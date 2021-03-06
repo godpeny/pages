@@ -8,4 +8,3 @@ about: "Any Ideas for this Github Page?"
 ## Ideas
 
 <!-- Welcom any Ideas to improve this Github Page -->
-
