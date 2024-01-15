@@ -3,6 +3,7 @@ import ReactMarkdown from 'markdown-to-jsx';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import {useEffect, useState} from "react";
 
 function MarkdownListItem(props: any) {
   return <Box component="li" sx={{ mt: 1, typography: 'body1' }} {...props} />;
@@ -46,5 +47,11 @@ const options = {
 };
 
 export default function Markdown(props: any) {
-  return <ReactMarkdown options={options} {...props} />;
+  const [tosText, setTosText] = useState('')
+  useEffect(() => {
+    fetch(props.children).then(res => res.text()).then(text => setTosText(text))
+  })
+
+
+  return <ReactMarkdown options={options} children={tosText} />;
 }
