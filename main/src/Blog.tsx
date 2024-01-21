@@ -12,9 +12,9 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
+import post0 from "./blog-post.0.md";
 import post1 from "./blog-post.1.md";
 import post2 from './blog-post.2.md';
-import post3 from './blog-post.3.md';
 
 
 const sections = [
@@ -58,7 +58,7 @@ const featuredPosts = [
   },
 ];
 
-const posts = [post1, post2, post3];
+const posts = [post0,post1, post2];
 
 const sidebar = {
   title: 'About',
