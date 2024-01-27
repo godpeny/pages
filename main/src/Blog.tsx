@@ -17,7 +17,7 @@ import post0 from "./blog-post.0.md";
 import post1 from "./blog-post.1.md";
 import post2 from './blog-post.2.md';
 import post3 from './blog-post.3.md';
-
+import post4 from './blog-post.4.md';
 
 const sections = [
   { title: 'Technology', url: '#' },
@@ -60,7 +60,7 @@ const featuredPosts = [
   },
 ];
 
-const posts = [post0,post1, post2];
+const posts = [post0,post1, post2, post3, post4];
 
 const sidebar = {
   title: 'About',
