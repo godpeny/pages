@@ -1,13 +1,7 @@
-# Skip-gram With Negative Sampling and C-Bow
+# Word2Vec & GloVE
 
-## Basic
+## Word Embeddings
 
-## Skip-gram
+## Word2Vec
 
-## Gradient of Skip-gram
-
-## Negative Sampling
-
-## Gradient of Negative Sampling
-
-## C-Bow
+# GloVE
