@@ -3,6 +3,8 @@
 ## Terminology
 
 ## Math
+### Statistics
+#### L2 Norm
 
 ### Calculus
 
