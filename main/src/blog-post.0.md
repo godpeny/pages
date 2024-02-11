@@ -5,6 +5,7 @@
 ## Math
 ### Statistics
 #### L2 Norm
+#### Gaussian Distribution (= Normal Distribution)
 
 ### Calculus
 
