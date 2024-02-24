@@ -1,6 +1,8 @@
 # Stub
 
 ## Terminology
+### Jacobian vs Hessian
+
 
 ## Math
 ### Statistics
