@@ -1,7 +1,7 @@
 # Stub
 
 ## Terminology
-### Jacobian vs Hessian
+### Variables vs Parameters
 
 
 ## Math
@@ -12,5 +12,7 @@
 
 ### Calculus
 #### Chain Rule
+#### Gradient Vector
+#### Jacobian vs Hessian
 
 ### Linear Algebra
