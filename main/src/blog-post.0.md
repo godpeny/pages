@@ -17,3 +17,7 @@
 #### Jacobian vs Hessian
 
 ### Linear Algebra
+#### Vector and Matrix
+##### Row Vector vs Column Vector
+##### Rank of a Matrix
+##### Vector and Matrix Multiplication
