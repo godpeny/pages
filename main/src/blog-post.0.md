@@ -19,5 +19,5 @@
 ### Linear Algebra
 #### Vector and Matrix
 ##### Row Vector vs Column Vector
-##### Rank of a Matrix
+##### Span, Range, Rank and Null Space
 ##### Vector and Matrix Multiplication
