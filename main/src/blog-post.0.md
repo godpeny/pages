@@ -13,8 +13,7 @@
 
 ### Calculus
 #### Chain Rule
-#### Gradient Vector
-#### Jacobian vs Hessian
+#### Jacobian vs Gradients vs Hessian
 
 ### Linear Algebra
 #### Vector and Matrix
