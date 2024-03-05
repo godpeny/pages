@@ -1,13 +1,92 @@
 # What is Container?
 
+## Linux Man Page Numbering
+- 1 : User Commands
+- 2 : System Calls
+- 3 : Library Functions
+- 4 : Special Files
+- 5 : File Formats and Conventions
+- 6 : Games et al.
+- 7 : Miscellanea
+- 8 : System Administration tools and Daemons
+
 ## User Mode and Kernel Mode
 
 ## System Calls
+### process vs thread
+ - A process is the execution of a program. It includes the program itself, data, resources such as files, and execution info such as process relation information kept by the OS. 
+The OS allows users to create, schedule, and terminate the processes via system calls.
+ - A thread is a semi-process. It has its own stack and executes a given piece of code. Unlike a real process, the thread normally shares its memory with other threads. 
+Conversely, processes usually have a different memory area for each one of them.
 
+### fork, clone, exec, unshare, setns, nsenter and mount
+- fork(2) : fork creates a new ("child") process by duplicating the calling process.
+The new process is referred to as the child process. The calling process is referred to as the parent process. 
+The child process and the parent process run in separate memory spaces.
+The entire virtual address space of the parent is replicated in the child, including the states of mutexes, condition variables, and other pthreads objects.
+
+- clone(2) : These system calls create a new ("child") process, in a manner similar to fork(2). 
+By contrast with ``fork(2)``, these system calls provide more precise control over what pieces of execution context are shared between the calling process and the child process.  
+For example, using these system calls, the caller can control whether or not the two processes share the virtual address space, the table of file descriptors, and the table of signal handlers.  
+These system calls also allow the new child process to be placed in separate namespaces.
+
+- execve(2) : The exec() family of functions replaces the current process image with a new process image. 
+``execve()`` executes the program referred to by pathname.  This causes the program that is currently being run by the calling process to be replaced with a new program, with newly initialized stack, heap, and (initialized and uninitialized) data segments.
+exec함수는 사용하던 공간을 해제하고 새로운 공간을 실행 가능한 바이너리를 로드하고 실행한다. 새로운 스택을 초기화하고 excutable entry point를 전달하여 실행한다. 
+exec 함수는 보통 fork-and-exec 방식(UNIX process management model에서 일컫는)으로 사용된다. 어떤 프로세스가 exec를 호출하면 이 프로세스 메모리 공간을 해제하고 새 실행 파일을 로드하고 실행한다. 이렇게 되어버리면 exec를 호출한 프로세스 공간은 새 프로세스로 교체되고, exec를 호출한 프로세스는 실행이 중지된다. 
+기존 프로세스의 실행 중지를 회피하기 위한 방법이 fork-and-exec 방식인 것이다. 새로운 프로세스를 생성하고 그 프로세스에서 exec 함수를 실행해서 새로운 프로세스를 실행하는 것이다. 이 방식을 사용하여 부모 프로세스와 자식 프로세스가 모두 실행이 가능한 것이다.
+
+- unshare(1) : ``unshare(1)`` command creates new namespaces (as specified by the command-line options) and then executes the specified program.
+  - mount namespace, UTS namespace, IPC namespace, PID namespace, network namespace, user namespace, cgroup namespace.
+  - ``--mount-proc`` : just before running the program, mount the proc filesystem at mountpoint (default is /proc). This is useful when creating a new PID namespace. 
+  It also implies creating a new mount namespace since the /proc mount would otherwise mess up existing programs on the system. 
+  The new proc filesystem is explicitly mounted as private to make sure that the new namespace is really unshared.
+  - ``--fork`` : fork the specified program as a child process of ``unshare`` rather than running it directly. This is useful when creating a new PID namespace. (``fork-and-exec`` implementing model)
+  ``unshare`` program will fork a 'new process' after it has created the namespace. Then this 'new process' will have PID=1 and will execute our shell program. (``exec``)
+
+- setns(2) : setns() system call can be used to associate the calling thread with a namespace of the specified type.
+  - `` int setns(int fd, int nstype);`` : the ``fd argument is a file descriptor referring to one of the magic links in a "/proc/pid/ns/" directory (or a bind mount to such a link) or a PID file descriptor.
+- nsenter(1) : run program in different namespaces.
+- mount(8) : mount a filesystem. All files accessible in a Unix system are arranged in one big tree, the file hierarchy, rooted at ``/``. 
+These files can be spread out over several devices. The mount command serves to attach the filesystem found on some device to the big file tree.
+  - The ``proc`` filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at ``/proc``.  
+  - Typically, it is mounted automatically by the system, but it can also be mounted manually using a command ```mount -t proc proc /proc```.
 ## CGroups
+### concept
+
+### implementation
+- "/sys/fs/cgroup" is the default mount point for cgroups.
 
 ## Namespaces
+### concept
 
-## File System
+### implementation
+- "/proc/[pid]/ns" is the default mount point for namespaces.
+
+### Types of Namespaces
+- Mount Namespace
+- UTS Namespace
+- IPC Namespace
+- PID Namespace
+- Network Namespace
+- User Namespace
+- Cgroup Namespace
+
+## Cgroup and Namespace
+네임스페이스와 cgroup은 컨테이너 및 최신 애플리케이션을 위한 빌딩 블록입니다. 애플리케이션을 보다 현대적인 아키텍처로 리팩토링할 때 작동 방식을 이해하는 것이 중요합니다.
+네임스페이스는 시스템 리소스의 격리를 제공하고 cgroup은 해당 리소스에 대한 세분화된 제어 및 제한 적용을 허용합니다.
+컨테이너는 네임스페이스와 cgroup을 사용할 수 있는 유일한 방법이 아닙니다. 네임스페이스 및 cgroup 인터페이스는 Linux 커널에 내장되어 있으므로 다른 애플리케이션에서 이를 사용하여 분리 및 리소스 제약을 제공할 수 있습니다.
+
+## Container Image and Container Runtime
 
 ## Networking
+
+
+
+## Reference
+- http://man.he.net/man7
+- https://navigatorkernel.blogspot.com/
+- https://nginxstore.com/blog/kubernetes/%EB%84%A4%EC%9E%84%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%EC%99%80-cgroup%EC%9D%80-%EB%AC%B4%EC%97%87%EC%9D%B4%EB%A9%B0-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%9E%91%EB%8F%99%ED%95%A9%EB%8B%88%EA%B9%8C/
+- https://www.schutzwerk.com/en/blog/linux-container-cgroups-01-intro/
+- https://tech.kakaoenterprise.com/154
+- https://itnext.io/breaking-down-containers-part-0-system-architecture-37afe0e51770
