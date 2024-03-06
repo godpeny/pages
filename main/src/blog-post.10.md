@@ -53,9 +53,62 @@ These files can be spread out over several devices. The mount command serves to 
   - Typically, it is mounted automatically by the system, but it can also be mounted manually using a command ```mount -t proc proc /proc```.
 ## CGroups
 ### concept
+ - cgroups have 4 main features(resource limiting, prioritization, accounting, process control) to allow an administrator to ensure that programs running on the system stay within certain acceptable boundaries for CPU, RAM, block device I/O, and device groups.
+ - cgroups are simply a directory structure with cgroups mounted into them. They can be located anywhere on the filesystem, but you will find the system-created cgroups in "/sys/fs/cgroup" by default.
+#### terminology
+- cgroup : collection of processes that are bound by the same set of limits or parameters defined via the cgroup filesystem.
+- subsystem (= resource controller) :controller is a kernel component that modifies the behavior of the processes in a cgroup.  Various subsystems have been implemented, 
+making it possible to do things such as limiting the amount of CPU time and memory available to a cgroup, accounting for the CPU time used by a cgroup, and freezing and resuming execution of the processes in a cgroup.
+- hierarch : hierarchy is defined by creating, removing, and renaming subdirectories within the cgroup filesystem.  At each level of the hierarchy, attributes (e.g., limits) can be defined.
 
 ### implementation
+![blog10_cgroup_diagram.png](images%2Fblog10_cgroup_diagram.png)
 - "/sys/fs/cgroup" is the default mount point for cgroups.
+- each type of controller (cpu, disk, memory, etc.) is subdivided into a tree-like structure like a filesystem.
+- ``PID 1`` in memory, disk i/o, and cpu control groups. but cgroups are created per resource type and have no association with each other. so ``PID 1`` in the memory controller can actually has no relation to ``PID 1`` in the cpu controller.
+```bash
+# ls /sys/fs/cgroup (hierarchy)
+/cgroup
+├── <controller type>
+│   ├── <group 1>
+│   ├── <group 2>
+│   ├── <group 3>
+
+# mount hierarchy to cgroup controller
+mount -t cgroup -o memory none /my_cgroups/memory
+mount -t cgroup -o cpu,cpuacct none /my_cgroups/cpu
+mount -t cgroup -o cpuset none /my_cgroups/cpusets
+
+# ls -l /sys/fs/cgroup/cpu/user1/
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cgroup.clone_children
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cgroup.procs
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.stat
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_all
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_percpu
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_percpu_sys
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_percpu_user
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_sys
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpuacct.usage_user
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cpu.cfs_period_us
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cpu.cfs_quota_us
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cpu.rt_period_us
+-rw-r--r--. 1 root root 0 Sep  5 10:26 cpu.rt_runtime_us
+-rw-r--r--. 1 root root 0 Sep  5 10:20 cpu.shares
+-r--r--r--. 1 root root 0 Sep  5 10:26 cpu.stat
+-rw-r--r--. 1 root root 0 Sep  5 10:26 notify_on_release
+-rw-r--r--. 1 root root 0 Sep  5 10:23 tasks
+
+# control the cpu shares with cgroup
+$ echo 2048 > user1/cpu.shares
+$ echo 768 > user2/cpu.shares
+$ echo 512 > user3/cpu.shares
+
+# add PID to cgroup 'user1'
+$ echo 2023 > user1/tasks
+```
+### conclusion
+![blog10_cgroup_conclusion.png](images%2Fblog10_cgroup_conclusion.png)
 
 ## Namespaces
 ### concept
@@ -90,3 +143,5 @@ These files can be spread out over several devices. The mount command serves to 
 - https://www.schutzwerk.com/en/blog/linux-container-cgroups-01-intro/
 - https://tech.kakaoenterprise.com/154
 - https://itnext.io/breaking-down-containers-part-0-system-architecture-37afe0e51770
+- https://www.redhat.com/sysadmin/cgroups-part-one
+- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/resource_management_guide/index
