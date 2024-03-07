@@ -51,6 +51,7 @@ exec 함수는 보통 fork-and-exec 방식(UNIX process management model에서 �
 These files can be spread out over several devices. The mount command serves to attach the filesystem found on some device to the big file tree.
   - The ``proc`` filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at ``/proc``.  
   - Typically, it is mounted automatically by the system, but it can also be mounted manually using a command ```mount -t proc proc /proc```.
+
 ## CGroups
 ### concept
  - cgroups have 4 main features(resource limiting, prioritization, accounting, process control) to allow an administrator to ensure that programs running on the system stay within certain acceptable boundaries for CPU, RAM, block device I/O, and device groups.
@@ -112,9 +113,34 @@ $ echo 2023 > user1/tasks
 
 ## Namespaces
 ### concept
+- provide processes with their own system view, thus isolating independent processes from each other. 
+- in other words, namespaces define the set of resources that a process can use (You cannot interact with something that you cannot see).
 
 ### implementation
-- "/proc/[pid]/ns" is the default mount point for namespaces.
+- "/proc/[pid]/ns" is the default mount point for namespaces, and it contains symbolic links to the namespace files for each type of namespace that the process belongs to.
+```bash
+# ls -l /proc/5151/ns
+total 0
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:48 cgroup -> 'cgroup:[4026531835]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 ipc -> 'ipc:[4026531839]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 mnt -> 'mnt:[4026531841]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 net -> 'net:[4026531840]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 pid -> 'pid:[4026531836]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 07:36 pid_for_children -> 'pid:[4026531836]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 07:32 time -> 'time:[4026531834]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 07:36 time_for_children -> 'time:[4026531834]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 user -> 'user:[4026531837]'
+lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 uts -> 'uts:[4026531838]'
+
+#  <type> -> ‘<type>:[<inode>]’. 
+# Firstly, <type> is the type of namespace, such as cgroup, ipc, mnt, net, pid, or user. 
+# Then, the <inode> is the inode number that uniquely identifies each namespace on the system.
+# Additionally, we can use these inode numbers to enter the namespaces of the process using the nsenter command:
+$ sudo nsenter --net=/proc/5151/ns/net
+```
+
+### procfs
+
 
 ### Types of Namespaces
 - Mount Namespace
@@ -124,6 +150,9 @@ $ echo 2023 > user1/tasks
 - Network Namespace
 - User Namespace
 - Cgroup Namespace
+  - each cgroup namespace has its own set of cgroup root directories. when a process creates a new cgroup namespace using clone(2) or unshare(2), its current cgroups directories become the cgroup root directories of the new namespace.
+  - creating a different cgroup namespace essentially moves the root directory of the cgroup. If the cgroup was, for example, "/sys/fs/cgroup/mycgroup", a new namespace cgroup could use this as a root directory. 
+  the host might see "/sys/fs/cgroup/mycgroup/{group1,group2,group3}" but creating a new cgroup namespace would mean that the new namespace would only see {"group1,group2,group3}".
 
 ## Cgroup and Namespace
 네임스페이스와 cgroup은 컨테이너 및 최신 애플리케이션을 위한 빌딩 블록입니다. 애플리케이션을 보다 현대적인 아키텍처로 리팩토링할 때 작동 방식을 이해하는 것이 중요합니다.
@@ -131,6 +160,7 @@ $ echo 2023 > user1/tasks
 컨테이너는 네임스페이스와 cgroup을 사용할 수 있는 유일한 방법이 아닙니다. 네임스페이스 및 cgroup 인터페이스는 Linux 커널에 내장되어 있으므로 다른 애플리케이션에서 이를 사용하여 분리 및 리소스 제약을 제공할 수 있습니다.
 
 ## Container Image and Container Runtime
+### Union File System 
 
 ## Networking
 
@@ -145,3 +175,4 @@ $ echo 2023 > user1/tasks
 - https://itnext.io/breaking-down-containers-part-0-system-architecture-37afe0e51770
 - https://www.redhat.com/sysadmin/cgroups-part-one
 - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/resource_management_guide/index
+- https://www.baeldung.com/linux/find-process-namespaces
