@@ -139,11 +139,18 @@ lrwxrwxrwx 1 abdulhameed abdulhameed 0 Jul 26 06:55 uts -> 'uts:[4026531838]'
 $ sudo nsenter --net=/proc/5151/ns/net
 ```
 
-### procfs
-
+### procfs ('/proc')
+- ``/proc`` is referred to as a virtual file system, so this file system is not used for storage. 
+- its main purpose is to provide a file-based interface to hardware, memory, running processes, and other system components.
+- real-time information can be retrieved on many system components by viewing the corresponding /proc file.
+- 일반적인 파일 시스템은 메모리(/proc가 있는 곳)가 아닌 디스크에 위치하며, 이 경우 인덱스 노드(index-node, 줄여서 inode) 번호는 파일의 inode가 있는 디스크 위치를 가리키는 포인터입니다. 
+inode는 파일의 권한과 같은 파일에 관한 정보를 담고 있으며, 파일 데이터가 저장된 디스크 위치를 가리키는 포인터도 포함하고 있다.
+- similarly, '/sys' is a virtual file system that provides an interface to kernel data structures. It is commonly mounted at '/sys'.
 
 ### Types of Namespaces
 - Mount Namespace
+  - isolate the set of filesystem mount points seen by a group of processes. 
+  thus, processes in different mount namespaces can have different views of the filesystem hierarchy.
 - UTS Namespace
 - IPC Namespace
 - PID Namespace
@@ -176,3 +183,5 @@ $ sudo nsenter --net=/proc/5151/ns/net
 - https://www.redhat.com/sysadmin/cgroups-part-one
 - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/resource_management_guide/index
 - https://www.baeldung.com/linux/find-process-namespaces
+- https://wikidocs.net/196798
+- https://lwn.net/Articles/531114/#series_index
