@@ -11,8 +11,28 @@
 - 8 : System Administration tools and Daemons
 
 ## User Mode and Kernel Mode
+- User Mode : Wwen a user-mode program requests to run, a process and virtual address space (address space for that process) are created for it by OS. 
+User-mode programs are less privileged than user-mode applications and are not allowed to access the system resources directly. for instance, if an application under user mode wants to access system resources, it will have to first go through the Operating system kernel by using syscalls.
+- Kernel Mode : the kernel is the core program on which all the other operating system components rely, it is used to access the hardware components and schedule which processes should run on a computer system and when, and it also manages the application software and hardware interaction. 
+hence it is the most privileged program, unlike other programs, it can directly interact with the hardware. when programs running under user mode need hardware access for example webcam, then first it has to go through the kernel by using a syscall, and to carry out these requests the CPU switches from user mode to kernel mode at the time of execution. 
+after finally completing the execution of the process the CPU again switches back to the user mode.
 
 ## System Calls
+- a system call is a routine that allows a user application to request actions that require special privileges. adding system calls is one of several ways to extend the functions provided by the kernel.
+- when to call system calls? : 
+  - read and write from files.
+  - create or delete files.
+  - create and manage new processes.
+  - send and receive packets, through network connections.
+  - access hardware devices.
+  - etc..
+![blog10_system_call_1.png](images%2Fblog10_system_call_1.png)
+- system call execution process
+  - 1: the processor executes a process in the user mode until a system call interrupts it.
+  - 2: then on a priority basis, the system call is executed in the kernel mode.
+  - 3: after the completion of system call execution, control returns to user mode.,
+  - 4: the execution resumes in Kernel mode.
+![blog10_system_call_2.png](images%2Fblog10_system_call_2.png)
 ### process vs thread
  - A process is the execution of a program. It includes the program itself, data, resources such as files, and execution info such as process relation information kept by the OS. 
 The OS allows users to create, schedule, and terminate the processes via system calls.
@@ -166,14 +186,168 @@ inode는 파일의 권한과 같은 파일에 관한 정보를 담고 있으며,
 네임스페이스는 시스템 리소스의 격리를 제공하고 cgroup은 해당 리소스에 대한 세분화된 제어 및 제한 적용을 허용합니다.
 컨테이너는 네임스페이스와 cgroup을 사용할 수 있는 유일한 방법이 아닙니다. 네임스페이스 및 cgroup 인터페이스는 Linux 커널에 내장되어 있으므로 다른 애플리케이션에서 이를 사용하여 분리 및 리소스 제약을 제공할 수 있습니다.
 
-## Container Image and Container Runtime
-### Union File System 
+## Container File System
+### Linux Overlay Filesystem
+![blog10_overlay_filesystem.png](images%2Fblog10_overlay_filesystem.png)
+- OverlayFS is a union mount filesystem on Linux. It is used to overlay an upper directory tree on top of a lower directory tree (these are virtually merged even if they belong to different filesystems). 
+the interesting thing about OverlayFS is that the lower directory tree is read-only, while the upper partition can be modified.
 
-## Networking
+- Modification : any changes made to the files from the upper directory tree will be carried out as usual. however, any changes made to the lower tree are temporary and stored on the view level. 
+this means that a copy of the modified files will be created in the upper directory and undergo the changes instead of the original file in the lower layer
 
+- Removal : removing a file from the OverlayFS directory will successfully remove a file from the upper directory, but if the file belongs to the lower directory, OverlayFS will simulate that removal by creating a whiteout file. 
+this file will only exist in the OverlayFS directory – no physical changes will be seen in the other two directories. so when OverlayFS is dismounted, this information will be lost.
+(Lower Dir 파일에 변경이 필요하면 Upper Dir로 파일을 먼저 복사(Copy) 한 뒤에 변경을 처리합니다(CoW, Copy-On-Write). Upper Dir이 있음으로 해서 기존 이미지 레이어, 즉 원본을 수정하지 않고도 신규 쓰기나 수정이 발생한 변경 부분만 새로 커밋하여 레이어를 추가/확장할 수 있습니다.)
+#### exmaple
+```bash
+/tmp/rootfs# mount -t overlay overlay -o lowerdir=image2:image1,upperdir=container,workdir=work merge
+```
+![blog10_overlay_filesystem_example.png](images%2Fblog10_overlay_filesystem_example.png)
 
+### Docker Image & Container Layer
+#### Image Layer
+```dockerfile
+# syntax=docker/dockerfile:1
+
+FROM ubuntu:22.04
+LABEL org.opencontainers.image.authors="org@example.com"
+COPY . /app
+RUN make /app
+RUN rm -r $HOME/.cache
+CMD python /app/app.py
+```
+- each command modifies the filesystem create a layer.
+each layer is only a set of differences from the layer before it. note that both adding, and removing files will result in a new layer. 
+in the example above, the ``$HOME/.cache`` directory is removed, but will still be available in the previous layer and add up to the image's total size.
+- Image Layer : read-only (=low_dir in OverlayFS)
+- Container Layer : read-write (=upper_dir in OverlayFS)
+![blog10_docker_layers_1.png](images%2Fblog10_docker_layers_1.png)
+#### Container Layer
+- the layers are stacked on top of each other. when you create a new container, you add a new writable layer on top of the underlying layers. 
+this layer is often called the "container layer". all changes made to the running container, such as writing new files, modifying existing files, and deleting files, are written to this thin writable container layer.
+- the major difference between a container and an image is the top writable layer. 
+all writes to the container that add new or modify existing data are stored in this writable layer. when the container is deleted, the writable layer is also deleted. The underlying image remains unchanged.
+- because each container has its own writable container layer, and all changes are stored in this container layer, multiple containers can share access to the same underlying image and yet have their own data state.
+![blog10_docker_layers_2.png](images%2Fblog10_docker_layers_2.png)
+
+#### Implementation
+- imageDB : imagedb is an image database that stores information about the Docker layers and the relationships between them (for example, how one depends on the other). the Docker daemon stores the imagedb. 
+when running a container, the platform uses this database to retrieve information about each layer.
+- layerDB : layerdb is a database that holds information about the relationship between layers. It also holds instructions for building layers. this database is stored in the daemon.
+when running a container using an image, the Docker daemon uses both the imagedb and layerdb to start the container.
+- caches : cache speeds up the process of building an image. it stores all the files that make up each layer in a database called "layer cache database." 
+each file has a hash value and a row in this database and each Docker layer also has a row in the cache database.
+
+#### Where is Docker image and container stored in the host?
+- find path liske ``/var/lib/docker``.
+- actual image layers are stored in ``/var/lib/docker/image/overlay2``, while the files are stored in ``/var/lib/docker/overlay2``.
+- use ``docker inspect`` to find the path of the image and container.
+```bash
+# docker inspect <container_id>
+"GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/756e5194fcdd64be8731377290becc99328245c8865e07c5d51f8aa057253985/diff:/var/lib/docker/overlay2/e780dc911946fcb9e0abbfd0370982f2196efe2d4b15d3c9788216ac1caa4014/diff:/var/lib/docker/overlay2/23ab75ebbe58183a60c984b385a6f02859029f1b6425285ff00238cccd25b7d7/diff:/var/lib/docker/overlay2/ef88c4ee2bb729696b19101c38a19e4be3860509bbbbaf04e3126feaf6248809/diff:/var/lib/docker/overlay2/fc13a95085f3340336bac24b052949c7e1697249b4a60f6e7e3873dbc07a312c/diff:/var/lib/docker/overlay2/e423e037d617a14e5f44606b9460d391eb9d94f9435c160a6d0adb4bfa6fec4b/diff",
+                "MergedDir": "/var/lib/docker/overlay2/c3b2470a74361ce94a95738f1aa46ffbe0fa9f782590a7286666a1c9fcaf9ad1/merged",
+                "UpperDir": "/var/lib/docker/overlay2/c3b2470a74361ce94a95738f1aa46ffbe0fa9f782590a7286666a1c9fcaf9ad1/diff",
+                "WorkDir": "/var/lib/docker/overlay2/c3b2470a74361ce94a95738f1aa46ffbe0fa9f782590a7286666a1c9fcaf9ad1/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:ceb365432eec83dafc777cac5ee87737b093095035c89dd2eae01970c57b1d15",
+                "sha256:84619992a45bb790ab8f77ff523e52fc76dadfe17e205db6a111d0f657d31d71",
+                "sha256:3137f8f0c6412c12b46fd397866589505b4474e53580b4e62133da67bf1b2903",
+                "sha256:7d52a4114c3602761999a4ea2f84a093c8fcc8662876acc4c3b92878b9948547",
+                "sha256:188d128a188cafb013db48e94d9366f0be64083619f50b452cfd093e7affa260",
+                "sha256:bcc6856722b7b251ad00728c9cd93b679c7836d5e6780b52316b56c20fd5be94",
+                "sha256:61a7fb4dabcd05eba747fed22ff5264f82066d2bf8e16f78198f616e700f5aa7"
+            ]
+        }
+...
+# var/lib/docker 
+var/lib/docker# tree -L 1
+.
+├── buildkit
+├── containers
+├── engine-id
+├── image # layers are stored here
+├── network
+├── overlay2 # files are stored here
+├── plugins
+├── runtimes
+├── swarm
+├── tmp
+└── volumes
+
+# image layer
+/var/lib/docker/image/overlay2# tree -L 2
+.
+├── distribution
+│   ├── diffid-by-digest
+│   └── v2metadata-by-diffid
+├── imagedb
+│   ├── content
+│   └── metadata
+├── layerdb
+│   ├── sha256
+│   └── tmp
+└── repositories.json
+
+# Layer DB
+/var/lib/docker/image/overlay2/layerdb/sha256# tree .
+.
+├── 0814ebf6e0ed919bf8bf686038d645aa2b535eb9a6bc4b58b2df1b31d499fe3d
+│   ├── cache-id # local file hash (~/var/lib/docker/overlay2/~
+│   ├── diff # layer file hash
+│   ├── parent # parent layer file hash
+│   ├── size
+│   └── tar-split.json.gz
+├── 0baf2321956a506afcddaafe217bc852e4c56a9640530b1b2f98b3378d4b6173
+│   ├── cache-id
+│   ├── diff
+│   ├── size
+│   └── tar-split.json.gz
+├── 0c2e669c3c8abe5ce516bd0ffbb3dec76614a9cd1dec058a7c4815a403adee83
+│   ├── cache-id
+│   ├── diff
+│   ├── parent
+│   ├── size
+│   └── tar-split.json.gz
+├── 1084f34dba33ee0238270b757d7d4c3ffa06fcac38f1be5bf26bf35d8982eb17
+│   ├── cache-id
+│   ├── diff
+│   ├── parent
+│   ├── size
+│   └── tar-split.json.gz
+...
+```
+## Docker in Practice
+### Multi-Staged Builds
+ - generated images are smaller. the final image is typically much smaller than the one produced by a normal build, as the resulting image includes just what the application needs to run.
+ - resulting container will be more secure because your final image includes only what it needs to run the application.
+ - smaller images mean less time to transfer or quicker CI/CD builds, faster deployment time, and improved performance.
+#### Implement
+```dockerfile
+# syntax=docker/dockerfile:1
+
+FROM alpine:latest AS builder
+RUN apk --no-cache add build-base
+
+FROM builder AS build1
+COPY source1.cpp source.cpp
+RUN g++ -o /binary source.cpp
+
+FROM builder AS build2
+COPY source2.cpp source.cpp
+RUN g++ -o /binary source.cpp
+```
 
 ## Reference
+### Cgroup and Namespace
+- https://data-flair.training/blogs/system-call-in-os/
+- https://www.geeksforgeeks.org/difference-between-user-mode-and-kernel-mode/
 - http://man.he.net/man7
 - https://navigatorkernel.blogspot.com/
 - https://nginxstore.com/blog/kubernetes/%EB%84%A4%EC%9E%84%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%EC%99%80-cgroup%EC%9D%80-%EB%AC%B4%EC%97%87%EC%9D%B4%EB%A9%B0-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%9E%91%EB%8F%99%ED%95%A9%EB%8B%88%EA%B9%8C/
@@ -185,3 +359,13 @@ inode는 파일의 권한과 같은 파일에 관한 정보를 담고 있으며,
 - https://www.baeldung.com/linux/find-process-namespaces
 - https://wikidocs.net/196798
 - https://lwn.net/Articles/531114/#series_index
+
+### Filesystem
+- https://www.educative.io/answers/what-is-overlayfs
+- https://tech.kakaoenterprise.com/171
+- https://docs.docker.com/storage/storagedriver/
+- https://blog.packagecloud.io/what-are-docker-image-layers/
+- 
+### Docker In Practice
+- https://www.cherryservers.com/blog/docker-multistage-build
+- https://docs.docker.com/build/building/multi-stage/
