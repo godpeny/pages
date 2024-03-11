@@ -11,7 +11,7 @@
 - 8 : System Administration tools and Daemons
 
 ## User Mode and Kernel Mode
-- User Mode : Wwen a user-mode program requests to run, a process and virtual address space (address space for that process) are created for it by OS. 
+- User Mode : When a user-mode program requests to run, a process and virtual address space (address space for that process) are created for it by OS. 
 User-mode programs are less privileged than user-mode applications and are not allowed to access the system resources directly. for instance, if an application under user mode wants to access system resources, it will have to first go through the Operating system kernel by using syscalls.
 - Kernel Mode : the kernel is the core program on which all the other operating system components rely, it is used to access the hardware components and schedule which processes should run on a computer system and when, and it also manages the application software and hardware interaction. 
 hence it is the most privileged program, unlike other programs, it can directly interact with the hardware. when programs running under user mode need hardware access for example webcam, then first it has to go through the kernel by using a syscall, and to carry out these requests the CPU switches from user mode to kernel mode at the time of execution. 
@@ -323,6 +323,18 @@ var/lib/docker# tree -L 1
 │   └── tar-split.json.gz
 ...
 ```
+
+## Container Network
+### Types of Container Network
+ - Bridge
+ - Host
+ - None
+ - Overlay
+ - Underlay
+ - Macvlan
+
+### Docker Network
+
 ## Docker in Practice
 ### Multi-Staged Builds
  - generated images are smaller. the final image is typically much smaller than the one produced by a normal build, as the resulting image includes just what the application needs to run.
@@ -359,6 +371,7 @@ RUN g++ -o /binary source.cpp
 - https://www.baeldung.com/linux/find-process-namespaces
 - https://wikidocs.net/196798
 - https://lwn.net/Articles/531114/#series_index
+- https://www.techtarget.com/searchdatacenter/definition/kernel
 
 ### Filesystem
 - https://www.educative.io/answers/what-is-overlayfs
