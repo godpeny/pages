@@ -38,6 +38,7 @@ after finally completing the execution of the process the CPU again switches bac
 The OS allows users to create, schedule, and terminate the processes via system calls.
  - A thread is a semi-process. It has its own stack and executes a given piece of code. Unlike a real process, the thread normally shares its memory with other threads. 
 Conversely, processes usually have a different memory area for each one of them.
+ - https://www.baeldung.com/cs/threads-sharing-resources
 
 ### fork, clone, exec, unshare, setns, nsenter and mount
 - fork(2) : fork creates a new ("child") process by duplicating the calling process.
@@ -71,6 +72,7 @@ exec 함수는 보통 fork-and-exec 방식(UNIX process management model에서 �
 These files can be spread out over several devices. The mount command serves to attach the filesystem found on some device to the big file tree.
   - The ``proc`` filesystem is a pseudo-filesystem which provides an interface to kernel data structures.  It is commonly mounted at ``/proc``.  
   - Typically, it is mounted automatically by the system, but it can also be mounted manually using a command ```mount -t proc proc /proc```.
+  - bind-mount : Classically, mounting creates a view of a storage device as a directory tree. A bind mount instead takes an existing directory tree and replicates it under a different point.
 
 ## CGroups
 ### concept
@@ -324,7 +326,7 @@ var/lib/docker# tree -L 1
 ...
 ```
 
-## Container Network
+## Container Networking
 ### Types of Container Network
  - Bridge
  - Host
@@ -361,6 +363,7 @@ RUN g++ -o /binary source.cpp
 - https://data-flair.training/blogs/system-call-in-os/
 - https://www.geeksforgeeks.org/difference-between-user-mode-and-kernel-mode/
 - http://man.he.net/man7
+- https://www.javatpoint.com/process-vs-thread
 - https://navigatorkernel.blogspot.com/
 - https://nginxstore.com/blog/kubernetes/%EB%84%A4%EC%9E%84%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%EC%99%80-cgroup%EC%9D%80-%EB%AC%B4%EC%97%87%EC%9D%B4%EB%A9%B0-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%9E%91%EB%8F%99%ED%95%A9%EB%8B%88%EA%B9%8C/
 - https://www.schutzwerk.com/en/blog/linux-container-cgroups-01-intro/
@@ -378,7 +381,10 @@ RUN g++ -o /binary source.cpp
 - https://tech.kakaoenterprise.com/171
 - https://docs.docker.com/storage/storagedriver/
 - https://blog.packagecloud.io/what-are-docker-image-layers/
-- 
+
+### Network
+- https://www.vmware.com/topics/glossary/content/container-networking.html
+
 ### Docker In Practice
 - https://www.cherryservers.com/blog/docker-multistage-build
 - https://docs.docker.com/build/building/multi-stage/
