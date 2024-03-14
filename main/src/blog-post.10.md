@@ -79,7 +79,7 @@ These files can be spread out over several devices. The mount command serves to 
  - cgroups have 4 main features(resource limiting, prioritization, accounting, process control) to allow an administrator to ensure that programs running on the system stay within certain acceptable boundaries for CPU, RAM, block device I/O, and device groups.
  - cgroups are simply a directory structure with cgroups mounted into them. They can be located anywhere on the filesystem, but you will find the system-created cgroups in "/sys/fs/cgroup" by default.
 #### terminology
-- cgroup : collection of processes that are bound by the same set of limits or parameters defined via the cgroup filesystem.
+- cgroups : collection of processes that are bound by the same set of limits or parameters defined via the cgroup filesystem.
 - subsystem (= resource controller) :controller is a kernel component that modifies the behavior of the processes in a cgroup.  Various subsystems have been implemented, 
 making it possible to do things such as limiting the amount of CPU time and memory available to a cgroup, accounting for the CPU time used by a cgroup, and freezing and resuming execution of the processes in a cgroup.
 - hierarch : hierarchy is defined by creating, removing, and renaming subdirectories within the cgroup filesystem.  At each level of the hierarchy, attributes (e.g., limits) can be defined.
@@ -135,6 +135,7 @@ $ echo 2023 > user1/tasks
 
 ## Namespaces
 ### concept
+- A namespace wraps a global system resource in an abstraction that makes it appear to the processes within the namespace that they have their own isolated instance of the global resource.
 - provide processes with their own system view, thus isolating independent processes from each other. 
 - in other words, namespaces define the set of resources that a process can use (You cannot interact with something that you cannot see).
 
@@ -336,6 +337,10 @@ var/lib/docker# tree -L 1
  - Macvlan
 
 ### Docker Network
+
+### Linux Virtual File System
+https://blog.naver.com/n_cloudplatform/222384170516
+https://www.kernel.org/doc/html/v5.9/filesystems/vfs.html
 
 ## Docker in Practice
 ### Multi-Staged Builds
