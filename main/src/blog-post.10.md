@@ -40,6 +40,9 @@ The OS allows users to create, schedule, and terminate the processes via system 
 Conversely, processes usually have a different memory area for each one of them.
  - https://www.baeldung.com/cs/threads-sharing-resources
 
+### VM vs Container
+
+
 ### fork, clone, exec, unshare, setns, nsenter and mount
 - fork(2) : fork creates a new ("child") process by duplicating the calling process.
 The new process is referred to as the child process. The calling process is referred to as the parent process. 
