@@ -2,6 +2,9 @@
 
 ## Terminology
 ### Variables vs Parameters
+##### Train, Dev, Test Set
+train on the training set, evaluate results on the dev set, and test on the test set.
+so do not test your model on the test set until you have finished handling overfitting.
 
 ## Math
 ### Statistics
