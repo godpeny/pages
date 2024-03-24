@@ -11,6 +11,9 @@ so do not test your model on the test set until you have finished handling overf
 #### L2 Norm
 #### Gaussian Distribution (= Normal Distribution)
 #### Probability vs Likelihood
+same function can be interpreted in two ways: as a function of data given parameters, or as a function of parameters given data.
+probability = function of data given parameters. (parameters are fixed and data is varying)
+likelihood = function of parameters given data. (data is fixed and parameters are varying)
 #### Cumulative Distribution Function(CDF) vs Probability Density Function(PDF) vs Probability Mass Function(PMF)
 #### Expectation vs Mean vs Average
 
