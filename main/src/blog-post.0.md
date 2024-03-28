@@ -40,6 +40,9 @@ so do not test your model on the test set until you have finished handling overf
 
 
 ### Linear Algebra
+#### Convex and Concave Function
+Convex function : function is convex if the line segment between any two distinct points on the graph of the function lies above the graph between the two points. (볼록 함수 - 아래로 볼록)
+Concave function : function is concave if the line segment between any two distinct points on the graph of the function lies below the graph between the two points. (오목 함수 - 아래로 오목)
 #### Vector and Matrix
 ##### Row Vector vs Column Vector
 ##### Span, Range, Rank and Null Space
