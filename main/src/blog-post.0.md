@@ -2,6 +2,12 @@
 
 ## Terminology
 ### Variables vs Parameters
+- Variables : values that are input to a model.
+  - i.e. input features in a neural network. ( = x)
+- Parameters : values that are learned by the model during training.
+  - i.e. weights, biases in a neural network. ( = W, b) 
+  - theta : set of parameters in a model.
+
 ##### Train, Dev, Test Set
 train on the training set, evaluate results on the dev set, and test on the test set.
 so do not test your model on the test set until you have finished handling overfitting.
