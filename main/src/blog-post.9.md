@@ -2,7 +2,7 @@
 
 ## Basics
 
-## Gaussian Discriminant Analysis
+## Gaussian Discriminant Analysis (GDA)
 
 ### Multivariate Gaussian Distribution
 
@@ -11,3 +11,5 @@
 ## Naive Bayes
 
 ### Laplace Smoothing
+
+### Discriminative Models(DLA)  vs Generative Models(GLA)
