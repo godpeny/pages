@@ -8,9 +8,13 @@
   - i.e. weights, biases in a neural network. ( = W, b) 
   - theta : set of parameters in a model.
 
-##### Train, Dev, Test Set
+### Train, Dev, Test Set
 train on the training set, evaluate results on the dev set, and test on the test set.
 so do not test your model on the test set until you have finished handling overfitting.
+
+### ArgNax / ArgMin
+- Arguments of maxima / minima.
+- input points at which the function output value is maximized / minimized.
 
 ## Math
 ### Statistics
@@ -32,8 +36,11 @@ so do not test your model on the test set until you have finished handling overf
     - probability = area under the curve.
     - likelihood = y-axis value.
 
-
 #### Cumulative Distribution Function(CDF) vs Probability Density Function(PDF) vs Probability Mass Function(PMF)
+- PDF: continuous random variable
+  - E(X) = = mu(mean) = integral(x * f(x) dx) 
+  - Var(X) = integral((x - E(X))^2 * f(x) dx)
+
 #### Expectation vs Mean vs Average
 
 ### Calculus
