@@ -20,6 +20,8 @@ so do not test your model on the test set until you have finished handling overf
 ### Statistics
 #### L2 Norm
 #### Gaussian Distribution (= Normal Distribution)
+#### Joint Probability
+- P(A, B) = p(A ∩ B) : likelihood of events occurring together at the same point in time.
 #### Probability vs Likelihood
 - In Deep Learning
   - same function can be interpreted in two ways: as a function of data given parameters, or as a function of parameters given data. 
