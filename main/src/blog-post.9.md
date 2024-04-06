@@ -13,3 +13,5 @@
 ### Laplace Smoothing
 
 ### Discriminative Models(DLA)  vs Generative Models(GLA)
+
+### Multi-Variate Bernoulli Event Model vs Multinomial Event Model
