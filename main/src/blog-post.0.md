@@ -58,6 +58,11 @@ so do not test your model on the test set until you have finished handling overf
 #### Convex and Concave Function
 Convex function : function is convex if the line segment between any two distinct points on the graph of the function lies above the graph between the two points. (볼록 함수 - 아래로 볼록)
 Concave function : function is concave if the line segment between any two distinct points on the graph of the function lies below the graph between the two points. (오목 함수 - 아래로 오목)
+#### Convex Optimization
+- Convex optimization problems : subfield of mathematical optimization that studies the problem of minimizing convex functions over convex sets (or, equivalently, maximizing concave functions over convex sets).
+- Convex set : given any two points in the subset, the subset contains the whole line segment that joins them. 
+  Equivalently, a convex set or a convex region is a subset that intersects every line into a single line segment.
+- Optima in Convex Optimization : local optima are global optima.
 #### Vector and Matrix
 ##### Row Vector vs Column Vector
 ##### Span, Range, Rank and Null Space
