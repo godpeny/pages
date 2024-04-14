@@ -86,6 +86,29 @@ primal problem에서는 주어진 식을 만족하는 벡터 𝑥 를 찾는 것
 
 ### Lagrange Duality
 
+$$
+\begin{align*}
+& \text{minimize} & & f_0(x) \\
+& \text{subject to} & & f_i(x) \leq 0, & & i = 1, \ldots, m, \\
+& & & h_i(x) = 0, & & i = 1, \ldots, p,
+\end{align*}
+$$
+considering above optimization problem, 
+$$
+L(x, \lambda, \nu) = f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x), \\
+
+\text{when, Lagrangian } L : \mathbb{R}^n \times \mathbb{R}^m \times \mathbb{R}^p \rightarrow \mathbb{R}
+$$
+
+the basic idea in Lagrangian duality is to take the constraints into
+account by augmenting the objective function with a weighted sum of the constraint
+functions.
+- lagrange multiplier
+$\lambda$, $\nu$ are called the dual variables or lagrange multiplier vectors.
+  - $\lambda_i$ : lagrange multiplier associated with the $i$ th inequality constraint,  $f_i(x) \leq 0$
+  - $\nu_i$ : lagrange multiplier associated with the $i$ th equality constraint, $h_i(x) = 0$
+
+
 
 ### Karush-Kuhn-Tucker(KKT) Conditions
 ### KKT Dual Complementarity Condition
