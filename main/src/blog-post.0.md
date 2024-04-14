@@ -63,6 +63,11 @@ Concave function : function is concave if the line segment between any two disti
 - Convex set : given any two points in the subset, the subset contains the whole line segment that joins them. 
   Equivalently, a convex set or a convex region is a subset that intersects every line into a single line segment.
 - Optima in Convex Optimization : local optima are global optima.
+
+#### Domain of a Function
+- the set of inputs accepted by the function. It is sometimes denoted by dom(f) or dom f,  where f is the function. 
+- in layman's term, "what x can be".
+- e.g. ``f(X) -> y, dom(f) = X``
 #### Vector and Matrix
 ##### Row Vector vs Column Vector
 ##### Span, Range, Rank and Null Space
