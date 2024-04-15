@@ -55,6 +55,9 @@ so do not test your model on the test set until you have finished handling overf
 
 
 ### Linear Algebra
+#### Feasible Point/Region
+ - point : A point x that satisfies all the constraints is called a feasible point and thus is a feasible solution to the problem. 
+ - region : A set of all possible points (sets of values of the choice variables) of an optimization problem that satisfy the problem's constraints, potentially including inequalities, equalities, and integer constraints.
 #### Convex and Concave Function
 Convex function : function is convex if the line segment between any two distinct points on the graph of the function lies above the graph between the two points. (볼록 함수 - 아래로 볼록)
 Concave function : function is concave if the line segment between any two distinct points on the graph of the function lies below the graph between the two points. (오목 함수 - 아래로 오목)
@@ -72,3 +75,19 @@ Concave function : function is concave if the line segment between any two disti
 ##### Row Vector vs Column Vector
 ##### Span, Range, Rank and Null Space
 ##### Vector and Matrix Multiplication
+
+#### Affine Function
+An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
+
+#### Bounded/Unbounded
+A set is called bounded if all of its points are within a certain distance of each other. 
+Conversely, a set which is not bounded is called unbounded. 
+
+#### Bounded Above/Below, Upper/Lower Bound and Least Upper/Lower Bound (Supremum, Infimum) 
+- A set $E \subseteq \mathbb{R}$ is bounded above(or below) if there is a real number M, called an upper(or lower) bound of E, such that $x <= M$ (or $x >= M$), for all $x \in \mathbb{R}$
+
+- A real number M is the least upper(or lower) bound, or supremum(or infimum), of a set  $E \subseteq \mathbb{R}$ if,
+1. M is an upper(or lower) bound of E
+2. each M' < M is not an upper bound of E. In this case, we write M = supE.  
+(or each M' > M is not an lower bound of E. In this case, we write M = infE.)
+- 쉽게 말하면, 상계에 속하는 값들 중에서 가장 작은 값이 상한이 되고 하계에 속하는 값들 중에서 가장 큰 값이 하한이 된다.
