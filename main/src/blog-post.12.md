@@ -103,11 +103,32 @@ $$
 the basic idea in Lagrangian duality is to take the constraints into
 account by augmenting the objective function with a weighted sum of the constraint
 functions.
-- lagrange multiplier
+
+#### Lagrange multiplier
 $\lambda$, $\nu$ are called the dual variables or lagrange multiplier vectors.
   - $\lambda_i$ : lagrange multiplier associated with the $i$ th inequality constraint,  $f_i(x) \leq 0$
   - $\nu_i$ : lagrange multiplier associated with the $i$ th equality constraint, $h_i(x) = 0$
 
+#### Lagrange dual function
+$
+g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right).
+$
+
+for any $\lambda \geq 0$  and any $\nu $ we have, $g(\lambda, \nu) \leq p^*$.
+
+
+for each pair $(\lambda, \nu)$ with $\lambda \geq 0$, the Lagrange dual function gives us a lower bound on the optimal value $ p⋆ $ of the optimization problem.  
+thus have a lower bound that depends on some parameters $\lambda$, $\nu$.
+
+
+
+#### lower value on optimal value
+for feasible $\hat{x}$ which satisfy constraints,  
+$
+g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) \leq L(\hat{x}, \lambda, \nu) \leq f_0(\hat{x}).
+$  
+this is because if Lagrangian is unbounded below in x(e.g. $\inf_{x \in D} L(x, \lambda, \nu)$),  
+the dual function takes on the value $-\infty$.
 
 
 ### Karush-Kuhn-Tucker(KKT) Conditions

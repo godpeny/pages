@@ -83,11 +83,11 @@ An affine function is a function composed of a linear function + a constant and 
 A set is called bounded if all of its points are within a certain distance of each other. 
 Conversely, a set which is not bounded is called unbounded. 
 
-#### Bounded Above/Below, Upper/Lower Bound and Least Upper/Lower Bound (Supremum, Infimum) 
+#### Bounded Above/Below, Upper/Lower Bound and Least Upper/Greast Lower Bound (Supremum, Infimum) 
 - A set $E \subseteq \mathbb{R}$ is bounded above(or below) if there is a real number M, called an upper(or lower) bound of E, such that $x <= M$ (or $x >= M$), for all $x \in \mathbb{R}$
 
-- A real number M is the least upper(or lower) bound, or supremum(or infimum), of a set  $E \subseteq \mathbb{R}$ if,
+- A real number M is the least upper(or greast lower) bound, or supremum(or infimum), of a set  $E \subseteq \mathbb{R}$ if,
 1. M is an upper(or lower) bound of E
 2. each M' < M is not an upper bound of E. In this case, we write M = supE.  
 (or each M' > M is not an lower bound of E. In this case, we write M = infE.)
-- 쉽게 말하면, 상계에 속하는 값들 중에서 가장 작은 값이 상한이 되고 하계에 속하는 값들 중에서 가장 큰 값이 하한이 된다.
+- 쉽게 말하면, 상계(upper bound)에 속하는 값들 중에서 가장 작은 값이 상한(supremum)이 되고 하계(lower bound)에 속하는 값들 중에서 가장 큰 값이 하한(infimum)이 된다.
