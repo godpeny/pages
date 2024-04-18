@@ -91,3 +91,9 @@ Conversely, a set which is not bounded is called unbounded.
 2. each M' < M is not an upper bound of E. In this case, we write M = supE.  
 (or each M' > M is not an lower bound of E. In this case, we write M = infE.)
 - 쉽게 말하면, 상계(upper bound)에 속하는 값들 중에서 가장 작은 값이 상한(supremum)이 되고 하계(lower bound)에 속하는 값들 중에서 가장 큰 값이 하한(infimum)이 된다.
+
+#### Indicator function (Characteristic function)
+https://en.wikipedia.org/wiki/Characteristic_function_(convex_analysis)
+
+#### Soft vs Hard Constraints
+ 

@@ -110,26 +110,75 @@ $\lambda$, $\nu$ are called the dual variables or lagrange multiplier vectors.
   - $\nu_i$ : lagrange multiplier associated with the $i$ th equality constraint, $h_i(x) = 0$
 
 #### Lagrange dual function
-$
+$$
 g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right).
-$
+$$
 
 for any $\lambda \geq 0$  and any $\nu $ we have, $g(\lambda, \nu) \leq p^*$.
-
-
 for each pair $(\lambda, \nu)$ with $\lambda \geq 0$, the Lagrange dual function gives us a lower bound on the optimal value $ p⋆ $ of the optimization problem.  
 thus have a lower bound that depends on some parameters $\lambda$, $\nu$.
 
-
-
 #### lower value on optimal value
 for feasible $\hat{x}$ which satisfy constraints,  
-$
+$$
 g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) \leq L(\hat{x}, \lambda, \nu) \leq f_0(\hat{x}).
-$  
+$$ 
 this is because if Lagrangian is unbounded below in x(e.g. $\inf_{x \in D} L(x, \lambda, \nu)$),  
 the dual function takes on the value $-\infty$.
 
+#### Lagrange Dual Problem
+$$
+\begin{align*}
+& \text{maximize} & & g(\lambda, \nu) \\
+& \text{subject to} & & \lambda \geq 0.
+\end{align*}
+$$
+- optimization problem to find the best lower bound that can be obtained from the Lagrange dual function.
+- the Lagrange dual problem is a convex optimization problem, since the
+objective to be maximized is concave and the constraint is convex.(This is the case
+whether or not the primal problem is convex.)
+
+#### Example 1 - Linear Programming
+for the primal problem,
+$$
+\begin{align*}
+& \text{minimize} & & c^T x \\
+& \text{subject to} & & Ax = b, \\
+& & & Gx \leq h.
+\end{align*}
+$$
+using lagrange multiplier vector $u$ and $v$, make Lagrangian $L$,
+$$
+L(x, u, v) = c^T x + u^T (Ax - b) + v^T (Gx - h) \leq c^T x \\
+\text{when vector} \quad v \geq 0 
+$$ 
+this is because $u^T (Ax - b)$ is always zero and $v^T (Gx - h)$ is always zero or negative. ($Ax = b, \ Gx \leq h$)
+when lagrange optinal function is $g(\lambda, \nu) = \min_{x} L(x, u, v)$, 
+$$
+p^* \geq \min_{x \in C} L(x, u, v) \geq \min_{x} L(x, u, v) \\
+\text{when C is feasible region that meets constraints, } \\
+p^* \text{is optimal value that we are looking for.}
+$$
+this is because you can better minimize when constraints is not set. (=lower value on optimal value)
+let's partial differentiate $g(\lambda)=\min_{x} L(x, u, v)$ w.r.t $x$,
+$$
+\frac{\partial L}{\partial x} = c^T + u^T A + v^T G = 0 \\
+\therefore c = -A^T u - G^T v
+$$
+
+using this equation, Lagrangian $L$ is,
+$$
+L(x, u, v) = c^T x + u^T (Ax - b) + v^T (Gx - h) \\
+\implies (-A^T u - G^T v) x + u^T (Ax - b) + v^T (Gx - h) \\
+= -u^T Ax - v^T Gx + u^T Ax - u^T b + v^T Gx - v^T h \\
+= -u^T b - v^T h \\
+= g(u, v)
+$$
+
+so original primal problem is same as maximizing $g(u, v) =  L(x, u, v)$ since, $ p^* \geq L(x, u, v)$.
+
+
+#### Strong vs Weak Duality and Duality Gap
 
 ### Karush-Kuhn-Tucker(KKT) Conditions
 ### KKT Dual Complementarity Condition
