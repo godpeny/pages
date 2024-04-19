@@ -110,11 +110,13 @@ $\lambda$, $\nu$ are called the dual variables or lagrange multiplier vectors.
   - $\nu_i$ : lagrange multiplier associated with the $i$ th equality constraint, $h_i(x) = 0$
 
 #### Lagrange dual function
+Lagrange dual function $g(\lambda, \nu)$ is defined as below,
 $$
-g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right).
+g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right). \\
+p^* \text{ is optimal value from primal problem.}
 $$
 
-for any $\lambda \geq 0$  and any $\nu $ we have, $g(\lambda, \nu) \leq p^*$.
+for any $\lambda \geq 0$  and any $\nu $ we have, $g(\lambda, \nu) \leq p^*$.  
 for each pair $(\lambda, \nu)$ with $\lambda \geq 0$, the Lagrange dual function gives us a lower bound on the optimal value $ p⋆ $ of the optimization problem.  
 thus have a lower bound that depends on some parameters $\lambda$, $\nu$.
 
@@ -177,8 +179,49 @@ $$
 
 so original primal problem is same as maximizing $g(u, v) =  L(x, u, v)$ since, $ p^* \geq L(x, u, v)$.
 
+#### Example 2 - General Case
+consider the primal problem,
+$$
+\begin{align*}
+& \text{minimize} & & f(x) \\
+& \text{subject to} & & h_i(x) \leq 0, & & i = 1, \ldots, m, \\
+& & & l_j(x) = 0, & & j = 1, \ldots, r.
+\end{align*}
+$$
+let's define Lagrangian $L$ and Lagrangian dual problem $g$ as below,
+$$
+L(x, u, v) = f(x) + \sum_{i=1}^{m} u_i h_i(x) + \sum_{i=1}^{r} v_i l_i(x) \\
+g(u, v) = \min_{x} L(x, u, v) \\
+\text{when vector} \quad u \geq 0
+$$
+since  $p^* \geq L(x, u, v)$, prime problem which is looking for only vector $x$ can be changed into dual problem as below which is looking for vector $v$, $u$.
+$$
+\begin{align*}
+& \text{maximize} & & g(u, v) \\
+& \text{subject to} & & u \geq 0.
+\end{align*}
+$$
+you can also see that dual problem is maximizing problem while prime problem was minimizaing problem.
 
-#### Strong vs Weak Duality and Duality Gap
+#### Weak Duality, Strong Duality and Duality Gap
+The optimal value of the Lagrange dual problem, which we denote $d^⋆$, is, by definition,
+the best lower bound on $p^⋆$ that can be obtained from the Lagrange dual
+function. It can be described as below,
+$$
+d^*\leq p^*
+$$
+above inequality property is called weak duality.
+$$
+d^* = p^*
+$$
+above equality property is called strong duality.  
+duality gap is basically the gap between the optimal value of the primal problem ($p^*$)
+and the best (i.e., greatest) lower bound on it($d^*$) that can be obtained from the
+Lagrange dual function. It can be described as below,
+$$
+p^* - d^*
+$$
+
 
 ### Karush-Kuhn-Tucker(KKT) Conditions
 ### KKT Dual Complementarity Condition
