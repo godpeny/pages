@@ -224,4 +224,60 @@ $$
 
 
 ### Karush-Kuhn-Tucker(KKT) Conditions
-### KKT Dual Complementarity Condition
+#### KKT conditions for nonconvex problems
+let $x^⋆$ and $(\lambda^*, v^*)$ be any primal and dual optimal points with zero duality gap (strong duality).  
+since $x^*$ minimizes $L(x^*, \lambda^*, v^*)$ over x, it follows that its gradient must vanish at $x^*$. In other words,
+$$
+\nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) = 0.
+$$
+then any pair of primal and dual optimal point must satisfy KKT conditons below.
+$$
+\begin{align*}
+\nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) &= 0, \\
+f_i(x^*) &\leq 0, & i &= 1, \ldots, m, \\
+h_i(x^*) &= 0, & i &= 1, \ldots, p, \\
+\lambda_i^* &\geq 0, & i &= 1, \ldots, m, \\
+\lambda_i^* f_i(x^*) &= 0, & i &= 1, \ldots, m.
+\end{align*}
+$$
+to sum up, for any optimization problem with differentiable objective and
+constraint functions for which strong duality obtains, any pair of primal and dual
+optimal points must satisfy the KKT conditions.
+
+#### KKT conditions for convex problems
+When the primal problem is convex, the KKT conditions are also sufficient for the
+points to be primal and dual optimal.  
+In other words, if $f_i$ are convex and $h_i$ are
+affine, and $\hat{x}$, $\hat{\lambda}$ and $\hat{v}$ are any points that satisfy the KKT conditions,
+$$
+\begin{align*}
+\nabla f_0(\hat{x}) + \sum_{i=1}^{m} \hat{\lambda}_i \nabla f_i(\hat{x}) + \sum_{i=1}^{p} \hat{\nu}_i \nabla h_i(\hat{x}) &= 0, \\
+f_i(\hat{x}) &\leq 0, & i &= 1, \ldots, m, \\
+h_i(\hat{x}) &= 0, & i &= 1, \ldots, p, \\
+\hat{\lambda}_i &\geq 0, & i &= 1, \ldots, m, \\
+\hat{\lambda}_i f_i(\hat{x}) &= 0, & i &= 1, \ldots, m.
+\end{align*}
+$$
+
+#### Necessity
+remind that, 
+$$
+g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \min_{x} L(x, \lambda,\nu)
+$$
+and primal solution is $x^*$ and dual solution are $\lambda^*$, $\nu^*$.  
+under strong duality,
+$$
+f_0(x^*) = g(\lambda^*, \nu^*)
+$$
+since first KKT condition states that its gradient with respect to $x$ vanishes at $x=x^*$, so it follows that $x^*$ minimizes $L(x, \lambda^*, \nu^*)$ which means,
+$$
+\inf_{x \in D} L(x, \lambda^*, \nu^*) = L(x^*, \lambda^*, \nu^*)
+$$
+below is from "lower value on optimal value" with primal and dual optimal values and applied second and third conditions on KKT,
+$$
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right) \leq f_0(x^*).
+$$
+
+#### Sufficiency
+
+#### KKT Dual Complementarity Condition
