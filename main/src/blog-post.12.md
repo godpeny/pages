@@ -260,6 +260,10 @@ h_i(\hat{x}) &= 0, & i &= 1, \ldots, p, \\
 $$
 
 #### Necessity
+Necessity will show that ,
+If $x^*$ and $u^*, v^*$ are primal and dual solutions, with zero duality gap,  
+$\implies$ $x^*, u^*, v^*$ satisfy the KKT conditions.
+
 remind that, 
 $$
 g(\lambda, \nu) = \inf_{x \in D} L(x, \lambda, \nu) = \min_{x} L(x, \lambda,\nu)
@@ -269,15 +273,59 @@ under strong duality,
 $$
 f_0(x^*) = g(\lambda^*, \nu^*)
 $$
+since $\inf_{x \in D} L(x, \lambda^*, \nu^*)$ is lower than $L(x, \lambda^*, \nu^*)$ with any other x, it is also lower than $L$ with primal solution $x^*$. 
+$$
+\inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*), \\ 
+$$
+therefore, 
+$$
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) \right)
+
+$$
+since $x^*$ is primal optimal, it satisfies primal constraints $f_i(x^*) \leq 0$ and $h_i(x^*) = 0$.  
+also, considering inequality of primal problem $f_0(x^*)$, Lagrangian $L$ and Lagrange dual problem $g(\lambda^*, \nu^*)$, ('lower value on optimal value')
+$$
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) \right) \leq f_0(x^*)
+$$
+equality('=') works for above. this shows that 
+$$
+\text{1.} \inf_{x \in D} L(x, \lambda^*, \nu^*) = L(x^*, \lambda^*, \nu^*) \\
+\text{2.} \sum_{i=1}^{p} \lambda_i f_i(x^*) =0
+$$ 
+'1' shows that $L(x, \lambda^*, \nu^*)$ has the minimum when $x=x^*$ and it implies that its gradient must vanish at $x^*$, 
+$$
+\nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) = 0, \\
+$$
+this shows that it satisfies KKT's first condition which is called 'stationarity'.
+'2' satisfies KKT's last condition which is called 'complementary slackness' (i.e. 'KKT dual complementarity condition')
+
+since primal solution is $x^*$ and dual solution are $\lambda^*$, $\nu^*$, it satisfies all other conditions of KKT.
+
+#### Sufficiency
+if $x^*, \lambda^*, \nu^*$ satisfies KKT conditions $\implies$ $x^*, \lambda^*, \nu^*$ are primal and dual solution with string duality.
+
 since first KKT condition states that its gradient with respect to $x$ vanishes at $x=x^*$, so it follows that $x^*$ minimizes $L(x, \lambda^*, \nu^*)$ which means,
 $$
 \inf_{x \in D} L(x, \lambda^*, \nu^*) = L(x^*, \lambda^*, \nu^*)
 $$
-below is from "lower value on optimal value" with primal and dual optimal values and applied second and third conditions on KKT,
+and it implies that,
 $$
-f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x) + \sum_{i=1}^{m} \lambda_i f_i(x) + \sum_{i=1}^{p} \nu_i h_i(x) \right) \leq f_0(x^*).
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*)
 $$
+using the condition $\sum_{i=1}^{p} \lambda_i f_i(x)=0$ and $h_i(x^*) = 0$, 
+$$
+g(\lambda^*, \nu^*) = f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) = f_0(x^*) \\ 
+\therefore g(\lambda^*, \nu^*) = f_0(x^*)
+$$
+this implies the strong duality. in other words, it shows that $x^*, \lambda^*, \nu^*$ are optimal solutions.
 
-#### Sufficiency
+#### Conclusion
+If $x^*$ and $u^*, v^*$ are primal and dual solutions, with zero duality gap $\Leftrightarrow$
+$x^*, \lambda^*, \nu^*$ satisfies KKT conditions.
 
-#### KKT Dual Complementarity Condition
+### Reference
+- https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf
+- https://www.stat.cmu.edu/~ryantibs/convexopt/lectures/kkt.pdf
+- https://ratsgo.github.io/convex%20optimization/2018/01/25/duality/
+- https://ratsgo.github.io/convex%20optimization/2018/01/26/KKT/
+- https://lee-jaejoon.github.io/optimization-lagrange-kkt/
