@@ -222,6 +222,12 @@ $$
 p^* - d^*
 $$
 
+#### Slater’s condition
+a sufficient condition for strong duality to hold for a convex optimization problem.  
+There exists an $x \in \text{relint}\, D$ such that,
+$$
+f_i(x) < 0, \quad i = 1, \ldots, m, \quad Ax = b.
+$$
 
 ### Karush-Kuhn-Tucker(KKT) Conditions
 #### KKT conditions for nonconvex problems

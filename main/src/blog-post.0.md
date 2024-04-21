@@ -78,6 +78,8 @@ Concave function : function is concave if the line segment between any two disti
 
 #### Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
+#### Affine hull
+smallest affine set containing S, in other words, the intersection of all affine sets containing S.
 
 #### Bounded/Unbounded
 A set is called bounded if all of its points are within a certain distance of each other. 
