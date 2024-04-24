@@ -222,6 +222,19 @@ $$
 p^* - d^*
 $$
 
+#### Constraint Qualifications for Strong Duality
+there are various ways to guarantee 'strong duality"' in optimization problems, even when the problem isn't necessarily convex. and these conditions are called 'constraint qualifications'.  
+for example, 
+$$
+\begin{align*}
+& \text{minimize} & & f(x) \\
+& \text{subject to} & & h_i(x) \leq 0, & & i = 1, \ldots, m, \\
+& & & l_j(x) = 0, & & j = 1, \ldots, r. \\
+& \text{when f(x) is convex}
+\end{align*}
+$$
+above form is one example of constraint. another simple constraint qualification is 'Slater’s condition'.
+
 #### Slater’s condition
 a sufficient condition for strong duality to hold for a convex optimization problem.  
 There exists an $x \in \text{relint}\, D$ such that,
