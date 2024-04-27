@@ -6,6 +6,7 @@
 ## Functional Margin and Geometric Margin
 
 ## Optimal Margin Classifier
+
 ### Optimization Problem  
 
 $$
@@ -83,3 +84,5 @@ u^T Ax + u^T Gx \leq u^T b + u^T h \\
 v \geq 0
 $$
 primal problem에서는 주어진 식을 만족하는 벡터 𝑥 를 찾는 것이었으나 dual problem에서는 벡터 𝑢,𝑣 를 찾는 문제로 바뀌었다.
+
+## Kernels
