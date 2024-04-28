@@ -85,4 +85,8 @@ v \geq 0
 $$
 primal problem에서는 주어진 식을 만족하는 벡터 𝑥 를 찾는 것이었으나 dual problem에서는 벡터 𝑢,𝑣 를 찾는 문제로 바뀌었다.
 
+## Support Vector
+the points that are closest to the hyperplane.
+- coefficients of support vectors($\alpha$) the only ones that are non zero.
+https://www.quora.com/In-SVM-mathematically-why-are-the-coefficients-of-support-vectors-the-only-ones-that-are-non-zero
 ## Kernels
