@@ -87,6 +87,7 @@ primal problem에서는 주어진 식을 만족하는 벡터 𝑥 를 찾는 것
 
 ## Support Vector
 the points that are closest to the hyperplane.
-- coefficients of support vectors($\alpha$) the only ones that are non zero.
-https://www.quora.com/In-SVM-mathematically-why-are-the-coefficients-of-support-vectors-the-only-ones-that-are-non-zero
+- coefficients of support vectors($\alpha$) are the only ones that are non zero.
+this is because margin of the support vectors is 1. which can be derived from the formulars from "Optimal Margin Classifier".
+
 ## Kernels
