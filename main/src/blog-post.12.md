@@ -91,3 +91,6 @@ the points that are closest to the hyperplane.
 this is because margin of the support vectors is 1. which can be derived from the formulars from "Optimal Margin Classifier".
 
 ## Kernels
+### Terminology
+(input) attributes : original input value of problem. ($=x$)  
+(input) features : new set of quantities. ($=\phi(x)$, e.g. [$x, x^2, x^3 ...$])
