@@ -92,5 +92,24 @@ this is because margin of the support vectors is 1. which can be derived from th
 
 ## Kernels
 ### Terminology
-(input) attributes : original input value of problem. ($=x$)  
-(input) features : new set of quantities. ($=\phi(x)$, e.g. [$x, x^2, x^3 ...$])
+ - (input) attributes : original input value of problem. ($=x$)  
+ - (input) features : new set of quantities. ($=\phi(x)$, e.g. [$x, x^2, x^3 ...$])
+
+ #### Basics
+- kernel function : A function that takes as its inputs vectors in the original space and returns the dot product of the vectors in the feature space.  
+loosely speaking, kernel function is dot product of the transformed vectors by considering that each coordinate of the transformed vector ϕ(x) is just some function of the coordinates in the corresponding lower dimensional vector x.  
+e.g.  
+$
+\phi: X \rightarrow \mathbb{R}^N, k(\mathbf{x}, \mathbf{z}) = \langle \phi(\mathbf{x}), \phi(\mathbf{z}) \rangle
+$   
+$k(\mathbf{x}, \mathbf{z})$ is kernel function.  
+- kernel trick : enable kernel functions to operate in a high-dimensional, implicit feature space without ever computing the coordinates of the data in that space, but rather by simply computing the inner products between the images of all pairs of data in the feature space. This operation is often computationally cheaper than the explicit computation of the coordinates.
+
+#### Types of Kernels
+ - polynomial kernel  
+ $$
+ K(x, y) = \langle \phi(x), \phi(y) \rangle = (x^\top y + c)^d
+ $$
+ - Gaussian kernel 
+
+ #### example of using polynomial kernel with kernel trick
