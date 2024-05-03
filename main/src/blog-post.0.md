@@ -98,4 +98,13 @@ Conversely, a set which is not bounded is called unbounded.
 https://en.wikipedia.org/wiki/Characteristic_function_(convex_analysis)
 
 #### Soft vs Hard Constraints
+
+#### Coordinate Vector
+coordinate vector is a representation of a vector as an ordered list of numbers (a tuple) that describes the vector in terms of a particular ordered basis.  e.g.  
+$
+B = \{b_1, b_2, \dots, b_n\} \\
+v = \alpha_1 b_1 + \alpha_2 b_2 + \dots + \alpha_n b_n \\
+[v]_B = (\alpha_1, \alpha_2, \dots, \alpha_n)
+$
+coordinate vector of $v$ relative to B is $[v]_B$
  
