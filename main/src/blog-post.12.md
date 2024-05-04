@@ -112,4 +112,24 @@ $k(\mathbf{x}, \mathbf{z})$ is kernel function.
  $$
  - Gaussian kernel 
 
- #### example of using polynomial kernel with kernel trick
+#### example of using polynomial kernel with kernel trick
+
+## L1 Regularization
+
+## Applying Kernel and Regularization to SVM
+
+## Sequential Minimal Optimization (SMO)
+Sequential minimal optimization (SMO) is an algorithm for solving the quadratic programming (QP) problem that arises during the training of support-vector machines (SVM). It was invented by John Platt.
+
+### Basics
+let's solve optimation problem from svm,
+$$
+\begin{align*}
+\max_{\alpha} \quad & W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i=1}^m \sum_{j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j K(x^{(i)}, x^{(j)}) \\
+\text{s.t.} \quad & 0 \leq \alpha_i \leq C, \quad i = 1, \ldots, m, \\
+& \sum_{i=1}^m \alpha_i y^{(i)} = 0,
+\end{align*}
+$$
+repeat till convergence
+1. Select some pair $a_i$ and $a_j$ to update next (using a heuristic that tries to pick the two that will allow us to make the biggest progress towards the global maximum).  
+2. Reoptimize W(α) with respect to αi and αj, while holding all the other $a_k$’s (k= i,j) fixed.
