@@ -1,6 +1,9 @@
 # Language
-## Interpreted vs Compiled
-
+## Interpreted vs Compiled Language
+ - Interpreted Language : interpreted language is a programming language that executes instructions directly and freely, without previously compiling a program into machine-language instructions.
+ - Compiled Language : compiled languages are converted directly into machine code that the processor can execute. As a result, they tend to be faster and more efficient to execute than interpreted languages. They also give the developer more control over hardware aspects, like memory management and CPU usage.
+compiled languages need a “build” step – they need to be manually compiled first. You need to “rebuild” the program every time you need to make a change. In our hummus example, the entire translation is written before it gets to you.  
+ - Interpreter vs Compiler : a compiler translates the entire source code into machine code before execution, resulting in faster execution since no translation is needed during runtime. On the other hand, an interpreter translates code line by line during execution, making it easier to detect errors but potentially slowing down the program.
 ## Python
 ### GIL
 ### Multi-Processing vs Multi-Threading
@@ -33,5 +36,3 @@ print(result)  # Outputs: 32 (1*4 + 2*5 + 3*6)
 ### Channel
 ### Generic
 ### Interface and Type Assertion
-
-
