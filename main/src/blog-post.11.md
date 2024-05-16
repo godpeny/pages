@@ -4,8 +4,23 @@
  - Compiled Language : compiled languages are converted directly into machine code that the processor can execute. As a result, they tend to be faster and more efficient to execute than interpreted languages. They also give the developer more control over hardware aspects, like memory management and CPU usage.
 compiled languages need a “build” step – they need to be manually compiled first. You need to “rebuild” the program every time you need to make a change. In our hummus example, the entire translation is written before it gets to you.  
  - Interpreter vs Compiler : a compiler translates the entire source code into machine code before execution, resulting in faster execution since no translation is needed during runtime. On the other hand, an interpreter translates code line by line during execution, making it easier to detect errors but potentially slowing down the program.
+### Interpreter
+### Compiler
 ## Python
-### GIL
+### Global Interpreer Lock (GIL)
+#### Basics
+- a global interpreter lock is a mechanism used in computer-language interpreters to synchronize the execution of threads so that only one native thread (per process) can execute basic operations (such as memory allocation and reference counting) at a time.
+as a general rule, an interpreter that uses GIL will see only one thread to execute at a time, even if runs on a multi-core processor, although someimplementations provide for CPU intensive code to release the GIL, allowing multiple threads to use multiple cores. 
+- a global interpreter lock is a mutual-exclusion lock held by a programming language interpreter thread to avoid sharing code that is not thread-safe with other threads.
+#### Advantages
+- increased speed of single-threaded programs (no necessity to acquire or release locks on all data structures separately)
+- easy integration of C libraries that usually are not thread-safe,
+- ease of implementation (having a single GIL is much simpler to implement than a lock-free interpreter or one using fine-grained locks).
+#### Disadvantages
+- if the process is almost purely made up of interpreted code and does not make calls outside of the interpreter which block for long periods of time (allowing the GIL to be released by that thread while they process), there is likely to be very little increase in speed when running the process on a multiprocessor machine.
+- https://www.dabeaz.com/python/GIL.pdf
+
+## Python
 ### Multi-Processing vs Multi-Threading
 ### Asyncio
 #### Event Loop
@@ -27,9 +42,6 @@ b = np.array([4, 5, 6])
 result = a @ b  # Dot product
 print(result)  # Outputs: 32 (1*4 + 2*5 + 3*6)
 ```
-
-
-
 
 ## Golang
 ### Goroutine
