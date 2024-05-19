@@ -6,7 +6,6 @@ compiled languages need a “build” step – they need to be manually compiled
  - Interpreter vs Compiler : a compiler translates the entire source code into machine code before execution, resulting in faster execution since no translation is needed during runtime. On the other hand, an interpreter translates code line by line during execution, making it easier to detect errors but potentially slowing down the program.
 ### Interpreter
 ### Compiler
-## Python
 ### Global Interpreer Lock (GIL)
 #### Basics
 - a global interpreter lock is a mechanism used in computer-language interpreters to synchronize the execution of threads so that only one native thread (per process) can execute basic operations (such as memory allocation and reference counting) at a time.
