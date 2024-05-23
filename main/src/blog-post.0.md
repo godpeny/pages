@@ -76,7 +76,13 @@ Concave function : function is concave if the line segment between any two disti
 #### Vector and Matrix
 ##### Row Vector vs Column Vector
 ##### Span, Range, Rank and Null Space
-##### Vector and Matrix Multiplication
+##### Vector Multiplication
+https://rfriend.tistory.com/145
+https://rfriend.tistory.com/146
+- Dot Product
+- Inner Product
+- Outer Product
+##### Matrix Multiplication
 
 #### Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
