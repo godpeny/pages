@@ -17,6 +17,12 @@ so do not test your model on the test set until you have finished handling overf
 - input points at which the function output value is maximized / minimized.
 
 ## Math
+### Vertical Bars
+- $|x|$ if $x$ is a number, it denotes abolute value.  
+- $|A|$  if $A$ is a matrix, it denotes determinant.  
+- $|S|$ if $S$ is a set, it denotes its cardinality(the number of elements of the set).
+
+
 ### Statistics
 #### L2 Norm
 #### Gaussian Distribution (= Normal Distribution)
