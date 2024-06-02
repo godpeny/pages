@@ -49,7 +49,11 @@ so do not test your model on the test set until you have finished handling overf
   - E(X) = = mu(mean) = integral(x * f(x) dx) 
   - Var(X) = integral((x - E(X))^2 * f(x) dx)
 
-#### Expectation vs Mean vs Average
+#### Expected Value vs Mean vs Average
+ - average and mean : mathematically, average and mean are same. So basic formulas used to calculate average and mean are also the same. But the difference between them lies in context in which they are use. The term average is used to estimate an approximate value of a given data in general purpose. However, the use of word in “mean” is specifically used in the context of statistics. In other words, mean is specifically used to represent the average of the statististical data.
+(average == mean)
+ - mean vs expected value : mean is typically used when we want to calculate the average value of a given sample. This represents the average value of raw data that we’ve already collected. However, expected value is used when we want to calculate the mean of a probability distribution. This represents the average value we expect to occur before collecting any data. 
+ In other words, expected value is generalization of the weighted average. Informally, the expected value is the arithmetic mean of the possible values a random variable can take, weighted by the probability of those outcomes. 
 
 ### Calculus
 #### Chain Rule
