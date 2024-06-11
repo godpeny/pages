@@ -22,7 +22,6 @@ so do not test your model on the test set until you have finished handling overf
 - $|A|$  if $A$ is a matrix, it denotes determinant.  
 - $|S|$ if $S$ is a set, it denotes its cardinality(the number of elements of the set).
 
-
 ### Statistics
 #### L2 Norm
 #### Gaussian Distribution (= Normal Distribution)
@@ -46,8 +45,14 @@ so do not test your model on the test set until you have finished handling overf
 
 #### Cumulative Distribution Function(CDF) vs Probability Density Function(PDF) vs Probability Mass Function(PMF)
 - PDF: continuous random variable
-  - E(X) = = mu(mean) = integral(x * f(x) dx) 
-  - Var(X) = integral((x - E(X))^2 * f(x) dx)
+![alt text](images/blog0_pdf.png)
+ - $\Pr[a \leq X \leq b] = \int_a^b f_X(x) \, dx$
+ - E(X) = = mu(mean) = integral(x * f(x) dx) 
+ - Var(X) = integral((x - E(X))^2 * f(x) dx)  
+ - if $F_X$ is thecumulative distribution function of $X$,  
+$F_X(x) = \int_{-\infty}^x f_X(u) \, du,$
+and (if $f_X$ is continuous at $x$) $f_X(x) = \frac{d}{dx} F_X(x)$.
+
 
 #### Expected Value vs Mean vs Average
  - average and mean : mathematically, average and mean are same. So basic formulas used to calculate average and mean are also the same. But the difference between them lies in context in which they are use. The term average is used to estimate an approximate value of a given data in general purpose. However, the use of word in “mean” is specifically used in the context of statistics. In other words, mean is specifically used to represent the average of the statististical data.
