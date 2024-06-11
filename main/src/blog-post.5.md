@@ -22,13 +22,20 @@
 ## Cumulative Distribution Function(CDF) vs Probability Density Function(PDF) vs Probability Mass Function(PMF)
 ### PDF: continuous random variable
 ![alt text](images/blog5_pdf.png)
+#### Necessary Conditions for PDF
+ - $f(x) \geq 0, \, \forall \, x \in \mathbb{R}$
+ - $f(x)$ should be piecewise continuous.
+ - $\int_{-\infty}^{\infty} f(x) \, dx = 1$
+
+#### Properties of PDF
  - $\Pr[a \leq X \leq b] = \int_a^b f_X(x) \, dx$
  - E(X) = = mu(mean) = integral(x * f(x) dx) 
  - Var(X) = integral((x - E(X))^2 * f(x) dx)  
- - if $F_X$ is thecumulative distribution function of $X$,  
+ - if $F_X$ is the cumulative distribution function(CDF) of $X$,  
 $F_X(x) = \int_{-\infty}^x f_X(u) \, du,$
 and (if $f_X$ is continuous at $x$) $f_X(x) = \frac{d}{dx} F_X(x)$.
-
+ - the probability density function of a continuous random variable over a single value is zero.  
+ $P(X = a) = P(a \leq X \leq a) = \int_a^a f(x) \, dx = 0$
 
 ## Expected Value vs Mean vs Average
  - average and mean : mathematically, average and mean are same. So basic formulas used to calculate average and mean are also the same. But the difference between them lies in context in which they are use. The term average is used to estimate an approximate value of a given data in general purpose. However, the use of word in “mean” is specifically used in the context of statistics. In other words, mean is specifically used to represent the average of the statististical data.
