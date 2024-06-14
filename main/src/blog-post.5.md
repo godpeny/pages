@@ -29,8 +29,8 @@
 
 #### Properties of PDF
  - $\Pr[a \leq X \leq b] = \int_a^b f_X(x) \, dx$
- - E(X) = = mu(mean) = integral(x * f(x) dx) 
- - Var(X) = integral((x - E(X))^2 * f(x) dx)  
+ - $E(X) := \int_{-\infty}^{\infty} x f(x) \, dx$
+ - $\text{Var}(X) := \int_{-\infty}^{\infty} [x - E(X)]^2 f(x) \, dx$
  - if $F_X$ is the cumulative distribution function(CDF) of $X$,  
 $F_X(x) = \int_{-\infty}^x f_X(u) \, du,$
 and (if $f_X$ is continuous at $x$) $f_X(x) = \frac{d}{dx} F_X(x)$.

@@ -103,6 +103,10 @@ the ReAct framework can allow LLMs to interact with external tools to retrieve a
 ![alt text](images/blog14_m_cot.png)
 traditional CoT focuses on the language modality. In contrast, Multimodal CoT incorporates text and vision into a two-stage framework. The first step involves rationale generation based on multimodal information. This is followed by the second phase, answer inference, which leverages the informative generated rationales.
 
+### Reflextion
+https://www.promptingguide.ai/techniques/reflexion
+https://promptengineering.org/reflexion-an-iterative-approach-to-llm-problem-solving/
+
 ## Reference
 https://www.promptingguide.ai/techniques/pal
 
