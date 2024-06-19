@@ -42,6 +42,50 @@ result = a @ b  # Dot product
 print(result)  # Outputs: 32 (1*4 + 2*5 + 3*6)
 ```
 
+### '|' In Python
+#### 1. Union
+when used with data structure such as dictionary or set, it performs a union operation and returns a set/dictionary containingitems from both initial data structures.
+```python
+# 1
+x =  {"a":1,"b":2} 
+y = {"c":3,"d":4}
+
+x|y # {‘a’: 1, ‘b’: 2, ‘c’: 3, ‘d’: 4}
+
+# 2
+# If a key appears in both dictionary the key from the second dictionary is used
+{"a":1,"b":2} | {"a":2,"c":3} # {‘a’: 2, ‘b’: 2, ‘c’: 3}
+
+# 3
+x = {1,2,3}
+y = {1,2,4}
+
+x|y # {1, 2, 3, 4}
+
+# 4
+{1,2,3}|{4,5,6}|{7,8,9}  # {1, 2, 3, 4, 5, 6, 7, 8, 9}
+{'a':1} | {'b':2} | {'c':3} # {‘a’: 1, ‘b’: 2, ‘c’: 3}
+```
+#### 2. Logical OR
+when used on boolean values(i.e. True and False), it performs a logical OR operation.
+```python
+True | True # = True or True = True
+False | True # = False or True = True
+False | False # = False or False = False
+```
+### 3. Bitwise OR
+When used on integer values, is performs a bitwise OR operation. The integers are converted to binary format and operations are performed on each bit and the results are then returned in decimal format. Bitwise OR returns 1 if either of the bit is 1 else 0.
+```python
+12 | 7 # 15
+
+"""
+12 = 1100 (Binary format)
+7 = 0111 (Binary format)
+
+12|7 = 1111 (Binary) = 15
+"""
+```
+
 ## Golang
 ### Goroutine
 ### Channel
