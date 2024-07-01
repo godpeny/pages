@@ -87,7 +87,8 @@ When used on integer values, is performs a bitwise OR operation. The integers ar
 ```
 
 ## Golang
-### Goroutine
-### Channel
+### Concurrency
+Goroutine, Channel
+https://go.dev/doc/effective_go#concurrency
 ### Generic
 ### Interface and Type Assertion
