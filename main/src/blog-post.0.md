@@ -28,4 +28,8 @@ v = \alpha_1 b_1 + \alpha_2 b_2 + \dots + \alpha_n b_n \\
 $
 coordinate vector of $v$ relative to B is $[v]_B$
 
-### Soft vs Hard Constraints
+### Soft vs Hard Constraints (Constrained Optimization )
+- Soft Constraints
+Some variable values that are penalized in the objective function if, and based on the extent that, the conditions on the variables are not satisfied.
+- Hard constraints
+Set conditions for the variables that are required to be satisfied.
