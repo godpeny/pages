@@ -28,8 +28,12 @@ v = \alpha_1 b_1 + \alpha_2 b_2 + \dots + \alpha_n b_n \\
 $
 coordinate vector of $v$ relative to B is $[v]_B$
 
-### Soft vs Hard Constraints (Constrained Optimization )
+### Soft vs Hard Constraints (Constrained Optimization)
 - Soft Constraints
 Some variable values that are penalized in the objective function if, and based on the extent that, the conditions on the variables are not satisfied.
 - Hard constraints
 Set conditions for the variables that are required to be satisfied.
+
+### Deep Learning vs Reinforcement Learning
+Deep learning and reinforcement learning are both systems that learn autonomously.  
+The difference between them is that deep learning is learning from a training set and then applying that learning to a new data set, while reinforcement learning is dynamically learning by adjusting actions based in continuous feedback to maximize a reward.
