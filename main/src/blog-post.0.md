@@ -38,5 +38,8 @@ Set conditions for the variables that are required to be satisfied.
 Deep learning and reinforcement learning are both systems that learn autonomously.  
 The difference between them is that deep learning is learning from a training set and then applying that learning to a new data set, while reinforcement learning is dynamically learning by adjusting actions based in continuous feedback to maximize a reward.
 
-### Deep reinforcement learning (deep RL)
+### Deep Reinforcement Learning (deep RL)
 https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
+
+### Graph Neural Network (GNN)
+https://en.wikipedia.org/wiki/Graph_neural_network
