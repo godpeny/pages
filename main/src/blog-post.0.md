@@ -48,3 +48,9 @@ https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
 
 ### Graph Neural Network (GNN)
 https://en.wikipedia.org/wiki/Graph_neural_network
+
+### LLM
+A large language model (LLM) is a computational model notable for its ability to achieve general-purpose language generation and other natural language processing tasks such as classification. 
+Based on language models, LLMs acquire these abilities by learning statistical relationships from vast amounts of text during a computationally intensive self-supervised and semi-supervised training process.
+LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
+LLMs are artificial neural networks that utilize the transformer architecture, invented in 2017. The largest and most capable LLMs, as of June 2024, are built with a decoder-only transformer-based architecture, which enables efficient processing and generation of large-scale text data.
