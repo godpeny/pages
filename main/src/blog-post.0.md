@@ -38,17 +38,6 @@ Set conditions for the variables that are required to be satisfied.
 Deep learning and reinforcement learning are both systems that learn autonomously.  
 The difference between them is that deep learning is learning from a training set and then applying that learning to a new data set, while reinforcement learning is dynamically learning by adjusting actions based in continuous feedback to maximize a reward.
 
-### Reinforcement Learning
-https://en.wikipedia.org/wiki/Reinforcement_learning
-https://web.stanford.edu/class/archive/cs/cs224n/cs224n.1184/lectures/lecture16-guest.pdf
-
-
-### Deep Reinforcement Learning (deep RL)
-https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
-
-### Graph Neural Network (GNN)
-https://en.wikipedia.org/wiki/Graph_neural_network
-
 ### LLM
 A large language model (LLM) is a computational model notable for its ability to achieve general-purpose language generation and other natural language processing tasks such as classification. 
 Based on language models, LLMs acquire these abilities by learning statistical relationships from vast amounts of text during a computationally intensive self-supervised and semi-supervised training process.
