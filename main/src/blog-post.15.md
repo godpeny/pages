@@ -23,6 +23,21 @@ Concave function : function is concave if the line segment between any two disti
 
 ## Vector and Matrix
 ### Row Vector vs Column Vector
+Row Vector is a $1 \times n$ matrix for some $n$, consisting of a single row of $n$ entries,
+$
+\mathbf{a} = \begin{bmatrix} a_1 & a_2 & \dots & a_n \end{bmatrix}.  
+$  
+
+Column Vector is a $ m \times 1$ matrix for some $m$ consisting of a single column of ⁠$m$ entries,
+$
+\mathbf{x} = \begin{bmatrix} 
+x_1 \\ 
+x_2 \\ 
+\vdots \\ 
+x_m 
+\end{bmatrix}.
+$
+
 ### Span, Range, Rank and Null Space
 ### Vector Multiplication
 https://rfriend.tistory.com/145
