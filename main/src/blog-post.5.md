@@ -1,5 +1,16 @@
 # Statistics
 ## L2 Norm
+The L2 Norm $|x|$ is a vector norm defined for a complex vector (A vector whose elements are complex numbers.)
+when 
+$
+\mathbf{x} = \begin{bmatrix} 
+x_1 \\ 
+x_2 \\ 
+\vdots \\ 
+x_n 
+\end{bmatrix}, \\
+\|\mathbf{x}\| = \sqrt{\sum_{k=1}^n |x_k|^2},
+$
 ## Gaussian Distribution (= Normal Distribution)
 ## Joint Probability
 - P(A, B) = p(A ∩ B) : likelihood of events occurring together at the same point in time.
