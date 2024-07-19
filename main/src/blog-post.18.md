@@ -351,7 +351,38 @@ Monolithic한 Push에는 두 가지 방법이 있습니다.:
 ```
 [더 자세한 사항](https://github.com/opencontainers/distribution-spec/blob/main/spec.md)
 
-# CRI
-The CRI is a plugin interface which enables the kubelet to use a wide variety of container runtimes, without having a need to recompile the cluster components.
-You need a working container runtime on each Node in your cluster, so that the [kubelet](https://kubernetes.io/docs/reference/generated/kubelet) can launch Pods and their containers.
-The Container Runtime Interface (CRI) is the main protocol for the communication between the kubelet and Container Runtime.
+## Container Runtime Interface (CRI)
+CRI(Container Runtime Interface)는 클러스터 컴포넌트를 재컴파일할 필요 없이 kubelet이 다양한 컨테이너 런타임을 사용할 수 있도록 하는 플러그인 인터페이스입니다.
+클러스터의 각 노드에 작업 중인 컨테이너 런타임이 있어야 kubelet이 파드(Pods)와 해당 컨테이너를 실행할 수 있습니다.
+Container Runtime Interface(CRI)는 kubelet과 컨테이너 런타임 간의 통신을 위한 주요 프로토콜입니다.
+
+### OCI vs CRI
+- OCI의 목표는 **컨테이너 포맷과 런타임의 표준화**하여, 다양한 컨테이너 기술들이 일관된 방식으로 동작하도록 하는 것이다.
+- CRI는 쿠버네티스와 연계된 개념으로, **컨테이너 런타임이 쿠버네티스의 kubelet과 어떻게 통신해야 하는지 정의한 인터페이스**이다.
+
+# Build Tool 비교
+BuildKit ( = Docker), Buildah, Kaniko
+
+## Common 
+OCI 규격을 따른다. 
+Multi-Stage Build가 가능ㅇ하다.
+
+## Multi-Stage Parallel Build ( = Performance 향상)
+BuildKit : O
+Kaniko : X
+Buildah : X 
+
+## Rootless ( = Security)
+BuildKit : O / seccomp와 AppArmor를 Disable해야 하기 때문에 Linux Kernal 단에서 보안 취약점을 노출하게 된다는 단점이 존재
+Kaniko : X but privileged X 
+Buildah : O
+> `Buildah` specializes in building OCI images. Buildah's commands replicate all of the commands that are found in a Dockerfile. This allows building images with and without Dockerfiles while not requiring any root privileges.
+> 
+
+## Multi-Arch
+BuildKit : O
+Kaniko : X 
+> *본 이미지의 파일 시스템을 추출합니다(Dockerfile의 FROM 이미지). 그런 다음 Dockerfile의 명령을 실행하여 각 명령 후에 사용자 공간에서 파일 시스템을 스냅샷으로 만듭니다. 각 명령 후에 변경된 파일 계층을 기본 이미지에 추가하고(있는 경우) 이미지 메타데이터를 업데이트합니다.*
+> 
+Kaniko는 모든 것을 자체 컨테이너에 빌드합니다. 즉, Kaniko는 본질적으로 가상화할 수 없고 항상 실행 중인 아키텍처에 대한 컨테이너 이미지를 빌드합니다. 굳이 구현을 원한다면 서로 다른 arch 에서 만든 이미지를 arch tag를 이용해서 푸쉬해야 한다.
+Buildah : O
