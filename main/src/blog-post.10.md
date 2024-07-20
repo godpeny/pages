@@ -40,7 +40,16 @@ The OS allows users to create, schedule, and terminate the processes via system 
 Conversely, processes usually have a different memory area for each one of them.
  - https://www.baeldung.com/cs/threads-sharing-resources
 
-### VM vs Container
+## VM vs Container
+![alt text](images/blog10_vm_vs_container.png)
+Both use virtualization which is the process in which a system singular resource like RAM, CPU, Disk, or Networking can be ‘virtualized’ and represented as multiple resources.  
+However virtual machines access the hardware of a physical machine through a hypervisor. The hypervisor creates an abstraction layer allowing the VM to access CPU, memory, and storage. Containers, on the other hand, represent a package that includes an executable with the dependencies it needs to run.  
+But Containers are more lightweight and portable than virtual machines. This makes them a good choice for applications that need to be deployed quickly and easily, where compute must be optimized.
+In short, the key differentiator between containers and virtual machines is that virtual machines virtualize an entire machine down to the hardware layers and containers only virtualize software layers above the operating system level.
+
+This means that each container shares the physical machine's hardware and operating system kernel with other containers.
+
+As a result, virtual machines are typically more resource-intensive than containers. However, virtual machines also provide a high level of isolation, which can be important for security and compliance reasons.
 
 
 ### fork, clone, exec, unshare, setns, nsenter and mount
