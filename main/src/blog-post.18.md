@@ -360,19 +360,57 @@ Container Runtime Interface(CRI)는 kubelet과 컨테이너 런타임 간의 통
 - OCI의 목표는 **컨테이너 포맷과 런타임의 표준화**하여, 다양한 컨테이너 기술들이 일관된 방식으로 동작하도록 하는 것이다.
 - CRI는 쿠버네티스와 연계된 개념으로, **컨테이너 런타임이 쿠버네티스의 kubelet과 어떻게 통신해야 하는지 정의한 인터페이스**이다.
 
-# Build Tool 비교
+# Comparing Build Tools
 BuildKit ( = Docker), Buildah, Kaniko
-
-## Common 
 OCI 규격을 따른다. 
-Multi-Stage Build가 가능ㅇ하다.
+Multi-Stage Build가 가능하다.
 
 ## Multi-Stage Parallel Build ( = Performance 향상)
 BuildKit : O
+
+```docker
+FROM ubuntu:bionic as base-builder
+
+ENV GOPATH=$HOME/go
+ENV PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+
+RUN apt-get update \
+    && apt-get install -y curl git build-essential
+
+FROM base-builder as base-builder-extended // 1
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g yarn
+
+FROM base-builder as golang // 2 
+RUN curl -O https://storage.googleapis.com/golang/go1.15.2.linux-amd64.tar.gz \
+    && tar -xvf go1.15.2.linux-amd64.tar.gz
+
+FROM base-builder as source-code // 3 
+RUN git clone https://github.com/prometheus/prometheus.git prometheus/
+
+FROM base-builder-extended as builder
+COPY --from=golang go /usr/local
+COPY --from=source-code prometheus/ prometheus/
+RUN cd prometheus/ && make build
+
+FROM ubuntu:bionic as final
+COPY --from=builder prometheus/prometheus prometheus
+# RUN ./prometheus --config.file=your_config.yml
+```
 Kaniko : X
 Buildah : X 
 
 ## Rootless ( = Security)
+### Why Not Root?
+Docker 컨테이너는 기본적으로 Root 권한을 가지고 실행됩니다. 이를 통해 제한 없는 컨테이너 관리가 가능하므로 시스템 패키지 설치, 구성 파일 편집, 권한 있는 포트 바인딩 등의 작업을 수행할 수 있습니다. 이는 개발 목적으로는 매우 유용하지만 컨테이너를 프로덕션 환경에 배치하면 높은 위험에 노출될 수 있습니다. 왜냐하면 Root 권한으로 컨테이너에 액세스하는 모든 사람이 악성 코드를 주입하는 등 바람직하지 않은 프로세스를 시작할 수 있기 때문입니다. 또한 컨테이너에서 Root로 프로세스를 실행하면 컨테이너를 시작할 때 사용자 ID(UID) 또는 그룹 ID(GID)를 변경할 수 있으므로 애플리케이션이 취약해집니다.
+
+컨테이너를 초기화 할때 호스트의 파일 시스템을 수정해야 하므로 이때는 Root 권한인 필요하다. 하지만 컨테이너를 실행할 때에는 Root로 실행될 필요는 없다. 특히 database, loadbalancer 등의 컴포넌트들은..!
+### Differences Between Root and Non-Root Containers
+Root 컨테이너는 다음과 같은 기능을 제공합니다.
+- 컨테이너 시스템을 수정하여 사용자가 호스트 파일 시스템을 편집하고 런타임에 시스템 패키지를 설치하는 등의 작업을 할 수 있도록 합니다.
+- 컨테이너가 1024 이하의 포트에 바인딩되도록 허용합니다.
+한편, Non-Root 컨테이너는 어떤 사용자가 어떤 네임스페이스에서 특정 프로세스를 실행할 수 있는지, 어떤 볼륨에 액세스할 수 있는지, 그리고 컨테이너가 액세스할 수 있는 포트를 규제합니다.
 BuildKit : O / seccomp와 AppArmor를 Disable해야 하기 때문에 Linux Kernal 단에서 보안 취약점을 노출하게 된다는 단점이 존재
 Kaniko : X but privileged X 
 Buildah : O
@@ -382,7 +420,27 @@ Buildah : O
 ## Multi-Arch
 BuildKit : O
 Kaniko : X 
-> *본 이미지의 파일 시스템을 추출합니다(Dockerfile의 FROM 이미지). 그런 다음 Dockerfile의 명령을 실행하여 각 명령 후에 사용자 공간에서 파일 시스템을 스냅샷으로 만듭니다. 각 명령 후에 변경된 파일 계층을 기본 이미지에 추가하고(있는 경우) 이미지 메타데이터를 업데이트합니다.*
+> *기본 이미지의 파일 시스템을 추출합니다(Dockerfile의 FROM 이미지). 그런 다음 Dockerfile의 명령을 실행하여 각 명령 후에 사용자 공간에서 파일 시스템을 스냅샷으로 만듭니다. 각 명령 후에 변경된 파일 계층을 기본 이미지에 추가하고(있는 경우) 이미지 메타데이터를 업데이트합니다.*
 > 
 Kaniko는 모든 것을 자체 컨테이너에 빌드합니다. 즉, Kaniko는 본질적으로 가상화할 수 없고 항상 실행 중인 아키텍처에 대한 컨테이너 이미지를 빌드합니다. 굳이 구현을 원한다면 서로 다른 arch 에서 만든 이미지를 arch tag를 이용해서 푸쉬해야 한다.
 Buildah : O
+
+# Caching
+BuildKit : O
+이미지와 캐시를 각각 별도의 저장소에 보관 가능. (레지스트리, S3 등)
+Kaniko : O
+이미지와 캐시를 각각 별도의 저장소에 보관 가능. (레지스트리)
+스냅샷 기능 제공 : A snapshot is a read-only copy of the entire file system and all the files contained in the file system.  → 이 기능 때문에 느린 걸지두? 는 딱히 쓰는 것 같지는 않음.
+> **Flag `--snapshot-mode`**
+You can set the `--snapshot-mode=<full (default), redo, time>` flag to set how kaniko will snapshot the filesystem.
+If `-snapshot-mode=full` is set, the full file contents and metadata are considered when snapshotting. This is the least performant option, but also the most robust.
+If `-snapshot-mode=redo` is set, the file mtime, size, mode, owner uid and gid will be considered when snapshotting. This may be up to 50% faster than "full", particularly if your project has a large number files.
+If `-snapshot-mode=time` is set, only file mtime will be considered when snapshotting (see [limitations related to mtime](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#mtime-and-snapshotting)).
+> 
+Buildah : O
+1.29.1 버전 이후로 리모트 캐시 사용 가능한 걸로 보임.
+
+## Tracking
+BuildKit : Opentelemetry 로 Tracing 제공
+Kaniko : Google Slow Jam 사용 Profiling 기능 제공
+Buildah : 없는듯?
