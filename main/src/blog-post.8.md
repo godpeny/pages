@@ -15,6 +15,13 @@ $
 - log-partition function $A(\eta)$ : logarithm of a normalization factor, without which ${\displaystyle \ f_{X}\!\left(x\ {\big |}\ \theta \right)}$ would not be a probability distribution:  
 $A(\eta) = \log \left( \int_{X} h(x) \exp(\eta(\theta) \cdot T(x)) \, dx \right)$
 
+## 3 Assumptions
+GLM consists of three elements below.
+1. A particular distribution for modeling $Y$ from among those which are considered exponential families of probability distributions.  
+2. A linear predictor $\eta = X\beta$.  
+3. A link function $g$ such that $\mathbb{E}(Y \mid X) = \mu = g^{-1}(\eta)$.
+
+
 ## Linear Regression
 
 ### Basic
