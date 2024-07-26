@@ -53,3 +53,10 @@ and (if $f_X$ is continuous at $x$) $f_X(x) = \frac{d}{dx} F_X(x)$.
 (average == mean)
  - mean vs expected value : mean is typically used when we want to calculate the average value of a given sample. This represents the average value of raw data that we’ve already collected. However, expected value is used when we want to calculate the mean of a probability distribution. This represents the average value we expect to occur before collecting any data. 
  In other words, expected value is generalization of the weighted average. Informally, the expected value is the arithmetic mean of the possible values a random variable can take, weighted by the probability of those outcomes. 
+
+### PMF : discrete random variable
+A function that gives the probability that a discrete random variable is exactly equal to some value. Sometimes it is also known as the discrete probability density function.  
+$
+ p : \mathbb{R} \to [0, 1], \ \ p_X(x) = P(X = x) \\
+\sum_x p_X(x) = 1, \ \ p_X(x) \geq 0.
+$
