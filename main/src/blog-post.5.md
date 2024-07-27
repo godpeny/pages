@@ -56,7 +56,19 @@ and (if $f_X$ is continuous at $x$) $f_X(x) = \frac{d}{dx} F_X(x)$.
 
 ### PMF : discrete random variable
 A function that gives the probability that a discrete random variable is exactly equal to some value. Sometimes it is also known as the discrete probability density function.  
+#### Properties of PMF
+- $p : \mathbb{R} \to [0, 1], \ \ p_X(x) = P(X = x) \\$
+- $\sum_x p_X(x) = 1, \ \ p_X(x) \geq 0$
+
+### CDF : the probability that the random variable X that takes on a value less than or equal to x
+The cumulative distribution function of a real-valued random variable $X$ is the function given by,  
 $
- p : \mathbb{R} \to [0, 1], \ \ p_X(x) = P(X = x) \\
-\sum_x p_X(x) = 1, \ \ p_X(x) \geq 0.
+F_X(x) = P(X \leq x)
 $
+#### Properties of CDF
+when $f(x)$ is probability density function and $F(x)$ is cumulative distribution function.  
+
+- ${P}(a < X \leq b) = F_X(b) - F_X(a) \\$
+- $f(x) = \frac{dF(x)}{dx} \\$
+- $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt \\$ 
+- ${P}(X = b) = F_X(b) - \lim_{x \to b^-} F_X(x)$
