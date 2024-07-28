@@ -33,6 +33,10 @@ GLM consists of three elements below.
 ### Normal Equation
 
 ### Locally Weighted Linear Regression
+Rather than learning a fixed set of parameters as is done in ordinary linear regression, parameters $\theta$ are computed individually for each query point $x$.
+$
+J(\theta) = \sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2
+$
 
 ## Logistic Regression
 
