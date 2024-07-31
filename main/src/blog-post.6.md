@@ -26,7 +26,25 @@ $
 \vdots & \vdots & \ddots & \vdots \\
 \frac{\partial^2 f}{\partial x_n \partial x_1} & \frac{\partial^2 f}{\partial x_n \partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_n^2}
 \end{bmatrix}.
+$  
+That is, the entry of the $i$ th row and the $j$ th column is 
 $
+\left( \mathbf{H}_f \right)_{i,j} = \frac{\partial^2 f}{\partial x_i \partial x_j}.
+$
+
+### Jacobian
+The Jacobian matrix of a vector-valued function of several variables is the matrix of all its first-order partial derivatives.  
+Suuppose $\mathbf{f} : \mathbb{R}^n \rightarrow \mathbb{R}^m
+$ is a function such that each of its first-order partial derivatives exists on $\mathbb{R}^n$.  
+This function takes a point $\mathbf{x} \in \mathbb{R}^n$ as input and produces the vector $\mathbf{f}(\mathbf{x}) \in \mathbb{R}^m$ as output.  
+Then the Jacobian matrix of $\mathbf{f}$ is defined to be an $m \times n$ matrix, denoted by $\mathbf{J}$, whose $(i,j)$ entry is $\mathbf{J}_{ij} = \frac{\partial f_i}{\partial x_j}$, or explicitly  
+$
+\mathbf{J} = \left[ \frac{\partial \mathbf{f}}{\partial x_1} \ \cdots \ \frac{\partial \mathbf{f}}{\partial x_n} \right] = \left[ \begin{array}{c} \nabla^T f_1 \\ \vdots \\ \nabla^T f_m \end{array} \right] = \left[ \begin{array}{ccc} \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n} \end{array} \right]
+$  
+where $\nabla^T f_1$ is the transpose (row vector) of the gradient of the $i$ th component.  
+The Jacobian matrix represents the differential of $f$ at every point where $f$ is differentiable.
+
+
 
 
 ## Differential vs Derivative vs Gradient
