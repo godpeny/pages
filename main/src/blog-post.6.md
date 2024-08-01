@@ -42,9 +42,30 @@ $
 \mathbf{J} = \left[ \frac{\partial \mathbf{f}}{\partial x_1} \ \cdots \ \frac{\partial \mathbf{f}}{\partial x_n} \right] = \left[ \begin{array}{c} \nabla^T f_1 \\ \vdots \\ \nabla^T f_m \end{array} \right] = \left[ \begin{array}{ccc} \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n} \end{array} \right]
 $  
 where $\nabla^T f_1$ is the transpose (row vector) of the gradient of the $i$ th component.  
-The Jacobian matrix represents the differential of $f$ at every point where $f$ is differentiable.
+The Jacobian matrix represents the differential of $f$ at every point where $f$ is differentiable.  
+즉, Jacobian(야코비언)은 어떤 다변수 벡터함수(vector-valued function of multiple variables)에 대한 일차 미분(first derivative)으로 볼 수 있습니다.
 
+### Gradient vs Jacobian
+- 공통점 : Gradient나 Jacobian이나 모두 함수에 대한 일차 미분(first derivative)을 나타낸다는 점에서는 동일합니다.  
+- 차이점 : Gradient나는 다변수 스칼라 함수(scalar-valued function of multiple variables)에 대한 일차 미분인 반면 Jacobian은 다변수 벡터 함수(vector-valued function of multiple variables)에 대한 일차미분입니다. 즉, Gradient는 통상적인 일변수 함수의 일차미분을 다변수 함수로 확장한 것이고, Jacobian은 이를 다시 다변수 벡터함수로 확장한 것입니다.
 
+#### Gradient
+$
+f(x,y) = 5x^2 + 3xy + 3y^3, \\
+\frac{\partial f}{\partial x} = 10x + 3y, \ \ \frac{\partial f}{\partial y} = 3x + 9y^2 \\
+\nabla f = \begin{bmatrix}
+10x + 3y \\
+3x + 9y^2
+\end{bmatrix}
+$
+
+#### Jacobian
+$
+\mathbf{J}\mathbf{h}(f(x,y),g(x,y)) = \begin{bmatrix} f_x & f_y \\ g_x & g_y \end{bmatrix}, \\
+f(x,y) : \begin{bmatrix} \sin(x) + y \\ x + \cos(y) \end{bmatrix} \\
+\mathbf{J}(f) = \begin{bmatrix} \cos(x) & 1 \\ 1 & -\sin(y) \end{bmatrix}
+$  
+$\mathbf{J}(f)$ shows the jacobian of function $f$ from vector-valued function of multiple variables $\mathbf{h}$.  
 
 
 ## Differential vs Derivative vs Gradient
