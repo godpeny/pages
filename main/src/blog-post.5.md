@@ -72,3 +72,19 @@ when $f(x)$ is probability density function and $F(x)$ is cumulative distributio
 - $f(x) = \frac{dF(x)}{dx} \\$
 - $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt \\$ 
 - ${P}(X = b) = F_X(b) - \lim_{x \to b^-} F_X(x)$
+
+## Mean Square Error (MSE)
+The 'mean squared error (MSE)' or 'mean squared deviation (MSD) of an estimator' (of a procedure for estimating an unobserved quantity) measures the average of the squares of the errors.  
+The average squared difference between the estimated values and the actual value.  
+### Definition
+If a vector of $n$ predictions is generated from a sample of $n$ data points on all variables, and $Y$ 
+is the vector of observed values of the variable being predicted, with $\hat {Y}$ being the predicted values (e.g. as from a least-squares fit), then the within-sample MSE of the predictor is computed as
+$
+\mathrm{MSE} = \frac{1}{n} \sum_{i=1}^{n} \left( Y_i - \hat{Y}_i \right)^2
+$  
+since the mean is $\left( \frac{1}{n} \sum_{i=1}^{n} \right)$ and error is $\left( Y_i - \hat{Y}_i \right)^2 = \left( e_i \right)^2$
+In matrix calculation,   
+$
+\mathrm{MSE} = \frac{1}{n} \sum_{i=1}^{n} \left( e_i \right)^2 = \frac{1}{n} \mathbf{e}^T \mathbf{e}
+$  
+where $e_i$ is $Y_i - \hat{Y}_i$ and $\mathbf{e}$ is $n \times 1$ column vector.
