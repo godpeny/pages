@@ -11,6 +11,10 @@ x_n
 \end{bmatrix}, \\
 \|\mathbf{x}\| = \sqrt{\sum_{k=1}^n |x_k|^2},
 $
+
+## Frobenius norm
+https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm
+
 ## Gaussian Distribution (= Normal Distribution)
 ## Joint Probability
 - P(A, B) = p(A ∩ B) : likelihood of events occurring together at the same point in time.
