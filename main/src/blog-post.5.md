@@ -12,7 +12,9 @@ x_n
 \|\mathbf{x}\| = \sqrt{\sum_{k=1}^n |x_k|^2},
 $
 
-## Frobenius norm
+## "Entry-wise" Matrix Norms
+### Lpq Norm
+### Frobenius Norm
 https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm
 
 ## Gaussian Distribution (= Normal Distribution)
