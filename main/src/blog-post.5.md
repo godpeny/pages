@@ -13,7 +13,18 @@ x_n
 $
 
 ## "Entry-wise" Matrix Norms
+Treat $m\times n$  matrix as a vector of size $m\cdot n$ and use one of the familiar vector norms.  
+$
+\|\mathbf{A}\|_{p,p} = \|\operatorname{vec}(\mathbf{A})\|_p = \left( \sum_{i=1}^m \sum_{j=1}^n \left|a_{ij}\right|^p \right)^{1/p}
+$  
+The special case, p = 2 is the Frobenius norm, and p = ∞ yields the maximum norm.  
 ### Lpq Norm
+From the original definition matrix, $A$ presents n data points in m-dimensional space.  
+Since $(a_{1},\ldots ,a_{n})$ be the columns of matrix 
+$\displaystyle L_{2,1}$ norm is the sum of the Euclidean norms of the columns of the matrix:  
+$
+\|\mathbf{A}\|_{2,1} = \sum_{j=1}^n \|\mathbf{a}_j\|_2 = \sum_{j=1}^n \left( \sum_{i=1}^m \left|a_{ij}\right|^2 \right)^{1/2}
+$
 ### Frobenius Norm
 https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm
 
