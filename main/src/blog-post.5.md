@@ -24,6 +24,10 @@ Since $(a_{1},\ldots ,a_{n})$ be the columns of matrix
 $\displaystyle L_{2,1}$ norm is the sum of the Euclidean norms of the columns of the matrix:  
 $
 \|\mathbf{A}\|_{2,1} = \sum_{j=1}^n \|\mathbf{a}_j\|_2 = \sum_{j=1}^n \left( \sum_{i=1}^m \left|a_{ij}\right|^2 \right)^{1/2}
+$  
+In general, when $p, q \geq 1$,  
+$
+\|\mathbf{A}\|_{p,q} = \left( \sum_{j=1}^n \left( \sum_{i=1}^m \left|a_{ij}\right|^p \right)^{q/p} \right)^{1/q}.
 $
 ### Frobenius Norm
 https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm
