@@ -38,6 +38,13 @@ x_m
 \end{bmatrix}.
 $
 
+### Trace
+The trace of a square matrix $A$, denoted $\text{tr}(A)$, is defined to be the sum of elements on the main diagonal (from the upper left to the lower right) of matrix $A$.  
+The trace is only defined for a square matrix $(n \times n)$.  
+$
+\text{tr}(A) = \sum_{i=1}^{n} a_{ii} = a_{11} + a_{22} + \cdots + a_{nn}
+$  
+
 ### Span, Range, Rank and Null Space
 ### Vector Multiplication
 https://rfriend.tistory.com/145
@@ -50,8 +57,6 @@ https://rfriend.tistory.com/146
 ### Matrix Multiplication
 #### 3-d matrix multiplication
 https://www.geeksforgeeks.org/numpy-3d-matrix-multiplication/
-
-
 
 ## Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
