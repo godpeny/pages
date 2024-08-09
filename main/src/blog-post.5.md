@@ -30,8 +30,12 @@ $
 \|\mathbf{A}\|_{p,q} = \left( \sum_{j=1}^n \left( \sum_{i=1}^m \left|a_{ij}\right|^p \right)^{q/p} \right)^{1/q}.
 $
 ### Frobenius Norm
-https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm
-
+The Frobenius norm is an extension of the Euclidean norm to $K^{n \times n}$.  
+When $p$ = $q$ = 2 for the $L_{p,q}$ it is called the Frobenius norm or the Hilbert–Schmidt norm.  
+$
+\|A\|_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n} |a_{ij}|^2} = \sqrt{\text{trace}(A^* A)}.
+$  
+Loosely speaking, the Frobenius Norm is also equivalent to the Euclidean norm generalised to matrices instead of vectors.
 ## Gaussian Distribution (= Normal Distribution)
 ## Joint Probability
 - P(A, B) = p(A ∩ B) : likelihood of events occurring together at the same point in time.
