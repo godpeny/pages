@@ -56,8 +56,31 @@ https://rfriend.tistory.com/146
 
 ### Matrix Multiplication
 #### 3-d matrix multiplication
-https://www.geeksforgeeks.org/numpy-3d-matrix-multiplication/
+A 3D matrix is nothing but a collection (or a stack) of many 2D matrices, just like how a 2D matrix is a collection/stack of many 1D vectors.  
+So, matrix multiplication of 3D matrices involves multiple multiplications of 2D matrices, which eventually boils down to a dot product between their row/column vectors.
 
+```
+Matrix A:
+[[[1 2]
+  [3 4]] // a_1
+
+ [[5 6]
+  [7 8]]] // a_2
+
+Matrix B:
+[[[9 8]
+  [7 6]] // b_1
+
+ [[5 4]
+  [3 2]]] // b_2
+
+Matrix C (A @ B):
+[[[23 20] 
+  [55 48]] // a_1 @ b_1
+
+ [[47 36]
+  [83 64]]] // a_2 @ b_2
+```
 ## Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
 ## Affine hull
