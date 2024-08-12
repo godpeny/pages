@@ -52,8 +52,39 @@ https://rfriend.tistory.com/146
 - Dot Product
 - Inner Product
 - Outer Product
-### Diagonal matrix
+### Diagonal Matrix
+In linear algebra, a diagonal matrix is a matrix in which the entries outside the main diagonal are all zero; the term usually refers to square matrices. Elements of the main diagonal can either be zero or nonzero.  
+In geometry, a diagonal matrix may be used as a scaling matrix, since matrix multiplication with it results in changing scale (size) and possibly also shape; only a scalar matrix results in uniform change in scale.
+#### Identity Matrix
+An identity matrix of size $n$ is  $n\times n$ square matrix with ones on the main diagonal and zeros elsewhere. 
+#### Scaling Matrix
+To scale an object by a vector $\mathbf{v} = (v_x, v_y, v_z)$, each point $\mathbf{p} = (p_x, p_y, p_z)$ would need to be multiplied with this scaling matrix:
 
+$
+S_v = \begin{bmatrix}
+v_x & 0 & 0 \\
+0 & v_y & 0 \\
+0 & 0 & v_z
+\end{bmatrix}.
+$
+
+$
+S_v p = \begin{bmatrix}
+v_x & 0 & 0 \\
+0 & v_y & 0 \\
+0 & 0 & v_z
+\end{bmatrix}
+\begin{bmatrix}
+p_x \\
+p_y \\
+p_z
+\end{bmatrix}
+= \begin{bmatrix}
+v_x p_x \\
+v_y p_y \\
+v_z p_z
+\end{bmatrix}.
+$
 ### Matrix Multiplication
 #### 3-d matrix multiplication
 A 3D matrix is nothing but a collection (or a stack) of many 2D matrices, just like how a 2D matrix is a collection/stack of many 1D vectors.  
