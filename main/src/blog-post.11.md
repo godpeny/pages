@@ -163,4 +163,6 @@ func Serve(queue chan *Request) {
 
 https://go.dev/doc/effective_go#concurrency
 ### Generic
+https://go.dev/blog/intro-generics
+https://go.dev/doc/tutorial/generics
 ### Interface and Type Assertion
