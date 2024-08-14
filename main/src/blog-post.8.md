@@ -26,9 +26,19 @@ GLM consists of three elements below.
 
 ### Basic
 
-### Margin and Loss Function
+### Margin
+### Loss Function(Cost Function)
+In mathematical optimization and decision theory, a loss function or cost function (sometimes also called an error function) is a function that maps an event or values of one or more variables onto a real number intuitively representing some "cost" associated with the event.  
+An optimization problem seeks to minimize a loss function.  
+An objective function is either a loss function or its opposite (in specific domains, variously called a reward function, a profit function, a utility function, a fitness function, etc.), in which case it is to be maximized. 
+such as,  
+$
+J(\theta) = \frac{1}{2} \sum_{i=1}^{m} \left( h_\theta(x^{(i)}) - y^{(i)} \right)^2.
+$  
+It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.
 
 ### Batch / Stochastic Gradient Descent
+
 
 ### Normal Equation
 
