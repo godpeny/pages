@@ -35,9 +35,45 @@ such as,
 $
 J(\theta) = \frac{1}{2} \sum_{i=1}^{m} \left( h_\theta(x^{(i)}) - y^{(i)} \right)^2.
 $  
-It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.
+It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.  
+In other word, choose $\theta$ so as to minimize $J(\theta)$.  
 
-### Batch / Stochastic Gradient Descent
+### Gradient Descent
+The idea is to take repeated steps in the opposite direction of the gradient (or approximate gradient) of the functio(loss function) at the current point, because this is the direction of steepest descent.  
+$
+\theta_j := \theta_j - \alpha \frac{\partial}{\partial \theta_j} J(\theta).
+$
+#### Relation with Loss Function
+To minimize cost function $J(\theta)$, let’s start with some “initial guess” for $\theta$, and that repeatedly changes $\theta$ to make $J(\theta)$ smaller, until hopefully we converge to a value of
+$\theta$ that minimizes $J(\theta)$.
+
+#### Batch / Stochastic Gradient Descent
+- Batch: update parameters (theta) after looking at every example in the entire training set on every iteration. 
+Repeat until convergence {  
+$
+\theta_j := \theta_j + \alpha \sum_{i=1}^{m} \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)} \quad (\text{for every } j).
+$  
+}
+
+- Stochastic: update the parameters (theta) according to the gradient of the error with respect to that single training example only.  
+$
+\theta_j := \theta_j + \alpha \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)} \quad (\text{for every } j).
+$
+
+#### Least Mean Square Algorithm (LMS)
+LMS algorithm is a stochastic gradient descent method that iteratively updates filter coefficients to minimize the mean square error between the desired and actual signals.  
+When error is
+$\left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right)$, the magnitude of the update is proportional to the error term.
+$
+\theta_j := \theta_j + \alpha \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)}.
+$
+#### Relation with Gradient Descent
+$
+\frac{\partial}{\partial \theta_j} J(\theta) = \frac{\partial}{\partial \theta_j} \frac{1}{2} \left( h_\theta(x) - y \right)^2
+= 2 \cdot \frac{1}{2} \left( h_\theta(x) - y \right) \cdot \frac{\partial}{\partial \theta_j} \left( h_\theta(x) - y \right)
+= \left( h_\theta(x) - y \right) \cdot \frac{\partial}{\partial \theta_j} \left( \sum_{i=0}^{n} \theta_i x_i - y \right)
+= \left( h_\theta(x) - y \right) x_j.
+$  
 
 
 ### Normal Equation
