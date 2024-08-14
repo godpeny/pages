@@ -34,11 +34,28 @@ Some variable values that are penalized in the objective function if, and based 
 - Hard constraints
 Set conditions for the variables that are required to be satisfied.
 
-### Deep Learning vs Reinforcement Learning
+## A.I Related Terminology
+### Supervised Learning
+Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
+The training data is processed, building a function that maps new data to expected output values.  
+An optimal scenario will allow for the algorithm to correctly determine output values for unseen instances.
+#### Algorithms
+The most widely used learning algorithms are:
+- Support-vector machines
+- Linear regression
+- Logistic regression
+- Naive Bayes
+- Linear discriminant analysis
+- Decision trees
+- K-nearest neighbor algorithm
+- Neural networks (Multilayer perceptron)
+- Similarity learning
+
+## Deep Learning vs Reinforcement Learning
 Deep learning and reinforcement learning are both systems that learn autonomously.  
 The difference between them is that deep learning is learning from a training set and then applying that learning to a new data set, while reinforcement learning is dynamically learning by adjusting actions based in continuous feedback to maximize a reward.
 
-### LLM
+## LLM
 A large language model (LLM) is a computational model notable for its ability to achieve general-purpose language generation and other natural language processing tasks such as classification. 
 Based on language models, LLMs acquire these abilities by learning statistical relationships from vast amounts of text during a computationally intensive self-supervised and semi-supervised training process.
 LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
