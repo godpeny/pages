@@ -60,3 +60,9 @@ A large language model (LLM) is a computational model notable for its ability to
 Based on language models, LLMs acquire these abilities by learning statistical relationships from vast amounts of text during a computationally intensive self-supervised and semi-supervised training process.
 LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
 LLMs are artificial neural networks that utilize the transformer architecture, invented in 2017. The largest and most capable LLMs, as of June 2024, are built with a decoder-only transformer-based architecture, which enables efficient processing and generation of large-scale text data.
+
+## Parametic vs Non-Parametic Learning Algorithm
+- Parametic : fixed finite number of parameters ($\theta$) for fitting to the data. So After fitting theta, trainning data is no more needed to make prediction.    
+e.g. linear regression
+- Non-Parametic : the amount of stuff we need to keep in order to represent the hypothesis $h$ grows linearly with the size of the training set. Also need to have entire training set to make prediction.  
+e.g. locally weighted linear regression
