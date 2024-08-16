@@ -106,11 +106,26 @@ $
 Above derivation, we can find the fact that maximizing $log(\theta)$ is same as minimizing 
 $\sum_{i=1}^{m} \left( y^{(i)} - \theta^T x^{(i)} \right)^2$, which is original loss function $J(\theta)$.
 
-### Locally Weighted Linear Regression
+### Locally Weighted Linear Regression (LWR)
 Rather than learning a fixed set of parameters as is done in ordinary linear regression, parameters $\theta$ are computed individually for each query point $x$.
 $
 J(\theta) = \sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2
+$  
+When original linear regression:  
+ - fit $\theta$ to minimize $\sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2$
+ - predict with $ \theta^T x^{(i)}$.  
+
+LWR:
+ - fit $\theta$ to minimize $\sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2$
+ - predict with $ \theta^T x^{(i)}$.  
+
+#### Weight
+Weight $w^{(i)}s$ are non negative value. A standard choice the weight is  
 $
+w^{(i)} = \exp \left( -\frac{\left(x^{(i)} - x\right)^2}{2\tau^2} \right)
+$  
+
+
 
 ## Logistic Regression
 
