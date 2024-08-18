@@ -25,6 +25,47 @@ GLM consists of three elements below.
 ## Linear Regression
 
 ### Basic
+In Machine Learning, linear regression is a type of supervised machine learning algorithm that computes the linear relationship between the dependent variable and one or more independent features by fitting a linear equation to observed data.   
+ - Simple Linear Regression: Only one independent variable($x$).  
+ (only one $x$ and one $y$ variable.)
+ - Multiple Linear Regression: Relationship between two or more variables($x$) and a response($y$) by fitting a linear equation to observed data.  
+ (one $y$ and more than one $x$ variables. e.g.,$y = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p + \epsilon$)
+ - Univariate Linear Regression : Target variable depends on only one independent variable.  
+ (one $x$ and one $y$) 
+ - Multivariate Linear Regression : More than one predictor and more than one response.  
+(more than one $x$ and more than one $y$ variable.)  
+ $\mathbf{Y} = \mathbf{X}\mathbf{B} + \mathbf{\Xi}$  
+$
+\begin{pmatrix}
+y_{11} \ y_{12} \ \cdots \ y_{1p} \\
+y_{21} \ y_{22} \ \cdots \ y_{2p} \\
+y_{31} \ y_{32} \ \cdots \ y_{3p} \\
+\vdots \ \vdots \ \ddots \ \vdots \\
+y_{n1} \ y_{n2} \ \cdots \ y_{np}
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \ x_{11} \ x_{12} \ \cdots \ x_{1q} \\
+1 \ x_{21} \ x_{22} \ \cdots \ x_{2q} \\
+1 \ x_{31} \ x_{32} \ \cdots \ x_{3q} \\
+\vdots \ \vdots \ \vdots \ \ddots \ \vdots \\
+1 \ x_{n1} \ x_{n2} \ \cdots \ x_{nq}
+\end{pmatrix}
+\begin{pmatrix}
+\beta_{01} \ \beta_{02} \ \cdots \ \beta_{0p} \\
+\beta_{11} \ \beta_{12} \ \cdots \ \beta_{1p} \\
+\beta_{21} \ \beta_{22} \ \cdots \ \beta_{2p} \\
+\vdots \ \vdots \ \ddots \ \vdots \\
+\beta_{q1} \ \beta_{q2} \ \cdots \ \beta_{qp}  
+\end{pmatrix} + 
+\begin{pmatrix}
+\epsilon_{11} \ \epsilon_{12} \ \cdots \ \epsilon_{1p} \\
+\epsilon_{21} \ \epsilon_{22} \ \cdots \ \epsilon_{2p} \\
+\epsilon_{31} \ \epsilon_{32} \ \cdots \ \epsilon_{3p} \\
+\vdots \ \vdots \ \ddots \ \vdots \\
+\epsilon_{n1} \ \epsilon_{n2} \ \cdots \ \epsilon_{np}
+\end{pmatrix}
+$
 
 ### Margin
 ### Loss Function(Cost Function)
@@ -126,8 +167,11 @@ w^{(i)} = \exp \left( -\frac{\left(x^{(i)} - x\right)^2}{2\tau^2} \right)
 $  
 
 
-
 ## Logistic Regression
+### Basics
+Logistic regression is a supervised machine learning algorithm used for classification tasks,  
+where the goal is to predict the probability that an instance belongs to a given class or not.   
+Logistic regression is a statistical algorithm which analyze the relationship between two data factors. 
 
 ### Probability Interpretation
 
