@@ -1,11 +1,11 @@
 # Generalized Linear Models (GLM)
 ## Basics
-in statistics, a generalized linear model is a flexible generalization of ordinary linear regression. The GLM generalizes linear regression by allowing the linear model to be related to the response variable via a link function and by allowing the magnitude of the variance of each measurement to be a function of its predicted value.  
-in a generalized linear model, each outcome $y$ of the dependent variables is assumed to be generated from a particular distribution in an exponential family, a large class of probability distributions that includes the normal, binomial, Poisson and gamma distributions, among others.  
+A generalized linear model is a flexible generalization of ordinary linear regression. The GLM generalizes linear regression by allowing the linear model to be related to the response variable via a link function and by allowing the magnitude of the variance of each measurement to be a function of its predicted value.  
+In a generalized linear model, each outcome $y$ of the dependent variables is assumed to be generated from a particular distribution in an exponential family, a large class of probability distributions that includes the normal, Bernoulli, binomial, Poisson and gamma distributions, among others.  
 
 ## Exponential Family
-an exponential family is a parametric set of probability distributions of a certain form, specified below.  
-this special form is chosen formathematical convenience, includingthe enabling of the user to calculateexpectations, covariances usingdifferentiation based on some usefulalgebraic properties, as well as forgenerality, as exponential familiesare in a sense very natural sets ofdistributions to consider. 
+An exponential family is a parametric(finite number of parameters) set of probability distributions of a certain form.   
+This special form is chosen for mathematical convenience, including the enabling of the user to calculate expectations, covariances using differentiation based on some useful algebraic properties, as well as forgenerality, as exponential familiesare in a sense very natural sets ofdistributions to consider. 
 $$
 {\displaystyle \ f_{X}\!\left(x\ {\big |}\ \theta \right)=h(x)\ \exp {\bigl [}\ \eta (\theta )\cdot T(x)-A(\theta )\ {\bigr ]}\ }
 $$
@@ -21,9 +21,42 @@ GLM consists of three elements below.
 2. A linear predictor $\eta = X\beta$.  
 3. A link function $g$ such that $\mathbb{E}(Y \mid X) = \mu = g^{-1}(\eta)$.
 
+### Bernoulli Distribution as GLM
+$$
+\begin{align*}
+p(y; \phi) &= \phi^y (1 - \phi)^{1 - y} \\
+&= \exp\left(y \log \phi + (1 - y) \log (1 - \phi)\right) \\
+&= \exp\left(\left(\log\left(\frac{\phi}{1 - \phi}\right)\right) y + \log(1 - \phi)\right).
+\end{align*}
+$$  
+$$
+\begin{align*}
+\eta &= \log\left(\frac{\phi}{1 - \phi}\right) \\ 
+T(y) &= y \\
+a(\eta) &= -\log(1 - \phi) \\
+        &= \log(1 + e^{\eta}) \\
+b(y) &= 1 \\
+\end{align*}
+$$
+
+### Gausian Distribution as GLM
+$$
+\begin{align*}
+p(y; \mu) &= \frac{1}{\sqrt{2\pi}} \exp\left( -\frac{1}{2} (y - \mu)^2 \right) \\
+&= \frac{1}{\sqrt{2\pi}} \exp\left( -\frac{1}{2} y^2 \right) \cdot \exp\left( \mu y - \frac{1}{2} \mu^2 \right)
+\end{align*}
+$$  
+$$
+\begin{align*}
+\eta &= \mu \\
+T(y) &= y \\
+a(\eta) &= \frac{\mu^2}{2} \\
+       &= \frac{\eta^2}{2} \\
+b(y) &= \left(\frac{1}{\sqrt{2\pi}}\right) \exp\left(-\frac{y^2}{2}\right).
+\end{align*}
+$$
 
 ## Linear Regression
-
 ### Basic
 In Machine Learning, linear regression is a type of supervised machine learning algorithm that computes the linear relationship between the dependent variable and one or more independent features by fitting a linear equation to observed data.   
  - Simple Linear Regression: Only one independent variable($x$).  
@@ -186,6 +219,16 @@ g'(z) = \frac{d}{dz} \left(\frac{1}{1 + e^{-z}}\right) \\
 = g(z)(1 - g(z)).
 $$
 
+### Bernoulli Distribution
+The discrete probability distribution of a random variable which takes the value 1 with probability $p$ and the value 0 with probability $ q=1-p$.  
+$$
+f(k; p) =
+\begin{cases} 
+p & \text{if } k = 1, \\
+q = 1 - p & \text{if } k = 0.
+\end{cases}
+$$
+
 ### Classification Model using Logistic Regression
 When assuming,  
 $$
@@ -221,10 +264,10 @@ $$
 \theta_j := \theta_j + \alpha \left( y^{(i)} - h_{\theta}(x^{(i)}) \right) x_j^{(i)}
 $$  
 
-### Probability Interpretation
-
-### Basics
-
+### Why Logistic Regression linear model?
+Logistic regression is considered a generalized linear model because the outcome always depends on the sum of the inputs and parameters. ($\theta^T x = \theta_{0} x_{0} + \theta_{1} x_{1} \cdots \theta_{m} x_{m}$)  
+In other words, the output cannot depend on the product (or quotient, etc.) of its parameters.(example of non linear: $ \theta_{1} x_{1} \times  \theta_{2} x_{2} ...$)  
+ 
 ### Newton's Method
 
 ## Softmax Regression
