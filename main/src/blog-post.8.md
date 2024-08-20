@@ -297,14 +297,22 @@ The normalization ensures that the sum of the components of the output vector $\
 ### Multinomial Distribution
 The multinomial distribution is a generalization of the binomial distribution.  
 For $n$ independent trials each of which leads to a success for exactly one of $k$ categories, with each category having a given fixed success probability, the multinomial distribution gives the probability of any particular combination of numbers of successes for the various categories.  
-When $k$ is 2 and $n$ is 1, the multinomial distribution is the Bernoulli distribution. When $k$ is 2 and $n$ is bigger than 1, it is the binomial distribution. When $k$ is bigger than 2 and n is 1, it is the categorical distribution.  
-Probability Mass Function(PMF) of multinomial distribution is:  
+Mathematically, if we have $k$ possible mutually exclusive outcomes, $x_i$ indicates the number of times outcome number $i$ is observed over the $n$ independent trials, with corresponding probabilities $p_1, \cdots, p_k$, Probability Mass Function(PMF) of multinomial distribution is:  
+(어떤 시행애서 $k$ 가지의 값이 나타날 수 있고, 그 값들이 나타날 확률이 각각 $p_1, \cdots, p_k$ 라고 할 때 $n$번의 독립 시행에서 $i$ 번째의 값이 $x_i$ 번 나타날 확률)
 $$
 f(x_1, \dots, x_k; n, p_1, \dots, p_k) = \Pr(X_1 = x_1 \text{ and } \dots \text{ and } X_k = x_k) = \\ 
 \begin{cases} 
 \frac{n!}{x_1! \cdots x_k!} p_1^{x_1} \times \cdots \times p_k^{x_k}, & \text{when } \sum_{i=1}^k x_i = n \\
 0, & \text{otherwise}
 \end{cases}
+$$
+
+#### Applying Multinomial Distribution
+In our model, we have one trial($n=1$) and the number of times outcome number $i$ is one.($x_k=1$). So the modified distribution is:  
+$$
+\frac{1!}{1! \cdots 1!} p_1^{x_1} \times \cdots \times p_k^{x_k} = \\
+p_1^{x_1} \times \cdots \times p_k^{x_k} = \\
+\prod_{i}^{k} P_{i}^{y_{i}}
 $$
 
 ### Multinomial Distribution as GLM
