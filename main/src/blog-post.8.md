@@ -14,7 +14,15 @@ $$
 - naturla parameter $\eta$
 - log-partition function $A(\eta)$ : logarithm of a normalization factor, without which ${\displaystyle \ f_{X}\!\left(x\ {\big |}\ \theta \right)}$ would not be a probability distribution:  
 $A(\eta) = \log \left( \int_{X} h(x) \exp(\eta(\theta) \cdot T(x)) \, dx \right)$
+- canonical response function(distribution's mean as a function of the natural parameter) : $g(\eta) = \mathbb{E}[T(y);\eta]$  
+(the canonical response function for the
+Gaussian family is just the identify function; and the canonical response function for the Bernoulli is the logistic function)  
+- canonical link function: $g^{-1}$
 
+### Relationship Between Parameter, Mean and Natural Parameter with 
+https://ocw.mit.edu/courses/18-650-statistics-for-applications-fall-2016/dff89368051a5feae72b39c6422d0752_MIT18_650F16_GLM.pdf
+
+https://stats.stackexchange.com/questions/40876/what-is-the-difference-between-a-link-function-and-a-canonical-link-function
 ## 3 Assumptions
 GLM consists of three elements below.
 1. A particular distribution for modeling $Y$ from among those which are considered exponential families of probability distributions.  
@@ -271,3 +279,124 @@ In other words, the output cannot depend on the product (or quotient, etc.) of i
 ### Newton's Method
 
 ## Softmax Regression
+The softmax function takes as input a vector $z$ of $K$ real numbers, and normalizes it into a probability distribution consisting of $K$ probabilities proportional to the exponentials of the input numbers.  
+That is, prior to applying softmax, some vector components could be negative, or greater than one; and might not sum to 1; but after applying softmax, each component will be in the interval $(0,1)$.  
+Formally, the standard (unit) softmax function $\sigma$:  
+$$
+\sigma: \mathbb{R}^K \rightarrow (0, 1)^K, \text{ where } K \geq 1,
+$$  
+$$
+\text{vector } \mathbf{z} = (z_1, \dots, z_K) \in \mathbb{R}^K
+$$
+$$
+\sigma(\mathbf{z}) \in (0,1)^K \text{ with } \sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j=1}^K e^{z_j}}.
+$$
+The softmax applies the standard exponential function to each element 
+$z_{i}$ of the input vector $z$ (consisting of $K$), and normalizes these values by dividing by the sum of all these exponentials.  
+The normalization ensures that the sum of the components of the output vector $\sigma(z)$ is 1. 
+### Multinomial Distribution
+The multinomial distribution is a generalization of the binomial distribution.  
+For $n$ independent trials each of which leads to a success for exactly one of $k$ categories, with each category having a given fixed success probability, the multinomial distribution gives the probability of any particular combination of numbers of successes for the various categories.  
+When $k$ is 2 and $n$ is 1, the multinomial distribution is the Bernoulli distribution. When $k$ is 2 and $n$ is bigger than 1, it is the binomial distribution. When $k$ is bigger than 2 and n is 1, it is the categorical distribution.  
+Probability Mass Function(PMF) of multinomial distribution is:  
+$$
+f(x_1, \dots, x_k; n, p_1, \dots, p_k) = \Pr(X_1 = x_1 \text{ and } \dots \text{ and } X_k = x_k) = \\ 
+\begin{cases} 
+\frac{n!}{x_1! \cdots x_k!} p_1^{x_1} \times \cdots \times p_k^{x_k}, & \text{when } \sum_{i=1}^k x_i = n \\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+### Multinomial Distribution as GLM
+When $\phi_i \cdots \phi_k$ specifying the probability of each of the outcomes:
+$$
+\phi_i = p(y = i; \phi), \quad \text{and} \quad p(y = k; \phi) = 1 - \sum_{i=1}^{k-1} \phi_i
+$$  
+To express the multinomial as an exponential family distribution, define $T(y) \in \mathbb{R}^{k-1}$ as follow:  
+$$
+\begin{align*}
+T(1) &= \begin{pmatrix} 1 \\ 0 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \quad 
+T(2) = \begin{pmatrix} 0 \\ 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \quad  \dots, \quad
+T(k-1) = \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots \\ 1 \end{pmatrix}, \quad 
+T(k) = \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots \\ 0 \end{pmatrix},
+\end{align*}
+$$  
+In this case, $T(y)$ !=  $y$ and $T(y)_i$ is $i$-th element of the vector $T(Y)$.  
+Also, $\left(T(y)\right)_i = \mathbf{1}\{y = i\}$ and $\mathbb{E}\left[(T(y))_i\right] = P(y = i) = \phi_i$.  
+$$
+\begin{aligned}
+p(y;\boldsymbol{\phi}) &= \phi_1^{1\{y=1\}} \phi_2^{1\{y=2\}} \cdots \phi_k^{1\{y=k\}} \\
+&= \phi_1^{1\{y=1\}} \phi_2^{1\{y=2\}} \cdots \phi_i^{1\{y=i\}} \cdots \phi_k^{1-\sum_{i=1}^{k-1} 1\{y=i\}} \\
+&= \phi_1^{(T(y))_1} \phi_2^{(T(y))_2} \cdots \phi_k^{1-\sum_{i=1}^{k-1} (T(y))_i} \\
+&= \exp\left((T(y))_1 \log(\phi_1) + (T(y))_2 \log(\phi_2) + \cdots + \left(1 - \sum_{i=1}^{k-1} (T(y))_i\right) \log(\phi_k)\right) \\
+&= \exp\left((T(y))_1 \log(\phi_1/\phi_k) + (T(y))_2 \log(\phi_2/\phi_k) + \cdots + (T(y))_{k-1} \log(\phi_{k-1}/\phi_k) + \log(\phi_k)\right) \\
+&= b(y) \exp(\boldsymbol{\eta}^T T(y) - a(\boldsymbol{\eta}))
+\end{aligned}
+$$
+and,  
+$$
+\begin{aligned}
+\text{where} \quad \boldsymbol{\eta} &= 
+\begin{bmatrix}
+\log(\phi_1/\phi_k) \\
+\log(\phi_2/\phi_k) \\
+\vdots \\
+\log(\phi_{k-1}/\phi_k)
+\end{bmatrix}, \\
+a(\boldsymbol{\eta}) &= -\log(\phi_k), \\
+b(y) &= 1.
+\end{aligned}
+$$ 
+From Above, we can find the link function is $\eta_i = \log\left(\frac{\phi_i}{\phi_k}\right)
+$, and response function is $e^{\eta_i} = \frac{\phi_i}{\phi_k}$.  
+Using response function, 
+$$
+e^{\eta_i} = \frac{\phi_i}{\phi_k} \\
+\phi_k e^{\eta_i} = \phi_i \\
+\phi_k \sum_{i=1}^{k} e^{\eta_i} = \sum_{i=1}^{k} \phi_i = 1 \\
+\phi_k = \frac{1}{\sum_{i=1}^{k} e^{\eta_i}} \\
+$$
+Thus, 
+$$
+\phi_i = \frac{e^{\eta_i}}{\sum_{j=1}^{k} e^{\eta_j}}
+$$  
+The function mapping from the $\eta$ to $\phi$ is called softmax function.  
+Using Assumption 3, we have $\eta_i = \theta_i^T x$, the model assumes that the conditional distribution of $y$ given $x$ is:  
+$$
+\begin{align*}
+p(y = i \mid x; \theta) &= \phi_i \\
+&= \frac{e^{\eta_i}}{\sum_{j=1}^{k} e^{\eta_j}} \\
+&= \frac{e^{\theta_i^T x}}{\sum_{j=1}^{k} e^{\theta_j^T x}}
+\end{align*}
+$$  
+When applying this model to classification problems where $y \in \{1, \dots, k\}$, the hypothesis $h_{\theta}(x)$ is:  
+$$
+\begin{align*}
+h_{\theta}(x) &= \mathbb{E}[T(y) \mid x; \theta] \\
+&= \mathbb{E} \left[ \begin{pmatrix} 
+1\{y=1\} \\ 
+1\{y=2\} \\ 
+\vdots \\ 
+1\{y=k-1\} 
+\end{pmatrix} \mid x; \theta \right] \\
+&= \begin{pmatrix} 
+\phi_1 \\ 
+\phi_2 \\ 
+\vdots \\ 
+\phi_{k-1} 
+\end{pmatrix} \\
+&= \begin{pmatrix} 
+\frac{\exp(\theta_1^T x)}{\sum_{j=1}^{k} \exp(\theta_j^T x)} \\ 
+\frac{\exp(\theta_2^T x)}{\sum_{j=1}^{k} \exp(\theta_j^T x)} \\ 
+\vdots \\ 
+\frac{\exp(\theta_{k-1}^T x)}{\sum_{j=1}^{k} \exp(\theta_j^T x)} 
+\end{pmatrix}.
+\end{align*}
+$$  
+In other words, our hypothesis will output the estimated probability $p(y = i \mid x; \theta)$ for every value of $\{1, \cdots, k\}$.  
+Similar to logistic regression, we can learn the parameter $\theta$ by optaining the maximum likelihood estimate of the parameters by maximizing log-likelihood function:  
+$$
+\ell(\theta) = \sum_{i=1}^{m} \log p(y^{(i)}|x^{(i)}; \theta) \\
+= \sum_{i=1}^{m} \log \prod_{l=1}^{k} \left( \frac{e^{\theta_l^T x^{(i)}}}{\sum_{j=1}^{k} e^{\theta_j^T x^{(i)}}} \right)^{1\{y^{(i)}=l\}}
+$$
+Like logisstic regression, maximum likelihood estimate can be obtained by using method gradient ascent or Newton’s method.
