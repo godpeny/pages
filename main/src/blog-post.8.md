@@ -19,10 +19,26 @@ $A(\eta) = \log \left( \int_{X} h(x) \exp(\eta(\theta) \cdot T(x)) \, dx \right)
 Gaussian family is just the identify function; and the canonical response function for the Bernoulli is the logistic function)  
 - canonical link function: $g^{-1}$
 
-### Relationship Between Parameter, Mean and Natural Parameter with 
-https://ocw.mit.edu/courses/18-650-statistics-for-applications-fall-2016/dff89368051a5feae72b39c6422d0752_MIT18_650F16_GLM.pdf
+### Link Function and Response Function
+![alt text](images/blog8_link_response_relationship.png)
+$$
+\eta = g\left(\gamma'(\theta)\right) \\
+\theta = \gamma'^{-1}\left(g^{-1}(\eta)\right)
+$$
+ - $\gamma'$ is known function.
+ - $g$ is link function.
 
-https://stats.stackexchange.com/questions/40876/what-is-the-difference-between-a-link-function-and-a-canonical-link-function
+#### Canonical
+$g$ is canonical link function if the function connects $\eta$, $\theta$ and $\mu$.
+$$
+\gamma'^{-1} \circ g^{-1} = \left(g \circ \gamma'\right)^{-1} = I \\
+$$
+Same as,
+$$
+\eta = \theta
+$$
+
+
 ## 3 Assumptions
 GLM consists of three elements below.
 1. A particular distribution for modeling $Y$ from among those which are considered exponential families of probability distributions.  
