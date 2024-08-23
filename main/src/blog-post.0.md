@@ -66,3 +66,6 @@ LLMs are artificial neural networks that utilize the transformer architecture, i
 e.g. linear regression
 - Non-Parametic : the amount of stuff we need to keep in order to represent the hypothesis $h$ grows linearly with the size of the training set. Also need to have entire training set to make prediction.  
 e.g. locally weighted linear regression
+
+## Supervised Learning
+As in supervised learning problems, first pick a representation for our hypothesis class (what we are trying to learn) and after that pick a loss function that we will minimize.

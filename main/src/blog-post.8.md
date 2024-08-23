@@ -292,6 +292,27 @@ $$
 Logistic regression is considered a generalized linear model because the outcome always depends on the sum of the inputs and parameters. ($\theta^T x = \theta_{0} x_{0} + \theta_{1} x_{1} \cdots \theta_{m} x_{m}$)  
 In other words, the output cannot depend on the product (or quotient, etc.) of its parameters.(example of non linear: $ \theta_{1} x_{1} \times  \theta_{2} x_{2} ...$)  
  
+### Margin and Loss Function for Binary Classification
+In binary Classification problems, it is often convenient to use a hypothesis class of the form $h_{\theta}(x) = \theta^T x$ and when presented with a new example $x$, we classify it
+as positive or negative depending on the sign of $\theta^T x$.  
+$$
+\text{sign}(h_{\theta}(x)) = \text{sign}(\theta^T x) \quad \text{where} \quad \text{sign}(t) =
+\begin{cases} 
+1 & \text{if } t > 0 \\
+0 & \text{if } t = 0 \\
+-1 & \text{if } t < 0.
+\end{cases}
+$$
+Where we say that $y = 1$ if the example is a member of the
+positive class and $y = −1$ if the example is a member of the negative class, $y \in \{-1, +1\}$.  
+Then, the hypothesis $h_{\theta}(x)$ with parameter
+vector $\theta$ classifies a particular example ($X$, $y$) correctly if,  
+$$
+\text{sign}(\theta^T x) = y \quad \text{or equivalently} \quad y\theta^T x > 0.
+$$  
+$y\theta^Tx$ is called margin.  
+
+
 ### Newton's Method
 
 ## Softmax Regression
