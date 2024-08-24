@@ -128,11 +128,11 @@ $$
 ### Loss Function(Cost Function)
 In mathematical optimization and decision theory, a loss function or cost function (sometimes also called an error function) is a function that maps an event or values of one or more variables onto a real number intuitively representing some "cost" associated with the event.  
 An optimization problem seeks to minimize a loss function.  
-An objective function is either a loss function or its opposite (in specific domains, variously called a reward function, a profit function, a utility function, a fitness function, etc.), in which case it is to be maximized. 
 such as,  
 $$
 J(\theta) = \frac{1}{2} \sum_{i=1}^{m} \left( h_\theta(x^{(i)}) - y^{(i)} \right)^2.
 $$  
+An objective function is either a loss function or its opposite (in specific domains, variously called a reward function, a profit function, a utility function, a fitness function, etc.), in which case it is to be maximized.    
 It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.  
 In other word, choose $\theta$ so as to minimize $J(\theta)$.  
 
@@ -226,8 +226,7 @@ $
 
 ## Logistic Regression
 ### Basics
-Logistic regression is a supervised machine learning algorithm used for classification tasks,  
-where the goal is to predict the probability that an instance belongs to a given class or not.   
+Logistic regression is a supervised machine learning algorithm used for classification tasks, where the goal is to predict the probability that an instance belongs to a given class or not.   
 Logistic regression is a statistical algorithm which analyze the relationship between two data factors. 
 
 ### Logistic Function (Sigmoid Function)
@@ -253,7 +252,7 @@ q = 1 - p & \text{if } k = 0.
 \end{cases}
 $$
 
-### Classification Model using Logistic Regression
+### Binary Classification Model in Logistic Regression (label: 1,0)
 When assuming,  
 $$
 P(y = 1 \mid x; \theta) = h_\theta(x) \\
@@ -291,8 +290,9 @@ $$
 ### Why Logistic Regression linear model?
 Logistic regression is considered a generalized linear model because the outcome always depends on the sum of the inputs and parameters. ($\theta^T x = \theta_{0} x_{0} + \theta_{1} x_{1} \cdots \theta_{m} x_{m}$)  
 In other words, the output cannot depend on the product (or quotient, etc.) of its parameters.(example of non linear: $ \theta_{1} x_{1} \times  \theta_{2} x_{2} ...$)  
- 
-### Margin and Loss Function for Binary Classification
+
+### Binary Classification Model using Logistic Regression (label: 1,0)
+#### Margin of Binary Classification (label: 1,-1)
 In binary Classification problems, it is often convenient to use a hypothesis class of the form $h_{\theta}(x) = \theta^T x$ and when presented with a new example $x$, we classify it
 as positive or negative depending on the sign of $\theta^T x$.  
 $$
@@ -312,6 +312,79 @@ $$
 $$  
 $y\theta^Tx$ is called margin.  
 
+#### Loss Function for Binary Classification
+Choose some loss function so that
+for our training data, makes the margin $y^{(i)}\theta^Tx^{(i)}$
+very large for each training example.  
+When $\varphi$ is loss function with zero-one range and $z$ is $y\theta^Tx$ :  
+$$
+\varphi_{zo}(z) = \varphi_{zo}(y\theta^Tx) = 
+\begin{cases} 
+1 & \text{if } z \leq 0, \\
+0 & \text{if } z > 0.
+\end{cases}
+$$
+For any particular loss function, the empirical risk that we minimize is then:  
+$$
+J(\theta) = \frac{1}{m} \sum_{i=1}^{m} \varphi\left(y^{(i)}\theta^T x^{(i)}\right).
+$$
+Through this jacobian, we can penalize those $\theta$ for which
+$y^{(i)}\theta^Tx^{(i)} < 0$ frequently in the training data(loss increases by 1 for each data), and record no loss for $y^{(i)}\theta^Tx^{(i)} > 0$ for each training examples.  
+Choosing $\theta$ to minimize the average logistic loss will
+yield a $\theta$ for which $y^{(i)}\theta^Tx^{(i)} > 0$ for most (or even all!) of the training examples.  
+
+#### Types of Loss Functions
+ - logisitc loss: $\varphi_{\text{logistic}}(z) = \log(1 + e^{-z})$  
+ - hinge loss: $\varphi_{\text{hinge}}(z) = [1 - z]_+ = \max\{1 - z, 0\}$  
+ - exponential loss: $\varphi_{\exp}(z) = e^{-z}$  
+
+#### Probabilistic intrepretation
+When hypothesis as,  
+$$
+h_\theta(x) = g(\theta^T x) = \frac{1}{1 + e^{-\theta^T x}},
+$$
+Using logistic loss function, loss is,  
+$$
+\varphi_{\text{logistic}}(yx^T\theta) = \log\left(1 + \exp(-yx^T\theta)\right)
+$$
+And Choose $\theta$ that minimizes $J(\theta)$ which is logistic regression risk is,  
+$$
+J(\theta) = \frac{1}{m} \sum_{i=1}^{m} \varphi_{\text{logistic}}(y^{(i)}\theta^T x^{(i)}) = \frac{1}{m} \sum_{i=1}^{m} \log \left( 1 + \exp(-y^{(i)}\theta^T x^{(i)}) \right).
+$$
+The likelihood of the training data is,   
+$$
+L(\theta) = \prod_{i=1}^{m} p(Y = y^{(i)} \mid x^{(i)}; \theta) = \prod_{i=1}^{m} h_\theta(y^{(i)} x^{(i)})
+$$  
+So the log-likelihood is,  
+$$
+\ell(\theta) = \sum_{i=1}^{m} \log h_\theta(y^{(i)} x^{(i)}) = - \sum_{i=1}^{m} \log \left( 1 + e^{-y^{(i)} \theta^T x^{(i)}} \right) = -m J(\theta)
+$$
+That is, maximum likelihood in the logistic model $L(\theta)$ is the same as minimizing the average logistic loss $J(\theta)$, and we arrive at logistic regression again.
+
+### Gradient Descent in Logistic Regression
+Consider gradient-descent-based procedures for performing the minimization of logistic loss.  
+With that in mind, the derivatives of the logistic loss is,  
+$$
+\begin{align*}
+\frac{d}{dz} \varphi_{\text{logistic}}(z) &= \varphi_{\text{logistic}}'(z) = \frac{1}{1 + e^{-z}} \cdot \frac{d}{dz} e^{-z} = -\frac{e^{-z}}{1 + e^{-z}} = -\frac{1}{1 + e^{z}} = -g(-z), \\
+\end{align*}
+$$
+when $z = y \theta^T x$,  
+$$
+\begin{align*}
+\frac{\partial}{\partial \theta_k} \varphi_{\text{logistic}}(y\theta^Tx) &= -g(-y\theta^Tx) \frac{\partial}{\partial \theta_k} (y\theta^Tx) = -g(-y\theta^Tx) yx_k.
+\end{align*}
+$$
+Thus, a stochastic gradient procedure for minimization of $J(\theta)$  iteratively performs the following for every iteraion.  
+ 1. choose $i \in \{1, \cdots, m\}$ uniformly at random.
+ 2. perform gradient update rule:  
+ $\theta^{(t+1)} = \theta^{(t)} - \alpha_t \cdot \nabla_{\theta} \varphi_{\text{logistic}}(y^{(i)} x^{(i)T} \theta^{(t)})$  
+ $\theta^{(t+1)} = \theta^{(t)} + \alpha_t g(-y^{(i)} x^{(i)T} \theta^{(t)}) y^{(i)} x^{(i)} = \theta^{(t)} + \alpha_t h_{\theta(t)}(-y^{(i)} x^{(i)}) y^{(i)} x^{(i)}$  
+
+This update is intuitive:
+If our current hypothesis $h_{\theta(t)}$ assigns probability close to 1 for the incorrect label $y(i)$, then we try to reduce the loss by moving $\theta$ in the direction of $y(i)x(i)$.  
+Conversely, if our current hypothesis $h_{\theta(t)}$ assigns probability close to 0 for the incorrect label $y(i)$, the update
+essentially does nothing.
 
 ### Newton's Method
 

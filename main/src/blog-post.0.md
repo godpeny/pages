@@ -51,11 +51,11 @@ The most widely used learning algorithms are:
 - Neural networks (Multilayer perceptron)
 - Similarity learning
 
-## Deep Learning vs Reinforcement Learning
+### Deep Learning vs Reinforcement Learning
 Deep learning and reinforcement learning are both systems that learn autonomously.  
 The difference between them is that deep learning is learning from a training set and then applying that learning to a new data set, while reinforcement learning is dynamically learning by adjusting actions based in continuous feedback to maximize a reward.
 
-## LLM
+### LLM
 A large language model (LLM) is a computational model notable for its ability to achieve general-purpose language generation and other natural language processing tasks such as classification. 
 Based on language models, LLMs acquire these abilities by learning statistical relationships from vast amounts of text during a computationally intensive self-supervised and semi-supervised training process.
 LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
@@ -67,5 +67,15 @@ e.g. linear regression
 - Non-Parametic : the amount of stuff we need to keep in order to represent the hypothesis $h$ grows linearly with the size of the training set. Also need to have entire training set to make prediction.  
 e.g. locally weighted linear regression
 
-## Supervised Learning
+### Supervised Learning
 As in supervised learning problems, first pick a representation for our hypothesis class (what we are trying to learn) and after that pick a loss function that we will minimize.
+
+### Model and Regression
+- Model is a broader concept and encompasses any algorithm that can make predictions.
+- Regression specifically refers to a family of methods/models focused on predicting continuous outcome.
+
+#### Linear Model and Regression
+Linear model is a broad term that includes any model with a linear relationship between variables, while Linear Regression specifically refers to the task of predicting a continuous outcome using a linear relationship.
+
+#### Logistic Model and Regression
+Logistic model is a broader term that refers to any model using a logistic function for classification or other purposes. Logistic regression is a specific statistical method that uses a logistic model to perform binary classification.
