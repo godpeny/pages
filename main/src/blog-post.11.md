@@ -123,6 +123,11 @@ func incrementor() func() int {
  ```
 
 ## Golang
+### Goroot, GoPath, GoProxy, GoSumDB
+
+### Naked Return
+https://go.dev/tour/basics/7
+
 ### Concurrency
 #### Goroutines
 Goroutine is a function executing concurrently with other goroutines in the same address space.  
@@ -166,3 +171,8 @@ https://go.dev/doc/effective_go#concurrency
 https://go.dev/blog/intro-generics
 https://go.dev/doc/tutorial/generics
 ### Interface and Type Assertion
+
+### Range over Function
+https://go.dev/wiki/RangefuncExperiment#how-are-more-complicated-loops-implemented
+https://github.com/golang/go/discussions/56413
+https://go.dev/blog/range-functions
