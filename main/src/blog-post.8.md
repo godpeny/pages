@@ -291,8 +291,8 @@ $$
 Logistic regression is considered a generalized linear model because the outcome always depends on the sum of the inputs and parameters. ($\theta^T x = \theta_{0} x_{0} + \theta_{1} x_{1} \cdots \theta_{m} x_{m}$)  
 In other words, the output cannot depend on the product (or quotient, etc.) of its parameters.(example of non linear: $ \theta_{1} x_{1} \times  \theta_{2} x_{2} ...$)  
 
-### Binary Classification Model using Logistic Regression (label: 1,0)
-#### Margin of Binary Classification (label: 1,-1)
+### Binary Classification Model using Logistic Regression (label: 1,-1)
+#### Margin of Binary Classification 
 In binary Classification problems, it is often convenient to use a hypothesis class of the form $h_{\theta}(x) = \theta^T x$ and when presented with a new example $x$, we classify it
 as positive or negative depending on the sign of $\theta^T x$.  
 $$
@@ -387,7 +387,16 @@ Conversely, if our current hypothesis $h_{\theta(t)}$ assigns probability close 
 essentially does nothing.
 
 ### Newton's Method
-
+A root-finding algorithm which produces successively better approximations to the roots (or zeroes) of a real-valued function.  
+It starts with a real-valued function $f$, its derivative $f′$, and an initial guess $x_0$ for a root of $f$.  
+If $f$ satisfies certain assumptions and the initial guess is close, then
+$$
+x_1 = x_0 - \frac{f(x_0)}{f'(x_0)}
+$$
+$x_1$ is a better approximation of the root than $x_0$. The process is repeated as,  
+$$
+x_{n+1} = x_{n} - \frac{f(x_{n})}{f'(x_{n})}
+$$
 ## Softmax Regression
 The softmax function takes as input a vector $z$ of $K$ real numbers, and normalizes it into a probability distribution consisting of $K$ probabilities proportional to the exponentials of the input numbers.  
 That is, prior to applying softmax, some vector components could be negative, or greater than one; and might not sum to 1; but after applying softmax, each component will be in the interval $(0,1)$.  
