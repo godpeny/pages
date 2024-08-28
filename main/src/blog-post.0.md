@@ -79,3 +79,10 @@ Linear model is a broad term that includes any model with a linear relationship 
 
 #### Logistic Model and Regression
 Logistic model is a broader term that refers to any model using a logistic function for classification or other purposes. Logistic regression is a specific statistical method that uses a logistic model to perform binary classification.
+
+### Calibration
+Calibration is the degree to which the probabilities predicted by a classification model match the true frequencies of the target classes in a dataset.  
+(모형의 예측값이, 실제 확률을 반영하는 것. 예를 들어, X 의 Y1 에 대한 모형의 출력이 0.8이 나왔을 때, 80 % 확률로 Y1 일 것라는 의미를 갖도록 만드는 것입니다.)  
+For example, if we make a lot of predictions with a perfectly calibrated binary classification model, and then consider only those for which the model predicted a 70% probability of the positive class, then the model should be correct 70% of the time.  
+Similarly, if we only consider the examples for which our model predicted a 10% probability of the positive class, the ground truth will turn out to indeed be positive in one-tenth of the cases.  
+A well-calibrated model produces predictions that are closely aligned with the actual outcomes on aggregate.
