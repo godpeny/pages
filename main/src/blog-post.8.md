@@ -277,10 +277,10 @@ $$
 $$  
 Taking derivatives to log likelihood is:  
 $$
-\frac{\partial}{\partial \theta_j} \ell(\theta) = \left( \frac{y}{g(\theta^T x)} - \frac{(1-y)}{1 - g(\theta^T x)} \right) \cdot \frac{\partial}{\partial \theta_j} g(\theta^T x) \\
-= \left( \frac{y}{g(\theta^T x)} - \frac{(1-y)}{1 - g(\theta^T x)} \right) g(\theta^T x) \left( 1 - g(\theta^T x) \right) \cdot x_j \\
-= \left( y(1 - g(\theta^T x)) - (1-y)g(\theta^T x) \right) \cdot x_j \\
-= \left( y - h_{\theta}(x) \right) \cdot x_j.
+\frac{\partial}{\partial \theta_j} \ell(\theta) = \sum_{i=1}^{m} \left( \frac{y^{(i)}}{g(\theta^T x^{(i)})} - \frac{(1-y^{(i)})}{1 - g(\theta^T x^{(i)})} \right) \cdot \frac{\partial}{\partial \theta_j} g(\theta^T x^{(i)}) \\
+= \sum_{i=1}^{m} \left( \frac{y^{(i)}}{g(\theta^T x^{(i)})} - \frac{(1-y^{(i)})}{1 - g(\theta^T x^{(i)})} \right) g(\theta^T x^{(i)}) \left( 1 - g(\theta^T x^{(i)}) \right) \cdot x_j^{(i)} \\
+= \sum_{i=1}^{m} \left( y^{(i)}(1 - g(\theta^T x^{(i)})) - (1-y)g(\theta^T x^{(i)}) \right) \cdot x_j^{(i)} \\
+= \sum_{i=1}^{m} \left( y^{(i)} - h_{\theta}(x^{(i)}) \right) \cdot x_j^{(i)}.
 $$  
 Therefore stochastic gradient ascent rule is:  
 $$
