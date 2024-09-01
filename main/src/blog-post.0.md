@@ -86,3 +86,11 @@ Calibration is the degree to which the probabilities predicted by a classificati
 For example, if we make a lot of predictions with a perfectly calibrated binary classification model, and then consider only those for which the model predicted a 70% probability of the positive class, then the model should be correct 70% of the time.  
 Similarly, if we only consider the examples for which our model predicted a 10% probability of the positive class, the ground truth will turn out to indeed be positive in one-tenth of the cases.  
 A well-calibrated model produces predictions that are closely aligned with the actual outcomes on aggregate.
+
+### Prior Probability & Posterior Probability
+#### Prior Probability
+A prior probability distribution of an uncertain quantity, often simply called the prior, is its assumed probability distribution before some evidence is taken into account.  
+In Bayesian statistics, Bayes' rule prescribes how to update the prior with new information to obtain the posterior probability distribution, which is the conditional distribution of the uncertain quantity given new data. 
+#### Posterior Probability
+A type of conditional probability that results from updating the prior probability with information summarized by the likelihood via an application of Bayes' rule.  
+In the context of Bayesian statistics, it is a conditional distribution over the unobserved random variables, conditioned on the observed random variables. e.g., $p(\theta \mid x,y)$
