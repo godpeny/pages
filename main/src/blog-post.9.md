@@ -19,7 +19,7 @@ In contrast, the generative model tries to produce convincing 1's and 0's by gen
  - Discriminative model ignores the question of whether a given instance is likely, and just tells you how likely a label is to apply to the instance.
  - For example, Logistic Regression and Decision Tree
 
-## Bayes' Rule (Theorem)
+### Bayes' Rule (Theorem)
 $$
 P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)}, \ \ \text{when } P(B) \neq 0
 $$
@@ -35,7 +35,7 @@ $$
 check how conditional probability represented, $p(\theta \mid x, y) = \frac{p(x, y, \theta)}{p(x, y)} $.
 
 
-## Gaussian Discriminant Analysis (GDA)
+## Multivariate Normal Distribution
 A generalization of the one-dimensional (univariate) normal distribution to higher dimensions.  
 GDA is parameterized by a mean vector $\mu \in \mathbb{R}^{n}$ and a covariance matrix $\sum \in \mathbb{R}^{n}$  where $\sum \geq 0$ is symmetric and positive semi-definite. Also written $\mathcal{N}(\mu, \Sigma)$.  
 The density of GDA:  
@@ -56,7 +56,43 @@ $$
 \text{Cov}(Z) = \mathbb{E}[ZZ^T] - (\mathbb{E}[Z])(\mathbb{E}[Z])^T.
 $$
 
-### Multivariate Gaussian Distribution
+## Gaussian Discriminant Analysis (GDA)
+Gaussian Discriminant Analysis (GDA) is a supervised learning algorithm used for classification tasks in machine learning.  
+GDA works by assuming that the data(input features $x$ are
+continuous-valued random variables) in each class follows a Gaussian distribution, and then estimating the mean and covariance matrix for each class. It then uses Bayes’ theorem to compute the probability that a new data point belongs to each class, and chooses the class with the highest probability as the predicted class.  
+The model is:  
+$$
+\begin{align*}
+y &\sim \text{Bernoulli}(\phi) \\
+x \mid y = 0 &\sim \mathcal{N}(\mu_0, \Sigma) \\
+x \mid y = 1 &\sim \mathcal{N}(\mu_1, \Sigma)
+\end{align*}
+$$
+The distribution of GDA model is:  
+$$
+\begin{align*}
+p(y) &= \phi^y (1 - \phi)^{1 - y} \\
+p(x \mid y = 0) &= \frac{1}{(2\pi)^{n/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x - \mu_0)^T \Sigma^{-1} (x - \mu_0)\right) \\
+p(x \mid y = 1) &= \frac{1}{(2\pi)^{n/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1)\right)
+\end{align*}
+$$
+Note that there are two mean vectore $\mu_0$ and $\mu_1$.  
+Log likelihood is:  
+$$
+\begin{align*}
+\ell(\phi, \mu_0, \mu_1, \Sigma) &= \log \prod_{i=1}^{m} p(x^{(i)}, y^{(i)}; \phi, \mu_0, \mu_1, \Sigma) \\
+&= \log \prod_{i=1}^{m} p(x^{(i)} \mid y^{(i)}; \mu_0, \mu_1, \Sigma) p(y^{(i)}; \phi).
+\end{align*}
+$$
+By maximizing $\ell$ with respect to the parameters($ \phi, \mu_0, \mu_1, \Sigma$), we find the maximum likelihood estimate of the parameters to be:  
+$$
+\begin{align*}
+\phi &= \frac{1}{m} \sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 1\} \\
+\mu_0 &= \frac{\sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 0\} x^{(i)}}{\sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 0\}} \\
+\mu_1 &= \frac{\sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 1\} x^{(i)}}{\sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 1\}} \\
+\Sigma &= \frac{1}{m} \sum_{i=1}^{m} (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^T.
+\end{align*}
+$$
 
 ### GDA vs Logistic Regression
 
