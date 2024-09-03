@@ -94,7 +94,34 @@ $$
 \end{align*}
 $$
 
-### GDA vs Logistic Regression
+### Relationship between GDA and Logistic Regression
+The GDA model has an interesting relationship to logistic regression.  
+If we view the quantity $p(y = 1 \mid x; \phi, \Sigma, \mu_0, \mu_1)$ as a function of $x$, we’ll find that it can be expressed in the form:  
+$$
+p(y = 1 \mid x; \phi, \mu_0, \mu_1, \Sigma) = \frac{1}{1 + \exp\left(-(\theta^T x + \theta_0)\right)}
+$$
+where $\theta$ is some appropriate function of $\phi, \mu_0, \mu_1, \Sigma$.  This is exactly the form that logistic regression(discriminative learning algorithm) used to model $p(y=1 \mid x)$.  
+Let's see the relationship between GDA and logistic regression,  
+$$
+\begin{align*}
+p(y = 1 \mid x) &= \frac{p(x \mid y = 1)p(y = 1)}{p(x \mid y = 1)p(y = 1) + p(x \mid y = 0)p(y = 0)} \\
+&= \frac{\exp\left\{-\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1)\right\} \phi}{\exp\left\{-\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1)\right\} \phi + \exp\left\{-\frac{1}{2} (x - \mu_0)^T \Sigma^{-1} (x - \mu_0)\right\} (1 - \phi)} \\
+&= \frac{1}{1 + \exp\left\{\frac{1}{2} (x - \mu_1)^T \Sigma^{-1} (x - \mu_1) - \frac{1}{2} (x - \mu_0)^T \Sigma^{-1} (x - \mu_0) - \ln\left(\frac{1 - \phi}{\phi}\right)\right\}} \\
+&= \frac{1}{1 + \exp\left\{-\left[(\Sigma^{-1} (\mu_1 - \mu_0))^T x + \frac{1}{2} (\mu_0 + \mu_1)^T \Sigma^{-1} (\mu_0 - \mu_1) - \ln\left(\frac{1 - \phi}{\phi}\right)\right]\right\}} \\
+\theta &= \Sigma^{-1} (\mu_1 - \mu_0) \\
+\theta_0 &= \frac{1}{2} (\mu_0 + \mu_1)^T \Sigma^{-1} (\mu_0 - \mu_1) - \ln\left(\frac{1 - \phi}{\phi}\right)
+\end{align*}
+$$
+#### GDA vs Logistic Regression
+If $p(x \mid y)$ is multivariate gaussian (with shared $\Sigma$),
+then $p(y \mid x)$ necessarily follows a logistic function.  
+The converse, however is not true; i.e., $p(y \mid x)$ being a logistic function does not imply $p(x \mid y)$ is multivariate gaussian. This shows that GDA makes stronger modeling assumptions about the data than does logistic regression.  
+It turns out that when these modeling assumptions are correct, then GDA will find better fits to the data, and is a better model. Specifically, when $p(x \mid y)$ is indeed gaussian (with shared $\Sigma$), then GDA is asymptotically efficient. Informally, this means that in the limit of very large training sets (large $m$), there is no algorithm that is strictly better than GDA (in terms of, say, how accurately estimating $p(y \mid x)$.  
+More generally, even for small training set sizes, we would generally expect GDA to better.  
+In short, 
+ - GDA makes stronger modeling assumptions, and is more
+data efficient (i.e., requires less training data to learn “well”) when the modeling assumptions are correct or at least approximately correct.  
+ - Logisticregression makes weaker assumptions, and is significantly more robust to deviations from modeling assumptions.
 
 ## Naive Bayes
 
