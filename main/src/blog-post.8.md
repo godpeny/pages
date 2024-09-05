@@ -182,10 +182,13 @@ Consider hypothesis of regression problem, when $ \epsilon$ is IID(Independently
 $y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \ \epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$   
 Since $\epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$, $
 p(\epsilon^{(i)}) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(\epsilon^{(i)})^2}{2\sigma^2}\right)$  
-Which means it can be interpreted as the distribution of $y^{(i)}$ given $x^{(i)}$ parameterized by $\theta$.  
+Which means it can be interpreted as the distribution of $y^{(i)}$ given $x^{(i)}$ parameterized by $\theta$ as $y^{(i)} \mid x^{(i)}; \theta \sim \mathcal{N}(\theta^T x^{(i)}, \sigma^2)$.  
+Which is:  
 $$
 p(y^{(i)} | x^{(i)}; \theta) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{\left(y^{(i)} - \theta^T x^{(i)}\right)^2}{2\sigma^2}\right).
 $$  
+Note that we should not condition on $\theta$
+$p(y^{(i)} | x^{(i)}; \theta)$, since $\theta$ is not a random variable. (Remeber that Gaussian distribution is a type of continuous probability distribution for a real-valued random variable)  
 Given $X$ is design matrix with all elements are $x^{(i)}$ and $\theta$, the distribution of $y^{(i)}$ is $p(\vec{y} | X; \theta)$ (function of $y^{(i)}$).  
 We can view this as function of $\theta$ instead of $y^{(i)}$, and this is call likelihood.  
 $L(\theta) = L(\theta; X, \vec{y}) = p(\vec{y} | X; \theta).$  

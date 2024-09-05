@@ -37,6 +37,14 @@ $
 $  
 Loosely speaking, the Frobenius Norm is also equivalent to the Euclidean norm generalised to matrices instead of vectors.
 ## Gaussian Distribution (= Normal Distribution)
+A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
+$$
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+when the parameter $\mu$ is the mean or expectation of the distribution (and also its median and mode), while the parameter 
+$\sigma ^{2}$ is the variance.  
+Their importance is partly due to the central limit theorem. It states that, under some conditions, the average of many samples (observations) of a random variable with finite mean and variance is itself a random variable—whose distribution converges to a normal distribution as the number of samples increases. 
+
 ## Joint Probability
 - P(A, B) = p(A ∩ B) : likelihood of events occurring together at the same point in time.
 ## Probability vs Likelihood
