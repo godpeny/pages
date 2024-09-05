@@ -24,19 +24,19 @@ Concave function : function is concave if the line segment between any two disti
 ## Vector and Matrix
 ### Row Vector vs Column Vector
 Row Vector is a $1 \times n$ matrix for some $n$, consisting of a single row of $n$ entries,
-$
+$$
 \mathbf{a} = \begin{bmatrix} a_1 & a_2 & \dots & a_n \end{bmatrix}.  
-$  
+$$
 
 Column Vector is a $ m \times 1$ matrix for some $m$ consisting of a single column of ⁠$m$ entries,
-$
+$$
 \mathbf{x} = \begin{bmatrix} 
 x_1 \\ 
 x_2 \\ 
 \vdots \\ 
 x_m 
 \end{bmatrix}.
-$
+$$
 
 ### Trace
 The trace of a square matrix $A$, denoted $\text{tr}(A)$, is defined to be the sum of elements on the main diagonal (from the upper left to the lower right) of matrix $A$.  
@@ -44,6 +44,18 @@ The trace is only defined for a square matrix $(n \times n)$.
 $
 \text{tr}(A) = \sum_{i=1}^{n} a_{ii} = a_{11} + a_{22} + \cdots + a_{nn}
 $  
+
+### Vector and Identity Matrix
+When $z$ is a vector of dimension of $n \times 1$ and matrix $H=a⋅I$, where $I$ is identity matrix of $n \times n$ dimension and $a$ is scalar.
+$$
+z \cdot (a \cdot I) \cdot z^T = a \cdot (z \cdot I \cdot z^T) = a \cdot (z \cdot z^T)
+$$
+It is shwon that multiplying by the identity matrix $I$ does not change the vector.  
+Also, it can be presented as below:  
+$$
+\quad z \cdot H \cdot z^T = a \cdot \|z\|^2,
+\quad \text{where} \quad \|z\|^2 = z \cdot z^T = \sum_{i=1}^{n} z_i^2.
+$$
 
 ### Span, Range, Rank and Null Space
 ### Vector Multiplication
