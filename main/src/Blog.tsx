@@ -33,6 +33,8 @@ import post16 from './blog-post.16.md';
 import post17 from './blog-post.17.md';
 import post18 from './blog-post.18.md';
 import post19 from './blog-post.19.md';
+import post20 from './blog-post.20.md';
+import post21 from './blog-post.21.md';
 
 const sections = [
   { title: 'Technology', url: '#' },
@@ -75,7 +77,7 @@ const featuredPosts = [
   },
 ];
 
-const posts = [post0,post1, post2, post3, post4, post5, post6, post7, post8, post9, post10, post11, post12, post13, post14, post15, post16, post17, post18, post19];
+const posts = [post0,post1, post2, post3, post4, post5, post6, post7, post8, post9, post10, post11, post12, post13, post14, post15, post16, post17, post18, post19, post20, post21];
 
 const sidebar = {
   title: 'About',
