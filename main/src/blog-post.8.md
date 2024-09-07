@@ -175,6 +175,61 @@ $$
 
 
 ### Normal Equation
+### Jacobian with Matrix
+Given a training set let's define the design matrix $X$ which contains the training examples’ input values in its rows:  
+$$
+X = \begin{bmatrix}
+(x^{(1)})^T \\
+(x^{(2)})^T \\
+\vdots \\
+(x^{(m)})^T
+\end{bmatrix}.
+$$
+And let $\vec{y}$ be the $m$-dimensional vector containing all the target values from the training set:  
+$$
+\vec{y} = 
+\begin{bmatrix}
+y^{(1)} \\
+y^{(2)} \\
+\vdots \\
+y^{(m)}
+\end{bmatrix}.
+$$
+Since $(x^{(1)})^T\theta = h_\theta(x^{(1)}) - y^{(1)}$, we can verify,  
+$$
+X\theta - \vec{y} = 
+\begin{bmatrix}
+(x^{(1)})^T\theta \\
+\vdots \\
+(x^{(m)})^T\theta
+\end{bmatrix}
+- 
+\begin{bmatrix}
+y^{(1)} \\
+\vdots \\
+y^{(m)}
+\end{bmatrix}
+= 
+\begin{bmatrix}
+h_\theta(x^{(1)}) - y^{(1)} \\
+\vdots \\
+h_\theta(x^{(m)}) - y^{(m)}
+\end{bmatrix}.
+$$
+Using the fact that $z^T z = \sum_i z_i^2$ for vector $z$,  
+$$
+\frac{1}{2} (X \theta - \vec{y})^T (X \theta - \vec{y}) = \frac{1}{2} \sum_{i=1}^m (h_\theta(x^{(i)}) - y^{(i)})^2 = J(\theta)
+$$
+To minimize, $J(\theta)$, let's find derivatives with respect to $\theta$ using Normal Equation,  
+$$
+\nabla_\theta J(\theta) = \nabla_\theta \frac{1}{2} (X \theta - \vec{y})^T (X \theta - \vec{y}) = X^T X \theta - X^T \vec{y}
+$$
+To minimize $J(\theta)$, we set its derivatives to zero, and obtain the
+normal equations:
+$$
+X^T X \theta =  X^T \vec{y} \\
+ \theta = X^T X \theta - X^T \vec{y}
+ $$
 
 ### Probabilistic Interpretation (Maximum Likelihood)
 Why least-squre cost function is resonable chocie when faced regression problem?  
