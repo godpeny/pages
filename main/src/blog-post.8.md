@@ -222,14 +222,14 @@ $$
 $$
 To minimize, $J(\theta)$, let's find derivatives with respect to $\theta$ using Normal Equation,  
 $$
-\nabla_\theta J(\theta) = \nabla_\theta \frac{1}{2} (X \theta - \vec{y})^T (X \theta - \vec{y}) = X^T X \theta - X^T \vec{y}
+\nabla_\theta J(\theta) = \nabla_\theta \frac{1}{2} (X \theta - \vec{y})^T (X \theta - \vec{y}) = \Vert X \theta - \vec{y} \Vert_2^2 \\ = X^T X \theta - X^T \vec{y}
 $$
 To minimize $J(\theta)$, we set its derivatives to zero, and obtain the
 normal equations:
 $$
 X^T X \theta =  X^T \vec{y} \\
  \theta = X^T X \theta - X^T \vec{y}
- $$
+$$
 
 ### Probabilistic Interpretation (Maximum Likelihood)
 Why least-squre cost function is resonable chocie when faced regression problem?  
