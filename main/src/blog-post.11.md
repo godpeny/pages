@@ -173,6 +173,69 @@ https://go.dev/doc/tutorial/generics
 ### Interface and Type Assertion
 
 ### Range over Function
-https://go.dev/wiki/RangefuncExperiment#how-are-more-complicated-loops-implemented
-https://github.com/golang/go/discussions/56413
-https://go.dev/blog/range-functions
+#### Push
+```golang
+// push.go
+package push
+
+func Backward[E any](s []E) func(func(int, E) bool) {
+	return func(yield func(int, E) bool) {
+		for i := len(s) - 1; i >= 0; i-- {
+			if !yield(i, s[i]) {
+				return
+			}
+		}
+	}
+}
+...
+// main.go
+package main
+
+import (
+	"fmt"
+	pullFunc "github.com/godpeny/golang_range_over_function/pull"
+	pushFunc "github.com/godpeny/golang_range_over_function/push"
+)
+
+func push() {
+	s := []string{"hello", "world"}
+
+    // (1)
+	f := pushFunc.Backward(s)
+	f(func(i int, x string) bool {
+		fmt.Println(i, x)
+		return true
+	})
+
+    // (2)
+	pushFunc.Backward(s)(func(i int, x string) bool {
+		fmt.Println(i, x)
+		return true
+	})
+
+    // new feature (3)
+	for i, x := range pushFunc.Backward(s) {
+		fmt.Println(i, x)
+	}
+}
+```
+(1) or (2) are the ways of earlier ways of iterating over sequences. ((1) and (2) are actually same)  
+But with newly added feature, you can use as (3), which is by supporting range syntex.  
+
+### Pull
+
+### Why Needed?
+Why this is needed is quotoed below from refrences.  
+```
+When you want to iterate over something, you first have to learn how the specific code you are calling handles iteration. This lack of uniformity hinders Go’s goal of making it easy to easy to move around in a large code base. People often mention as a strength that all Go code looks about the same. That’s simply not true for code with custom iteration.
+
+We should converge on a standard way to handle iteration in Go, and one way to incentivize that is to support it directly in range syntax. Specifically, the idea is to allow range over function values of certain types. If any kind of code providing iteration implements such a function, then users can write the same kind of range loop they use for slices and maps and stop worrying about whether they are using a bespoke iteration API correctly.
+```
+
+### Reference
+ - https://github.com/golang/go/discussions/56413
+ - https://go.dev/blog/range-functions
+ - https://go.dev/wiki/RangefuncExperiment#how-are-more-complicated-loops-implemented
+
+
+
