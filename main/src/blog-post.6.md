@@ -1,5 +1,24 @@
 # Calculus
 ## Chain Rule
+The chain rule is a formula that expresses the derivative of the composition of two differentiable functions $f$ and $g$ in terms of the derivatives of $f$ and $g$.  
+More precisely, if $h=f\circ g$ is the function such that $h(x)=f(g(x))$ for every $x$.
+In Lagrange's notation,
+$$
+h'(x) = f'(g(x)) g'(x)
+$$
+Equivently,
+$$
+h' = (f \circ g)' = (f' \circ g) \cdot g'.
+$$
+The chain rule may also be expressed in Leibniz's notation. If a variable $z$ depends on the variable $y$, which itself depends on the variable $x$ (that is, y and z are dependent variables), then $z$ depends on $x$ as well, via the intermediate variable $y$.  
+In this case, the chain rule is expressed as,
+$$
+\frac{dz}{dx} = \frac{dz}{dy} \cdot \frac{dy}{dx},
+$$
+and below expression for indicating at which points the derivatives have to be evaluated.
+$$
+\left. \frac{dz}{dx} \right|_{x} = \left. \frac{dz}{dy} \right|_{y(x)} \cdot \left. \frac{dy}{dx} \right|_{x}.
+$$
 ## Jacobian vs Gradients vs Hessian vs Laplacian
 https://darkpgmr.tistory.com/132
 
