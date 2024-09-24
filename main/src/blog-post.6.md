@@ -88,6 +88,9 @@ $\mathbf{J}(f)$ shows the jacobian of function $f$ from vector-valued function o
 
 
 ## Differential vs Derivative vs Gradient
+https://www.geeksforgeeks.org/difference-between-differential-and-derivative/
+https://math.stackexchange.com/questions/289923/what-are-the-differences-between-differential-and-gradient
+
 ## Epsilon in Calculus
 - Epsilon is a small positive number, often used in numerical computation to avoid division by zero or taking the logarithm of zero.
 
