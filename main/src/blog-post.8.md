@@ -232,7 +232,7 @@ X^T X \theta =  X^T \vec{y} \\
 $$
 
 ### Probabilistic Interpretation (Maximum Likelihood)
-Why least-squre cost function is resonable chocie when faced regression problem?  
+Why least-squre cost function is reasonable choice when faced regression problem?  
 Consider hypothesis of regression problem, when $ \epsilon$ is IID(Independently and Identically Distributed) according to Gaussian distribution with mean zero and some variance $\sigma^2$.  
 $y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \ \epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$   
 Since $\epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$, $
@@ -244,7 +244,7 @@ p(y^{(i)} | x^{(i)}; \theta) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{\lef
 $$  
 Note that we should not condition on $\theta$
 $p(y^{(i)} | x^{(i)}; \theta)$, since $\theta$ is not a random variable. (Remeber that Gaussian distribution is a type of continuous probability distribution for a real-valued random variable)  
-Given $X$ is design matrix with all elements are $x^{(i)}$ and $\theta$, the distribution of $y^{(i)}$ is $p(\vec{y} | X; \theta)$ (function of $y^{(i)}$).  
+Given $X$ (which is design matrix with all elements are $x^{(i)}$) and $\theta$, the distribution of $y^{(i)}$ is $p(\vec{y} | X; \theta)$ (function of $y^{(i)}$).  
 We can view this as function of $\theta$ instead of $y^{(i)}$, and this is call likelihood.  
 $L(\theta) = L(\theta; X, \vec{y}) = p(\vec{y} | X; \theta).$  
 $$
@@ -268,7 +268,7 @@ $
 J(\theta) = \sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2
 $  
 When original linear regression:  
- - fit $\theta$ to minimize $\sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2$
+ - fit $\theta$ to minimize $\sum_{i=1}^{m} \left( \theta^T x^{(i)} - y^{(i)} \right)^2$
  - predict with $ \theta^T x^{(i)}$.  
 
 LWR:
