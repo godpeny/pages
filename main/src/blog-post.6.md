@@ -138,3 +138,15 @@ f(x + h) = (x + h)^T A (x + h) \\
 = f(x) + Df(x) h + o(|h|),
 $$
 So $\frac{\partial}{\partial x} \left (x^T A x \right)$ is $(A + A^T) x$ if $A$ is not symmetric, and $2Ax$ if $A$ is symmetric because $A^T = A$ when $A$ is symmetric matrix.
+
+## Symmetric Matrix
+A symmetric matrix is a square matrix that is equal to its transpose. Formally,
+$$ A = A^T $$  
+The entries of a symmetric matrix are symmetric with respect to the main diagonal. So if $\displaystyle a_{ij}$ denotes the entry in the $i$ th row and $j$ th column then, 
+$$
+A \text{ is symmetric} <=> \text{for every } i,j \quad a_{ij} = a_{ji}
+$$
+
+### Using Symmetric Matrix
+If Matrix $W$ is symmetric, $AWA^T$ is also symmetric because $(AWA^T)^T = AW^TA^T$, and since $W=W^T$, in result, $(AWA^T)^T = AWA^T$.
+
