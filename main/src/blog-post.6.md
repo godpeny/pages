@@ -95,3 +95,46 @@ https://math.stackexchange.com/questions/289923/what-are-the-differences-between
 - Epsilon is a small positive number, often used in numerical computation to avoid division by zero or taking the logarithm of zero.
 
 ## Epsilon-Delta Definition of Limit
+
+## Taylor Series
+The Taylor expansion of function is an infinite sum of terms that are expressed in terms of the function's derivatives at a single point. For most common functions, the function and the sum of its Taylor series are equal near this point.  
+주어진 함수를 정의역의 특정 점의 미분계수들을 계수로 하는 다항식의 극한(멱급수)으로 표현하는 것을 말한다.
+$$
+f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x - a)^n
+$$
+간단히 설명하자면, 테일러 급수란 여러 번 미분이 가능한 함수 $f(x)$에 대해 
+$x=a$ 에서 그 $f(x)$ 에 접하는 멱급수로 표현하는 방법이라고 할 수 있다.
+
+$$
+f(x) = p_{\infty}(x) \\
+p_n(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \cdots + \frac{f^{(n)}(a)}{n!}(x - a)^n \\
+= \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x - a)^k  
+$$
+
+테일러 급수에서 주의해야 될 사항은 좌변과 우변이 모든 $x$에 대해 같은 것이 아니라 $x = a$ 근처에서만 성립한다는 점입니다. 즉, $x$가 $a$에서 멀어지면 멀어질수록 $f(x) = p(x)$로 놓는 것은 큰 오차를 갖게 됩니다. 한편, 근사다항식의 차수는 높으면 높을수록 $f(x)$를 좀더 잘 근사하게 됩니다.
+테일러 급수는 결국 $x = a$에서 $f(x)$와 동일한 미분계수를 갖는 어떤 다항함수로 $f(x)$를 근사시키는 것입니다. 위 식에서
+$$f(a) = p(a), f'(a) = p'(a), f''(a) = p''(a), ...$$
+임은 쉽게 확인할 수 있을 것입니다. 테일러 급수를 이용해 이와같이 $x = a$ 에서 미분계수를 일치시키면 $x = a$ 뿐만 아니라 그 주변의 일정 구간에서도 $f(x)$ 와 $p(x)$ 가 거의 일치되게 됩니다.  
+그런데 문제에 따라서는 $f(x)$ 를 1차 또는 2차까지만 테일러 전개하는 경우도 많습니다. 예를 들어, $f(x)$ 를 2차 다항함수로 근사할 경우에는
+$$
+f(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + Q_3(x)
+$$
+1차 다항함수로 근사할 경우에는
+$$
+f(x) = f(a) + f'(a)(x - a) + Q_2(x)
+$$
+와 같이 놓고 $Q(x)$를 0처럼 생각(무시)해 버립니다. 이 경우, $f(x)$를 무한차수 다항함수로 근사하는 것 보다는 근사오차가 크겠지만, $x$가 충분히 $a$에 가까운 경우에는 근사오차가 거의 없다고 볼 수 있습니다. 따라서 아래와 같이 표현할 수도 있습니다($x=a+h$). 
+$$
+f(a + h) = f(a) + f'(a) h + \frac{f''(a)}{2!} h^2 + \frac{f^{(3)}(a)}{3!} h^3 + \dots
+= \sum_{k=0}^{\infty} \frac{f^{(k)}(a)}{k!} h^k
+$$
+
+### Using Taylor Series
+When $f(x) = x^TAx$, using Taylor Series,
+$$
+f(x + h) = (x + h)^T A (x + h) \\
+= x^T A x + x^T A h + h^T A x + h^T A h \\
+= x^T A x + x^T (A + A^T) h + h^T A h \\
+= f(x) + Df(x) h + o(|h|),
+$$
+So $\frac{\partial}{\partial x} \left (x^T A x \right)$ is $(A + A^T) x$ if $A$ is not symmetric, and $2Ax$ if $A$ is symmetric because $A^T = A$ when $A$ is symmetric matrix.
