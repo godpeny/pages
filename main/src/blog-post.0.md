@@ -87,6 +87,9 @@ For example, if we make a lot of predictions with a perfectly calibrated binary 
 Similarly, if we only consider the examples for which our model predicted a 10% probability of the positive class, the ground truth will turn out to indeed be positive in one-tenth of the cases.  
 A well-calibrated model produces predictions that are closely aligned with the actual outcomes on aggregate.
 
+#### Calibration vs Accuracy
+Accuracy measures the percentage of correct predictions made by the model, while calibration measures the alignment between the predicted probabilities and the actual likelihood of the predicted events.
+
 ### Prior Probability & Posterior Probability
 #### Prior Probability
 A prior probability distribution of an uncertain quantity, often simply called the prior, is its assumed probability distribution before some evidence is taken into account.  
