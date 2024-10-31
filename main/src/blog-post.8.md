@@ -427,7 +427,7 @@ $$
 \frac{d}{dz} \varphi_{\text{logistic}}(z) &= \varphi_{\text{logistic}}'(z) = \frac{1}{1 + e^{-z}} \cdot \frac{d}{dz} e^{-z} = -\frac{e^{-z}}{1 + e^{-z}} = -\frac{1}{1 + e^{z}} = -g(-z), \\
 \end{align*}
 $$
-when $z = y \theta^T x$,  
+when $z = y \theta^T x$ and $g(x)$ is hypothesis, 
 $$
 \begin{align*}
 \frac{\partial}{\partial \theta_k} \varphi_{\text{logistic}}(y\theta^Tx) &= -g(-y\theta^Tx) \frac{\partial}{\partial \theta_k} (y\theta^Tx) = -g(-y\theta^Tx) yx_k.
@@ -443,6 +443,17 @@ This update is intuitive:
 If our current hypothesis $h_{\theta(t)}$ assigns probability close to 1 for the incorrect label $y(i)$, then we try to reduce the loss by moving $\theta$ in the direction of $y(i)x(i)$.  
 Conversely, if our current hypothesis $h_{\theta(t)}$ assigns probability close to 0 for the incorrect label $y(i)$, the update
 essentially does nothing.
+
+### Linearly Seperable datset in Logistic Regression
+Remember that Maximum Likelihood is finding the parameter values that maximize the likelihood of observing the data.   
+If a dataset is completely linearly separable, i.e. $\forall i \in \{1, \dots, m \}, \ y^{(i)} \theta^T x^{(i)} > 0$ and $y \in \{1,-1\}$
+then, by multiplying a larger positive scalar, there will always be a new $\theta$ that makes $\ell (\theta)$ even bigger (which means make cost function $J(\theta)$ smaller),
+which prevents the algorithm from converging.  
+However, if the dataset is not linearly separable, $\theta$ cannot be generated
+in such way while minimizing $\ell (\theta)$.  
+
+#### Linearly Seperable
+A set of data points can be separated into distinct classes using a straight line or hyperplane.
 
 ### Newton's Method
 A root-finding algorithm which produces successively better approximations to the roots (or zeroes) of a real-valued function.  
