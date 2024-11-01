@@ -1,4 +1,10 @@
 # Statistics
+## L1 Norm
+The sum of the absolute value of the entries in the vector.
+$$
+\|\bm{x}\|_1 := \sum_{i=1}^n |x_i|.
+$$
+
 ## L2 Norm
 The L2 Norm $|x|$ is a vector norm defined for a complex vector (A vector whose elements are complex numbers.)
 when 
@@ -11,6 +17,12 @@ x_n
 \end{bmatrix}, \\
 \|\mathbf{x}\| = \sqrt{\sum_{k=1}^n |x_k|^2},
 $
+
+## P-Norm
+Let $p\geq 1$ be a real number. The p-norm of vector(also called $\ell^p$-norm) of vector $\bm{x} = (x_1, \dots, x_n)$ is,  
+$$
+\|\bm{x}\|_p := \left( \sum_{i=1}^n |x_i|^p \right)^{1/p}.
+$$
 
 ## "Entry-wise" Matrix Norms
 Treat $m\times n$  matrix as a vector of size $m\cdot n$ and use one of the familiar vector norms.  
