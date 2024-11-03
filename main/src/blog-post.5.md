@@ -171,6 +171,12 @@ when $f(x)$ is probability density function and $F(x)$ is cumulative distributio
 - $F_X(x) = \int_{-\infty}^{x} f_X(t) \, dt \\$ 
 - ${P}(X = b) = F_X(b) - \lim_{x \to b^-} F_X(x)$
 
+## Joint Probability Mass Function
+The joint probability mass function of two discrete random variables $X$ and $Y$ is defined as
+$$
+P_{XY}(x, y) = P(X = x, Y = y).
+$$
+
 ## Mean Square Error (MSE)
 The 'mean squared error (MSE)' or 'mean squared deviation (MSD) of an estimator' (of a procedure for estimating an unobserved quantity) measures the average of the squares of the errors.  
 The average squared difference between the estimated values and the actual value.  
