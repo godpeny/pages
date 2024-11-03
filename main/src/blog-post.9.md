@@ -124,7 +124,77 @@ data efficient (i.e., requires less training data to learn “well”) when the 
  - Logisticregression makes weaker assumptions, and is significantly more robust to deviations from modeling assumptions.
 
 ## Naive Bayes
+나이브 베이지안(Naive Bayesian) 알고리즘은 베이즈 정리를 이용한 확률적 기계학습 알고리즘이다. 사전 확률에 기반을 두고 사후 확률을 추론하는 확률적 예측을 하는데, 이 때 모든 사건이 독립사건이라는 순진한(naive) 가정을 하고 있기 때문에 나이브 베이지안이라는 이름을 가지게 되었다.  
+Naive Bayes classifiers are a family of linear "probabilistic classifiers" which assumes that the features are conditionally independent, given the target class.
+Abstractly, Naive Bayes is a conditional probability model and it assigns probabilities ${\displaystyle p(C_{k}\mid x_{1},\ldots ,x_{n})}$ for each of the $K$ possible outcomes or classes ${\displaystyle C_{k}}$ given a problem instance to be classified, represented by a vector ${\displaystyle \mathbf {x} =(x_{1},\ldots ,x_{n})}$ encoding some $n$ independent variables(feature).  
+Using Bayes' theorem, the conditional probability can be decomposed as,
+$$
+p(C_k \mid \mathbf{x}) = \frac{p(C_k) \, p(\mathbf{x} \mid C_k)}{p(\mathbf{x})}
+$$
+which can be recognized as,
+$$
+\text{posterior} = \frac{\text{prior} \times \text{likelihood}}{\text{evidence}}
+$$
+In the model, the numerator is equivalent to the joint probability model, 
+$$
+p(C_k, x_1, \dots, x_n) = p(x_1, \dots, x_n, C_k) \\
+= p(x_1 \mid x_2, \dots, x_n, C_k) \, p(x_2, \dots, x_n, C_k) \\
+= p(x_1 \mid x_2, \dots, x_n, C_k) \, p(x_2 \mid x_3, \dots, x_n, C_k) \, p(x_3, \dots, x_n, C_k) \\
+= \dots \\
+= p(x_1 \mid x_2, \dots, x_n, C_k) \, p(x_2 \mid x_3, \dots, x_n, C_k) \cdots p(x_{n-1} \mid x_n, C_k) \, p(x_n \mid C_k) \, p(C_k)
+$$
+Now the "naive" conditional independence assumptions come into play: assume that all features in ${\displaystyle \mathbf {x} }$ are mutually independent, conditional on the category ${\displaystyle C_{k}}$. Under this assumption,
+$$
+p(x_i \mid x_{i+1}, \dots, x_n, C_k) = p(x_i \mid C_k).
+$$
+Thus, the joint model can be expressed as when since the denominator ${\displaystyle p(\mathbf {x} )}$ is omitted.
+$$
+p(C_k \mid x_1, \dots, x_n) 
+= p(C_k) \, p(x_1 \mid C_k) \, p(x_2 \mid C_k) \, p(x_3 \mid C_k) \, \dots \\
+= p(C_k) \prod_{i=1}^{n} p(x_i \mid C_k),
+$$
 
-### Laplace Smoothing
+## Laplace Smoothing
+In statistics, Laplace Smoothing is a technique used to smooth count data, eliminating issues caused by certain values having 0 occurrences.  
+Given a set of observation counts ${\displaystyle \mathbf {x} =\langle x_{1},x_{2},\ldots ,x_{d}\rangle }$ from a ${\displaystyle d}$-dimensional multinomial distribution with ${\displaystyle N}$ trials, a "smoothed" version of the counts gives the estimator,  
+$$
+\hat{\theta}_i = \frac{x_i + \alpha}{N + \alpha d} \quad (i = 1, \dots, d),
+$$
 
-### Multi-Variate Bernoulli Event Model vs Multinomial Event Model
+## Multi-Variate Bernoulli Event Model vs Multinomial Event Model
+#### Multinoulli Distribution (Multi-Variate Bernoulli Distribution)
+벡터 가 k*1 차원의 이산 확률 변수 (벡터)이고, one-hot encoding과 같은 방식으로 하나의 원소만 1, 다른 k-1개의 원소는 0일 때 확률 분포를 정의한다.  
+If $x$ be a $k \times 1$ discrete random vector. Let the support(support of a random variable is the set of values that the random variable can take) of $x$ be the set of $k \times 1$ vectors having one entry equal to 1 and all other entries equal to 0.  
+$$
+R_X = \left\{ x \in \{0,1\}^K : \sum_{j=1}^K x_j = 1 \right\}
+$$
+If $p_k$ is the possibility of $x_i$, $p_1, p_2, ... p_k$ are positive numbers such that,
+$$
+\sum_{j=1}^k p_j = 1
+$$
+We say that $X$ has a Multinoulli distribution with probabilities $p_{1}$, ..., $p_{K}$ if its joint probability mass function is, 
+$$
+p_X(x_1, \dots, x_K) = 
+\begin{cases} 
+    \prod_{j=1}^K p_j^{x_j} & \text{if } (x_1, \dots, x_K) \in R_X \\
+    0 & \text{otherwise} 
+\end{cases}
+$$
+Which can be also expressed as below:
+$$
+\prod_{j=1}^{K} p_j^{x_j} = p_1^{x_1} \cdots p_{i-1}^{x_{i-1}} \cdot p_i^{x_i} \cdot p_{i+1}^{x_{i+1}} \cdots p_K^{x_K} \\
+= p_1^0 \cdots p_{i-1}^0 \cdot p_i^1 \cdot p_{i+1}^0 \cdots p_K^0 \\
+= 1 \cdots 1 \cdot p_i \cdot 1 \cdots 1 \\
+= p_i.
+$$
+#### Multinomial Distribution
+Multinomial distribution is a generalization of the binomial distribution. It models the probability of counts for each side of a $k$-sided dice rolled $n$ times.
+$$
+f(x_1, \dots, x_k; n, p_1, \dots, p_k) = \Pr(X_1 = x_1 \text{ and } \dots \text{ and } X_k = x_k) \\
+= \begin{cases}
+    \dfrac{n!}{x_1! \cdots x_k!} p_1^{x_1} \cdots p_k^{x_k}, & \text{when } \sum_{i=1}^{k} x_i = n, \\
+    0, & \text{otherwise}.
+\end{cases}
+$$
+When $k=2 \text{ and } n=1$, the multinomial distribution is the Bernoulli distribution. When $k=2 \text{ and } n \geq 1$, it is the binomial distribution.  
+When $k \geq 2 \text{ and } n=1$, it is the categorical distribution. 
