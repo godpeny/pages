@@ -1,5 +1,14 @@
 # Support Vector Machines (SVM)
 
+## Unit Vector
+In mathematics, a unit vector in a normed vector space is a vector (often a spatial vector) of length 1.
+$$
+\hat{\mathbf{u}} = \frac{\mathbf{u}}{\|\mathbf{u}\|}
+$$ 
+where $\|\mathbf{u}\|$ is the norm (or length) of $u$.  
+The term normalized vector is sometimes used as a synonym for unit vector.  
+A unit vector is often used to represent direction.
+
 ## Margin
  - hyperplane
 
