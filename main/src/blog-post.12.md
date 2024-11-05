@@ -9,8 +9,20 @@ where $\|\mathbf{u}\|$ is the norm (or length) of $u$.
 The term normalized vector is sometimes used as a synonym for unit vector.  
 A unit vector is often used to represent direction.
 
+## Support Vector
+Support Vectors are datapoints that are closest to the hyperplane.
+
 ## Margin
- - hyperplane
+Margin is defined as the gap between two lines on the closet data points of different classes. It can be calculated as the perpendicular distance from the line to the support vectors. 
+
+## Hyperplane
+p차원 공간에서, 초평면은 p-1 차원인 평평한 affine 부분 공간 입니다. 예를 들어, 2차원 공간에서 초평면은 평평한 1차원 부분공간 입니다. 즉, 선 입니다. 3차원에서 초평면은 평평한 2차원 부분공간이며 이는 평면입니다.  
+In geometry, a hyperplane is a generalization of a 2-D plane in 3-D space to mathematical spaces of arbitrary dimension.  
+Like a plane in space, a hyperplane is a flat hypersurface, a subspace whose dimension is one less than that of the ambient space. Two lower-dimensional examples of hyperplanes are one-dimensional lines in a plane and zero-dimensional points on a line.
+
+Most commonly, the ambient space is n-dimensional Euclidean space, in which case the hyperplanes are the (n − 1)-dimensional "flats", each of which separates the space into two half spaces.
+
+In ML, hyperplanes are essentially a boundary which classifies the data set (classifies Spam email from the ham ones). It could be lines, 2D planes, or even n-dimensional planes that are beyond our imagination.
 
 ## Functional Margin and Geometric Margin
 The functional margin is the distance between the hyperplane (decision boundary) that separates the classes and the nearest training examples and it does not depend on the magnitude.
@@ -43,6 +55,10 @@ $$.
 In other words, the geometric margin is invariant to the rescaling of the parameter, which is the only difference between geometric margin and functional margin.
 
 ## Optimal Margin Classifier
+A margin classifier is a type of classification model which is able to give an associated distance from the decision boundary for each data sample.  
+For instance, if a linear classifier is used, the distance (typically Euclidean, though others may be used) of a sample from the separating hyperplane is the margin of that sample.  
+The Optimal margin classifier is the classifier that maximizes the margin between two classes. 
+
 
 ### Optimization Problem  
 
