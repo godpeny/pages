@@ -24,6 +24,9 @@ Most commonly, the ambient space is n-dimensional Euclidean space, in which case
 
 In ML, hyperplanes are essentially a boundary which classifies the data set (classifies Spam email from the ham ones). It could be lines, 2D planes, or even n-dimensional planes that are beyond our imagination.
 
+### Relationship of Support Vector, Margin and Hyperplane
+![alt text](images/blog12_supportvector_margin_hyperplane.png)
+
 ## Functional Margin and Geometric Margin
 The functional margin is the distance between the hyperplane (decision boundary) that separates the classes and the nearest training examples and it does not depend on the magnitude.
 The functional margin is a measure of the generalization ability of the classifier. A larger functional margin indicates confident and a correct prediction.
