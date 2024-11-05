@@ -13,6 +13,34 @@ A unit vector is often used to represent direction.
  - hyperplane
 
 ## Functional Margin and Geometric Margin
+The functional margin is the distance between the hyperplane (decision boundary) that separates the classes and the nearest training examples and it does not depend on the magnitude.
+The functional margin is a measure of the generalization ability of the classifier. A larger functional margin indicates confident and a correct prediction.
+$$
+\hat{\gamma}^{(i)} = y^{(i)} (w^T x + b).
+$$
+The geometric margin is just a scaled version of the functional margin.
+$$
+\gamma^{(i)} = \frac{\hat{\gamma}^{(i)}}{\| \mathbf{w} \|}.
+$$
+![alt text](images/blog12_functional_and_geometric_margin.png)
+When A is $x^{(i)}$ and $\frac{w}{\|w\|}$ is a unit-length vector pointing in the same direction as $w$, B is $x^{(i)} - \gamma^{(i)} \frac{w}{\|w\|}$.  
+Since point B lies on the hyperplane which is $w^T x + b$,
+$$
+w^T \left( x^{(i)} - \gamma^{(i)} \frac{w}{\|w\|} \right) + b = 0.
+$$
+Solving for $\gamma^{(i)}$, 
+$$
+\quad \gamma^{(i)} = \frac{w^T x^{(i)} + b}{\|w\|} = \left( \frac{w}{\|w\|} \right)^T x^{(i)} + \frac{b}{\|w\|}.
+$$
+Remind that,
+$$
+\hat{\gamma}^{(i)} = y^{(i)} (w^T x + b).
+$$
+Therefore we can find out that geometric margin is scaled version of functonal margin.
+$$
+\gamma^{(i)} = y^{(i)} \left( \left( \frac{w}{\|w\|} \right)^T x^{(i)} + \frac{b}{\|w\|} \right) = \frac{\hat{\gamma}^{(i)}}{\| \mathbf{w} \|}
+$$.
+In other words, the geometric margin is invariant to the rescaling of the parameter, which is the only difference between geometric margin and functional margin.
 
 ## Optimal Margin Classifier
 
@@ -22,6 +50,7 @@ $$
 \min_x \quad f_0(x) \\
 \text{subject to :} \quad f_i(x) \leq b_i, \quad i = 1, \ldots, m. 
 $$
+
 
 making the best possible choice of a vector from a set of candidate choices.
 - The variable x represents the choice made.
