@@ -166,11 +166,11 @@ $$
 then any pair of primal and dual optimal point must satisfy KKT conditons below.
 $$
 \begin{align*}
-\nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) &= 0, \\
-f_i(x^*) &\leq 0, & i &= 1, \ldots, m, \\
-h_i(x^*) &= 0, & i &= 1, \ldots, p, \\
-\lambda_i^* &\geq 0, & i &= 1, \ldots, m, \\
-\lambda_i^* f_i(x^*) &= 0, & i &= 1, \ldots, m.
+&\nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) = 0, \\
+&\lambda_i^* f_i(x^*) = 0, \quad i = 1, \ldots, m, \\ 
+&f_i(x^*) \leq 0, \quad i = 1, \ldots, m, \\
+&h_i(x^*) = 0, \quad i = 1, \ldots, p, \\
+&\lambda_i^* \geq 0, \quad i = 1, \ldots, m.
 \end{align*}
 $$
 to sum up, for any optimization problem with differentiable objective and
@@ -184,11 +184,11 @@ In other words, if $f_i$ are convex and $h_i$ are
 affine, and $\hat{x}$, $\hat{\lambda}$ and $\hat{v}$ are any points that satisfy the KKT conditions,
 $$
 \begin{align*}
-\nabla f_0(\hat{x}) + \sum_{i=1}^{m} \hat{\lambda}_i \nabla f_i(\hat{x}) + \sum_{i=1}^{p} \hat{\nu}_i \nabla h_i(\hat{x}) &= 0, \\
-f_i(\hat{x}) &\leq 0, & i &= 1, \ldots, m, \\
-h_i(\hat{x}) &= 0, & i &= 1, \ldots, p, \\
-\hat{\lambda}_i &\geq 0, & i &= 1, \ldots, m, \\
-\hat{\lambda}_i f_i(\hat{x}) &= 0, & i &= 1, \ldots, m.
+&\nabla f_0(\hat{x}) + \sum_{i=1}^{m} \hat{\lambda}_i \nabla f_i(\hat{x}) + \sum_{i=1}^{p} \hat{\nu}_i \nabla h_i(\hat{x}) = 0, \\
+&\hat{\lambda}_i f_i(\hat{x}) = 0, \quad i = 1, \ldots, m, \\ 
+&f_i(\hat{x}) \leq 0, \quad i = 1, \ldots, m, \\
+&h_i(\hat{x}) = 0, \quad i = 1, \ldots, p, \\
+&\hat{\lambda}_i \geq 0, \quad i = 1, \ldots, m.
 \end{align*}
 $$
 
@@ -212,27 +212,27 @@ $$
 $$
 therefore, 
 $$
-f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) \right)
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) =  f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*)
 
 $$
 since $x^*$ is primal optimal, it satisfies primal constraints $f_i(x^*) \leq 0$ and $h_i(x^*) = 0$.  
 also, considering inequality of primal problem $f_0(x^*)$, Lagrangian $L$ and Lagrange dual problem $g(\lambda^*, \nu^*)$, ('lower value on optimal value')
 $$
-f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = \inf_{x \in D} \left( f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) \right) \leq f_0(x^*)
+f_0(x^*) = g(\lambda^*, \nu^*) = \inf_{x \in D} L(x, \lambda^*, \nu^*) \leq L(x^*, \lambda^*, \nu^*) = f_0(x^*) + \sum_{i=1}^{m} \lambda_i f_i(x^*) + \sum_{i=1}^{p} \nu_i h_i(x^*) \leq f_0(x^*)
 $$
 equality('=') works for above. this shows that 
 $$
 \text{1.} \inf_{x \in D} L(x, \lambda^*, \nu^*) = L(x^*, \lambda^*, \nu^*) \\
 \text{2.} \sum_{i=1}^{p} \lambda_i f_i(x^*) =0
 $$ 
-'1' shows that $L(x, \lambda^*, \nu^*)$ has the minimum when $x=x^*$ and it implies that its gradient must vanish at $x^*$, 
+'1.' shows that $L(x, \lambda^*, \nu^*)$ has the minimum when $x=x^*$ and it implies that its gradient must vanish at $x^*$, 
 $$
 \nabla f_0(x^*) + \sum_{i=1}^{m} \lambda_i^* \nabla f_i(x^*) + \sum_{i=1}^{p} \nu_i^* \nabla h_i(x^*) = 0, \\
 $$
-this shows that it satisfies KKT's first condition which is called 'stationarity'.
-'2' satisfies KKT's last condition which is called 'complementary slackness' (i.e. 'KKT dual complementarity condition')
+this shows that it satisfies KKT's first condition which is called 'stationarity'.  
+'2.' satisfies KKT's last condition which is called 'complementary slackness' (i.e. 'KKT dual complementarity condition')
 
-since primal solution is $x^*$ and dual solution are $\lambda^*$, $\nu^*$, it satisfies all other conditions of KKT.
+since primal solution is $x^*$ and dual solution are $\lambda^*$, $\nu^*$, it satisfies all other conditions of KKT. (primal condition : line3,4)
 
 ### Sufficiency
 if $x^*, \lambda^*, \nu^*$ satisfies KKT conditions $\implies$ $x^*, \lambda^*, \nu^*$ are primal and dual solution with string duality.
