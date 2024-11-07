@@ -34,6 +34,14 @@ Some variable values that are penalized in the objective function if, and based 
 - Hard constraints
 Set conditions for the variables that are required to be satisfied.
 
+### Necessity and Sufficiency
+In logic and mathematics, necessity and sufficiency are terms used to describe a conditional or implicational relationship between two statements.  
+For example, when conditional sentence "If $P$ then $Q$", 
+$$P \Rightarrow Q"$$
+ $Q$ is necessity for $P$ because the truth of $Q$ is guranteed by $P$.  
+Similarly $P$ is sufficient for $Q$, because $P$ being true always implies that $Q$ is true. (But $P$ not being true does not always imply that $Q$ is not true)
+
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
