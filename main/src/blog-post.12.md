@@ -24,8 +24,39 @@ Most commonly, the ambient space is n-dimensional Euclidean space, in which case
 
 In ML, hyperplanes are essentially a boundary which classifies the data set (classifies Spam email from the ham ones). It could be lines, 2D planes, or even n-dimensional planes that are beyond our imagination.
 
+### Kinds of Hyperplanes in SVM
+#### Optimal Hyperplane
+This is the main decision boundary that separates the two classes of data points. The goal of SVM is to find the hyperplane that maximizes the margin between two classes.
+#### Positive Hyperplane:
+The positive hyperplane is the boundary on one side of the margin where the support vectors of the positive class (let’s say class +1) lie.  
+Data points from the positive class lie either on or beyond this boundary.
+#### Negative Hyperplane:
+The negative hyperplane is the boundary on the opposite side of the margin where the support vectors of the negative class (let’s say class -1) lie.  
+Data points from the negative class lie either on or beyond this boundary.
+
 ### Relationship of Support Vector, Margin and Hyperplane
+#### 1
 ![alt text](images/blog12_supportvector_margin_hyperplane.png)
+
+#### 2
+![alt text](images/blog12_supportvector_margin_hyperplane_2.png)
+
+
+Where optimal hyperplane is,
+$$
+w^T x + b = 0 
+$$
+$w$ is weight vector, $b$ is bias, $x$ is feature vector.
+
+For the positive hyperplane,
+$$
+w^T x + b = +1
+$$
+For the negative hyperplane.
+$$
+w^T x + b = -1
+$$
+
 
 ## Functional Margin and Geometric Margin
 The functional margin is the distance between the hyperplane (decision boundary) that separates the classes and the nearest training examples and it does not depend on the magnitude.
