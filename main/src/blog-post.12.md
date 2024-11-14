@@ -183,15 +183,21 @@ this is because margin of the support vectors is 1. which can be derived from th
  - (input) attributes : original input value of problem. ($=x$)  
  - (input) features : new set of quantities. ($=\phi(x)$, e.g. [$x, x^2, x^3 ...$])
 
- #### Basics
-- kernel function : A function that takes as its inputs vectors in the original space and returns the dot product of the vectors in the feature space.  
+### Basics
+#### kernel function
+A function that takes as its inputs vectors in the original space and returns the dot product of the vectors in the feature space.  
 loosely speaking, kernel function is dot product of the transformed vectors by considering that each coordinate of the transformed vector ϕ(x) is just some function of the coordinates in the corresponding lower dimensional vector x.  
-e.g.  
-$
+For example,   
+$$
 \phi: X \rightarrow \mathbb{R}^N, k(\mathbf{x}, \mathbf{z}) = \langle \phi(\mathbf{x}), \phi(\mathbf{z}) \rangle
-$   
-$k(\mathbf{x}, \mathbf{z})$ is kernel function.  
-- kernel trick : enable kernel functions to operate in a high-dimensional, implicit feature space without ever computing the coordinates of the data in that space, but rather by simply computing the inner products between the images of all pairs of data in the feature space. This operation is often computationally cheaper than the explicit computation of the coordinates.
+$$ 
+
+$k(\mathbf{x}, \mathbf{z})$ is kernel function.   
+It is an algorithms for pattern analysis, whose best known member is the support-vector machine (SVM). These methods involve using linear classifiers to solve nonlinear problems
+
+#### kernel trick
+Enable kernel functions to operate in a high-dimensional, implicit feature space without ever computing the coordinates of the data in that space, but rather by simply computing the inner products between the images of all pairs of data in the feature space. This operation is often computationally cheaper than the explicit computation of the coordinates.  
+In other words, $K(x, y)$ may be very inexpensive to cacluate, even $\phi(x)$ and $\phi(z)$ may be very expensive to calculate. Thus, we can get SVMs to learn the high dimensional feature space given by $\phi$ but without ever having to explicitly find or represent vecotr $\phi(x)$.
 
 #### Types of Kernels
  - polynomial kernel  
