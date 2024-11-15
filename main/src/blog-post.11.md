@@ -128,6 +128,8 @@ func incrementor() func() int {
 ### Naked Return
 https://go.dev/tour/basics/7
 
+### Context
+
 ### Concurrency
 #### Goroutines
 Goroutine is a function executing concurrently with other goroutines in the same address space.  
