@@ -183,6 +183,30 @@ this is because margin of the support vectors is 1. which can be derived from th
  - (input) attributes : original input value of problem. ($=x$)  
  - (input) features : new set of quantities. ($=\phi(x)$, e.g. [$x, x^2, x^3 ...$])
 
+When $ K(x, z) = (x^T z + c)^d $ is kernel function, it corresponds to a feature mapping to an $\binom{n + d}{d}$ feature spaces. For example when $n=3$ and $d=2$, 
+$$
+\begin{equation}
+\binom{3+2}{2} = \binom{5}{2} = \frac{5 \cdot 4}{2} = 10.
+\end{equation}
+$$
+$$
+\phi(x) =
+\begin{bmatrix}
+x_1^2 \\
+x_2^2 \\
+x_3^2 \\
+x_1 x_2 \\
+x_1 x_3 \\
+x_2 x_3 \\
+x_1 x_2 \\
+x_1 x_3 \\
+x_2 x_3 \\
+x_1 x_2 x_3
+\end{bmatrix}.
+$$
+
+
+
 ### Basics
 #### kernel function
 A function that takes as its inputs vectors in the original space and returns the dot product of the vectors in the feature space.  
@@ -197,7 +221,56 @@ It is an algorithms for pattern analysis, whose best known member is the support
 
 #### kernel trick
 Enable kernel functions to operate in a high-dimensional, implicit feature space without ever computing the coordinates of the data in that space, but rather by simply computing the inner products between the images of all pairs of data in the feature space. This operation is often computationally cheaper than the explicit computation of the coordinates.  
-In other words, $K(x, y)$ may be very inexpensive to cacluate, even $\phi(x)$ and $\phi(z)$ may be very expensive to calculate. Thus, we can get SVMs to learn the high dimensional feature space given by $\phi$ but without ever having to explicitly find or represent vecotr $\phi(x)$.
+In other words, $K(x, y)$ may be very inexpensive to cacluate, even $\phi(x)$ and $\phi(z)$ may be very expensive to calculate. Thus, we can get SVMs to learn the high dimensional feature space given by $\phi$ but without ever having to explicitly find or represent vecotr $\phi(x)$.  
+For example, below takes $O(N)$.
+$$
+K(x, z) = (x^T z)^2
+$$
+Because when $n=3$, 
+$$
+(x_1 z_1 + x_2 z_2 + x_3 z_3)^2
+$$
+However, $K(x, z)$ can also intrepreted as below,
+$$
+\begin{aligned}
+K(x, z) &= \left( \sum_{i=1}^n x_i z_i \right) \left( \sum_{j=1}^n x_j z_j \right) \\
+&= \sum_{i=1}^n \sum_{j=1}^n x_i x_j z_i z_j \\
+&= \sum_{i, j = 1}^n (x_i x_j)(z_i z_j).
+\end{aligned}
+$$
+Similary, when $n=3$,
+$$
+(x_1 x_1)(z_1 z_1) + (x_1 x_2)(z_1 z_2) \dots (x_3 x_2)(z_3 z_2) + (x_3 x_3)(z_3 z_3)
+$$
+When consider $\phi(x) = \sum_{i= 1}^n (x_i x_j)$ and $\phi(z) = \sum_{j= 1}^n (z_i z_j)$,
+$$ 
+\phi(x) =
+\begin{bmatrix}
+x_1 x_1 \\
+x_1 x_2 \\
+x_1 x_3 \\
+x_2 x_1 \\
+x_2 x_2 \\
+x_2 x_3 \\
+x_3 x_1 \\
+x_3 x_2 \\
+x_3 x_3
+\end{bmatrix}, 
+\phi(z) =
+\begin{bmatrix}
+z_1 z_1 \\
+z_1 z_2 \\
+z_1 z_3 \\
+z_2 z_1 \\
+z_2 z_2 \\
+z_2 z_3 \\
+z_3 z_1 \\
+z_3 z_2 \\
+z_3 z_3
+\end{bmatrix}.
+$$
+As you can see $K(x, z) = \phi(x) \phi(z)$ and above calculation takes $O(N^2)$.
+So kernel trick makes expensive calculation($O(N^2)$) into inexpensive calculation($O(N)$).
 
 #### Types of Kernels
  - polynomial kernel  
