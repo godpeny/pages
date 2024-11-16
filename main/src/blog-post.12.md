@@ -272,12 +272,38 @@ $$
 As you can see $K(x, z) = \phi(x) \phi(z)$ and above calculation takes $O(N^2)$.
 So kernel trick makes expensive calculation($O(N^2)$) into inexpensive calculation($O(N)$).
 
-#### Types of Kernels
+### Types of Kernels
  - polynomial kernel  
  $$
  K(x, y) = \langle \phi(x), \phi(y) \rangle = (x^\top y + c)^d
  $$
  - Gaussian kernel 
+
+### Kernel Matrix
+A square m-by-m matrix whose (i,j) entriy is given $K_{ij} = K(x^{(i)}, x^{(j)})$ is kernel matrix.  
+A kernel function $K(x, z)$ and the kernel matrix $K$ have obvious close relationship. If $K$ is a valid Kernel, then matrix $K$ must be symmetric.
+$$
+K_{ij} = K(x^{(i)}, x^{(j)}) = \phi(x^{(i)})^T \phi(x^{(j)}) =  \\ 
+\phi(x^{(j)})^T \phi(x^{(i)}) = K(x^{(j)}, x^{(i)}) = K_{ji}
+$$
+Moreover if $\phi_k(x^{(i)})$ denotes the $k$-th coordinate, for any vector $z$, 
+$$
+z^T K z = \sum_i \sum_j z_i K_{ij} z_j \\
+= \sum_i \sum_j z_i \phi(x^{(i)})^T \phi(x^{(j)}) z_j \\
+= \sum_i \sum_j z_i \sum_k \phi_k(x^{(i)}) \phi_k(x^{(j)}) z_j \\
+= \sum_k \sum_i \sum_j z_i \phi_k(x^{(i)}) \phi_k(x^{(j)}) z_j \\
+= \sum_k \left( \sum_i z_i \phi_k(x^{(i)}) \right)^2 \\
+\geq 0.
+$$
+as above you can see that K-is also positive semi-definite.
+Hence, if $K$ is a valid kerne, then the corresponding Kernel matrix $K$ ($K \in \mathbb{R}^{m \times m}$) is symmetric positive semidefinite.  
+More generally, this turns out to be not only a necessary, but also a sufficient, condition for $K $to be a valid kernel
+(also called a Mercer kernel).  
+The following result is due to Mercer.
+
+#### Theorem (Mercer)
+For kernel $K : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ to be valid(mercer) kernel, it is necessary and sufficient that for any $\{ x^{(1)}, \ldots, x^{(m)} \}, \quad (m < \infty)$, the corresponding kernel matrix is symmetric
+positive semi-definite.
 
 #### example of using polynomial kernel with kernel trick
 
