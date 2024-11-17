@@ -222,6 +222,8 @@ It is an algorithms for pattern analysis, whose best known member is the support
 #### kernel trick
 Enable kernel functions to operate in a high-dimensional, implicit feature space without ever computing the coordinates of the data in that space, but rather by simply computing the inner products between the images of all pairs of data in the feature space. This operation is often computationally cheaper than the explicit computation of the coordinates.  
 In other words, $K(x, y)$ may be very inexpensive to cacluate, even $\phi(x)$ and $\phi(z)$ may be very expensive to calculate. Thus, we can get SVMs to learn the high dimensional feature space given by $\phi$ but without ever having to explicitly find or represent vecotr $\phi(x)$.  
+
+#### example of using polynomial kernel with kernel trick
 For example, below takes $O(N)$.
 $$
 K(x, z) = (x^T z)^2
@@ -305,14 +307,12 @@ The following result is due to Mercer.
 For kernel $K : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ to be valid(mercer) kernel, it is necessary and sufficient that for any $\{ x^{(1)}, \ldots, x^{(m)} \}, \quad (m < \infty)$, the corresponding kernel matrix is symmetric
 positive semi-definite.
 
-#### example of using polynomial kernel with kernel trick
-
-## L1 Regularization
-
 ## Applying Kernel and Regularization to SVM
 
 ## Sequential Minimal Optimization (SMO)
 Sequential minimal optimization (SMO) is an algorithm for solving the quadratic programming (QP) problem that arises during the training of support-vector machines (SVM). It was invented by John Platt.
+
+## Coordinate ascent
 
 ### Basics
 let's solve optimation problem from svm,

@@ -48,6 +48,12 @@ $
 \|A\|_F = \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n} |a_{ij}|^2} = \sqrt{\text{trace}(A^* A)}.
 $  
 Loosely speaking, the Frobenius Norm is also equivalent to the Euclidean norm generalised to matrices instead of vectors.
+
+## L1 Regularization
+
+## L2 Regularization
+
+
 ## Gaussian Distribution (= Normal Distribution)
 A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
 $$
