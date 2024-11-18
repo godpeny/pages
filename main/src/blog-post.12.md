@@ -307,12 +307,17 @@ The following result is due to Mercer.
 For kernel $K : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ to be valid(mercer) kernel, it is necessary and sufficient that for any $\{ x^{(1)}, \ldots, x^{(m)} \}, \quad (m < \infty)$, the corresponding kernel matrix is symmetric
 positive semi-definite.
 
+### SVM
+ - https://www.ibm.com/topics/support-vector-machine
+ - https://en.wikipedia.org/wiki/Support_vector_machine
+
 ## Applying Kernel and Regularization to SVM
 
 ## Sequential Minimal Optimization (SMO)
-Sequential minimal optimization (SMO) is an algorithm for solving the quadratic programming (QP) problem that arises during the training of support-vector machines (SVM). It was invented by John Platt.
-
-## Coordinate ascent
+Sequential minimal optimization (SMO) is an algorithm for solving the quadratic programming (QP) problem that arises during the training of support-vector machines (SVM). It was invented by John Platt.   
+- https://www.microsoft.com/en-us/research/uploads/prod/1998/04/sequential-minimal-optimization.pdf
+ - https://dsmilab.github.io/Yuh-Jye-Lee/assets/file/teaching/2017_machine_learning/SMO_algorithm.pdf
+ - https://en.wikipedia.org/wiki/Sequential_minimal_optimization 
 
 ### Basics
 let's solve optimation problem from svm,
@@ -326,3 +331,10 @@ $$
 repeat till convergence
 1. Select some pair $a_i$ and $a_j$ to update next (using a heuristic that tries to pick the two that will allow us to make the biggest progress towards the global maximum).  
 2. Reoptimize W(α) with respect to αi and αj, while holding all the other $a_k$’s (k= i,j) fixed.
+
+## CoordinateAscent
+ 
+### SVM vs SMO
+ - https://cs.stackexchange.com/questions/99705/what-is-the-difference-in-smo-algorithm-for-svm-and-smo-for-one-class
+ - https://stats.stackexchange.com/questions/130293/svm-and-smo-main-differences
+ 
