@@ -307,9 +307,37 @@ The following result is due to Mercer.
 For kernel $K : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ to be valid(mercer) kernel, it is necessary and sufficient that for any $\{ x^{(1)}, \ldots, x^{(m)} \}, \quad (m < \infty)$, the corresponding kernel matrix is symmetric
 positive semi-definite.
 
-### SVM
+## Basics of SVM
  - https://www.ibm.com/topics/support-vector-machine
  - https://en.wikipedia.org/wiki/Support_vector_machine
+
+A support vector machine (SVM) is a supervised machine learning algorithm that classifies data by finding an optimal line or hyperplane that maximizes the distance between each class in an N-dimensional space.
+
+SVMs are commonly used within classification problems. They distinguish between two classes by finding the optimal hyperplane that maximizes the margin between the closest data points of opposite classes. The number of features in the input data determine if the hyperplane is a line in a 2-D space or a plane in a n-dimensional space. Since multiple hyperplanes can be found to differentiate classes, maximizing the margin between points enables the algorithm to find the best decision boundary between classes. This, in turn, enables it to generalize well to new data and make accurate classification predictions. The lines that are adjacent to the optimal hyperplane are known as support vectors as these vectors run through the data points that determine the maximal margin.
+
+The SVM algorithm is widely used in machine learning as it can handle both linear and nonlinear classification tasks. However, when the data is not linearly separable, kernel functions are used to transform the data higher-dimensional space to enable linear separation. This application of kernel functions can be known as the “kernel trick”, and the choice of kernel function, such as linear kernels, polynomial kernels, radial basis function (RBF) kernels, or sigmoid kernels, depends on data characteristics and the specific use case.
+
+## Types of SVM classifiers
+### Linear SVMs
+Linear SVMs are used with linearly separable data; this means that the data do not need to undergo any transformations to separate the data into different classes.
+We are given a training dataset of 
+$n$ points of the form $(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_n, y_n)$.
+Where the $y_i$ are either 1 or −1, each indicating the class to which the point $x_i$ belongs. 
+Each $x_i$ is a $p$-dimensional real vector. We want to find the "maximum-margin hyperplane" that divides the group of points $x_i$ for which $y_i = 1$ from the group of points for which $y_i = -1$ which is defined so that the distance between the hyperplane and the nearest point $x_i$ from either group is maximized.  
+Mathematically, this separating hyperplane can be represented as
+$$
+w^T x - b = 0 \\
+\text{or,} \\
+w^T x + b = 0
+$$
+where w is the weight vector, x is the input vector, and b is the bias term. The parameter $\frac{b}{\|\mathbf{w}\|}$ determines the offset of the hyperplane from the origin along the normal vector $w$.
+![alt text](images/blog12_linear_svm.png)
+
+#### Hard magin:
+#### Soft margin: 
+
+### Nonlinear SVMs
+
 
 ## Applying Kernel and Regularization to SVM
 
