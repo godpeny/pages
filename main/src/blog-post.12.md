@@ -317,6 +317,20 @@ SVMs are commonly used within classification problems. They distinguish between 
 
 The SVM algorithm is widely used in machine learning as it can handle both linear and nonlinear classification tasks. However, when the data is not linearly separable, kernel functions are used to transform the data higher-dimensional space to enable linear separation. This application of kernel functions can be known as the “kernel trick”, and the choice of kernel function, such as linear kernels, polynomial kernels, radial basis function (RBF) kernels, or sigmoid kernels, depends on data characteristics and the specific use case.
 
+### Cartesian Product
+In mathematics, specifically set theory, the Cartesian product of two sets A and B, denoted $A \times B$ is the set of all ordered pairs $(a, b)$ where $a$ is in $A$ and $b$ is in $B$
+$$
+A \times B = \{(a, b) \mid a \in A \text{ and } b \in B\}.
+$$
+Applying to vector, $\mathbb{R}^n$ is the set of all $n$-dimensional vector, $\mathbb{R}^n \times \mathbb{R}^n$ is the Cartesian product of two vector.
+$$
+\mathbb{R}^n \times \mathbb{R}^n = \{(x, z) \mid x \in \mathbb{R}^n, z \in \mathbb{R}^n\},
+$$
+For example,
+$$
+(x_1 z_1 + x_2 z_2 + x_3 z_3 \dots + x_n z_n)
+$$
+
 ## Types of SVM classifiers
 ### Linear SVMs
 Linear SVMs are used with linearly separable data; this means that the data do not need to undergo any transformations to separate the data into different classes.
