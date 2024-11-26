@@ -374,8 +374,10 @@ repeat till convergence
 1. Select some pair $a_i$ and $a_j$ to update next (using a heuristic that tries to pick the two that will allow us to make the biggest progress towards the global maximum).  
 2. Reoptimize W(α) with respect to αi and αj, while holding all the other $a_k$’s (k= i,j) fixed.
 
-## CoordinateAscent
- 
+## Coordinate Ascent(Descent)
+ - https://en.wikipedia.org/wiki/Coordinate_descent
+ - https://convex-optimization-for-all.github.io/contents/chapter23/
+
 ### SVM vs SMO
  - https://cs.stackexchange.com/questions/99705/what-is-the-difference-in-smo-algorithm-for-svm-and-smo-for-one-class
  - https://stats.stackexchange.com/questions/130293/svm-and-smo-main-differences
