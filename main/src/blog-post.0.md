@@ -41,6 +41,26 @@ $$P \Rightarrow Q"$$
  $Q$ is necessity for $P$ because the truth of $Q$ is guranteed by $P$.  
 Similarly $P$ is sufficient for $Q$, because $P$ being true always implies that $Q$ is true. (But $P$ not being true does not always imply that $Q$ is not true)
 
+### Polynomial
+In mathematics, a polynomial is a mathematical expression consisting of indeterminates (also called variables) and coefficients, that involves only the operations of addition, subtraction, multiplication and exponentiation to nonnegative integer powers, and has a finite number of terms.
+
+### Coefficient
+In mathematics, a coefficient is a multiplicative factor involved in some term of a polynomial, a series, or any other type of expression. It may be a number without units, in which case it is known as a numerical factor.[1] It may also be a constant with units of measurement, in which it is known as a constant multiplier.
+
+### Variable
+In mathematics, a variable is a symbol, typically a letter, that holds a place for constants, often numbers. One say colloquially that the variable represents or denotes the object, and that the object is the value of the variable.  
+A variable may represent a unspecified number that remains fixed during the resolution of a problem; in which case, it is often called a parameter. A variable may denote an unknown number that has to be determined
+
+### Coefficient and Variable in Polynomial
+$$
+2X^2 - 3X + 2
+$$
+From above polynomial, coefficients are $2$, $-3$, $2$, and variable is $X$.
+
+$$
+aX^2 + bX + c = 0
+$$
+From above polynomial, parameters are $a,b,c$ and variable is $X$.
 
 ## A.I Related Terminology
 ### Supervised Learning

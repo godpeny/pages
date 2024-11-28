@@ -375,6 +375,35 @@ repeat till convergence
 2. Reoptimize W(α) with respect to αi and αj, while holding all the other $a_k$’s (k= i,j) fixed.
 
 ## Coordinate Ascent(Descent)
+Coordinate descent is an optimization algorithm that successively minimizes along coordinate directions to find the minimum of a function. At each iteration, the algorithm determines a coordinate or coordinate block via a coordinate selection rule, then minimizes over the corresponding coordinate hyperplane while fixing all other coordinates or coordinate blocks.  
+Coordinate descent is based on the idea that the minimization of a multivariable function $F(x)$ can be achieved by minimizing it along one direction at a time, i.e., solving univariate optimization problems in a loop. In the simplest case of cyclic coordinate descent, one cyclically iterates through the directions, one at a time, minimizing the objective function with respect to each coordinate direction at a time.  
+For example, let's suppose vector $x$ in round 0 as below.
+$$
+\mathbf{x}^0 = \left(x_1^0, \dots, x_n^0\right),
+$$
+The ound $k+1$ stands $x^k$ from $x^{k+1}$ by iteratively solving the single variable optimization problems.  
+$$
+x_i^{k+1} = \arg\min_{y \in \mathbb{R}} f\left(x_1^{k+1}, \dots, x_{i-1}^{k+1}, y, x_{i+1}^k, \dots, x_n^k\right),
+$$
+For each variable $x_i$ of $\mathbf{x}$, for $i$ from $1$ to $n$.  
+Thus, one begins with an initial guess $\mathbf {x}^{0}$ for a local minimum and gets a sequence $\mathbf {x} ^{0},\mathbf {x} ^{1},\mathbf {x} ^{2},\dots$ iteratively.  
+By doing line search in each iteration, you can get the result as below.
+$$
+F(\mathbf{x}^0) \geq F(\mathbf{x}^1) \geq F(\mathbf{x}^2) \geq \dots
+$$
+In easier way to describe is,  
+$$
+\text{Loop until convergence: } \\
+\left\{
+\begin{aligned}
+    &\text{For } i = 1, \dots, m, \\
+    &\quad \alpha_i := \arg\max_{\hat{\alpha}_i} W\left(\alpha_1, \dots, \alpha_{i-1}, \hat{\alpha}_i, \alpha_{i+1}, \dots, \alpha_m\right).
+\end{aligned}
+\right.
+$$
+For $i$ from $1$ to $m$, hold all the variables except for some ${\alpha}_i$ fixed, and reoptimize $W$ with respect to just the parameter ${\alpha}_i$.
+
+
  - https://en.wikipedia.org/wiki/Coordinate_descent
  - https://convex-optimization-for-all.github.io/contents/chapter23/
 
