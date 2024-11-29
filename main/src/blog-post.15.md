@@ -38,6 +38,13 @@ x_m
 \end{bmatrix}.
 $$
 
+## Vector Double Summation
+$$
+\begin{align*}
+\left( \sum_{i=1}^n x_i \right)^2 &= \left( \sum_{i=1}^n x_i \right) \left( \sum_{j=1}^n x_j \right) = \sum_{i=1}^n \sum_{j=1}^n x_i x_j
+\end{align*}
+$$
+
 ### Trace
 The trace of a square matrix $A$, denoted $\text{tr}(A)$, is defined to be the sum of elements on the main diagonal (from the upper left to the lower right) of matrix $A$.  
 The trace is only defined for a square matrix $(n \times n)$.  
@@ -141,4 +148,42 @@ Conversely, a set which is not bounded is called unbounded.
 2. each M' < M is not an upper bound of E. In this case, we write M = supE.  
 (or each M' > M is not an lower bound of E. In this case, we write M = infE.)
 - 쉽게 말하면, 상계(upper bound)에 속하는 값들 중에서 가장 작은 값이 상한(supremum)이 되고 하계(lower bound)에 속하는 값들 중에서 가장 큰 값이 하한(infimum)이 된다.
- 
+
+### Definite matrix
+For real matrix and $n \times n$ symmetric matrix $\mathbf{M}$.  
+An $n \times n$ symmetric real matrix $\mathbf{M}$ is said to be positive-definite if,
+$$
+\mathbf{x}^\top M \mathbf{x} > 0 \quad \text{for all non-zero } \mathbf{x} \in \mathbb{R}^n.
+$$
+
+Formally,
+$$
+M \text{ positive-definite } \iff \mathbf{x}^\top M \mathbf{x} > 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
+
+An $n \times n$ symmetric real matrix $\mathbf{M}$ is said to be positive-semi definite if,
+$$
+\mathbf{x}^\top M \mathbf{x} \geq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
+Formally,
+$$
+M \text{ positive-semidefinite } \iff \mathbf{x}^\top M \mathbf{x} \geq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
+
+An $n \times n$ symmetric real matrix $\mathbf{M}$ is said to be negative-definite if,
+$$
+\mathbf{x}^\top M \mathbf{x} < 0 \quad \text{for all non-zero } \mathbf{x} \in \mathbb{R}^n.
+$$
+Formally,
+$$
+M \text{ negative-definite } \iff \mathbf{x}^\top M \mathbf{x} < 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
+
+An $n \times n$ symmetric real matrix $\mathbf{M}$ is said to be negative-semidefinite if,
+$$
+\mathbf{x}^\top M \mathbf{x} \leq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
+Formally,
+$$
+M \text{ negative-semidefinite } \iff \mathbf{x}^\top M \mathbf{x} \leq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
+$$
