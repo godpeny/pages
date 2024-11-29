@@ -283,7 +283,8 @@ So kernel trick makes expensive calculation($O(N^2)$) into inexpensive calculati
 
 ### Kernel Matrix
 A square m-by-m matrix whose (i,j) entriy is given $K_{ij} = K(x^{(i)}, x^{(j)})$ is kernel matrix.  
-A kernel function $K(x, z)$ and the kernel matrix $K$ have obvious close relationship. If $K$ is a valid Kernel, then matrix $K$ must be symmetric.
+Since $K$ is now represented as a kernel matrix, and the summation involves data points $x^{(i)}$ and  $x^{(j)}$ from a dataset. ($x^{(i)}$ is $i$-thata point from the dataset and $x^{(j)}$ is $j$-thata point from the dataset.)  
+A kernel function $K(x, z)$ and the kernel matrix $K$ have obvious close relationship. If $K$ is a valid Kernel, then matrix $K$ must be symmetric. 
 $$
 K_{ij} = K(x^{(i)}, x^{(j)}) = \phi(x^{(i)})^T \phi(x^{(j)}) =  \\ 
 \phi(x^{(j)})^T \phi(x^{(i)}) = K(x^{(j)}, x^{(i)}) = K_{ji}
