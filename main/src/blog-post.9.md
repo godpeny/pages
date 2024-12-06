@@ -204,3 +204,73 @@ f(x_1, \dots, x_k; n, p_1, \dots, p_k) = \Pr(X_1 = x_1 \text{ and } \dots \text{
 $$
 When $k=2 \text{ and } n=1$, the multinomial distribution is the Bernoulli distribution. When $k=2 \text{ and } n \geq 1$, it is the binomial distribution.  
 When $k \geq 2 \text{ and } n=1$, it is the categorical distribution. 
+
+## Naive Bayes Classifier (for classification problem)
+Naive Bayes Classifier is a generative learning model that model $p(x|y)$. To do so, we have to use strong assumption Naive Bayes(NB) Assumption.  
+Recall that Bayes' Theorem is,  
+$$
+P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)}, \ \ \text{when } P(B) \neq 0
+$$
+Recall that Naive Bayes assumption is, 
+$$
+p(x_i \mid x_{i+1}, \dots, x_n, C_k) = p(x_i \mid C_k).
+$$
+
+Using above assumption, the model is parameterized by $\phi_{j|y=1}$,$\phi_{j|y=0}$ and $\phi_y$.
+$$
+\phi_{j|y=1} = p(x_j = 1 \mid y = 1) = \frac{\sum_{i=1}^m \mathbb{1}\{x_j^{(i)} = 1 \land y^{(i)} = 1\}}{\sum_{i=1}^m \mathbb{1}\{y^{(i)} = 1\}} \\[10pt]
+\phi_{j|y=0} = p(x_j = 1 \mid y = 0) =  \frac{\sum_{i=1}^m \mathbb{1}\{x_j^{(i)} = 1 \land y^{(i)} = 0\}}{\sum_{i=1}^m \mathbb{1}\{y^{(i)} = 0\}} \\[10pt]
+\phi_y = \frac{\sum_{i=1}^m \mathbb{1}\{y^{(i)} = 1\}}{m}
+$$
+
+For example, consider below messages and we want to classify  whether the message is spam or not depending on words in the messages.
+
+| Index | Message                | Spam   |
+|-------|------------------------| -------|
+| 1     | me free lottery        |  Spam  |
+| 2     | free get free you      |  Spam  |
+| 3     | you free scholarship   |        |
+| 4     | free to contact me     |        |
+| 5     | you won award          |        |
+| 6     | you ticket lottery     |  Spam  |
+
+$x_j$ is the word in the message and $y$ is label that indicating the message is spam($y=1$) or not($y=0$).  
+$\phi_{j|y=1}$ stands for the probability of the word appears in the spam message, $\phi_{j|y=0}$ is the probability of the word appears in the non spam message and $\phi_y$ is the probability of the message is spam.  
+Let's think of word 'you' in this example($x_j = \text{you}$).  
+Then $\phi_{j|y=1}$ can be achieved by "# of times 'you' appears in spam mail" / "# of words  in the spam mail". Similarly, $\phi_{j|y=0}$  is "# of times 'you' appear in non spam mail" / "# of words in the nom spam mail".  
+So for the word 'you' in this example, $\phi_{j|y=1} = \frac{2}{10} = 0.2$ and $\phi_{j|y=0} = \frac{2}{10} = 0.2$.  
+So, Model fitting in Naive Bayes Classifier is doing same task through all the other words besides 'you' and get the each $\phi_{j|y=1}$ and $\phi_{j|y=0}$ of words.
+
+When Prediction, you have to predict whether given input message($x$) is spam($y=1$) or not($y=0$). In order to do so, you have to calculate both the probability of the input message is spam and not and compare and find the bigger probability.    
+The probability of the input message is spam,  
+$$
+\begin{align*}
+p(y = 1 | x) &= \frac{p(x | y = 1)p(y = 1)}{p(x)} \\
+             &= \frac{\left( \prod_{j=1}^n p(x_j | y = 1) \right) p(y = 1)}{\left( \prod_{j=1}^n p(x_j | y = 1) \right) p(y = 1) + \left( \prod_{j=1}^n p(x_j | y = 0) \right) p(y = 0)}.
+\end{align*}
+$$
+The probability of the input message is not spam,  
+$$
+\begin{align*}
+p(y = 0 | x) &= \frac{p(x | y = 0)p(y = 0)}{p(x)} \\
+             &= \frac{\left( \prod_{j=1}^n p(x_j | y = 0) \right) p(y = 0)}{\left( \prod_{j=1}^n p(x_j | y = 1) \right) p(y = 1) + \left( \prod_{j=1}^n p(x_j | y = 0) \right) p(y = 0)}.
+\end{align*}
+$$
+
+Let's use model from above example again and assume the predcition of message "you free lottery" ($=x$).  
+The probability of this message is spam can be calculated by($=p(y = 1 | x)$) multiplying the probability of each words. (NB assumption.)  
+$$
+\text{Spam : } \prod_{j=1}^n p(x_j | y = 1) = \phi_{j|y=1} = \phi_{j(you)|y=1} \times \phi_{j(free)|y=1} \times \phi_{j(lottery)|y=1} \\
+
+\text{Non-Spam : } \prod_{j=1}^n p(x_j | y = 0) = \phi_{j|y=0} = \phi_{j(you)|y=0} \times \phi_{j(free)|y=0} \times \phi_{j(lottery)|y=0}
+$$
+Since, $p(x) = \frac{1}{6} = 0.1666$ and $p(y=0)=p(y=1)=\frac{3}{6}=0.5$ from the example, find the probabilities of message "you free lottery". 
+$$
+p(y = 1 | x) = \frac{\frac{2}{10} \times \frac{3}{10} \times \frac{2}{10} \times \frac{3}{6}}{ \frac{1}{6}} = 0.36
+$$  
+$$
+p(y = 0 | x) = \frac{\frac{2}{10} \times \frac{2}{10} \times \frac{0}{10} \times \frac{3}{6}}{\frac{1}{6}} = 0
+$$ 
+
+Since $p(y = 1 | x) > p(y = 0 | x)$, we can predict that message "you free lottery"(=$x$) would be classified as spam. 
+
