@@ -143,15 +143,21 @@ p(C_k, x_1, \dots, x_n) = p(x_1, \dots, x_n, C_k) \\
 = \dots \\
 = p(x_1 \mid x_2, \dots, x_n, C_k) \, p(x_2 \mid x_3, \dots, x_n, C_k) \cdots p(x_{n-1} \mid x_n, C_k) \, p(x_n \mid C_k) \, p(C_k)
 $$
-Now the "naive" conditional independence assumptions come into play: assume that all features in ${\displaystyle \mathbf {x} }$ are mutually independent, conditional on the category ${\displaystyle C_{k}}$. Under this assumption,
+Now the "naive" conditional independence assumptions come into play: assume that all features in ${\displaystyle \mathbf {x} }$ are mutually independent, conditional on the category ${\displaystyle C_{k}}$. In other words, that the $x_i$ is conditionally independent given $C_k$.  
+Under this assumption,
 $$
 p(x_i \mid x_{i+1}, \dots, x_n, C_k) = p(x_i \mid C_k).
 $$
+For instance, if $y = 1$ means spam email., “buy” is word $2087$ and “price” is word $39831$. Then assuming that if $y = 1$ (that a particular piece of email is spam), then knowledge
+of $x_{2087}$ (knowledge of whether “buy” appears in the message) will have no
+effect on your beliefs about the value of $x_{39831}$ (whether “price” appears in the message).
+More formally, this can be written $p(x_{2087}|y)$ = $p(x_{2087}|y, x_{39831})$.
+
 Thus, the joint model can be expressed as when since the denominator ${\displaystyle p(\mathbf {x} )}$ is omitted.
 $$
-p(C_k \mid x_1, \dots, x_n) 
-= p(C_k) \, p(x_1 \mid C_k) \, p(x_2 \mid C_k) \, p(x_3 \mid C_k) \, \dots \\
-= p(C_k) \prod_{i=1}^{n} p(x_i \mid C_k),
+p(C_k \mid x_1, \dots, x_n) = \frac{p(C_k)p(x_1, \ldots, x_n \mid C_k)}{p(x)} = \frac{p(C_k, x_1, \ldots, x_n)}{p(x)} \\
+= \frac{p(C_k) \, p(x_1 \mid C_k) \, p(x_2 \mid C_k) \, p(x_3 \mid C_k) \, \dots}{p(x)} \\
+= \frac{p(C_k)}{p(x)} \prod_{i=1}^{n} p(x_i \mid C_k),
 $$
 
 ## Laplace Smoothing
