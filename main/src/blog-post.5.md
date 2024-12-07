@@ -49,10 +49,14 @@ $
 $  
 Loosely speaking, the Frobenius Norm is also equivalent to the Euclidean norm generalised to matrices instead of vectors.
 
-## L1 Regularization
+## Regularization
+https://www.geeksforgeeks.org/regularization-in-machine-learning/
+https://en.wikipedia.org/wiki/Regularization_(mathematics)
 
-## L2 Regularization
-
+### L1 Regularization
+L1 regularization (also called LASSO) leads to sparse models by adding a penalty based on the absolute value of coefficients.
+### L2 Regularization
+L2 regularization (also called ridge regression) encourages smaller, more evenly distributed weights by adding a penalty based on the square of the coefficients.
 
 ## Gaussian Distribution (= Normal Distribution)
 A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
