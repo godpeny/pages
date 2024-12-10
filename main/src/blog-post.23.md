@@ -8,10 +8,54 @@ However, for more flexible models, there will tend to be greater $\text{Variance
 
 ### Bias
 The bias error is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting).
+= why is prediction staying away from real data.
 
 ### Variance
 The variance is an error from sensitivity to small fluctuations in the training set. High variance may result from an algorithm modeling the random noise in the training data (overfitting).
 
+## Approximation and Estimation
+![alt text](images/blog23_approximation_and_estimation_error.png)
+
+### Bayes Error
+$$
+\epsilon{(h^*)}
+$$
+Bayes error rate is the lowest possible error rate for any classifier of a random outcome and is analogous to the irreducible error.
+
+### Estimation Error
+$$
+\epsilon{(\hat{h})} - \epsilon{(\bar{h})}
+$$
+The estimation error is the error implied by the fact that the algorithm works with a finite training set that only partially reflects the true distribution of the data.
+(limitation do)
+
+### Approximation Error
+$$
+\epsilon{(h^*)} - \epsilon{(\bar{h})}
+$$
+The approximation error is the error implied by the choice of function class and is defined as the difference in risk obtained by the best model within the function class and the optimal model.
+
+### Total Error
+$$
+(\text{Bayes Error})+ (\text{Approximation Error}) + (\text{Estimation Error})
+$$
+
+### Relation with Bias and Variance
+ - Estimation Error : Estimation Variance + Estimation Bias
+ - Variance : Estimation Variance
+ - Bais : Estimation Bias + Approximation Error
+
+$$
+(\text{Bayes Error})+ (\text{Approximation Error}) + (\text{Estimation Error}) = 
+$$
+$$
+(\text{Bayes Error}) (\text{Bias}) (\text{Variance})
+$$
+
+### Fight High Bias & Fight High Variance
+ - Increase Hypothesis class $H$ to decrease bias (while increse variance)
+ - Increase number of examples to decrease variance. 
+ - Regularization to decrease variance.
 
 ## Regularization
 https://www.geeksforgeeks.org/regularization-in-machine-learning/
