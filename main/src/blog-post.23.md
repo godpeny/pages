@@ -7,7 +7,7 @@ As the number of tunable parameters increase in a model, it becomes more flexibl
 However, for more flexible models, there will tend to be greater $\text{Variance}$ to the model fit each time we take a set of samples to create a new training data set.
 
 ### Bias
-The bias error is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting).
+The bias error is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting).  
 = why is prediction staying away from real data.
 
 ### Variance
@@ -117,3 +117,10 @@ Advantages:
  - to avoid the curse of dimensionality.
  - improve the compatibility of the data with a certain learning model class.
  - to encode inherent symmetries present in the input space.
+ 
+ ## Empirical Risk Minimizer
+
+ ### Uniform Convergence
+
+ #### Union Bound
+ #### Hoeffeding's inequality
