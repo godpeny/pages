@@ -118,7 +118,40 @@ Advantages:
  - improve the compatibility of the data with a certain learning model class.
  - to encode inherent symmetries present in the input space.
  
- ## Empirical Risk Minimizer
+## Empirical Risk Minimizer
+Empirical risk minimization is a principle in statistical learning theory which defines a family of learning algorithms based on evaluating performance over a known and fixed dataset.  
+The core idea is based on an application of the law of large numbers; more specifically, we cannot know exactly how well a predictive algorithm will work in practice (i.e. the true "risk") because we do not know the true distribution of the data.  
+But we can instead estimate and optimize the performance of the algorithm on a known set of training data. (i.e. the empirical risk)  
+### Background of ERM
+When there is a non-negative real-valued loss function ${\displaystyle L({\hat {y}},y)}$ which measures how different the prediction $\hat{y}$ of a hypothesis is from the true outcome $y$.  
+A loss function commonly used in theory is the 0-1 loss function: 
+$$
+L(\hat{y}, y) =
+\begin{cases} 
+1 & \text{if } \hat{y} \neq y, \\
+0 & \text{if } \hat{y} = y.
+\end{cases}
+$$
+For classification tasks these loss functions can be scoring rules.  
+The risk associated with hypothesis $h(x)$ is then defined as the expectation of the loss function:
+$$
+R(h) = \mathbb{E}[L(h(x), y)] = \int L(h(x), y) \, dP(x, y).
+$$
+The ultimate goal of a learning algorithm is to find a hypothesis $h^{*}$ among a fixed class of functions $\mathcal {H}$ for which the risk $R(h)$ is minimal:
+$$
+h^* = \arg\min_{h \in \mathcal{H}} R(h).
+$$
+### Basics of ERM
+In general, the risk $R(h)$cannot be computed because the distribution $P(x,y)$ is unknown to the learning algorithm.   
+However, given a sample of iid training data points, we can compute an estimate, called the "empirical risk", by computing the average of the loss function over the training set.  
+More formally, computing the expectation with respect to the empirical measure:
+$$
+R_{\text{emp}}(h) = \frac{1}{n} \sum_{i=1}^n L(h(x_i), y_i).
+$$
+The empirical risk minimization principle states that the learning algorithm should choose a hypothesis $\hat {h}$ which minimizes the empirical risk over the hypothesis class $\mathcal {H}$:
+$$
+\hat{h} = \arg\min_{h \in \mathcal{H}} R_{\text{emp}}(h).
+$$
 
  ### Uniform Convergence
 
