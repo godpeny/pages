@@ -85,7 +85,7 @@ Based on language models, LLMs acquire these abilities by learning statistical r
 LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
 LLMs are artificial neural networks that utilize the transformer architecture, invented in 2017. The largest and most capable LLMs, as of June 2024, are built with a decoder-only transformer-based architecture, which enables efficient processing and generation of large-scale text data.
 
-## Parametic vs Non-Parametic Learning Algorithm
+### Parametic vs Non-Parametic Learning Algorithm
 - Parametic : fixed finite number of parameters ($\theta$) for fitting to the data. So After fitting theta, trainning data is no more needed to make prediction.    
 e.g. linear regression
 - Non-Parametic : the amount of stuff we need to keep in order to represent the hypothesis $h$ grows linearly with the size of the training set. Also need to have entire training set to make prediction.  
@@ -121,3 +121,7 @@ In Bayesian statistics, Bayes' rule prescribes how to update the prior with new 
 #### Posterior Probability
 A type of conditional probability that results from updating the prior probability with information summarized by the likelihood via an application of Bayes' rule.  
 In the context of Bayesian statistics, it is a conditional distribution over the unobserved random variables, conditioned on the observed random variables. e.g., $p(\theta \mid x,y)$
+
+### Training error vs Generalization error
+Training error is measured on training data - the data used to construct the model.  
+Generalization error is the error expected on new cases, and is usually estimated by measuring the error on a test data set, which is not used during model construction.
