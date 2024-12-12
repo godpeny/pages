@@ -153,7 +153,55 @@ $$
 \hat{h} = \arg\min_{h \in \mathcal{H}} R_{\text{emp}}(h).
 $$
 
- ### Uniform Convergence
+### Uniform Convergence
+A sequence of functions $f_{n}$ converges uniformly to a limiting function $f$ on a set $E$ as the function domain if, given any arbitrarily small positive number $\epsilon$, a number $N$ can be found such that each of the functions $f_{N},f_{N+1},f_{N+2},\ldots$  differs from $f$ by no more than $\epsilon $ at every point $x$ in $E$.  
+Informally speaking, if $f_{n}$ converges to $f$ uniformly, then how quickly the functions $f_{n}$ approach $f$ is "uniform" throughout $E$ in the following sense.  
+In order to guarantee that $f_{n}(x)$ differs from $f(x)$ by less than a chosen distance $\epsilon$ we only need to make sure that $n$ is larger than or equal to a certain $N$, which we can find without knowing the value of $x \in E$ in advance.  
+In other words, there exists a number $N=N(\epsilon )$ that could depend on $\epsilon$ but is independent of $x$ such that choosing $n\geq N$ will ensure that $|f_{n}(x)-f(x)|<\epsilon$ for all $x\in E$.
+![alt text](images/blog23_uniform_convergence.png)
+A sequence of functions $f_{n}$ converges uniformly to 
+$f$ when for arbitrary small $\epsilon$ there is an index $N$ such that the graph of $f_{n}$ is in the $\epsilon$-tube around $f$ whenever $n\geq N$.
 
- #### Union Bound
- #### Hoeffeding's inequality
+### Union Bound
+Union Bound also known as Boole's inequality, says that for any finite or countable set of events, the probability that at least one of the events happens is no greater than the sum of the probabilities of the individual events.  
+This inequality provides an upper bound on the probability of occurrence of at least one of a countable number of events in terms of the individual probabilities of the events.
+$$
+\mathbb{P}\left( \bigcup_{i=1}^\infty A_i \right) \leq \sum_{i=1}^\infty \mathbb{P}(A_i).
+$$
+
+### Hoeffding's inequality
+Hoeffding's inequality provides an upper bound on the probability that the sum of bounded independent random variables deviates from its expected value by more than a certain amount.
+
+Let $X_{1}+\cdots + X_{n}$ be independent random variables such that $ a_{i}\leq X_{i}\leq b_{i}$ almost surely. Consider the sum of these random variables, $ S_{n}=X_{1}+\cdots + X_{n}$.  
+Then Hoeffding's theorem states that, for all $t > 0$ and $\mathbb{E}[S_n]$ is expected value of $S_n$.
+$$
+\mathbb{P}\left(S_n - \mathbb{E}[S_n] \geq t\right) \leq \exp\left(-\frac{2t^2}{\sum_{i=1}^n (b_i - a_i)^2}\right)
+$$
+$$
+\mathbb{P}\left(|S_n - \mathbb{E}[S_n]| \geq t\right) \leq 2 \exp\left(-\frac{2t^2}{\sum_{i=1}^n (b_i - a_i)^2}\right)
+$$
+
+#### Hoeffding's inequality Generalization
+Let $Y_{1},\dots ,Y_{n}$ be independent observations such that 
+$\operatorname {E} (Y_{i})=0$ and $a_{i}\leq Y_{i}\leq b_{i}$. Let $\epsilon >0$,  Then, for any $t>0$, 
+$$
+\mathbb{P}\left(\sum_{i=1}^n Y_i \geq \epsilon\right) \leq \exp\left(-t\epsilon + \sum_{i=1}^n \frac{t^2 (b_i - a_i)^2}{8}\right)
+$$
+
+#### Hoeffding's inequality Special Case: Bernoulli Random Variables
+Suppose $a_{i}=0$ and $b_{i}=1$ for all $i$. This can occur when $X_{i}$ are independent Bernoulli random variables, though they need not be identically distributed.  
+Then we get the inequality for all $t \geq 0$.  
+$$
+\begin{align*}
+\mathbb{P}(S_n - \mathbb{E}[S_n] \geq t) &\leq \exp\left(-\frac{2t^2}{n}\right), \\
+\mathbb{P}(|S_n - \mathbb{E}[S_n]| \geq t) &\leq 2 \exp\left(-\frac{2t^2}{n}\right),
+\end{align*}
+$$
+or equivalently, 
+$$
+\begin{align*}
+\mathbb{P}\left(\frac{S_n - \mathbb{E}[S_n]}{n} \geq t\right) &\leq \exp(-2nt^2), \\
+\mathbb{P}\left(\left|\frac{S_n - \mathbb{E}[S_n]}{n}\right| \geq t\right) &\leq 2 \exp(-2nt^2).
+\end{align*}
+
+$$
