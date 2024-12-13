@@ -122,6 +122,6 @@ In Bayesian statistics, Bayes' rule prescribes how to update the prior with new 
 A type of conditional probability that results from updating the prior probability with information summarized by the likelihood via an application of Bayes' rule.  
 In the context of Bayesian statistics, it is a conditional distribution over the unobserved random variables, conditioned on the observed random variables. e.g., $p(\theta \mid x,y)$
 
-### Training error vs Generalization error
+### Training error(Empirical error) vs Generalization error
 Training error is measured on training data - the data used to construct the model.  
 Generalization error is the error expected on new cases, and is usually estimated by measuring the error on a test data set, which is not used during model construction.

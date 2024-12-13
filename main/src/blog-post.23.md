@@ -203,5 +203,11 @@ $$
 \mathbb{P}\left(\frac{S_n - \mathbb{E}[S_n]}{n} \geq t\right) &\leq \exp(-2nt^2), \\
 \mathbb{P}\left(\left|\frac{S_n - \mathbb{E}[S_n]}{n}\right| \geq t\right) &\leq 2 \exp(-2nt^2).
 \end{align*}
-
 $$
+
+## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM.
+
+### Finite H
+
+### Infinite H
+#### Vapnik-Chervonenkis dimension
