@@ -206,7 +206,52 @@ $$
 $$
 
 ## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM.
+### Questions
+The Question we want to solve is that.
+ 1. Can we make formal the bias and variance trade-off.
+ 2. Even though it's really generalization error that we care about, but most learning algorithms fit their models to the training set. Can we relate error on the training set to generalization error?
+ 3. Are there conditions under which we can actually prove that learning algorithms will work well?
 
+### Lemmas
+ 1. Union Bound : The probability of any one of $k$ events happening is at most the sums of the probabilities of the $k$ different events.
+ 2. Hoeffding Inequality : If we take $\hat{\phi}$ — the average of $m$ Bernoulli($\phi$)random variables — to be our estimate of $\phi$, then the probability of our being far from the true value is small, so long as $m$ is large.
+
+### Preliminaries
+We are trying to answer questions using lemmas. Let's assume that
+restrict our attention to binary classification in which the labels are $y \in \{0, 1\}$.
+
+$$
+S = \left\{ \left(x^{(i)}, y^{(i)}\right); i = 1, \ldots, m \right\}
+$$
+
+Given a training set $S$ of size $m$ , where the training examples $(x(i), y(i))$ are drawn iid from some probability distribution $D$. For a hypothesis $h$, we define the training error (also called the empirical risk or empirical error in learning theory) to be below..
+$$
+\hat{\varepsilon}(h) = \frac{1}{m} \sum_{i=1}^{m} \mathbb{1}\{h(x^{(i)}) \neq y^{(i)}\}.
+$$
+This is just the fraction of training examples that $h$ misclassifies.  
+
+We also define the generalization error to be
+$$
+\varepsilon(h) = P_{(x,y) \sim \mathcal{D}}(h(x) \neq y).
+$$
+I.e. this is the probability that, if we now draw a new example $(x, y)$ from
+the distribution $D$, $h$ will misclassify it.
+
+Note that we have assumed that the training data was drawn from the same distribution $D$ with which we’re going to evaluate our hypotheses. This is sometimes also referred to as
+one of the PAC assumptions.
+
+Consider the setting of linear classification, and let hypothesis $h$ is $h_{\theta}(x) = \mathbb{1}\{\theta^\top x \geq 0\}$. One reasonable way of fitting the parameters is trying to minimize the training error as below.
+$$
+\hat{\theta} = \arg \min_{\theta} \hat{\varepsilon}(h_{\theta}).
+$$
+This process is Empirical Risk Minimization (ERM), and the resulting hypothesis output by the learning algorithm is $\hat{h} = h_{\hat{\theta}}$.  
+
+When $H$ is called hypothesis classs and it is the set of
+all classifiers. Empirical Risk Minimization can now be thought of as a minimization over the class of functions $H$. In other words the learning algorithm picks the hypothesis based on the fomular below.
+$$
+\hat{h} = \arg \min_{h \in \mathcal{H}} \hat{\varepsilon}(h).
+$$
+#### IID
 ### Finite H
 
 ### Infinite H
