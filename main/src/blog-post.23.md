@@ -189,7 +189,7 @@ $$
 $$
 
 #### Hoeffding's inequality Special Case: Bernoulli Random Variables
-Suppose $a_{i}=0$ and $b_{i}=1$ for all $i$. This can occur when $X_{i}$ are independent Bernoulli random variables, though they need not be identically distributed.  
+Suppose $a_{i}=0$ and $b_{i}=1$ for all $i$. This can occur when $X_{i}$ are independent Bernoulli random variables, though they need not be identically distributed. The set $S_n = X_1 + \cdots + X_n$.
 Then we get the inequality for all $t \geq 0$.  
 $$
 \begin{align*}
@@ -253,6 +253,7 @@ $$
 $$
 #### IID
 ### Finite H
+$H$ is just a set of $k$ functions mapping from $X$ to ${0, 1}$, and empirical risk minimization selects $hat{h} to be whichever of these $k$ functions has the smallest training error.
 
 ### Infinite H
 #### Vapnik-Chervonenkis dimension
