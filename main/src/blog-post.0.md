@@ -47,6 +47,20 @@ In mathematics, a coefficient is a multiplicative factor involved in some term o
 In mathematics, a variable is a symbol, typically a letter, that holds a place for constants, often numbers. One say colloquially that the variable represents or denotes the object, and that the object is the value of the variable.  
 A variable may represent a unspecified number that remains fixed during the resolution of a problem; in which case, it is often called a parameter. A variable may denote an unknown number that has to be determined
 
+### Math Symbols
+ - Logical NOT: It negates the condition that follows.
+$$
+\neg
+$$
+ - There exists: There exists hypothesis $h$ in the hypothesis class $\mathcal{{H}}$.
+$$
+\exists h \in \mathcal{H}
+$$
+ - For all : For all hypothesis $h$ in the hypothesis class $\mathcal{{H}}$.
+$$
+\forall h \in \mathcal{H}
+$$
+
 ### Coefficient and Variable in Polynomial
 $$
 2X^2 - 3X + 2
