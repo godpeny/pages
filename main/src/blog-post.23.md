@@ -205,7 +205,7 @@ $$
 \end{align*}
 $$
 
-## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM.
+## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM
 ### Questions
 The Question we want to solve is that.
  1. Can we make formal the bias and variance trade-off.
@@ -251,7 +251,14 @@ all classifiers. Empirical Risk Minimization can now be thought of as a minimiza
 $$
 \hat{h} = \arg \min_{h \in \mathcal{H}} \hat{\varepsilon}(h).
 $$
-#### IID
+#### Independent and identically distribute (IID)
+A collection of random variables is independent and identically distributed(IID) if each random variable has the same probability distribution as the others and all are mutually independent.  
+A random sample can be thought of as a set of objects that are chosen randomly.  
+More formally, it is "a sequence of independent, identically distributed (IID) random data points.".  
+In other words, the terms random sample and IID are synonymous. 
+ - Identically distributed means that there are no overall trends — the distribution does not fluctuate and all items in the sample are taken from the same probability distribution.
+ - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way;[2] knowledge of the value of one variable gives no information about the value of the other and vice versa.
+
 ### Finite H
 $H$ is just a set of $k$ functions mapping from $X$ to ${0, 1}$, and empirical risk minimization selects $hat{h} to be whichever of these $k$ functions has the smallest training error.
 
