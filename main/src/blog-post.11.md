@@ -124,6 +124,18 @@ func incrementor() func() int {
 
 ## Golang
 ### Goroot, GoPath, GoProxy, GoSumDB
+ - Goroot : GOROOT is for compiler and tools that come from go installation and is used to find the standard libraries. It should always be set to the installation directory. 
+ - GoPath : GOPATH, also called the workspace directory, is the directory where the Go code belongs. It is implemented by and documented in the go/build package and is used to resolve import statements.
+ ```shell
+GOPATH="/Users/godpeny/Code"
+GOROOT="/opt/homebrew/Cellar/go@1.20/1.20.14/libexec"
+ ```
+- GOPROXY: Defines proxy servers that must be used to download dependencies. These proxy servers are used when you trigger the go command. Read more about GOPROXY in Module downloading and verification at golang.org.
+- GOSUMDB: Identifies the name of the checksum database. The checksum database verifies that your packages from the go.sum file are trusted. Read more about GOSUMDB in Module authentication failures at golang.org.
+- GOPRIVATE: Lists packages that are considered private. The go command does not use the GOPRIVATE or checksum database when downloading and validating these packages. Read more about GOPRIVATE in Module configuration for non-public modules at golang.org.
+- GONOPROXY: Lists packages that are considered private. The go command does not use the proxy when downloading these packages. GONOPROXY overrides GOPRIVATE.
+- GONOSUMDB: Lists packages that are considered private. The go command does not use the checksum database during validation of these packages. Overrides GOPRIVATE.
+
 
 ### Naked Return
 https://go.dev/tour/basics/7
