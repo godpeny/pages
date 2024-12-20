@@ -258,6 +258,15 @@ More formally, it is "a sequence of independent, identically distributed (IID) r
 In other words, the terms random sample and IID are synonymous. 
  - Identically distributed means that there are no overall trends — the distribution does not fluctuate and all items in the sample are taken from the same probability distribution.
  - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way;[2] knowledge of the value of one variable gives no information about the value of the other and vice versa.
+ 
+## Hypothesis(h) and Hypothesis
+### Hypothesis Space (H)
+Hypothesis space is the set of all the possible legal hypothesis.  
+This is the set from which the machine learning algorithm would determine the best possible (only one) which would best describe the target function or the outputs.
+ - Finite Hypothesis Class: In this case, the hypothesis class (often denoted as H) is assumed to be finite. A hypothesis class represents the set of possible models or functions that a machine learning algorithm can choose from when trying to learn a relationship between input data and output. When the hypothesis class is finite, it means that there are a limited number of potential models or functions to choose from. Conceptually, a finite hypothesis class H can be represented as a set of distinct hypotheses or models. Suppose H has "m" hypotheses. You can represent it as: $\mathcal{H} = \{h_1, h_2, \cdots h_n \}$
+- Infinite Hypothesis Class: Conversely, an "infinite hypothesis class" implies that the set of potential models or functions is not limited and can be infinite. This can be the case when, for example, the algorithm can consider an unbounded number of different models or functions to fit the data. An infinite hypothesis class H typically doesn't have a finite, enumerable list of hypotheses. It can include an infinite number of possible hypotheses. There is no specific equation to represent this class; it's described by the fact that it's unbounded.
+### Hypothesis (h)
+A hypothesis is a function that best describes the target in supervised machine learning. The hypothesis that an algorithm would come up depends upon the data and also depends upon the restrictions and bias that we have imposed on the data.
 
 ### Finite H
 $H$ is just a set of $k$ functions mapping from $X$ to ${0, 1}$, and empirical risk minimization selects $hat{h} to be whichever of these $k$ functions has the smallest training error.
