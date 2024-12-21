@@ -60,6 +60,10 @@ $$
 $$
 \forall h \in \mathcal{H}
 $$
+ -  there does not exist: the probability that there does not exist some element or condition satisfying a particular property. 
+ $$
+ \neg \exists
+ $$
 
 ### Coefficient and Variable in Polynomial
 $$
