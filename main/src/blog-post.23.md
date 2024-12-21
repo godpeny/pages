@@ -180,6 +180,13 @@ $$
 $$
 \mathbb{P}\left(|S_n - \mathbb{E}[S_n]| \geq t\right) \leq 2 \exp\left(-\frac{2t^2}{\sum_{i=1}^n (b_i - a_i)^2}\right)
 $$
+Or equivalently when using average instead of sum,
+$$
+\mathbb{P}\left(\frac{S_n - \mathbb{E}[S_n]}{n} \geq t\right) \leq \exp(-2nt^2)
+$$
+$$
+\mathbb{P}\left(\left|\frac{S_n - \mathbb{E}[S_n]}{n}\right| \geq t\right) \leq 2 \exp(-2nt^2)
+$$
 
 #### Hoeffding's inequality Generalization
 Let $Y_{1},\dots ,Y_{n}$ be independent observations such that 
@@ -204,6 +211,25 @@ $$
 \mathbb{P}\left(\left|\frac{S_n - \mathbb{E}[S_n]}{n}\right| \geq t\right) &\leq 2 \exp(-2nt^2).
 \end{align*}
 $$
+
+## Independent and identically distribute (IID)
+A collection of random variables is independent and identically distributed(IID) if each random variable has the same probability distribution as the others and all are mutually independent.  
+A random sample can be thought of as a set of objects that are chosen randomly.  
+More formally, it is "a sequence of independent, identically distributed (IID) random data points.".  
+In other words, the terms random sample and IID are synonymous. 
+ - Identically distributed means that there are no overall trends — the distribution does not fluctuate and all items in the sample are taken from the same probability distribution.
+ - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way;[2] knowledge of the value of one variable gives no information about the value of the other and vice versa.
+ 
+## Hypothesis(h) and Hypothesis
+### Hypothesis Space (H)
+Hypothesis space is the set of all the possible legal hypothesis.  
+This is the set from which the machine learning algorithm would determine the best possible (only one) which would best describe the target function or the outputs.
+ - Finite Hypothesis Class: In this case, the hypothesis class (often denoted as H) is assumed to be finite. A hypothesis class represents the set of possible models or functions that a machine learning algorithm can choose from when trying to learn a relationship between input data and output. When the hypothesis class is finite, it means that there are a limited number of potential models or functions to choose from. Conceptually, a finite hypothesis class H can be represented as a set of distinct hypotheses or models. Suppose H has "m" hypotheses. You can represent it as: $\mathcal{H} = \{h_1, h_2, \cdots h_n \}$
+- Infinite Hypothesis Class: Conversely, an "infinite hypothesis class" implies that the set of potential models or functions is not limited and can be infinite. This can be the case when, for example, the algorithm can consider an unbounded number of different models or functions to fit the data. An infinite hypothesis class H typically doesn't have a finite, enumerable list of hypotheses. It can include an infinite number of possible hypotheses. There is no specific equation to represent this class; it's described by the fact that it's unbounded.
+### Hypothesis (h)
+A hypothesis is a function that best describes the target in supervised machine learning. The hypothesis that an algorithm would come up depends upon the data and also depends upon the restrictions and bias that we have imposed on the data.
+
+## Vapnik-Chervonenkis dimension
 
 ## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM
 ### Questions
@@ -251,25 +277,57 @@ all classifiers. Empirical Risk Minimization can now be thought of as a minimiza
 $$
 \hat{h} = \arg \min_{h \in \mathcal{H}} \hat{\varepsilon}(h).
 $$
-#### Independent and identically distribute (IID)
-A collection of random variables is independent and identically distributed(IID) if each random variable has the same probability distribution as the others and all are mutually independent.  
-A random sample can be thought of as a set of objects that are chosen randomly.  
-More formally, it is "a sequence of independent, identically distributed (IID) random data points.".  
-In other words, the terms random sample and IID are synonymous. 
- - Identically distributed means that there are no overall trends — the distribution does not fluctuate and all items in the sample are taken from the same probability distribution.
- - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way;[2] knowledge of the value of one variable gives no information about the value of the other and vice versa.
- 
-## Hypothesis(h) and Hypothesis
-### Hypothesis Space (H)
-Hypothesis space is the set of all the possible legal hypothesis.  
-This is the set from which the machine learning algorithm would determine the best possible (only one) which would best describe the target function or the outputs.
- - Finite Hypothesis Class: In this case, the hypothesis class (often denoted as H) is assumed to be finite. A hypothesis class represents the set of possible models or functions that a machine learning algorithm can choose from when trying to learn a relationship between input data and output. When the hypothesis class is finite, it means that there are a limited number of potential models or functions to choose from. Conceptually, a finite hypothesis class H can be represented as a set of distinct hypotheses or models. Suppose H has "m" hypotheses. You can represent it as: $\mathcal{H} = \{h_1, h_2, \cdots h_n \}$
-- Infinite Hypothesis Class: Conversely, an "infinite hypothesis class" implies that the set of potential models or functions is not limited and can be infinite. This can be the case when, for example, the algorithm can consider an unbounded number of different models or functions to fit the data. An infinite hypothesis class H typically doesn't have a finite, enumerable list of hypotheses. It can include an infinite number of possible hypotheses. There is no specific equation to represent this class; it's described by the fact that it's unbounded.
-### Hypothesis (h)
-A hypothesis is a function that best describes the target in supervised machine learning. The hypothesis that an algorithm would come up depends upon the data and also depends upon the restrictions and bias that we have imposed on the data.
 
-### Finite H
-$H$ is just a set of $k$ functions mapping from $X$ to ${0, 1}$, and empirical risk minimization selects $hat{h} to be whichever of these $k$ functions has the smallest training error.
+## ERM in Finite H
+$H$ is just a set of $k$ functions mapping from $X$ to ${0, 1}$, and empirical risk minimization selects $hat{h} to be whichever of these $k$ functions has the smallest training error.  
+ -  First, we will show that $\hat{\varepsilon}(h)$ (training error of a hypothesis) is a
+reliable estimate of $\varepsilon(h)$(generalization error) for all $h$.
+ - Second, we will show that this implies an
+upper-bound on the generalization error of $\hat{h}$ (hypothesis from learning algorithm that minimize training error).
 
-### Infinite H
-#### Vapnik-Chervonenkis dimension
+When $h_i \in \mathcal{H}$ and sample $(x, y) \sim \mathcal{D}$, let's set $Z = 1\{ h_i(x) \neq y \}$. We can also say that $Z_j = 1\{ h_i(x^{(j)}) \neq y^{(j)} \}$.  
+Using above, we can see that  $\varepsilon(h)$ (generalization error = the misclassification probability on a randomly drawn example) is, 
+$$
+\varepsilon(h) = Z
+$$
+While  $\hat{\varepsilon}(h)$ (training error) is, 
+$$
+\hat{\epsilon}(h_i) = \frac{1}{m} \sum_{j=1}^m Z_j.
+$$
+Thus, $\hat{\epsilon}(h_i)$ is exactly the mean of the $m$ random variables $Z_j$ that are drawn iid from a Bernoulli distribution with mean $\varepsilon{(h_i)}$.  
+If apply the Hoeffding inequality in average form, 
+$$
+\mathbb{P} \left( |\varepsilon(h_i) - \hat{\varepsilon}(h_i)| > \gamma \right) 
+\leq 2 \exp(-2 \gamma^2 m).
+$$
+
+When $\varepsilon(h_i) = \mathbb{E}[S_n] / n$ and $\hat{\varepsilon}(h_i)= S_N/n$.  
+
+This shows that, for our particular $h_i$, training error will be close to generalization error with high probability, assuming $m$ is large.
+
+However, we don’t just want to guarantee that $\hat{\varepsilon}(h_i)$ will be close to $\varepsilon(h_i)$ with high
+probability for just only one particular $h_i$. We want it true for all $h \in \mathcal{H}$.  
+$$
+\text{If } A_i = |\epsilon(h_i) - \hat{\epsilon}(h_i)| > \gamma, \\
+P(A_i) \leq 2 \exp(-2\gamma^2 m).
+$$
+Using Union Bound, for all $A_i$, we can find out the probability of the empirical error deviates significantly from the true error for at least one hypothesis in the hypothesis class as below.
+$$
+P\left(\exists h \in \mathcal{H} : |\epsilon(h_i) - \hat{\epsilon}(h_i)| > \gamma \right) 
+= P(A_1 \cup \cdots \cup A_k) \\
+\leq \sum_{i=1}^k P(A_i) \\
+\leq \sum_{i=1}^k 2 \exp(-2\gamma^2 m) \\
+= 2k \exp(-2\gamma^2 m).
+$$
+If we subtract both sides from 1, we can find that,
+$$
+P\left(\neg \exists h \in \mathcal{H} : |\epsilon(h_i) - \hat{\epsilon}(h_i)| > \gamma \right) 
+= P\left(\forall h \in \mathcal{H} : |\epsilon(h_i) - \hat{\epsilon} \\(h_i)| \leq \gamma \right) \\
+\geq 1 - 2k \exp(-2\gamma^2 m).
+$$
+For all hypothesis $h$ in hypothesis classs $\mathcal{H}$, the probability of the absolute difference of errors does not exceed $\gamma$. In other word, with probability at least $1 - 2k \exp(-2\gamma^2 m)$, we have that $\epsilon(h)$ will be within $\gamma$
+ of $\hat{\varepsilon}(h)$ for all $h \in \mathcal{H}$.  
+This is called a uniform convergence result, because this is a bound that holds simultaneously for all $h \in \mathcal{H}$.
+
+
+## ERM in Infinite H
