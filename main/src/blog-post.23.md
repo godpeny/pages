@@ -329,5 +329,41 @@ For all hypothesis $h$ in hypothesis classs $\mathcal{H}$, the probability of th
  of $\hat{\varepsilon}(h)$ for all $h \in \mathcal{H}$.  
 This is called a uniform convergence result, because this is a bound that holds simultaneously for all $h \in \mathcal{H}$.
 
+There are three quantities of interest here: $m$, $\gamma$, and the probability of error($1 - 2k \exp(-2\gamma^2 m$)). We can bound either one in terms of the other two.  
+By setting
+ $\delta= 2k\exp(−2\gamma^2m)$ and solving for $m$, 
+$$
+m \geq \frac{1}{2\gamma^2} \log \frac{2k}{\delta},
+$$
+Thus, if $m$ is large enough as above, we can guarantee that with probability at least $1 - \delta$, training error will be within $\gamma$ of generalization error. guarantee. This training set size $m$ that a certain method or algorithm requires in order to achieve a certain level of performance is also called the algorithm’s sample complexity.  
+Similarly, hold $m$ and fixed $\delta$ and solve for $\gamma$, we can showthat with probability $1 − \gamma$ , we have that for all $h$,
+$$
+\left| \hat{\epsilon}(h) - \epsilon(h) \right| \leq \sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}.
+$$
+
+Given $h^* = \arg\min_{h \in \mathcal{H}} \epsilon(h)$ and $h^*$ be the best possible hypothesis in $\mathcal{H}$,
+
+$$
+\begin{align*}
+\epsilon(\hat{h}) &\leq \hat{\epsilon}(\hat{h}) + \gamma \quad \text{(1)} \\
+&\leq \hat{\epsilon}(h^*) + \gamma  \quad \text{(2)} \\
+&\leq \epsilon(h^*) + 2\gamma  \quad \text{(3)}
+\end{align*}
+$$
+$\text{(1)}$ can be derived from uniform convergence assumption that $\hat{\epsilon}(\hat{h}) - \gamma \leq \epsilon(\hat{h}) \leq \hat{\epsilon}(\hat{h}) + \gamma$ from the fomular $|\epsilon(\hat{h}) - \hat{\epsilon}(\hat{h})| \leq \gamma$.  
+
+$\text{(2)}$ $\hat{\epsilon}(\hat{h}) + \gamma, \leq \hat{\epsilon}(\hat{h}) \leq \hat{\epsilon}(h^*)$ can be derived from the fact that $\hat{\varepsilon}(\hat{h}) \leq \hat{\varepsilon}(h)$ for all $h \in \mathcal{H}$. So, $\hat{\varepsilon}(\hat{h}) \leq \hat{\varepsilon}(h^*)$ is true because $h^*$ is also one of $h \in \mathcal{H}$.
+
+Again using uniform convergence assumption that used in $\text{(1)}$, $|\hat{\epsilon}(h^*) - \epsilon(h^*)| \leq \gamma \leq 2\gamma $.
+In conclusion, if uniform convergence
+occurs, then the generalization error of $\hat{h}$ ($\varepsilon(\hat{h})$)  is at most $2 \gamma$ worse than the generalization error of the best possible hypothesis($\varepsilon(h^*)$) in $\mathcal{H}$.  
+In other word, if we have some
+hypothesis class $\mathcal{H}$ and are considering switching to some much larger hypothesis class $\mathcal{H}' \subseteq \mathcal{H}$.  
+If we switch to $\mathcal{H}'$, bias only can be decreased. This is because bias is generalization error of hypothesis considering below theorm with the probability of at least  $1-\gamma$ when $|\mathcal{H}| = k$ and $m$, $\delta$ are fixed.
+$$
+\varepsilon(\hat{h}) \leq \left( \min_{h \in \mathcal{H}} \varepsilon(h) \right) + 2 \sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}.
+$$
+We can see that the term $\min_{h \in \mathcal{H}}$ can only be decreased when the size of hypothesis is increasing. Therefore learning using a larger hypothesis class, bias can only decrease. 
+
 
 ## ERM in Infinite H
