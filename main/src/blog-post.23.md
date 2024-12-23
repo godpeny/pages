@@ -229,8 +229,37 @@ This is the set from which the machine learning algorithm would determine the be
 ### Hypothesis (h)
 A hypothesis is a function that best describes the target in supervised machine learning. The hypothesis that an algorithm would come up depends upon the data and also depends upon the restrictions and bias that we have imposed on the data.
 
-## Vapnik-Chervonenkis dimension
+## Shatter
+Suppose $A$ is a set and $C$ is a class of sets. The class $C$ shatters the set $A$ if for each subset a of $A$, there is some element $c$ of $C$ such that, $a = c \cap A$.  
+Simply speaking, an arrangement of points can be shattered if any subset of this arrangement can be isolated and put into one class. Say, you want to test if a certain arrangement (not all possible arrangements but only one particular arrangement) of $n$ points can be shattered by a certain type of classifiers.  
+Then you first test if any single point($1$) can be isolated. Then, if any $2$ points can be isolated, then if any $3$ points, etc, till any $n-1$ points of that particular arrangement.  
 
+For example, $f$ is a straight line as a classification model on points in a two-dimensional plane and the line should separate positive data points from negative data points.  
+There exist sets of 3 points that can indeed be shattered using this model (any 3 points that are not collinear can be shattered). However, no set of 4 points can be shattered: by Radon's theorem, any four points can be partitioned into two subsets with intersecting convex hulls, so it is not possible to separate one of these two subsets from the other.   
+### 3 points in 2 dimension plane that shatter with a straight line classifier
+![alt text](images/blog23_line_shatter_2d_3points.png)
+### 3 points in 2 dimension plane that not shatter with a straight line classifier
+![alt text](images/blog23_line_shatter_2d_4points.png)
+
+## Vapnik-Chervonenkis Dimension (VC Dimension)
+VC Dimension is a measure of the size (capacity, complexity, expressive power, richness, or flexibility) of a class of sets.  
+The notion can be extended to classes of binary functions and it is defined as the cardinality of the largest set of points that the algorithm can shatter, which means the algorithm can always learn a perfect classifier for any labeling of at least one configuration of those data points. 
+
+### VC Dimension of a classification model
+A binary classification model $f$ with some parameter vector $\theta$ is said to shatter a set of generally positioned data points $ (x_{1},x_{2},\ldots ,x_{n})$. If, for every assignment of labels to those points, there exists a $\theta$ such that the model $f$ makes no errors when evaluating that set of data points.  
+
+The definition of VC Dimension does not say "if any" set of $n$ points can be shattered by the classifier, but "if there exists" a set of $n$ points that can be shattered by the classifier and there is no set of $n+1$ points that can be shattered by the classifier, then the VC dimension of the classifier is $n$.
+So if a classifier's VC dimension is $3$, it does not have to shatter all possible arrangements of $3$ points.  
+Therefore, if of all arrangements of $3$ points you can find at least one such arrangement that can be shattered by the classifier, and cannot find $4$ points that can be shattered, then VC dimension is $3$.
+![alt text](images/blog23_vc_dimension.png)
+
+### In statistical learning theory
+The VC dimension can predict a probabilistic upper bound on the test error of a classification model.  
+It proved that the probability of the test error distancing from an upper bound (on data that is drawn i.i.d. from the same distribution as the training set) as below,
+$$
+\Pr\left(\text{test error} \leq \text{training error} + \sqrt{\frac{1}{N} \left[ D \left( \log\left(\frac{2N}{D}\right) + 1 \right) - \log\left(\frac{\eta}{4}\right) \right]} \right) = 1 - \delta,
+$$
+When $D$ is VC Dimension and $0 < \delta < 1$ and $N$ is the size of the training set. Therefore the VC Dimension provides both upper and lower bounds on the number of training examples required to achieve a given level of accuracy. 
 ## How Uniform Convergence, Union Bound and Hoeffding's inequality related in ERM
 ### Questions
 The Question we want to solve is that.
@@ -360,6 +389,7 @@ occurs, then the generalization error of $\hat{h}$ ($\varepsilon(\hat{h})$)  is 
 In other word, if we have some
 hypothesis class $\mathcal{H}$ and are considering switching to some much larger hypothesis class $\mathcal{H}' \subseteq \mathcal{H}$.  
 If we switch to $\mathcal{H}'$, bias only can be decreased. This is because bias is generalization error of hypothesis considering below theorm with the probability of at least  $1-\gamma$ when $|\mathcal{H}| = k$ and $m$, $\delta$ are fixed.
+From the derivation that $\text{(3)} = \epsilon(h^*) + 2\gamma$, $\epsilon(h^*)$ can be interpreted as $\min_{h \in \mathcal{H}}$. Also, we have proven that $\gamma$ can be expressed as $\sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}$. Therefore, 
 $$
 \varepsilon(\hat{h}) \leq \left( \min_{h \in \mathcal{H}} \varepsilon(h) \right) + 2 \sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}.
 $$
@@ -367,3 +397,23 @@ We can see that the term $\min_{h \in \mathcal{H}}$ can only be decreased when t
 
 
 ## ERM in Infinite H
+But many hypothesis classes, including any parameterized by real numbers
+(as in linear classification) actually contain an infinite number of functions. Can we prove similar results for this setting?  
+Given a hypothesis class $\mathcal{H}$, using VC Dimension theorem, 
+$$
+|\epsilon(h) - \hat{\epsilon}(h)| \leq O\left(\sqrt{\frac{d}{m} \log\frac{m}{d} + \frac{1}{m} \log\frac{1}{\delta}}\right)
+$$
+With the probability of at least $1 - \delta$ when $d$ is VC Dimension and $m$ is the size of training set.  
+Using the derivation used in finite H case, 
+$$
+\epsilon(\hat{h}) \leq \epsilon(h^*) + O\left(\sqrt{\frac{d}{m} \log\frac{m}{d} + \frac{1}{m} \log\frac{1}{\delta}}\right)
+$$
+In other words, if a hypothesis class $\mathcal{H}$ has finite VC Dimension, then uniform convergence occurs as $m$ becomes large. As before, this allows us to give a bound on $\epsilon(\hat{h})$ in terms of $\epsilon(h^*)$.  
+
+Also VC Dimension also appears in sample-complexity bounds. A space of binary functions with VC dimension $D$ can be learned with $N$ samples as below.
+$$
+N=\Theta \left({\frac {D+\ln {1 \over \delta }}{\varepsilon ^{2}}}\right)
+$$
+While $\varepsilon$ is the learning error and $\delta$ is the failure probability. Thus, the sample-complexity is a linear function of the VC dimension of the hypothesis space.
+In other words, the number of training examples needed to learn “well”
+using $\mathcal{H}$ is linear in the VC dimension of $\mathcal{H}$ ($D$) 
