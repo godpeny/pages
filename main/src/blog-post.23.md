@@ -388,7 +388,7 @@ In conclusion, if uniform convergence
 occurs, then the generalization error of $\hat{h}$ ($\varepsilon(\hat{h})$)  is at most $2 \gamma$ worse than the generalization error of the best possible hypothesis($\varepsilon(h^*)$) in $\mathcal{H}$.  
 In other word, if we have some
 hypothesis class $\mathcal{H}$ and are considering switching to some much larger hypothesis class $\mathcal{H}' \subseteq \mathcal{H}$.  
-If we switch to $\mathcal{H}'$, bias only can be decreased. This is because bias is generalization error of hypothesis considering below theorm with the probability of at least  $1-\gamma$ when $|\mathcal{H}| = k$ and $m$, $\delta$ are fixed.
+If we switch to $\mathcal{H}'$, bias only can be decreased. This is because bias is generalization error of hypothesis considering below theorm with the probability of at least  $1-\gamma$ when $|\mathcal{H}| = k$ and $m$, $\delta$ are fixed.  
 From the derivation that $\text{(3)} = \epsilon(h^*) + 2\gamma$, $\epsilon(h^*)$ can be interpreted as $\min_{h \in \mathcal{H}}$. Also, we have proven that $\gamma$ can be expressed as $\sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}$. Therefore, 
 $$
 \varepsilon(\hat{h}) \leq \left( \min_{h \in \mathcal{H}} \varepsilon(h) \right) + 2 \sqrt{\frac{1}{2m} \log \frac{2k}{\delta}}.
@@ -417,3 +417,10 @@ $$
 While $\varepsilon$ is the learning error and $\delta$ is the failure probability. Thus, the sample-complexity is a linear function of the VC dimension of the hypothesis space.
 In other words, the number of training examples needed to learn “well”
 using $\mathcal{H}$ is linear in the VC dimension of $\mathcal{H}$ ($D$) 
+
+## Sample Complexity
+The sample complexity of a machine learning algorithm represents the number of training-samples that it needs in order to successfully learn a target function.  
+More precisely, the sample complexity is the number of training-samples that we need to supply to the algorithm, so that the function returned by the algorithm is within an arbitrarily small error of the best possible function, with probability arbitrarily close to 1.  
+In general, the strong sample complexity is infinite, i.e. that there is no algorithm that can learn the globally-optimal target function using a finite number of training samples.  
+But If we are only interested in a particular class of target functions (e.g., only linear functions) then the sample complexity is finite, and it depends linearly on the VC dimension on the class of target functions.
+
