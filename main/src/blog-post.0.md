@@ -76,6 +76,9 @@ aX^2 + bX + c = 0
 $$
 From above polynomial, parameters are $a,b,c$ and variable is $X$.
 
+### Radon's theorem
+### Convex Hull
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
