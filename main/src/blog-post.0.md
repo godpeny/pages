@@ -78,6 +78,17 @@ From above polynomial, parameters are $a,b,c$ and variable is $X$.
 
 ### Radon's theorem
 ### Convex Hull
+### Additive Structure
+In Machine Learning, additive structure refers to a functional form where the output is the sum of contributions from individual components, 
+often represented as:  
+$$
+f(x) = \sum_{i=1}^{k} f_i(x_i).
+$$
+Each feature $x_i$ contributes independently to the output $f(x)$.  
+Common examples include linear models and generalized additive models (GAMs).
+It emphasizes how the model combines inputs additively, focusing on simplicity and interpretability.
+
+In Mathematics, additive structure can describe systems where addition (or an analogous operation) plays a defining role, such as vector spaces, rings, or groups. It highlights how elements interact under the operation of addition.
 
 ## A.I Related Terminology
 ### Supervised Learning
