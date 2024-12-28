@@ -14,10 +14,20 @@ $$
 = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] - \mathbb{E}[X]\mathbb{E}[Y] + \mathbb{E}[X]\mathbb{E}[Y] \\
 = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]
 $$
-
-### Relationship with Variance
+### Variance
+Variance is the expected value of the squared deviation from the mean of a random variable.
 $$
-\text{cov}(X, X) = \text{var}(X)
+\text{Var}(X) = \mathbb{E}[(X - \mu)^2].
+$$
+### Relationship Between Variance and Covariance
+$$
+\text{Cov}(X_i, X_i) = \text{Var}(X_i).
+$$
+Using the fact above, the sum of variance can be written as
+$$
+\text{Var}\left(\sum_{i=1}^n X_i\right) = \sum_{i=1}^n \sum_{j=1}^n \text{Cov}(X_i, X_j) = \\ 
+\sum_{i=1}^n \text{Var}(X_i) + 2 \sum_{1 \leq i < j \leq n} \text{Cov}(X_i, X_j) = \\
+\sum_{i=1}^n \text{Var}(X_i) + \sum_{i \neq j} \text{Cov}(X_i, X_j)
 $$
 
 ### Correlation
@@ -70,6 +80,34 @@ $$
 ## Decision Tree
 ### Cross-Entropy
 ## Ensmeble
+### Basic Probability Theory in Ensemble
+Since $\text{Var}(X_i) = \sigma^2$ and $\text{Var}(aX) = a^2 \text{Var}(X)$, variance of mean of $X$($\bar{X})$ is,
+$$
+\text{Var}(\bar{X}) = \text{Var}\left(\frac{1}{n} \sum_i X_i \right) = \frac{\sigma^2}{n}
+$$
+When variables are only identically distributed, using above derivation we can find out that,
+$$
+\text{Var}(\bar{X}) = \text{Var}\left(\frac{1}{n} \sum_i X_i \right) \text{(1)} \\
+= \frac{1}{n^2} \sum_{i,j} \text{Cov}(X_i, X_j) \text{(2)} \\
+= \frac{n\sigma^2}{n^2} + \frac{n(n-1)\rho\sigma^2}{n^2} \text{(3)} \\
+= \rho\sigma^2 + \frac{1-\rho}{n} \sigma^2 \text{(4)}
+$$
+(2) and (3) is derived from the relationship between variance and covariance, which is,
+$$
+\text{Var}\left(\sum_{i=1}^n X_i\right) = \sum_{i=1}^n \sum_{j=1}^n \text{Cov}(X_i, X_j)
+ = \sum_{i=1}^n \text{Var}(X_i) + \sum_{i \neq j} \text{Cov}(X_i, X_j)
+$$
+Also in (3), we know that varinace of the mean is $\frac{\sigma^2}{n}$ and any sets of $X_i$ and $X_j$  are correlated by a factor $\rho$ when $i \neq j$.  
+Therefore below can be derived as shown in (3).
+$$
+\text{Since } \text{Var}(X_i)= \sigma^2, \\ 
+\sum_{i=1}^n \text{Var}(X_i) = n \sigma^2
+$$
+$$
+\sum_{i \neq j} \text{Cov}(X_i, X_j) = (n^2-n)\rho\sigma^2
+$$
+Multiplying two with $\frac{1}{n^2}$ and combined together, we can understsand (4).
+
 ### Bagging
 ### Boosting
 
