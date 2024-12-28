@@ -80,6 +80,11 @@ $$
 ## Decision Tree
 ### Cross-Entropy
 ## Ensmeble
+Ensemble means ‘a collection of things’ and in Machine Learning terminology, Ensemble learning refers to the approach of combining multiple ML models to produce a more accurate and robust prediction compared to any individual model.  
+The idea is to train a diverse set of weak models on the same modelling task, such that the outputs of each weak learner have poor predictive ability (i.e., high bias), and among all weak learners, the outcome and error values exhibit high variance.  
+The set of weak models — which would not produce satisfactory predictive results individually — are combined or averaged to produce a single, high performing, accurate, and low-variance model to fit the task as required.  
+The Ensemble learning typically refers to bagging (bootstrap aggregating), boosting or stacking/blending techniques to induce high variance among the base models. We will look over only bagging and boosting.
+
 ### Basic Probability Theory in Ensemble
 Since $\text{Var}(X_i) = \sigma^2$ and $\text{Var}(aX) = a^2 \text{Var}(X)$, variance of mean of $X$($\bar{X})$ is,
 $$
@@ -108,6 +113,27 @@ $$
 $$
 Multiplying two with $\frac{1}{n^2}$ and combined together, we can understsand (4).
 
-### Bagging
-### Boosting
+### Bagging (Bootstrapped Aggregation)
+![alt text](images/blog24_bagging.png)
+ - Bootstrap Sampling: Divides the original training data into ‘N’ subsets and randomly selects a subset with replacement in some rows from other subsets.
+ - Base Model Training: For each bootstrapped sample, train a base model independently on that subset of data. These weak models are trained in parallel to increase computational efficiency and reduce time consumption.
+ - Prediction Aggregation: To make a prediction on testing data combine the predictions of all base models. For classification tasks, it can include majority voting or weighted majority while for regression, it involves averaging the predictions.
+ - Out-of-Bag (OOB) Evaluation: Some samples are excluded from the training subset of particular base models during the bootstrapping method. These “out-of-bag” samples can be used to estimate the model’s performance without the need for cross-validation.
+ - Final Prediction: After aggregating the predictions from all the base models, Bagging produces a final prediction for each instance.
+#### Bootstrap
+![alt text](images/blog24_bagging_bootstrap.png)  
+Bootstrap aggregation (bagging) involves training an ensemble on bootstrapped data sets. A bootstrapped set is created by selecting from original training data set with replacement. Thus, a bootstrap set may contain a given example zero, one, or multiple times. Ensemble members can also have limits on the features (e.g., nodes of a decision tree), to encourage exploring of diverse features.
 
+#### Aggregating
+#### Random Forest
+
+### Boosting
+#### Adaboost
+
+#### Bagging vs Boosting
+![alt text](images/blog24_bagging_vs_boosting.png)
+배깅은 병렬로 학습하는 반면, 부스팅은 순차적으로 학습합니다. 한번 학습이 끝난 후 결과에 따라 가중치를 부여합니다. 그렇게 부여된 가중치가 다음 모델의 결과 예측에 영향을 줍니다.
+
+오답에 대해서는 높은 가중치를 부여하고, 정답에 대해서는 낮은 가중치를 부여합니다. 따라서 오답을 정답으로 맞추기 위해 오답에 더 집중할 수 있게 되는 것입니다. 
+
+부스팅은 배깅에 비해 error가 적습니다. 즉, 성능이 좋습니다. 하지만 속도가 느리고 오버 피팅이 될 가능성이 있습니다
