@@ -9,3 +9,15 @@
 ## Backpropagation
 
 ## delta
+
+## Improving NNs
+
+### Analyzing Parameters
+
+### Activation Functions
+
+### Initialization Techniques
+
+### Optimizations
+
+
