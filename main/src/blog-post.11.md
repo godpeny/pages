@@ -220,8 +220,9 @@ func push() {
 	f := pushFunc.Backward(s)
 	f(func(i int, x string) bool {
 		fmt.Println(i, x)
-		return true
+		return true // "true" means continue running, "false" means stop
 	})
+    // When there are no more values to pass to yield, or if yield returns false, the push function returns.
 
     // (2)
 	pushFunc.Backward(s)(func(i int, x string) bool {
@@ -344,6 +345,15 @@ When you want to iterate over something, you first have to learn how the specifi
 
 We should converge on a standard way to handle iteration in Go, and one way to incentivize that is to support it directly in range syntax. Specifically, the idea is to allow range over function values of certain types. If any kind of code providing iteration implements such a function, then users can write the same kind of range loop they use for slices and maps and stop worrying about whether they are using a bespoke iteration API correctly.
 ```
+
+### Push vs Pull
+
+#### Concurrency vs Parallelism
+
+#### Coroutine vs Goroutine vs Thread
+
+#### Implementing Coroutine in Go
+
 
 ### Reference
  - https://github.com/golang/go/discussions/56413
