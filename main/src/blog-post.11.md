@@ -361,8 +361,90 @@ Push and pull functions represent different ways of interacting with data, and o
  - Pull Function: The programs that process the bytes in a file with a single loop. These programs process bytes in a file incrementally from many call sites, so a pull function is more appropriate for bytes in a file.
 
 ### Concurrency vs Parallelism
+#### Concurrency
+Concurrency relates to an application that is processing more than one task at the same time. Concurrency is an approach that is used for decreasing the response time of the system by using the single processing unit. Concurrency creates the illusion of parallelism, however actually the chunks of a task aren’t parallelly processed, but inside the application, there are more than one task is being processed at a time. It doesn’t fully end one task before it begins ensuing. 
+Concurrency is achieved through the interleaving operation of processes on the central processing unit(CPU) or in other words by the context switching. that’s rationale it’s like parallel processing. It increases the amount of work finished at a time. 
 
-#### Coroutine vs Goroutine vs Thread
+#### Parallelism
+Parallelism is related to an application where  tasks are divided into smaller sub-tasks that are processed seemingly simultaneously or parallel. It is used to increase the throughput and computational speed of the system by using multiple processors. Therefore it improves the throughput and computational speed of the system.
+
+While concurrency can be done by using a single processing unit, parallelism can’t be done by using a single processing unit. it needs multiple processing units.
+
+### Coroutine vs Goroutine vs Thread (vs python generator)
+#### Coroutine
+Coroutines provide concurrency without parallelism: when one coroutine is running, the one that resumed it or yielded to it is not. In other words, coroutines run one at a time and only switch at specific points in the program, the coroutines can share data among themselves without races. The explicit switches (``coroutine.yield`` and ``coroutine.resume`` in the  Lua example below) serve as synchronization points, creating happens-before edges.
+
+```lua
+function T(l, v, r)
+    return {left = l, value = v, right = r}
+end
+
+e = nil
+t1 = T(T(T(e, 1, e), 2, T(e, 3, e)), 4, T(e, 5, e))
+t2 = T(e, 1, T(e, 2, T(e, 3, T(e, 4, T(e, 5, e)))))
+t3 = T(e, 1, T(e, 2, T(e, 3, T(e, 4, T(e, 6, e)))))
+
+function visit(t)
+    if t ~= nil then  -- note: ~= is "not equal"
+        visit(t.left)
+        -- "yield" allows a running coroutine to suspend its execution so that it can be resumed later.
+        coroutine.yield(t.value) 
+        visit(t.right)
+    end
+end
+
+function cmp(t1, t2)
+    co1 = coroutine.create(visit)
+    co2 = coroutine.create(visit)
+    while true
+    do
+        -- "resume" (re)starts the execution of a coroutine, changing its state from suspended to running.
+        ok1, v1 = coroutine.resume(co1, t1) 
+        ok2, v2 = coroutine.resume(co2, t2)
+        if ok1 ~= ok2 or v1 ~= v2 then
+            return false
+        end
+        if not ok1 and not ok2 then
+            return true
+        end
+    end
+end
+```
+Reference: https://www.lua.org/pil/9.1.html
+
+Because scheduling is explicit (without any preemption) and done entirely without the operating system, a coroutine switch takes at most around ten nanoseconds, usually even less. Startup and teardown is also much cheaper than threads.
+
+#### Thread
+Threads provide more power than coroutines, but with more cost. The additional power is parallelism, and the cost is the overhead of scheduling, including more expensive context switches and the need to add preemption in some form. Typically the operating system provides threads, and a thread switch takes a few microseconds.
+
+#### Goroutine
+Go’s goroutines are cheap threads: a goroutine switch is closer to a few hundred nanoseconds, because the Go runtime takes on some of the scheduling work, but goroutines still provide the full parallelism and preemption of threads.
+
+#### Generator (python)
+The generator object contains the state of the single call to ``gen`` from below example, meaning local variable values and which line is executing. That state is pushed onto the call stack each time the generator is resumed and then popped back into the generator object at each yield, which can only occur in the top-most call frame.  
+In this way, the generator uses the same stack as the original program, avoiding the need for a full coroutine implementation but introducing these confusing limitations instead.
+```python
+def test_generator():
+    yield 1
+    yield 2
+    yield 3
+
+gen = test_generator()
+type(gen) # <class 'generator'>
+
+next(gen) # 1
+next(gen) # 2
+next(gen) # 3
+next(gen)
+# Traceback (most recent call last):
+#   File "<stdin>", line 1, in <module>
+# StopIteration
+
+```
+
+#### Happened-before
+Happend-before is a relation between the result of two events, such that if one event should happen before another event, the result must reflect that, even if those events are in reality executed out of order (usually to optimize program flow).  
+Also it indicates that memory written by one statement is visible to another statement. This means that the first statement completes its write before the second statement starts its read. 
 
 #### Implementing Coroutine in Go
 
