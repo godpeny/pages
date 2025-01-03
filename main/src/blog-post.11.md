@@ -347,8 +347,20 @@ We should converge on a standard way to handle iteration in Go, and one way to i
 ```
 
 ### Push vs Pull
+Push function has its own state maintained in its stack and can automatically clean up when the traversal is over.
+(Much powerful and easier)  
+In other words, a push function can be thought of as representing an entire collection. The implementation of the push function maintains iterator state implicitly on its stack, so that multiple uses of the push function use separate instances of the iterator state. Therefore, push function can be called multiple times to traverse the sequence multiple times. Also push function can be called simultaneously from different goroutines if they both want to traverse the sequence, without any synchronization.  
+(state를 function param 으로 전달받으면서 stack에 저장하므로 하나의 push function instance 는 그 자체로 완전한 collection이 되어서 재사용 및 여러 goroutine에서 병렬적으로 사용이 가능하다.)  
 
-#### Concurrency vs Parallelism
+In contrast, a pull function can be thought of as representing an iterator, not an entire collection. So a pull function always represents a specific point in one traversal of the sequence. Therefore pull function can't be reused and goroutines cannot share a pull function without synchronization. But of course,  pull function can be used from multiple call sites in a single goroutine.
+(pull function은 function 밖의 state가 존재하고 현재 state의 point(위치)를 나타내기 때문에 재사용이나 병렬적 사용이 불가능 하다. 왜냐면 하나의 state를 여러 pull function이 계속해서 덮어쓰면서 race condition이 일어날 것이기 때문이다.)
+
+#### When to Use either function?
+Push and pull functions represent different ways of interacting with data, and one way may be more appropriate than the other depending on the data. For example, many programs process the lines in a file in a single loop, so a push function is appropriate for lines in a file. In contrast, it is difficult to imagine any programs that would process the bytes in a file with a single loop (except maybe wc), while many process bytes in a file incrementally from many call sites (again, lexers are an example), so a pull function is more appropriate for bytes in a file.
+ - Push Function: The programs that process the lines in a file in a single loop, so a push function is appropriate for lines in a file.
+ - Pull Function: The programs that process the bytes in a file with a single loop. These programs process bytes in a file incrementally from many call sites, so a pull function is more appropriate for bytes in a file.
+
+### Concurrency vs Parallelism
 
 #### Coroutine vs Goroutine vs Thread
 
