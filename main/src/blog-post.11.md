@@ -447,6 +447,17 @@ Happend-before is a relation between the result of two events, such that if one 
 Also it indicates that memory written by one statement is visible to another statement. This means that the first statement completes its write before the second statement starts its read. 
 
 #### Implementing Coroutine in Go
+Why Coroutines in Go? 
+ - The parallelism provided by the goroutines caused races and eventually led to abandoning the design. The proper coroutines would have avoided the races and been more efficient than goroutines.  
+
+Where to use Coroutines in Go? 
+ - An anticipated future use case for coroutines in Go is iteration over generic collections. (=Push functions)
+
+Implement  
+(DIY) https://research.swtch.com/coro
+
+### Memory Models in Go
+https://research.swtch.com/gomm
 
 
 ### Reference
