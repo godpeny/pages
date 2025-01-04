@@ -145,7 +145,7 @@ $$
 To minimize cost function $J(\theta)$, let’s start with some “initial guess” for $\theta$, and that repeatedly changes $\theta$ to make $J(\theta)$ smaller, until hopefully we converge to a value of
 $\theta$ that minimizes $J(\theta)$.
 
-#### Batch / Stochastic Gradient Descent
+#### Batch, Stochastic and Mini-Batch Gradient Descent
 - Batch: update parameters (theta) after looking at every example in the entire training set on every iteration. 
 Repeat until convergence {  
 $$
@@ -157,6 +157,15 @@ $$
 $$
 \theta_j := \theta_j + \alpha \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)} \quad (\text{for every } j).
 $$
+
+- Mini-batch: a compromise between batch and stochastic gradient descent. The training dataset is split into smaller subsets, called mini-batches. Then, calculate gradients on each mini-batch and update the model parameters until convergence.  
+$$
+J_{\text{mb}} = \frac{1}{B} \sum_{i=1}^{B} \mathcal{L}^{(i)}
+$$
+Where $B$ is the size of mini batch.
+
+#### Why Gradient Descent goes to steepest part?
+
 
 #### Least Mean Square Algorithm (LMS)
 LMS algorithm is a stochastic gradient descent method that iteratively updates filter coefficients to minimize the mean square error between the desired and actual signals.  
