@@ -125,7 +125,7 @@ y_{n1} \ y_{n2} \ \cdots \ y_{np}
 $$
 
 ### Margin
-### Loss Function(Cost Function)
+### Loss Function(Cost Function = Objective Function)
 In mathematical optimization and decision theory, a loss function or cost function (sometimes also called an error function) is a function that maps an event or values of one or more variables onto a real number intuitively representing some "cost" associated with the event.  
 An optimization problem seeks to minimize a loss function.  
 such as,  
@@ -135,6 +135,10 @@ $$
 An objective function is either a loss function or its opposite (in specific domains, variously called a reward function, a profit function, a utility function, a fitness function, etc.), in which case it is to be maximized.    
 It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.  
 In other word, choose $\theta$ so as to minimize $J(\theta)$.  
+
+#### Loss Function vs Cost Function vs Objective Function
+Loss function is usually a function defined on a data point, prediction and label, and measures the penalty. While cost function is a sum of loss functions over your training set plus some model complexity penalty (regularization). Also, objective function is the most general term for any function that you optimize during training.  
+Therefore, A loss function is a part of a cost function which is a type of an objective function.
 
 ### Gradient Descent
 The idea is to take repeated steps in the opposite direction of the gradient (or approximate gradient) of the functio(loss function) at the current point, because this is the direction of steepest descent.  
