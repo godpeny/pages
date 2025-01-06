@@ -188,4 +188,17 @@ https://www.deeplearning.ai/ai-notes/initialization/index.html#III
 ### Optimizations
 Gradient Descent
 
-
+### Parameter Sharing
+Parameter sharing is a well-known approach for controlling the complexity of Deep Neural Networks by forcing certain weights to share the same value.
+![alt text](images/blog1_parameter_sharing.png)
+Consider above example with $64 \times 64 \times 3$ pixels. So we will have input $x = (x_1, \dots, x_n)$, and parameter $\theta = (\theta_1, \dots, \theta_n)$. In this case $\theta_1$ will always looks at the top left pixel of the image no matter what. However, we know that a soccer ball might appear in any region of the image and not always the center. It is possible that $\theta_1$ could never trained on a soccer ball in the top left of the image. As a result, during
+test time, if an image of a soccer ball in the top left appears, the logistic regression will likely predict no soccer ball.  
+With parameter sharing, we suppose $\theta \in \mathbb{R}^{4 \times 4}$, We now take our matrix of parameters $\theta$ and slide it over the image. In other words, we compute
+the element-wise product between $\theta$ and $x_{1:4,1:4}$, instead of calculationg product of whole $n$ between $\theta$ and $x$, we do below calcuation then move the window slightly to the right in the image repeatly.
+process.
+$$
+a = \sum_{i=1}^{4} \sum_{j=1}^{4} \theta_{ij} x_{ij}
+$$
+![alt text](images/blog1_parameter_sharing_window_slide.png)
+Once we have reached the end of the image, the parameters $\theta$ have "seen" all pixels of the image. So $\theta_1$ is no longer related to only the top left pixel. As a result, whether the soccer ball appears in the bottom right or top left of the image, the neural network will successfully detect the soccer ball.
+This technique is comonly used in convolutional neural network.
