@@ -168,8 +168,14 @@ J_{\text{mb}} = \frac{1}{B} \sum_{i=1}^{B} \mathcal{L}^{(i)}
 $$
 Where $B$ is the size of mini batch.
 
-#### Why Gradient Descent goes to steepest part?
-https://www.quora.com/Can-you-explain-intuitively-or-with-an-example-why-the-gradient-points-to-the-direction-of-steepest-ascent
+### Why Gradient Descent goes to steepest part?
+Because Gradient is the steepest ascent(or descent).
+
+#### Why Graidnt is same as steepest ascent(descent?)
+
+https://en.wikipedia.org/wiki/Dot_product
+
+https://math.stackexchange.com/questions/223252/why-is-gradient-the-direction-of-steepest-ascent
 
 
 #### Least Mean Square Algorithm (LMS)
