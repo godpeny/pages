@@ -169,6 +169,7 @@ $$
 Where $B$ is the size of mini batch.
 
 #### Why Gradient Descent goes to steepest part?
+https://www.quora.com/Can-you-explain-intuitively-or-with-an-example-why-the-gradient-points-to-the-direction-of-steepest-ascent
 
 
 #### Least Mean Square Algorithm (LMS)
