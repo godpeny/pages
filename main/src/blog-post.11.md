@@ -184,8 +184,44 @@ https://go.dev/doc/effective_go#concurrency
 ### Generic
 https://go.dev/blog/intro-generics
 https://go.dev/doc/tutorial/generics
-### Interface and Type Assertion
 
+### Interface and Type Assertion
+A type assertion provides access to an interface value's underlying concrete value.
+```golang
+t := i.(T)
+```
+This statement asserts that the interface value i holds the concrete type T and assigns the underlying T value to the variable t.
+
+If i does not hold a T, the statement will trigger a panic.
+
+To test whether an interface value holds a specific type, a type assertion can return two values: the underlying value and a boolean value that reports whether the assertion succeeded.
+```golang
+t, ok := i.(T)
+```
+If i holds a T, then t will be the underlying value and ok will be true.
+If not, ok will be false and t will be the zero value of type T, and no panic occurs.(Note the similarity between this syntax and that of reading from a map.)
+
+```golang
+package main
+
+import "fmt"
+
+func main() {
+	var i interface{} = "hello"
+
+	s := i.(string)
+	fmt.Println(s) // hello
+
+	s, ok := i.(string)
+	fmt.Println(s, ok) // hello true
+
+	f, ok := i.(float64)
+	fmt.Println(f, ok) // 0 false
+
+	f = i.(float64) // panic
+	fmt.Println(f)
+}
+```
 ### Push
 Provide a Set method that takes a function, and to call that function with every element in the Set. We’ll call this Push, because the Set pushes every value to the function. Here if the function returns false, we stop calling it.
 
