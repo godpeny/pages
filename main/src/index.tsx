@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Blog from "./Blog";
+import NewBlog from "./NewBlog";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-   <Blog />
+   <NewBlog />
   </React.StrictMode>
 );
 
