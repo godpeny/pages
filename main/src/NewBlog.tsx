@@ -1,6 +1,9 @@
 import React from 'react';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import blog1 from "./blog-post.1.md"
 
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme, Carousel } from 'antd';
 const { Header, Content, Sider, Footer } = Layout;
@@ -91,7 +94,6 @@ const contentStyle: React.CSSProperties = {
   background: '#364d79',
 };
 
-
 const NewBlog: React.FC = () => {
   const onClick: MenuProps['onClick'] = (e) => {
     console.log('click ', e);
@@ -101,6 +103,17 @@ const NewBlog: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const [value, setValue] = React.useState('');
+
+  console.log("!")
+  fetch(blog1)
+  .then(response => response.text())
+  .then(text => {
+    // Logs a string of Markdown content.
+    // Now you could use e.g. <rexxars/react-markdown> to render it.
+    console.log(text);
+    setValue(text)
+  });
 
   return (
     <Layout>
@@ -155,8 +168,8 @@ const NewBlog: React.FC = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            Content
-          
+              <Markdown remarkPlugins={[remarkGfm]}>{value}</Markdown>
+
           </Content>
         </Layout>
       </Layout>
