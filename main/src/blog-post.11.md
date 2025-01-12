@@ -159,7 +159,51 @@ func main() {
 ```
 
 ### Defer
+A defer statement defers the execution of a function until the surrounding function returns.
+The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns.
+The arguments to the deferred function (which include the receiver if the function is a method) are evaluated when the defer executes, not when the call executes. 
+Also, the Deferred functions are executed in LIFO order. 
 
+ex 1)
+```golang
+func deferredFunc(s string) { 
+    fmt.Println("returned value from returnArg():", s) 
+    fmt.Println("(3)") 
+} 
+
+func returnArg() string { 
+    fmt.Println("(2)") return "!!!" 
+} 
+
+func main() { 
+    defer deferredFunc(returnArg()) /
+    fmt.Println("(1)")
+}
+// (2) 
+// (1) 
+// returned value from returnArg(): !!! 
+// (3)
+```
+ex 2)
+```golang
+func handleInnerPanic() { 
+    defer fmt.Println("(4) reachable") 
+    fmt.Println("(1) reachable") 
+    
+    defer func() { 
+        v := recover() 
+        fmt.Println("(3) recovered:", v) 
+    }() 
+    
+    defer fmt.Println("(2) reachable") 
+    panic("panic occured") 
+    fmt.Println("unreachable") }
+
+// (1) reachable 
+// (2) reachable 
+// (3) recovered: panic occured
+// (4) reachable
+```
 ### Context
 
 ### Concurrency
