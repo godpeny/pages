@@ -1,8 +1,10 @@
 import React from 'react';
 import blog1 from "./blog-post.1.md"
-
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import "katex/dist/katex.min.css";
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme, Carousel } from 'antd';
@@ -168,8 +170,9 @@ const NewBlog: React.FC = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-              <Markdown remarkPlugins={[remarkGfm]}>{value}</Markdown>
-
+              <Markdown remarkPlugins={[remarkMath, remarkGfm]} rehypePlugins={[rehypeKatex]}>
+                {value}
+              </Markdown>
           </Content>
         </Layout>
       </Layout>
