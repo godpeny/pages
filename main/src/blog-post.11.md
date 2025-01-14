@@ -206,6 +206,10 @@ func handleInnerPanic() {
 ```
 ### Context
 
+### Interface{}
+ - https://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go
+ - https://research.swtch.com/interfaces
+
 ### Concurrency
 #### Goroutines
 Goroutine is a function executing concurrently with other goroutines in the same address space.  
