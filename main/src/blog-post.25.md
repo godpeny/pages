@@ -5,3 +5,4 @@
 ## Mixture of Gaussians
 ## EM Algorithm
 ### Jensen's Inequality
+## Factor Analysis
