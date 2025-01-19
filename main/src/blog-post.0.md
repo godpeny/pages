@@ -13,7 +13,18 @@
 - input points at which the function output value is maximized / minimized.
 
 ### Indicator function (Characteristic function)
-https://en.wikipedia.org/wiki/Characteristic_function_(convex_analysis)
+ - Characteristic Function in Convex Analysis is a convex function that indicates the membership (or non-membership) of a given element in that set. Let $X$ be a set, and let $A$ be a subset of $X$. The characteristic function of $A$ is, 
+ $$
+ \chi_A(x) :=
+\begin{cases} 
+0, & x \in A; \\
++\infty, & x \notin A.
+\end{cases}
+$$
+ - Indicator Function is a function that maps elements of the subset to one, and all other elements to zero. That is, if $A$ is a subset of some set $X$, then, 
+ $$
+ 1_A : X \to \{0, 1\}
+ $$
 
 ### Coordinate Vector
 coordinate vector is a representation of a vector as an ordered list of numbers (a tuple) that describes the vector in terms of a particular ordered basis.  e.g.  
