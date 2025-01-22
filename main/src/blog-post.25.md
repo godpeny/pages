@@ -32,6 +32,10 @@ Density Estimation is the construction of an estimate of an unobservable underly
 Therefore Density estimation is also frequently used in anomaly detection or novelty detection. If an observation lies in a very low-density region, it is likely to be an anomaly or a novelty.  
 We can also assume that the observed data points of Density Estimation are distributed from multiple mixture of Gaussian distributions.
 
+### Problem of Density Estimation
+However the problem of Density Estimation is that you can only see the data came from set of Gaussains, but you don't know which example came from which Gaussian.  
+Therefore Expectation-Maximization algorithm will allow us to fit the model despite not knowing which Gaussian each example that came from.
+
 ## Mixture of Gaussians
 
 ## EM Algorithm
