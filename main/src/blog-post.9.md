@@ -56,6 +56,10 @@ $$
 \text{Cov}(Z) = \mathbb{E}[ZZ^T] - (\mathbb{E}[Z])(\mathbb{E}[Z])^T.
 $$
 
+The multivariate normal distribution is often used to describe, at least approximately, any set of (possibly) correlated real-valued random variables, each of which clusters around a mean value.
+
+1 차원의 정규 분포를 다차원으로 확장 시킨 개념으로 평균값을 중심으로 군집화 되어 있는'상관 관계있는' 랜덤 변수 집합을 설명할때 사용한다.
+
 ## Gaussian Discriminant Analysis (GDA)
 Gaussian Discriminant Analysis (GDA) is a supervised learning algorithm used for classification tasks in machine learning.  
 GDA works by assuming that the data(input features $x$ are

@@ -14,6 +14,21 @@ $$
 = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] - \mathbb{E}[X]\mathbb{E}[Y] + \mathbb{E}[X]\mathbb{E}[Y] \\
 = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]
 $$
+
+#### Covariance Matrix
+A covariance matrix is a square matrix giving the covariance between each pair of elements of a given random vector.  
+Given Vector $\mathbf{X}$, all entries are random variables, each with finite variance and expected value.
+$$
+
+\mathbf{X} = (X_1, X_2, \ldots, X_n)^\top
+$$
+Then the covariance matrix $\mathbf{K}_{X_i X_j}$ is the matrix whose 
+$(i,j)$ entry is the covariance.
+$$
+\mathbf{K}_{X_i X_j} = \text{cov}[X_i, X_j] = \mathbb{E}[(X_i - \mathbb{E}[X_i])(X_j - \mathbb{E}[X_j])]
+$$
+Any covariance matrix is symmetric and positive semi-definite and its main diagonal contains variances. (i.e., the covariance of each element with itself).
+
 ### Variance
 Variance is the expected value of the squared deviation from the mean of a random variable.
 $$
