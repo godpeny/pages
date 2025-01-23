@@ -38,7 +38,30 @@ Therefore Expectation-Maximization algorithm will allow us to fit the model desp
 
 ## Mixture of Gaussians
 
-## EM Algorithm
+### Multivariate Gaussian, Mixture of Gaussian and Gaussian Discriminant Analysis(GDA)
+#### GDA vs Mixture of Gaussian
+ - In GDA, we have labled examples $(x_i, y_i)$ when $y_i$ is obseved. In Mixture of Gaussian, $y_i$ is replaced with $z_i$ which is latent(=hidden) random variable that we can not observer in the training set.
+ - Mixture of Gaussian set $z(y)$ to one of $k$ values instead of two in GDA. In GDA, $y(z)$ takes on one of two values. 
+ - Mixture of Gaussian use $\Sigma_{j}$ instead of $\Sigma$ in GDA, which means each Gaussian model in Mixture of Gaussian uses its own covariance matrix.
+
+#### Multivariate Gaussian vs Mixture of Gaussian
+While $k$ dimensional Multivariate Gaussian is, 
+$$
+\mathbf{X} = \begin{pmatrix} X_1, \dots, X_k \end{pmatrix} \sim \text{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma}),
+$$
+Where $\mu = \{\mu_1, \mu_2, \cdots, \mu_k \}$ is the mean vector, and $\Sigma$ is the positive definite $k \times k$ covariance matrix.
+
+However, we can write out a $k$ component mixture of (1 dimensional) Gaussians as, 
+$$
+\mathbf{X} \sim \sum_{i=1}^{k} \pi_i \, \text{N}(\mu_i, \Sigma_i),
+$$
+where $\pi_i$ is the mixing proportion of the $i$-th component and $(\mu_i, \Sigma_i)$ are the parameters of the $i$-th component.  
+As above, the Multivariate Gaussian is defined as a $k$ dimensional random vector, and the Mixture of Gaussians is defined as a random variable (which you can call a $1$ dimensional random vector).  
+
+In conclusion, 
+ - A Multivariate Gaussian Distribution describes a single, unified probability density over a vector of random variables, capturing the relationships (covariances) between them.  
+ - A Mixture of Gaussians is a probabilistic model that represents a weighted sum of multiple Gaussian distributions. It is designed to model data that comes from several distinct subpopulations, each of which follows its own Gaussian distribution.
+
 
 ### Jensen's Inequality
 Jensen's inequality generalizes the statement that the secant line(a line that intersects a curve at a minimum of two distinct points) of a convex function lies above the graph of the function. In the context of probability theory, it is generally stated in the following form: if $X$ is a random variable and $\mathbb{E}$ is a convex function, then
