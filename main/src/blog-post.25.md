@@ -62,6 +62,11 @@ In conclusion,
  - A Multivariate Gaussian Distribution describes a single, unified probability density over a vector of random variables, capturing the relationships (covariances) between them.  
  - A Mixture of Gaussians is a probabilistic model that represents a weighted sum of multiple Gaussian distributions. It is designed to model data that comes from several distinct subpopulations, each of which follows its own Gaussian distribution.
 
+## Expectation–Maximization Algorithm (EM Algorithm)
+An expectation–maximization (EM) algorithm is an iterative method to find (local) maximum likelihood estimates of parameters in statistical models, where the model depends on unobserved(latent) variables.  
+The EM iteration alternates between performing an expectation (E) step, which creates a function for the expectation of the log-likelihood evaluated using the current estimate for the parameters, and a maximization (M) step, which computes parameters maximizing the expected log-likelihood found on the E step.   
+These parameter-estimates are then used to determine the distribution of the latent variables in the next E step.  
+It can be used, for example, to estimate a mixture of gaussians.
 
 ### Jensen's Inequality
 Jensen's inequality generalizes the statement that the secant line(a line that intersects a curve at a minimum of two distinct points) of a convex function lies above the graph of the function. In the context of probability theory, it is generally stated in the following form: if $X$ is a random variable and $\mathbb{E}$ is a convex function, then
