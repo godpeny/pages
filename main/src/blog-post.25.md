@@ -78,4 +78,7 @@ $$
 \varphi(\mathbb{E}[X]) - \mathbb{E}[\varphi(X)]
 $$
 
+### Applying EM Algorithm to Mixture of Gaussians
+
+
 ## Factor Analysis
