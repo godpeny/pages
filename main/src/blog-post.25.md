@@ -84,6 +84,7 @@ In conclusion,
 
 ## Expectation–Maximization Algorithm (EM Algorithm)
 An expectation–maximization (EM) algorithm is an iterative method to find (local) maximum likelihood estimates of parameters in statistical models, where the model depends on unobserved(latent) variables.  
+EM Algorithm chooses some random values for the latent data points and estimates a new set of data. These new values are then recursively used to estimate a better first date, by filling up unknown points, until the values get fixed.  
 The EM iteration alternates between performing an expectation (E) step, which creates a function for the expectation of the log-likelihood evaluated using the current estimate for the parameters, and a maximization (M) step, which computes parameters maximizing the expected log-likelihood found on the E step.   
 These parameter-estimates are then used to determine the distribution of the latent variables in the next E step.  
 It can be used, for example, to estimate a mixture of gaussians.
@@ -99,6 +100,29 @@ $$
 $$
 
 ### Applying EM Algorithm to Mixture of Gaussians
+
+### Estimation Step (E): Tries to “guess” the latent values of the $z^{(i)}$
+First, initialize our model parameters like the mean($\mu_j$), covariance matrix($\Sigma_j$), and mixing coefficients($\phi_j$).  
+Calculate the posterior probabilities of data points belonging to each centroid using the current parameter values. In other words, using current paratmers values(mean, covariance and mixing probability), calculate the posterior probability of $z^{(i)}$'s given $x^{(i)}$'s.
+
+$$
+\textbf{(For each $i$,$j$)} \quad w_j^{(i)} := p(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)
+$$
+
+The values $w^{(i)}_j$ calculated in the E-step abvove is soft guesses for the $z^{(i)}$, whici is the probability of how much $x^{(i)}$ is assigned to the $j$ Gaussian.
+
+### Maximazation Step (M): Update parameter values($\phi, \mu, \Sigma$)
+In M Step, pretending that the guesses in the E step were correct, updates the parameters of the model based on the guesses.  
+
+$$
+\phi_j := \frac{1}{m} \sum_{i=1}^m w_j^{(i)}, \\
+
+\mu_j := \frac{\sum_{i=1}^m w_j^{(i)} x^{(i)}}{\sum_{i=1}^m w_j^{(i)}}, \\
+
+\Sigma_j := \frac{\sum_{i=1}^m w_j^{(i)} \left( x^{(i)} - \mu_j \right) \left( x^{(i)} - \mu_j \right)^T}{\sum_{i=1}^m w_j^{(i)}}.
+$$
+
+### Convergence of EM
 
 
 ## Factor Analysis
