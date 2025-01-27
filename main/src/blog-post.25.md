@@ -82,6 +82,26 @@ In conclusion,
  - A Multivariate Gaussian Distribution describes a single, unified probability density over a vector of random variables, capturing the relationships (covariances) between them.  
  - A Mixture of Gaussians is a probabilistic model that represents a weighted sum of multiple Gaussian distributions. It is designed to model data that comes from several distinct subpopulations, each of which follows its own Gaussian distribution.
 
+## Jensen's Inequality
+Jensen's inequality generalizes the statement that the secant line(a line that intersects a curve at a minimum of two distinct points) of a convex function lies above the graph of the function. In the context of probability theory, it is generally stated in the following form:  
+If $X$ is a random variable and $\varphi$ is a convex function, then
+$$
+\varphi(\mathbb{E}[X]) \leq \mathbb{E}[\varphi(X)]
+$$
+If $\varphi$ is concave function, then
+$$
+\varphi(\mathbb{E}[X]) \geq \mathbb{E}[\varphi(X)]
+$$
+The difference between the two sides of the inequality is called the Jensen gap.
+$$
+\varphi(\mathbb{E}[X]) - \mathbb{E}[\varphi(X)]
+$$
+Moreover, if function $\varphi$ is strictly convex(or concave), 
+$$
+\varphi(\mathbb{E}[X]) = \mathbb{E}[\varphi(X)]
+$$
+Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a constant)
+
 ## Expectation–Maximization Algorithm (EM Algorithm)
 An expectation–maximization (EM) algorithm is an iterative method to find (local) maximum likelihood estimates of parameters in statistical models, where the model depends on unobserved(latent) variables.  
 EM Algorithm chooses some random values for the latent data points and estimates a new set of data. These new values are then recursively used to estimate a better first date, by filling up unknown points, until the values get fixed.  
@@ -89,17 +109,91 @@ The EM iteration alternates between performing an expectation (E) step, which cr
 These parameter-estimates are then used to determine the distribution of the latent variables in the next E step.  
 It can be used, for example, to estimate a mixture of gaussians.
 
-### Jensen's Inequality
-Jensen's inequality generalizes the statement that the secant line(a line that intersects a curve at a minimum of two distinct points) of a convex function lies above the graph of the function. In the context of probability theory, it is generally stated in the following form: if $X$ is a random variable and $\mathbb{E}$ is a convex function, then
+### Description of EM Algorithm
+Suppose we have an estimation problem in which we have a training set $\{x^{(1)}, \cdots, x^{(m)} \}$ consisting of $m$ independent examples. We wish to fit the parameters of a model $p(x, z)$ to the data where the likelihood is given as below.
 $$
-\varphi(\mathbb{E}[X]) \leq \mathbb{E}[\varphi(X)]
+\ell(\theta) = \sum_{i=1}^m \log p(x; \theta) = \sum_{i=1}^m \log \sum_{z} p(x, z; \theta).
 $$
-The difference between the two sides of the inequality is called the Jensen gap.
+Since $z^{(i)}$'s are latent random variables, instead of observed data points, we can't use maximum likelihood estimation. 
+
+EM algorithm gives an efficient method for maximum likelihood estimation.  
+Since Maximizing $\ell(\theta)$ explicitly is difficult(MLE), instead,
+ - E-step: we will repeatedly construct a lower-bound on $\ell(\theta)$. 
+ - M-step: and then optimize that lower-bound.
+![alt text](images/blog25_em_algorithm.png)
+
+### Expectation Step (E Step)
+For each $i$, let $Q_i$ be some distribution over the discrete variables $z$’s Where $\sum Q_i(z^{(i)}) = 1, \quad Q_i(z^{(i)}) \geq 0$, following equations can be derived.
 $$
-\varphi(\mathbb{E}[X]) - \mathbb{E}[\varphi(X)]
+\ell(\theta) = \sum_{i=1}^m \log p(x; \theta) = \sum_i \log p(x^{(i)}; \theta)  
+= \sum_i \log \sum_{z^{(i)}} p(x^{(i)}, z^{(i)}; \theta) \\
+= \sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \\ 
+\geq \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
 $$
+For the understading of the derivation above, consider following as an expectation of the quantity $$ with respect to $z^{(i)}$ from distribution $Q_i$.  
+(For example, when $z = \{1, 2, \cdots, 10 \}$, $\mathbb{E}[g(z)] = \sum_z p(z)g(z)$ and $\mathbb{E} = \sum_z p(z) z$.)
+$$
+\sum_{z^{(i)}} Q_i(z^{(i)}) \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]
+$$
+From this idea, we apply Jensen's inequality and we have as below.
+$$
+f \left( \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right] \right) 
+\geq 
+\mathbb{E}_{z^{(i)} \sim Q_i} \left[ f \left( \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right) \right],
+$$
+So this makes the previous two equations works.
+$$
+\sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}  
+\geq \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
+Now, for any set of distributions $Q_i$, We have a lower-bound on $\ell(\theta)$.  
+After that, it is natural to try to make the lower-bound tight at that value of $\theta$.  
+In other word, make the inequality above hold with equality at our particular value of $\theta$ as following.
+$$
+\sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}  
+= \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
+To make above true, it is sufficent that the expectation be taken over a constant value. 
+$$
+\frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} = c
+$$
+This is because,
+$$
+f \left( \mathbb{E}_{z^{(i)} \sim Q_i} \left[ c \right] \right) = 
+f \left( \mathbb{E} \left[ c \right] \right) =
+f(c)
+\\ 
+\mathbb{E}_{z^{(i)} \sim Q_i} \left[ f \left( c \right) \right] = 
+\mathbb{E} \left[ f \left( c \right) \right] = 
+f(c)
+$$
+This can be accomplished by setting $Q_i(z^{(i)})$ is proportion of $p(x^{(i)}, z^{(i)})$.
+$$
+Q_i(z^{(i)}) \propto p(x^{(i)}, z^{(i)}; \theta).
+$$
+To make the $Q_i$ proportion of $p(x^{(i)}, z^{(i)})$, we will use the fact that we know, which is $\sum_{z^{(i)}} Q_i(z^{(i)}) = 1$.
+$$
+Q_i(z^{(i)}) = \frac{p(x^{(i)}, z^{(i)}; \theta)}{\sum_z p(x^{(i)}, z; \theta)}
+= \frac{p(x^{(i)}, z^{(i)}; \theta)}{p(x^{(i)}; \theta)}
+= p(z^{(i)} \mid x^{(i)}; \theta).
+$$
+So by simply set the $Q_i$’s to be the posterior distribution of the $z^{(i)}$’s given $x^{(i)}$
+and the setting of the parameters $\theta$, we can make the Jensen’s inequality in our derivation hold with equality.  
+
+At last, We have a lower-bound on the loglikelihood $\ell$ that we’re trying to maximize.
+
+### Maximization Step (M Step)
+Maximize the following formula that we derived from E Step which indicates the lower bound of the current log likelihood with respect to the parameters, so that we can obtain a new setting of the $\theta$.
+$$
+\sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
+(Detailed calculation will be explained in the "Applying EM Algorithm to Mixture of Gaussians" using Gaussian Mixtures Model example.)
+
+### Convergence of EM
 
 ### Applying EM Algorithm to Mixture of Gaussians
+Armed with our general definition of the EM algorithm, let’s go back to our
+old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussians.
 
 ### Estimation Step (E): Tries to “guess” the latent values of the $z^{(i)}$
 First, initialize our model parameters like the mean($\mu_j$), covariance matrix($\Sigma_j$), and mixing coefficients($\phi_j$).  
@@ -121,8 +215,6 @@ $$
 
 \Sigma_j := \frac{\sum_{i=1}^m w_j^{(i)} \left( x^{(i)} - \mu_j \right) \left( x^{(i)} - \mu_j \right)^T}{\sum_{i=1}^m w_j^{(i)}}.
 $$
-
-### Convergence of EM
 
 
 ## Factor Analysis
