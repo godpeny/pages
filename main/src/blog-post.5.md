@@ -102,14 +102,21 @@ $$
 A method of estimating the parameters of a statistical model given observations, by finding the parameter values that maximize the likelihood of observing the data.  
 In other word, when modeling a set of observations as a random sample from an unknown joint probability distribution which is expressed in terms of a set of parameters.  
 The goal of maximum likelihood estimation is to determine the parameters for which the observed data have the highest joint probability. We write the parameters governing the joint distribution as a vector $\theta = \begin{bmatrix} \theta_1, \theta_2, \dots, \theta_k \end{bmatrix}^T$ so that this distribution falls within a parametric family $\{ f(\cdot; \theta) \mid \theta \in \Theta \}$, where $\Theta$ is called the parameter space, a finite-dimensional subset of Euclidean space.  
-Evaluating the joint density at the observed data sample ${y} =(y_{1},y_{2},\ldots ,y_{n})\;$ gives a real-valued function, which is called the likelihood function.  
+
+ - Likelihood: 확률 분포가 가정된 상황에서 관측값이 가지는 확률값. 확률 분포가 가정된 상황에서 관측값이 가지는 확률값.
+ - MLE: 관측되는 데이터들을 가장 잘 모델링하는 확률분포의 parameter를 찾는 알고리즘.
+
+In order to maximize likelihood $L(\theta)$,  it is sometimes easier to work with $\ell(\theta) := \log L(\theta)$
+instead.  
+Since the logarithm function is monotonically increasing, it is clear
+that the value of $\theta$ where the maximum of $L(\theta)$ occurs is necessarily the value
+of $\theta$ where the maximum of $\ell(\theta)$ occurs, and that the converse is also true.
+That is,
 $$
-\mathcal{L}_n(\theta) = \mathcal{L}_n(\theta; \mathbf{y}) = f_n(\mathbf{y}; \theta),
+\hat{\theta}_{\text{MLE}} = \arg\max_\theta L(\theta) \iff \hat{\theta}_{\text{MLE}} = \arg\max_\theta \log L(\theta).
 $$
-For IID, $f_n(\mathbf{y}; \theta)$ will be the product of univariate density functions:
-$$
-f_n(\mathbf{y}; \theta) = \prod_{k=1}^{n} f_k^{\text{univar}}(y_k; \theta).
-$$
+To find the maximum, we take the derivative of the log-likelihood function with respect to the parameters ($=\ell'(\theta))$ and set it equal to zero, which gives us the likelihood equations, which are necessary conditions for finding the maximum.  
+Solving these equations provides the parameter values that maximize the likelihood function
 
 ## Maximum a posteriori estimation (MAP)
 사후확률(posterior probability)을 사전확률(prior probability)과 likelihood를 이용해서 계산할 수 있도록 해 주는 확률 변환식.  
