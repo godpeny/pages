@@ -38,7 +38,7 @@ x_m
 \end{bmatrix}.
 $$
 
-## Vector Double Summation
+### Vector Double Summation
 $$
 \begin{align*}
 \left( \sum_{i=1}^n x_i \right)^2 &= \left( \sum_{i=1}^n x_i \right) \left( \sum_{j=1}^n x_j \right) = \sum_{i=1}^n \sum_{j=1}^n x_i x_j
@@ -64,7 +64,45 @@ $$
 \quad \text{where} \quad \|z\|^2 = z \cdot z^T = \sum_{i=1}^{n} z_i^2.
 $$
 
+### Vector Space (Linear Space)
+A vector space is a set whose vectors can be added together and multiplied ("scaled") by numbers called scalars.  
+The operations of vector addition and scalar multiplication must satisfy certain requirements, called vector axioms.
+![alt text](images/blog15_vector_space.png)  
+For example, above image show the vector addition and scalar multiplication.
+ - 1) a vector $v$ (blue) is added to another vector $w$ (red, upper illustration). 
+ - 3) $w$ is stretched by a factor of $2$, yielding the sum $v + 2w$.
+
 ### Span, Range, Rank and Null Space
+#### Span (Linear Span)
+The linear span of a set $S$ of elements of a vector space $V$ is the smallest linear subspace of 
+$V$ that contains $S$.  
+It is the set of all finite linear combinations of the elements of $S$, and the intersection of all linear subspaces that contain $S$.  
+It follows from this definition that the span of $S$ is the set of all finite linear combinations of elements (vectors) of $S$, and can be defined as following,
+$$
+\text{span}(S) = \left\{ \lambda_1 \mathbf{v}_1 + \lambda_2 \mathbf{v}_2 + \cdots + \lambda_n \mathbf{v}_n \mid n \in \mathbb{N}, \mathbf{v}_1, \dots, \mathbf{v}_n \in S, \lambda_1, \dots, \lambda_n \in K \right\}
+$$
+For example, suppose there is vectore space $\mathbb{R}^{3}$,
+$$
+{(1, 0, 0), (0, 1, 0), (1, 1, 0)} 
+$$
+However, its spanning set is not ${(1, 0, 0), (0, 1, 0), (1, 1, 0)}$. Instead, its spanning set is, 
+$$
+{(1, 0, 0), (0, 1, 0)} 
+$$
+This is because last component $(1, 1, 0)$ is a linear combination of $(1, 0, 0)$ and $(0, 1, 0)$. Thus, the spanned space is not $\mathbb{R}^{3}$.
+
+#### Rank
+The rank of a matrix $A$ is the dimension of the vector space generated (or spanned) by its columns.  
+This corresponds to the maximal number of linearly independent columns of $A$. This, in turn, is identical to the dimension of the vector space spanned by its rows. In other words,  
+$\text{Row Rank} = \text{Column Rank} = \text{Rank of the Matrix}$
+
+For example, below matrix has rank 2.
+$$
+(1, 0, 1) \\ (0, 1, 1)\\(0, 1, 1)
+$$
+ - Column Rank: first two column vectors are linearly independable, but third column can be attained by lienar combination of the first two($1+2$). So rank is 2.
+ - Row Rank: second and third row vectors are identical, so rank is 2.
+
 ### Vector Multiplication
 https://rfriend.tistory.com/145
 https://rfriend.tistory.com/146
@@ -104,6 +142,10 @@ v_y p_y \\
 v_z p_z
 \end{bmatrix}.
 $
+#### Singular Matrix
+A singular matrix is a square matrix whose determinant is zero. In other words, it’s a square matrix (where the number of rows and columns are equal) that has no inverse. 
+In a singular matrix, some rows and columns are linearly dependent. Therefore, the rank of a singular matrix will be less than the order of the matrix, i.e., Rank (A) < Order of A.
+
 ### Matrix Multiplication
 #### 3-d matrix multiplication
 A 3D matrix is nothing but a collection (or a stack) of many 2D matrices, just like how a 2D matrix is a collection/stack of many 1D vectors.  
@@ -132,9 +174,18 @@ Matrix C (A @ B):
   [83 64]]] // a_2 @ b_2
 ```
 ## Affine Function
-An affine function is a function composed of a linear function + a constant and its graph is a straight line. (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
-## Affine hull
-smallest affine set containing S, in other words, the intersection of all affine sets containing S.
+An affine function is a function composed of a linear function + a constant and its graph is a straight line.  
+(즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
+
+## Affine Hull
+The smallest affine set containing S, in other words, the intersection of all affine sets containing S.
+
+## Affine Space
+This is the set of points $x$ that satisfying,
+$$
+x = \sum_{i=1}^{m} \alpha_i x^{(i)}
+$$
+For some $\alpha_i$’s so that $\sum_{i=1}^{m} \alpha_i x^{(i)} = 1$
 
 ## Bounded/Unbounded
 A set is called bounded if all of its points are within a certain distance of each other. 
