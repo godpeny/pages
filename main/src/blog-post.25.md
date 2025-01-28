@@ -189,13 +189,62 @@ $$
 $$
 (Detailed calculation will be explained in the "Applying EM Algorithm to Mixture of Gaussians" using Gaussian Mixtures Model example.)
 
+So combining both E Step and M step,  
+
+$$
+\textbf{Repeat until convergence} \\ 
+\text{(E-step)} \quad \text{For each } i, \text{ set} \quad Q_i(z^{(i)}) := p(z^{(i)} \mid x^{(i)}; \theta). \\
+\text{(M-step)} \quad \text{Set} \quad \theta := \arg \max_\theta \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}. \\
+$$
+
 ### Convergence of EM
+How we we know if this algorithm will converge? We will prove that 
+$$\ell(\theta^{(t)}) \leq \ell(\theta^{(t+1)})$$
+So that EM always monotonically improves log likelihood.  
+We will use the result of choosing $Q_i$'s from derivation above, remind that,
+$$
+Q_i^{(t)}(z^{(i)}) = p(z^{(i)} \mid x^{(i)}; \theta^{(t)}) \\
+\ell(\theta^{(t)}) = \sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t)})}{Q_i^{(t)} (z^{(i)})}
+$$
+with difference of $t$ which indicates the iteration.  
+$$
+\ell(\theta) \geq \sum_i \sum_{z^{(i)}} Q_i (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta}{Q_i (z^{(i)})} 
+$$
+Since above equation is true for any values of $Q_i$'s and $\theta$, particularly it holds also true for  $Q_i = Q_i^{(t)}$ and $\theta = \theta^{(t+1)}$ as below.
+$$
+\ell(\theta^{(t+1)})
+\geq \sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t+1)})}{Q_i^{(t)} (z^{(i)})}
+$$
+Since $\theta^{(t+1)}$ is explicitly is chosen from following equation, 
+$$
+\theta^{(t+1)} = \arg\max_{\theta} \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})},
+$$
+We can assure that $\theta^{(t+1)}$ must be equal or larger than the same formula evaluated at  $\theta^{(t)}$.
+$$
+\sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t+1)})}{Q_i^{(t)} (z^{(i)})}
+\geq \sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t)})}{Q_i^{(t)} (z^{(i)})} = \ell(\theta^{(t)})
+$$
+Therefore combining all together, we can find out that EM causes the likelihood to converge monotonically.
+$$
+\ell(\theta^{(t+1)})
+\geq \sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t+1)})}{Q_i^{(t)} (z^{(i)})} 
+\geq \sum_i \sum_{z^{(i)}} Q_i^{(t)} (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta^{(t)})}{Q_i^{(t)} (z^{(i)})} = \ell(\theta^{(t)})
+$$
+
+### Coordinate Ascent aspect of EM Algorithm
+Coordinate descent is an optimization algorithm that successively minimizes along coordinate directions to find the minimum of a function. 
+At each iteration, the algorithm determines a coordinate via a coordinate selection rule, then minimizes over the corresponding coordinate hyperplane while fixing all other coordinates or coordinate block.
+$$
+J(Q, \theta) = \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
+$$
+From the view of definition of coordinate ascent, EM can also be viewed a coordinate ascent on $J$, in which the E-step maximizes it with
+respect to $Q$(choosing $Q_i$ in E step) and the M-step maximizes it with respect to $\theta$.
 
 ### Applying EM Algorithm to Mixture of Gaussians
 Armed with our general definition of the EM algorithm, let’s go back to our
 old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussians.
 
-### Estimation Step (E): Tries to “guess” the latent values of the $z^{(i)}$
+#### Estimation Step (E): Tries to “guess” the latent values of the $z^{(i)}$
 First, initialize our model parameters like the mean($\mu_j$), covariance matrix($\Sigma_j$), and mixing coefficients($\phi_j$).  
 Calculate the posterior probabilities of data points belonging to each centroid using the current parameter values. In other words, using current paratmers values(mean, covariance and mixing probability), calculate the posterior probability of $z^{(i)}$'s given $x^{(i)}$'s.
 
@@ -205,7 +254,7 @@ $$
 
 The values $w^{(i)}_j$ calculated in the E-step abvove is soft guesses for the $z^{(i)}$, whici is the probability of how much $x^{(i)}$ is assigned to the $j$ Gaussian.
 
-### Maximazation Step (M): Update parameter values($\phi, \mu, \Sigma$)
+#### Maximazation Step (M): Update parameter values($\phi, \mu, \Sigma$)
 In M Step, pretending that the guesses in the E step were correct, updates the parameters of the model based on the guesses.  
 
 $$
