@@ -72,8 +72,11 @@ For example, above image show the vector addition and scalar multiplication.
  - 1) a vector $v$ (blue) is added to another vector $w$ (red, upper illustration). 
  - 3) $w$ is stretched by a factor of $2$, yielding the sum $v + 2w$.
 
-### Span, Range, Rank and Null Space
-#### Span (Linear Span)
+### Range
+
+### Null Space
+
+### Span (Linear Span)
 The linear span of a set $S$ of elements of a vector space $V$ is the smallest linear subspace of 
 $V$ that contains $S$.  
 It is the set of all finite linear combinations of the elements of $S$, and the intersection of all linear subspaces that contain $S$.  
@@ -91,7 +94,7 @@ $$
 $$
 This is because last component $(1, 1, 0)$ is a linear combination of $(1, 0, 0)$ and $(0, 1, 0)$. Thus, the spanned space is not $\mathbb{R}^{3}$.
 
-#### Rank
+### Rank
 The rank of a matrix $A$ is the dimension of the vector space generated (or spanned) by its columns.  
 This corresponds to the maximal number of linearly independent columns of $A$. This, in turn, is identical to the dimension of the vector space spanned by its rows. In other words,  
 $\text{Row Rank} = \text{Column Rank} = \text{Rank of the Matrix}$
@@ -103,12 +106,102 @@ $$
  - Column Rank: first two column vectors are linearly independable, but third column can be attained by lienar combination of the first two($1+2$). So rank is 2.
  - Row Rank: second and third row vectors are identical, so rank is 2.
 
+#### Property of Matrix Rank
+ - Sylvester’s rank inequality: if $A$ is an $m \times n$ matrix and $B$ is $n \times k$, then,
+ $$ \operatorname {rank} (A)+\operatorname {rank} (B)-n\leq \operatorname {rank} (AB) $$
+ - Subadditivity: $$ \operatorname {rank} (A+B)\leq \operatorname {rank} (A)+\operatorname {rank} (B) $$
+
 ### Vector Multiplication
 https://rfriend.tistory.com/145
 https://rfriend.tistory.com/146
-- Dot Product
-- Inner Product
-- Outer Product
+
+### Inner Product (Dot Product)
+Inner Product also called as a scalar product is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors), and returns a single number.
+
+#### Coordinate Definition
+The dot product of two vectors $\mathbf {a} =[a_{1},a_{2},\cdots ,a_{n}]$ and $ \mathbf {b} =[b_{1},b_{2},\cdots ,b_{n}]$, specified with respect to an orthonormal basis, is defined as
+$$
+\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i b_i = a_1 b_1 + a_2 b_2 + \dots + a_n b_n.
+$$
+
+For example, when there are two vectors, inner product of these vectors is,
+$$
+[1,3,-5] \cdot [4,-2,-1] = (1 \times 4) + (3 \times -2) + (-5 \times -1)
+= 4 - 6 + 5 = 3
+$$
+
+#### Geometric Definition
+In Euclidean space, a Euclidean vector is a geometric object that possesses both a magnitude(length of vector) and a direction. A vector can be pictured as an arrow.  
+The dot product of two Euclidean vectors $\mathbf {a}$ and $\mathbf {b}$ is defined by,
+$$
+\mathbf{a} \cdot \mathbf{b} = \|\mathbf{a}\| \|\mathbf{b}\| \cos \theta,
+$$
+When $\|\mathbf{a}\|$ denotes for magnitude(lenght) of vecdtor.  
+If vecdtor $\mathbf{a}$ and $\mathbf{b}$ are orthogonal, (the angle is $ 90^\circ$, which mneans $\theta = \pi / 2$).  
+Since $\cos \pi / 2 = 0$, 
+$$
+mathbf{a} \cdot \mathbf{b} = 0
+$$
+
+
+### Outer Product
+Outer product of two coordinate vectors is the matrix whose entries are all products of an element in the first vector with an element in the second vector.  
+If the two coordinate vectors have dimensions $n$ and $m$, then their outer product is an $n \times m$ matrix. 
+
+#### Definition
+Given two vectors of size $m\times 1$ and $n\times 1$ respectively,
+$$
+\mathbf{u} =
+\begin{bmatrix}
+    u_1 \\
+    u_2 \\
+    \vdots \\
+    u_m
+\end{bmatrix}, \quad
+\mathbf{v} =
+\begin{bmatrix}
+    v_1 \\
+    v_2 \\
+    \vdots \\
+    v_n
+\end{bmatrix}
+$$
+The outer product of these two vectors is $m \times n$ matrix $\mathbf{A}$, obtained by multiplying each element of each vector.
+$$
+\mathbf{u} \otimes \mathbf{v} = \mathbf{A} =
+\begin{bmatrix}
+    u_1 v_1 & u_1 v_2 & \cdots & u_1 v_n \\
+    u_2 v_1 & u_2 v_2 & \cdots & u_2 v_n \\
+    \vdots & \vdots & \ddots & \vdots \\
+    u_m v_1 & u_m v_2 & \cdots & u_m v_n
+\end{bmatrix}
+$$
+As you can see from above equation, outer product generates the matrix whose first row is $u_1(v_1, v_2, \cdots, v_n)$ and the $i$-th row is $u_i(v_1, v_2, \cdots, v_n)$.  
+So the rows are the vector $(v_1, v_2, \cdots, v_n)$ multiplied by scalars. Since this itself is the basis, the rank of the result matrix is always 1(or a zero matrix if the vector is zero).
+
+
+#### Summing the result matrix from outer product.
+Consider following sum of matrices of outer product of vectors.
+$$
+X = (X_1 + X_2 + \cdots + X_N) = u_1 v_1^T + u_2 v_2^T + \dots + u_N v_N^T 
+$$
+When $(u_1, u_2, \dots, u_N)$ are linearly independent and also $(v_1, v_2, \dots, v_N)$ is linearly independent.  
+In this summation, rank of matrix $X$ is equal to $N$.
+Let's use 2 properties of matrix rank, Subadditivity and Sylvester’s rank inequality to prove it.  
+First, using Subadditivity, we can assure that $\operatorname {rank} (X) \leq N$.
+$$ \operatorname {rank} (X) = \operatorname {rank} (X_1 + X_2 + \cdots + X_N) \leq (1 + 1 + \cdots + 1) = N $$
+Second, consider $X$ as multiplication of two matrices and apply Sylvester’s rank inequality.
+$$
+X = U \cdot V = \begin{pmatrix} u_1 & \dots & u_N \end{pmatrix} 
+\begin{pmatrix} v_1^T \\ \vdots \\ v_N^T \end{pmatrix} 
+$$
+$\operatorname{rank}(U)$ and $\operatorname{rank}(U)$ are both $N$ because they are composed of $N$'s linearly independent vectors from the first place.
+$$
+N(N + N - N) = \operatorname{rank}(U) + \operatorname{rank}(V) - N \leq \operatorname{rank}(X).
+$$
+
+Therefore, combining the two derivation above, we can conclude that the rank of sum of $N$ rank-1 matrices are $N$.
+
 ### Diagonal Matrix
 In linear algebra, a diagonal matrix is a matrix in which the entries outside the main diagonal are all zero; the term usually refers to square matrices. Elements of the main diagonal can either be zero or nonzero.  
 In geometry, a diagonal matrix may be used as a scaling matrix, since matrix multiplication with it results in changing scale (size) and possibly also shape; only a scalar matrix results in uniform change in scale.
