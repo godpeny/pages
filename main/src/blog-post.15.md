@@ -64,6 +64,16 @@ $$
 \quad \text{where} \quad \|z\|^2 = z \cdot z^T = \sum_{i=1}^{n} z_i^2.
 $$
 
+### Basis
+A set $B$ of vectors in a vector space $V$ is called a basis if every element of $V$ may be written in a unique way as a finite linear combination of elements of B. The elements of a basis are called basis vectors.
+Equivalently, a set $B$ is a basis if its elements are linearly independent and every element of $V$ is a linear combination of elements of B. In other words, a basis is a linearly independent spanning set.
+
+A vector space can have several bases; however all the bases have the same number of elements, called the dimension of the vector space.
+
+### Dimension
+In mathematics, the dimension of a vector space V is the cardinality (i.e., the number of vectors) of a basis of V over its base field.  
+For every vector space there exists a basis, all bases of a vector space have equal cardinality. As a result, the dimension of a vector space is uniquely defined. We say $V$ is finite-dimensional if the dimension of $V$ is finite, and infinite-dimensional if its dimension is infinite.
+
 ### Vector Space (Linear Space)
 A vector space is a set whose vectors can be added together and multiplied ("scaled") by numbers called scalars.  
 The operations of vector addition and scalar multiplication must satisfy certain requirements, called vector axioms.
@@ -110,10 +120,6 @@ $$
  - Sylvester’s rank inequality: if $A$ is an $m \times n$ matrix and $B$ is $n \times k$, then,
  $$ \operatorname {rank} (A)+\operatorname {rank} (B)-n\leq \operatorname {rank} (AB) $$
  - Subadditivity: $$ \operatorname {rank} (A+B)\leq \operatorname {rank} (A)+\operatorname {rank} (B) $$
-
-### Vector Multiplication
-https://rfriend.tistory.com/145
-https://rfriend.tistory.com/146
 
 ### Inner Product (Dot Product)
 Inner Product also called as a scalar product is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors), and returns a single number.
@@ -331,3 +337,18 @@ Formally,
 $$
 M \text{ negative-semidefinite } \iff \mathbf{x}^\top M \mathbf{x} \leq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
 $$
+
+## Linear Combination
+In mathematics, a linear combination is an expression constructed from a set of terms by multiplying each term by a constant and adding the results. (e.g. a linear combination of $x$ and $y$ would be any expression of the form $ax + by$, where a and b are constants).  
+Let $V$ be a vector space over the field $K$. As usual, we call elements of $V$ vectors and call elements of $K$ scalars. If $v_1, \cdots, v_n$ are vectors and $a_1, \cdots, a_n$ are scalars, then the linear combination of those vectors with those scalars as coefficients is as below.
+$$
+a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + a_3 \mathbf{v}_3 + \cdots + a_n \mathbf{v}_n.
+$$
+
+## Linear Independence
+In the theory of vector spaces, a set of vectors is said to be linearly independent if there exists no linear combination of the vectors that equals the zero vector. If such a linear combination exists, then the vectors are said to be linearly dependent.
+For example, A sequence of vectors $\mathbf {v} _{1},\mathbf {v} _{2},\dots ,\mathbf {v} _{k}$ from a vector space $V$ is said to be linearly dependent, if there exist scalars $a_{1},a_{2},\dots ,a_{k}$ not all zero.
+$$
+a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + \cdots + a_k \mathbf{v}_k = \mathbf{0},
+$$
+Where $\mathbf{0}$ denotes the zero vector.
