@@ -1,5 +1,29 @@
 # Deision Tree and Ensemble
 ## Preliminaries
+### Mean (Expected Value)
+#### Mean of Vector
+The expected value of a random vector is also a vector. If you have a vector and its expected value is defined component-wise as below.
+$$
+\mathbb{E}[\mathbf{z}] = \begin{bmatrix}
+\mathbb{E}[z_1] \\
+\mathbb{E}[z_2] \\
+\vdots \\
+\mathbb{E}[z_n]
+\end{bmatrix}
+$$
+Each component $\mathbb{E}[z_i]$ is a scalar, but the result of stacking them into a column vector makes the overall expected value a vector of the same dimension as $z$.
+
+#### Linearity of Expectation of Mean
+The linearity of expectation means is below.
+$$
+E[aX+bY]=aE[X]+bE[Y]
+$$
+Where $a$ and $b$ are constants (scalars, vectors, or matrices).
+$X$ and $Y$ are random variables.
+
+In this context, even if $a$ or $b$ is a matrix, the rule still applies, as long as the matrix is deterministic (fixed and not random). The key requirement for applying this property is that the matrix does not depend on the random variable.
+
+
 ### Covariance
 Covariance is a measure of the joint variability of two random variables. It is the sign of the covariance, therefore, shows the tendency in the linear relationship between the variables.  
 For example, if the covariance is positive, greater values of one variable mainly correspond with greater values of the other variable, and the same holds for lesser values (that is, the variables tend to show similar behavior).  
@@ -43,6 +67,16 @@ $$
 \text{Var}\left(\sum_{i=1}^n X_i\right) = \sum_{i=1}^n \sum_{j=1}^n \text{Cov}(X_i, X_j) = \\ 
 \sum_{i=1}^n \text{Var}(X_i) + 2 \sum_{1 \leq i < j \leq n} \text{Cov}(X_i, X_j) = \\
 \sum_{i=1}^n \text{Var}(X_i) + \sum_{i \neq j} \text{Cov}(X_i, X_j)
+$$
+
+#### Applying to Vector
+If $X$ is not a single variable but random vector, $Var(X)$ is redefined as the variance of the entire random vector $X$.
+$$ 
+Var(X)=E[(X−E[X])(X−E[X])
+$$ 
+And this is exactly the same as the covariance matrix.
+$$
+Var(X)=Cov(X)
 $$
 
 ### Correlation
