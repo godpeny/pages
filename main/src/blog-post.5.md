@@ -267,3 +267,45 @@ z_2 \\
 z_n
 \end{bmatrix}
 $$
+
+## Joint Probability Distribution
+The probability distribution of all possible pairs of outputs of two random variables that are defined on the same probability space. 
+
+When dealing with continuous random variables, things are a bit different. The notation $p(x) = p(x_1, x_2)$ refers to the joint probability density function (pdf), not the probability of an intersection.  
+It is the pdf that describes how likely the pair $(x_1, x_2)$ is.
+
+For example,  
+Each of two urns contains twice as many red balls as blue balls, and no others, and one ball is randomly selected from each urn, with the two draws independent of each other. Let $A$ and $B$ be discrete random variables associated with the outcomes of the draw from the first urn and second urn respectively.  
+The probability of drawing a red ball from either of the urns is ⁠$\frac{2}{3}$ and the probability of drawing a blue ball is ⁠⁠$\frac{1}{3}$⁠. The joint probability distribution is presented in the following table.
+
+$$
+\begin{array}{|c|c|c|c|}
+\hline
+ & A = \text{Red} & A = \text{Blue} & P(B) \\
+\hline
+B = \text{Red} & \left( \frac{2}{3} \right) \left( \frac{2}{3} \right) = \frac{4}{9} & \left( \frac{1}{3} \right) \left( \frac{2}{3} \right) = \frac{2}{9} & \frac{4}{9} + \frac{2}{9} = \frac{2}{3} \\
+\hline
+B = \text{Blue} & \left( \frac{2}{3} \right) \left( \frac{1}{3} \right) = \frac{2}{9} & \left( \frac{1}{3} \right) \left( \frac{1}{3} \right) = \frac{1}{9} & \frac{2}{9} + \frac{1}{9} = \frac{1}{3} \\
+\hline
+P(A) & \frac{4}{9} + \frac{2}{9} = \frac{2}{3} & \frac{2}{9} + \frac{1}{9} = \frac{1}{3} &  \\
+\hline
+\end{array}
+$$
+
+Each of the four inner cells shows the probability of a particular combination of results from the two draws. These probabilities are the joint distribution. In any one cell the probability of a particular combination occurring is (since the draws are independent) the product of the probability of the specified result for $A$ and the probability of the specified result for $B$.  
+The probabilities in these four cells sum to $1$, as with all probability distributions.
+
+### Marginal Probability Distribution
+It is important to distinguish between the joint probability distribution of $X$ and $Y$ and the probability distribution of each variable individually.  
+
+The individual probability distribution of a random variable is referred to as its marginal probability distribution. In general, the marginal probability distribution of $X$ can be determined from the joint probability distribution of $X$ and other random variables(e.g., $Y$).
+
+From above example, The final row and the final column give the marginal probability distribution for $A$ and the marginal probability distribution for $B$ respectively.  
+For example, for $A$ the first of these cells gives the sum of the probabilities for A being red, regardless of which possibility for $B$ in the column above the cell occurs, as ⁠⁠$\frac{2}{3}$⁠.  
+Thus the marginal probability distribution for $A$ gives $A$'s probabilities unconditional on $B$, in a margin of the table.
+
+If the joint probability density function of random variable $X$ and $Y$ is $f_{X,Y}(x,y)$ , the marginal probability density function of $X$ and $Y$, which defines the marginal distribution is as following.
+$$
+f_X(x) = \int f_{X,Y}(x, y) \, dy \\
+f_Y(y) = \int f_{X,Y}(x, y) \, dx
+$$
