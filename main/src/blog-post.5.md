@@ -203,3 +203,67 @@ where $e_i$ is $Y_i - \hat{Y}_i$ and $\mathbf{e}$ is $n \times 1$ column vector.
 
 ## Point estimation
 In statistics, point estimation involves the use of sample data to calculate a single value (known as a point estimate since it identifies a point in some parameter space) which is to serve as a "best guess" or "best estimate" of an unknown population parameter (for example, the population mean).
+
+## Understanding of $p(x|z)$ (Conditional Probability)
+The notation "p(x|z)" means "the probability of $x$ given $z$," and 
+When we say "given" in $p(x|z)$, it means that outcome $x$ occurs given that another event $z$ has already occurred and the probability of $x$ happening depends on that of $z$ happening.
+
+1. Conditional Probability  
+   - Considering the probability of $x$ under the condition that we know the value of $z$.
+   - Representing how the probability of $x$ changes when we have information about $z$.
+2. Fixed or Known Information  
+   - Treating $z$ as known or fixed information.
+   - looking at the probability distribution of $x$ in the subset of cases where $z$ takes on a specific value.
+3. Updated Knowledge  
+   - The probability of $x$ is updated based on the information provided by z.
+   - It reflects how our understanding of $x$ changes when we learn about $z$.
+4. Restricted Sample Space:
+   - Restricting our consideration to only those outcomes where $z$ has a particular value.
+
+For example, when $z$ is a random vector as below,
+$$
+\mathbf{z} = \begin{bmatrix}
+z_1 \\
+z_2 \\
+\vdots \\
+z_n
+\end{bmatrix}
+$$
+Expected value of the random vector $z$ given $z$ can be interpreted as Computing the expected value of the random vector $z$ given that we already know its value as following.
+$$
+\mathbb{E} \left[ \mathbf{z} \mid \mathbf{z} \right] = \mathbf{z}
+$$
+
+Let's suppose Suppose $z$ is a random variable (scalar) when $z=5$ given. Then the conditional expectation of $z$ given $z$ ($p(z|z)$) is simply the value of $z$ itself.
+$$
+E[Z∣Z=5]=5
+$$
+
+If z is not a scalar but vector, then 
+$$
+\mathbf{z} = \begin{bmatrix}
+z_1 \\
+z_2 \\
+\vdots \\
+z_n
+\end{bmatrix}
+$$
+The expected value of each component $z_i$ given that we know $z_i$ is simply $z_i$ itself.
+$$
+\mathbb{E} \left[ \begin{bmatrix}
+z_1 \\
+z_2 \\
+\vdots \\
+z_n
+\end{bmatrix} \mid \mathbf{\mathbf{z} = \begin{bmatrix}
+z_1 \\
+z_2 \\
+\vdots \\
+z_n
+\end{bmatrix}} \right] = \begin{bmatrix}
+z_1 \\
+z_2 \\
+\vdots \\
+z_n
+\end{bmatrix}
+$$
