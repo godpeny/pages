@@ -267,3 +267,18 @@ $$
 
 
 ## Factor Analysis
+Factor analysis is a statistical method used to describe variance among observed, correlated variables in terms of a potentially lower number of unobserved variables called factors.  
+For example, it is possible that variations in six observed variables mainly reflect the variations in two unobserved (underlying) variables.  
+Factor analysis searches for such joint variations in response to unobserved latent variables. The observed variables are modelled as linear combinations of the potential factors plus "error" terms, hence factor analysis can be thought of as a special case of errors-in-variables models.
+In perspective of Machine Learning, Factor analysis is one of the unsupervised machine learning algorithms which is used for dimensionality reduction. This algorithm creates factors from the observed variables to represent the common variance(i.e. variance due to correlation among the observed variables).
+
+### Why Use Factor Analysis
+When $n$ is dimension of data from a mixture of several Gaussians and $m$ is the number of training set, if $n >> m$, we would find that the covariance matrix $\Sigma$  is singular.  
+This means that $(1/|\Sigma|^{1/2}) = \frac{1}{0}$ does not exist, and $\frac{1}/\Sigma1/2 = 1/0$.
+
+More generally, unless $m$ exceeds $n$ by some reasonable amount, the maximum likelihood estimates of the mean and covariance may be quite poor.  
+Nonetheless, we would still like to be able to fit a reasonable Gaussian model to the data, and perhaps capture some interesting covariance structure in the data. We can do it by using Factor Analysis.
+
+### Factor Analysis Model
+
+### EM for Factor Analysis
