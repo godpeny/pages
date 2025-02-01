@@ -82,7 +82,10 @@ For example, above image show the vector addition and scalar multiplication.
  - 1) a vector $v$ (blue) is added to another vector $w$ (red, upper illustration). 
  - 3) $w$ is stretched by a factor of $2$, yielding the sum $v + 2w$.
 
-### Range
+### Row and column spaces
+The column space (also called the range or image) of a matrix $A$ is the span (set of all possible linear combinations) of its column vectors.  
+Whil the row space of this matrix is the vector space spanned by the row vectors.
+
 
 ### Null Space
 

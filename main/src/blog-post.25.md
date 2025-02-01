@@ -354,5 +354,7 @@ $$
 Simulating $x$ with 10,000 samples and running factor analysis, we can see that the loadings matrix allows us to quickly read off which variables are correlated, and the diagonal noise matrix accounts for arbitrary and uncorrelated offsets.  
 This is the main intuition behind factor analysis.
 
+### Notation
+
 
 ### EM for Factor Analysis
