@@ -267,18 +267,92 @@ $$
 
 
 ## Factor Analysis
-Factor analysis is a statistical method used to describe variance among observed, correlated variables in terms of a potentially lower number of unobserved variables called factors.  
-For example, it is possible that variations in six observed variables mainly reflect the variations in two unobserved (underlying) variables.  
-Factor analysis searches for such joint variations in response to unobserved latent variables. The observed variables are modelled as linear combinations of the potential factors plus "error" terms, hence factor analysis can be thought of as a special case of errors-in-variables models.
-In perspective of Machine Learning, Factor analysis is one of the unsupervised machine learning algorithms which is used for dimensionality reduction. This algorithm creates factors from the observed variables to represent the common variance(i.e. variance due to correlation among the observed variables).
+Factor analysis is one of the unsupervised machine learning algorithms which is used for dimensionality reduction. This algorithm creates factors from the observed variables to represent the common variance(i.e. variance due to correlation among the observed variables).
+$$
+x = \Lambda z + \mu
+$$
+Factor analysis, a statistical method for modeling the covariance structure of high
+dimensional data($x$) using a small number of latent variables(factors = $z^{(i)}$'s).  
 
 ### Why Use Factor Analysis
-When $n$ is dimension of data from a mixture of several Gaussians and $m$ is the number of training set, if $n >> m$, we would find that the covariance matrix $\Sigma$  is singular.  
+When $n$ is dimension of data from a mixture of Gaussian models and $m$ is the number of training set, if $n >> m$, we would find that the covariance matrix $\Sigma$  is singular.  
 This means that $(1/|\Sigma|^{1/2}) = \frac{1}{0}$ does not exist, and $\frac{1}/\Sigma1/2 = 1/0$.
 
 More generally, unless $m$ exceeds $n$ by some reasonable amount, the maximum likelihood estimates of the mean and covariance may be quite poor.  
 Nonetheless, we would still like to be able to fit a reasonable Gaussian model to the data, and perhaps capture some interesting covariance structure in the data. We can do it by using Factor Analysis.
 
 ### Factor Analysis Model
+As mentioned earlier, by modeling the correlations in our data($x$), we can represent it with fewer variables or dimensions(factors = $z^{(i)}$'s).
+$$
+x = \Lambda z + \mu
+$$
+ - $\Lambda$ is known as the factor loading matrix.  
+ - factors $z$ are assumed to be $\mathcal{N}(0, I)$ distributed (zero-mean independent normals, with unit variance).  
+- The $p$ dimensional random variable $\mu$ is distributed $\mathcal{N}(0, \Psi)$ , where $\Psi$ is a diagonal matrix. 
+  - This diagonality of $\Psi$ is one of the key assumptions of factor analysis that the observed variables are independent given the factors.
+
+The goal of factor analysis is to find the $\Lambda$ and $\Psi$ that
+best model the covariance structure of $x$. The factor variables $z$ model the correlations between
+the elements of $x$, while the $\mu$ variables account for independent noise in each element of $x$.
+
+### Dimensionality Reduction using Loading Matrix
+As an example, imagine we modeled a random vector $x$, normally distributed, in which two variables($x_1, x_2$) were strongly correlated as following.
+$$
+\mathbf{x}
+=
+\begin{bmatrix}
+x_{1}\\
+x_{2}\\
+x_{3}
+\end{bmatrix}
+\sim
+\mathcal{N}\!\Bigl(
+  \begin{bmatrix}
+    0\\
+    0\\
+    0
+  \end{bmatrix},
+  \begin{bmatrix}
+    1 & 0.9 & 0\\
+    0.9 & 1 & 0\\
+    0 & 0 & 1
+  \end{bmatrix}
+\Bigr).
+$$
+The correlation between $x_1, x_2$ allows us to model the covariance of $x$ as a low-rank approximation using a matrix called the loadings($\Lambda$), plus a noise term($\Psi$). 
+$$
+\underbrace{
+\begin{bmatrix}
+0.99 & 0.90 & 0.02\\
+0.90 & 1.01 & 0.03\\
+0.02 & 0.03 & 1.03
+\end{bmatrix}
+}_{\text{Empirical covariance}}
+\;\approx\;
+\underbrace{
+\begin{bmatrix}
+-0.94 & 0.01\\
+-0.95 & -0.0\\
+-0.03 & -0.16
+\end{bmatrix}
+}_{\Lambda}
+\underbrace{
+\begin{bmatrix}
+-0.94 & -0.95 & -0.03\\
+0.01 & -0.0 & -0.16
+\end{bmatrix}
+}_{\Lambda^{T}}
+\;+\;
+\underbrace{
+\begin{bmatrix}
+0.1 & 0 & 0\\
+0 & 0.1 & 0\\
+0 & 0 & 1.0
+\end{bmatrix}
+}_{\text{Noise}}
+$$
+Simulating $x$ with 10,000 samples and running factor analysis, we can see that the loadings matrix allows us to quickly read off which variables are correlated, and the diagonal noise matrix accounts for arbitrary and uncorrelated offsets.  
+This is the main intuition behind factor analysis.
+
 
 ### EM for Factor Analysis
