@@ -355,6 +355,45 @@ Simulating $x$ with 10,000 samples and running factor analysis, we can see that 
 This is the main intuition behind factor analysis.
 
 ### Notation
+Consider a random vector $x \in \mathbb{R}^{p}$.  
+We want to represent this variable with an unobserved latent variable $z \in \mathbb{R}^{k}$ where typically $k << p$.  
 
+The generative model is,
+$$
+x = \Lambda z + \mu + \epsilon, \quad x \in \mathbb{R}^{p}, \quad \Lambda \in \mathbb{R}^{n \times k}, \quad  \mu \in \mathbb{R}^{n} \\
+$$
+When where $z$ and $\epsilon$ are independent,
+$$
+z \sim \mathcal{N}(0, I), \quad z \in \mathbb{R}^{k} \\
+\epsilon \sim \mathcal{N}(0, \Psi), \quad \Psi \in \mathbb{R}^{n \times n} \quad  \\ 
+\mu \text{ is constant vector indicates noise.}
+$$
+Sometimes the model can be shown as following with $\mu$ is basically $\mu + \epsilon$ from above formula. (Since $\mu$ and $\epsilon$ account for independent noise in each element of $x$)
+$$
+\mu \sim \mathcal{N}(0, \Psi) \\
+x = \Lambda z + \mu 
+$$
+But In this notation we will stick to the former model formula. ($x = \Lambda z + \mu + \epsilon$)
+
+Now we want to find out exactly what distribution our model defines.
+$$
+\begin{bmatrix} z \\ x \end{bmatrix} \sim \mathcal{N}(\mu_{zx}, \Sigma).
+$$
+
+Using this joint distribution, we can compute the conditional distributions using convenient properties of joint Gaussians as mentioned below.
+
+$$
+x_1 \in \mathbb{R}^r, \quad x_2 \in \mathbb{R}^s, \quad \text{and} \quad x \in \mathbb{R}^{r+s}.
+\quad \text{Suppose} \quad x \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma),  \\ 
+\boldsymbol{\mu} = \begin{bmatrix} \boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2 \end{bmatrix}, 
+\quad \Sigma = \begin{bmatrix} \Sigma_{11} & \Sigma_{12} \\ \Sigma_{21} & \Sigma_{22} \end{bmatrix}.
+$$
+
+$$
+\boldsymbol{\mu}_{1|2} = \boldsymbol{\mu}_1 + \Sigma_{12} \Sigma_{22}^{-1} (x_2 - \boldsymbol{\mu}_2), \\
+\Sigma_{1|2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}.
+$$
+
+Then what is the distribution of $z$ and $x$?
 
 ### EM for Factor Analysis
