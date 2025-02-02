@@ -47,13 +47,23 @@ $$
 \mathbb{E}[X] = \int x \, p(x; \mu, \Sigma) \, dx = \mu \\
 \text{Cov}(X) = \sum
 $$
+$\mu_k$ is an average of $x_k$ among $m$ training sets.  
+
 The covariance of a vector-valued random variable $Z$ is defined as  
 $$
-\text{Cov}(Z) = \mathbb{E}[(Z - \mathbb{E}[Z])(Z - \mathbb{E}[Z])^T]
+\text{Cov}(X) \text{Cov}(X,X) = \mathbb{E}[(X - \mathbb{E}[X])(X - \mathbb{E}[X])^T]
 $$
 Also same as,  
 $$
-\text{Cov}(Z) = \mathbb{E}[ZZ^T] - (\mathbb{E}[Z])(\mathbb{E}[Z])^T.
+\text{Cov}(X) = \mathbb{E}[XX^T] - (\mathbb{E}[X])(\mathbb{E}[X])^T.
+$$
+In the structure of summation,
+$$
+\Sigma_{ij} = \operatorname{Cov}(X_i, X_j) = \mathbb{E}[(X_i - \mu_i)(X_j - \mu_j)].
+$$
+Where, 
+$$
+\Sigma_{ii} = \operatorname{Var}(X_i) = \mathbb{E}[(X_i - \mu_i)^2].
 $$
 
 The multivariate normal distribution is often used to describe, at least approximately, any set of (possibly) correlated real-valued random variables, each of which clusters around a mean value.
