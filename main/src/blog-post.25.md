@@ -368,6 +368,8 @@ z \sim \mathcal{N}(0, I), \quad z \in \mathbb{R}^{k} \\
 \epsilon \sim \mathcal{N}(0, \Psi), \quad \Psi \in \mathbb{R}^{n \times n} \quad  \\ 
 \mu \text{ is constant vector indicates noise.}
 $$
+where $\epsilon$ and $z$ are independent.
+
 Sometimes the model can be shown as following with $\mu$ is basically $\mu + \epsilon$ from above formula. (Since $\mu$ and $\epsilon$ account for independent noise in each element of $x$)
 $$
 \mu \sim \mathcal{N}(0, \Psi) \\
@@ -377,23 +379,130 @@ But In this notation we will stick to the former model formula. ($x = \Lambda z 
 
 Now we want to find out exactly what distribution our model defines.
 $$
-\begin{bmatrix} z \\ x \end{bmatrix} \sim \mathcal{N}(\mu_{zx}, \Sigma).
+\begin{bmatrix} z \\ x \end{bmatrix} \sim \mathcal{N}(\mu_{zx}, \Sigma)
 $$
 
 Using this joint distribution, we can compute the conditional distributions using convenient properties of joint Gaussians as mentioned below.
 
 $$
 x_1 \in \mathbb{R}^r, \quad x_2 \in \mathbb{R}^s, \quad \text{and} \quad x \in \mathbb{R}^{r+s}.
-\quad \text{Suppose} \quad x \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma),  \\ 
-\boldsymbol{\mu} = \begin{bmatrix} \boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2 \end{bmatrix}, 
+\quad \text{Suppose} \quad x \sim \mathcal{N}(\mu, \Sigma),  \\ 
+\mu = \begin{bmatrix} \mu_1 \\ \mu_2 \end{bmatrix}, 
 \quad \Sigma = \begin{bmatrix} \Sigma_{11} & \Sigma_{12} \\ \Sigma_{21} & \Sigma_{22} \end{bmatrix}.
 $$
 
 $$
-\boldsymbol{\mu}_{1|2} = \boldsymbol{\mu}_1 + \Sigma_{12} \Sigma_{22}^{-1} (x_2 - \boldsymbol{\mu}_2), \\
+\mu_{1|2} = \mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (x_2 - \mu_2), \\
 \Sigma_{1|2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}.
 $$
 
-Then what is the distribution of $z$ and $x$?
+Then what is the distribution of $z$ and $x$? We have to consider it as marginal distribution of Gaussian as following.
+$$
+\mu_{zx} = \begin{bmatrix} 0 \\ \mu \end{bmatrix} 
+= \begin{bmatrix} \mathbb{E}[z] \\ \mathbb{E}[\mathbf{x}] \end{bmatrix} 
+\left. 
+\begin{array}{c}
+\\ \\
+\end{array} 
+\right\} 
+\begin{array}{c}
+\text{r dimension} \\ \text{s dimension}
+\end{array}, \\
+\Sigma_{zx} = \overbrace{\begin{bmatrix} \Sigma_{zz} & \Sigma_{zx} \\ \Sigma_{xz} & \Sigma_{xx} \end{bmatrix}}^{\text{r,s dimension }}  \left. 
+\begin{array}{c}
+\\ \\
+\end{array} 
+\right\} 
+\begin{array}{c}
+\text{r dimension} \\ \text{s dimension}
+\end{array},
+= \begin{bmatrix} 
+\mathbb{E}[(z - \mathbb{E}[z])(z - \mathbb{E}[z])^T] & \mathbb{E}[(z - \mathbb{E}[z])(x - \mathbb{E}[x])^T] \\ 
+\mathbb{E}[(x - \mathbb{E}[x])(z - \mathbb{E}[z])^T] & \mathbb{E}[(x - \mathbb{E}[x])(x - \mathbb{E}[x])^T] 
+\end{bmatrix}.
+$$
+
+First, let's get mean of $z$ and $x$.
+$$
+\mathbb{E}[z] = 0, \quad \text{from the fact that } z \sim \mathcal{N}(0, I).
+$$
+$$
+\mathbb{E}[x] = \mathbb{E}[\mu + \Lambda z + \epsilon] \\
+= \mu + \Lambda \mathbb{E}[z] + \mathbb{E}[\epsilon] \\
+= \mu
+$$
+Second, let's find the covariance matrix $\Sigma$.
+
+$$
+\text{Since } z \sim \mathcal{N}(0, I), \text{ we easily find that } \Sigma_{zz} = \operatorname{Cov}(z) = I
+$$
+
+$\Sigma_zx$ can be derived as following with the fact that 
+$E[zzT] = \text{Cov}(z)$ (since $z$ has zero mean) and $E[z \epsilon^{T}] = E[z]E[\epsilon^{T}] = 0$ (since $z$ and $\epsilon$ are independent, and hence the expectation of their product is the product of their expectations).
+$$
+\mathbb{E}\big[(z - \mathbb{E}[z])(x - \mathbb{E}[x])^T\big] 
+= \mathbb{E}\big[z (\mu + \Lambda z + \epsilon - \mu)^T\big] \\
+= \mathbb{E}[z z^T] \Lambda^T + \mathbb{E}[z \epsilon^T] \\
+= \Lambda^T.
+$$
+
+Similarly, we can find $\Sigma_{xx}$ as below.
+$$
+\mathbb{E}\big[(x - \mathbb{E}[x])(x - \mathbb{E}[x])^T\big] 
+= \mathbb{E}\big[(\mu + \Lambda z + \epsilon - \mu)(\mu + \Lambda z + \epsilon - \mu)^T\big] \\
+= \mathbb{E}[\Lambda z z^T \Lambda^T + \epsilon z^T \Lambda^T + \Lambda z \epsilon^T + \epsilon \epsilon^T] \\
+= \Lambda \mathbb{E}[z z^T] \Lambda^T + \mathbb{E}[\epsilon \epsilon^T] \\
+= \Lambda \Lambda^T + {\Psi}.
+$$
+
+So putting together we get joint distribution of $z$ and $x$.
+$$
+\begin{bmatrix} 
+z \\ 
+x 
+\end{bmatrix} 
+\sim \mathcal{N}(\mu_{zx}, \Sigma) = 
+\mathcal{N} \left( 
+\begin{bmatrix} 
+0 \\ 
+\mu 
+\end{bmatrix}, 
+\begin{bmatrix} 
+I & \Lambda^T \\ 
+\Lambda & \Lambda \Lambda^T + \Psi 
+\end{bmatrix} 
+\right)
+$$
+Now we can see that the marginal distribution of $x$ is given as below.
+$$
+x \sim \mathcal{N}(\mu, \Lambda \Lambda^T + \Psi)
+$$
+Since the goal of factor analysis is to model the observed data $x$ using a low-dimensional latent variable $z$, the marginal distribution of $x$ encapsulates how the observed variables relate to the latent variables and the model's ability to explain the data.  
+You can also see that the covariance of $x$ is explained with the loading matrix($\Lambda \Lambda^T$) and noise as mentioned in "Dimensionality Reduction using Loading Matrix" part. 
+
+Thus we can write down the log likelihood of the parameters as below.
+$$
+\ell(x \mid \mu, \Lambda, \Psi) = \log \prod_{i=1}^{m} \frac{1}{(2\pi)^{n/2} |\Lambda \Lambda^T + \Psi|^{1/2}} 
+\exp\left( -\frac{1}{2} (x^{(i)} - \mu)^T (\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)} - \mu) \right)
+$$
+
+
+
+To perform maximum likelihood estimation, we would like to maximize this quantity with respect to the parameters($\mu, \Lambda, \Psi$). 
+
+
+But maximizing this formula explicitly is hard and we are aware of no algorithm that does so in closed-form. So, we will instead use to the EM algorithm. In the next section, we derive EM for factor analysis.
 
 ### EM for Factor Analysis
+
+$$
+\mathbb{E}[x \mid z] = \mathbb{E}[\mu + \Lambda z + \epsilon \mid z] = \mathbb{E}[\mu \mid z] + \mathbb{E}[\Lambda z \mid z] + \mathbb{E}[\epsilon \mid z] \\
+= \mu + \Lambda z + 0 = \mu + \Lambda z \quad \text{(since } \mu \text{ and } \Lambda z \text{ are constant given } z)
+$$
+
+$$
+\operatorname{Cov}(x \mid z) = \operatorname{Cov}(\mu + \Lambda z + \epsilon \mid z) (\text{since } \mu + \Lambda \text{ are constants given } z)\\
+= \operatorname{Cov}(\epsilon \mid z) = \Psi \\
+
+\therefore \quad x \mid z \sim \mathcal{N}(\mu + \Lambda z, \Psi).
+$$
