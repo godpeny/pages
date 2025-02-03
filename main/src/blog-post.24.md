@@ -23,6 +23,11 @@ $X$ and $Y$ are random variables.
 
 In this context, even if $a$ or $b$ is a matrix, the rule still applies, as long as the matrix is deterministic (fixed and not random). The key requirement for applying this property is that the matrix does not depend on the random variable.
 
+#### Non-Multiplicativity of Mean
+In general, the expected value is not multiplicative aas $\operatorname {E} [XY]$  is not necessarily equal to $\operatorname {E} [X]\cdot \operatorname {E} [Y]$.  
+If $X$ and $Y$ are independent, then one can show that 
+$\operatorname {E} [XY]=\operatorname {E} [X]\operatorname {E} [Y]$.  
+If the random variables are dependent, then generally $\operatorname {E} [XY]\neq \operatorname {E} [X]\operatorname {E} [Y]$ although in special cases of dependency the equality may hold.
 
 ### Covariance
 Covariance is a measure of the joint variability of two random variables. It is the sign of the covariance, therefore, shows the tendency in the linear relationship between the variables.  
