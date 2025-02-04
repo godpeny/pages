@@ -503,15 +503,77 @@ To perform maximum likelihood estimation, we would like to maximize this quantit
 But maximizing this formula explicitly is hard and we are aware of no algorithm that does so in closed-form. So, we will instead use to the EM algorithm. In the next section, we derive EM for factor analysis.
 
 ### EM for Factor Analysis
-
+#### E Step
+Remind from EM Algorithm that we made the Jensen’s inequality in our derivation hold with equality by simply set the $Q_i$’s to be the posterior distribution of the $z^{(i)}$’s given $x^{(i)}$ and the setting of the parameters $\theta$.
 $$
-\mathbb{E}[x \mid z] = \mathbb{E}[\mu + \Lambda z + \epsilon \mid z] = \mathbb{E}[\mu \mid z] + \mathbb{E}[\Lambda z \mid z] + \mathbb{E}[\epsilon \mid z] \\
-= \mu + \Lambda z + 0 = \mu + \Lambda z \quad \text{(since } \mu \text{ and } \Lambda z \text{ are constant given } z)
+Q_i(z^{(i)}) = \frac{p(x^{(i)}, z^{(i)}; \theta)}{\sum_z p(x^{(i)}, z; \theta)}
+= \frac{p(x^{(i)}, z^{(i)}; \theta)}{p(x^{(i)}; \theta)}
+= p(z^{(i)} \mid x^{(i)}; \theta).
+$$
+The difference is that in previous E step of EM Algorithm, we trined to find the vector $w$ since $z$ was discrete value.  
+Note that $w_{j}^{(i)} = Q_{i}(z^{(i)} = j)$ is the probability of $z^{(i)}$ taking the value $j$ under the distribution $Q_i$.  
+($\sum_{z} Q_{i}(z) = 1, \quad Q_{i}(z) > 0$, Don't confuse! not Gaussian distribution!)
+$$
+w_{j}^{(i)} = Q_{i}(z^{(i)} = j) = P(z^{(i)} = j \mid x^{(i)} ; \phi, \mu, \Sigma)
+$$ 
+Instead, we are finding the conditional distribution of a Gaussian since $z^{(i)}$ is continuous value (real data).  
+$$
+z^{(i)} \mid x^{(i)} ; \mu, \Lambda, \Psi \sim \mathcal{N} \left( \mu_{z^{(i)} \mid x^{(i)}}, \Sigma_{z^{(i)} \mid x^{(i)}} \right)
+$$
+Applying the definition of conditional distribution mentioned before,
+$$
+\mu_{1|2} = \mu_1 + \Sigma_{12} \Sigma_{22}^{-1} (x_2 - \mu_2), \\
+\Sigma_{1|2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}
+$$
+We can get as below.
+$$
+\mu_{z^{(i)} \mid x^{(i)}} = \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)} - \mu), \\
+\Sigma_{z^{(i)} \mid x^{(i)}} = I - \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} \Lambda
+$$
+Using the definition of $\mu_{z^{(i)}}, \Sigma_{z^{(i)}}$,
+$$
+Q_i(z^{(i)}) = \frac{1}{(2\pi)^{k/2} |\Sigma_{z^{(i)} \mid x^{(i)}}|^{1/2}} 
+\exp\left( -\frac{1}{2} (z^{(i)} - \mu_{z^{(i)} \mid x^{(i)}})^T \Sigma_{z^{(i)} \mid x^{(i)}}^{-1} (z^{(i)} - \mu_{z^{(i)} \mid x^{(i)}}) \right)
+$$
+Now We have the formula to maximize in M step.
+$$
+\sum_{i=1}^{m} \int_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \mu, \Lambda, \Psi)}{Q_i(z^{(i)})} \, dz^{(i)}
 $$
 
+#### M Step
+In M step, we need to maximize the following formular w.r.t to its parameters ($\mu, \Lambda, \Psi$).
 $$
-\operatorname{Cov}(x \mid z) = \operatorname{Cov}(\mu + \Lambda z + \epsilon \mid z) (\text{since } \mu + \Lambda \text{ are constants given } z)\\
-= \operatorname{Cov}(\epsilon \mid z) = \Psi \\
+\sum_{i=1}^{m} \int_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \mu, \Lambda, \Psi)}{Q_i(z^{(i)})} \, dz^{(i)}
+$$
 
-\therefore \quad x \mid z \sim \mathcal{N}(\mu + \Lambda z, \Psi).
+Let's simplify the formular.
+$$
+\sum_{i=1}^{m} \int_{z^{(i)}} Q_i(z^{(i)}) \left[ \log p(x^{(i)} \mid z^{(i)}; \mu, \Lambda, \Psi) + \log p(z^{(i)}) - \log Q_i(z^{(i)}) \right] \, dz^{(i)} \\
+= \sum_{i=1}^{m} \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \log p(x^{(i)} \mid z^{(i)}; \mu, \Lambda, \Psi) + \log p(z^{(i)}) - \log Q_i(z^{(i)}) \right]
+$$
+In detail, to derive, $\log p(x^{(i)}, z^{(i)}) = \log p(x^{(i)} \mid z^{(i)}; \mu, \Lambda, \Psi) + \log p(z^{(i)})$, the definition Bayes' Rule and Joint Probability as following is used.  
+$$
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}, \quad P(A, B) = P(A \cap B) = P(A \mid B) \cdot P(B)
+$$
+
+Also since
+$
+Q_i(z^{(i)}) = \frac{1}{(2\pi)^{k/2} |\Sigma_{z^{(i)} \mid x^{(i)}}|^{1/2}} 
+\exp\left( -\frac{1}{2} (z^{(i)} - \mu_{z^{(i)} \mid x^{(i)}})^T \Sigma_{z^{(i)} \mid x^{(i)}}^{-1} (z^{(i)} - \mu_{z^{(i)} \mid x^{(i)}}) \right)$, which is gaussian distribution, we can apply the concept of expectation of Gaussian distribution to the formula as following.
+$$
+\int_{z^{(i)}} Q_i(z^{(i)}) z^{(i)} \, dz^{(i)} = \mathbb{E}_{z^{(i)} \sim Q_i}[z^{(i)}] = \mu_{z^{(i)} \mid x^{(i)}}
+$$
+
+Now we can maximize this simplified formular with respect to parameters using derivative.
+The loading matrix $\Lambda$ is:
+$$
+\Lambda = \left( \sum_{i=1}^{m} (x^{(i)} - \mu) \mathbb{E}_{z^{(i)} \sim Q_i} \left[ z^{(i) T} \right] \right) 
+\left( \sum_{i=1}^{m} \mathbb{E}_{z^{(i)} \sim Q_i} \left[ z^{(i)} z^{(i) T} \right] \right)^{-1} \\
+= \left( \sum_{i=1}^{m} (x^{(i)} - \mu) \mu_{z^{(i)} \mid x^{(i)}}^T \right) 
+\left( \sum_{i=1}^{m} \mu_{z^{(i)} \mid x^{(i)}} \mu_{z^{(i)} \mid x^{(i)}}^T + \Sigma_{z^{(i)} \mid x^{(i)}} \right)^{-1}
+$$
+While the diagonal matrix $\Psi$ is:
+$$
+\Phi = \frac{1}{m} \sum_{i=1}^{m} x^{(i)} x^{(i) T} - x^{(i)} \mu_{z^{(i)} \mid x^{(i)}}^T \Lambda^T 
+- \Lambda \mu_{z^{(i)} \mid x^{(i)}} x^{(i) T} + \Lambda \left( \mu_{z^{(i)} \mid x^{(i)}} \mu_{z^{(i)} \mid x^{(i)}}^T + \Sigma_{z^{(i)} \mid x^{(i)}} \right) \Lambda^T
 $$
