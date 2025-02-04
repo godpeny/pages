@@ -268,6 +268,19 @@ z_n
 \end{bmatrix}
 $$
 
+Let's see other example too.
+$$
+\mathbb{E}[x \mid z] = \mathbb{E}[\mu + \Lambda z + \epsilon \mid z] = \mathbb{E}[\mu \mid z] + \mathbb{E}[\Lambda z \mid z] + \mathbb{E}[\epsilon \mid z] \\
+= \mu + \Lambda z + 0 = \mu + \Lambda z \quad \text{(since } \mu \text{ and } \Lambda z \text{ are constant given } z)
+$$
+
+$$
+\operatorname{Cov}(x \mid z) = \operatorname{Cov}(\mu + \Lambda z + \epsilon \mid z) (\text{since } \mu + \Lambda \text{ are constants given } z)\\
+= \operatorname{Cov}(\epsilon \mid z) = \Psi \\
+
+\therefore \quad x \mid z \sim \mathcal{N}(\mu + \Lambda z, \Psi).
+$$
+
 ## Joint Probability Distribution
 The probability distribution of all possible pairs of outputs of two random variables that are defined on the same probability space. 
 
