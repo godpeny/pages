@@ -18,7 +18,7 @@ the basic idea in Lagrangian duality is to take the constraints into
 account by augmenting the objective function with a weighted sum of the constraint
 functions.
 
-## Lagrange multiplier
+## Lagrange multiplier Vector
 $\lambda$, $\nu$ are called the dual variables or lagrange multiplier vectors.
   - $\lambda_i$ : lagrange multiplier associated with the $i$ th inequality constraint,  $f_i(x) \leq 0$
   - $\nu_i$ : lagrange multiplier associated with the $i$ th equality constraint, $h_i(x) = 0$
