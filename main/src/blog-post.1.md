@@ -179,12 +179,6 @@ $$
 https://www.deeplearning.ai/ai-notes/initialization/index.html#III
 
 
-### Normalization and Regularization
- - Normalization: A data preprocessing technique that adjusts the values of features to a common scale, typically between 0 and 1, without distorting the differences in the range of values. 
- - Regularization: A technique used to prevent overfitting in a model by adding a penalty term to the loss function. Regularization helps the model generalize better by preventing it from becoming too complex.  
- There are two common types of regularization: L1-norm (Lasso) and L2-norm (Ridge Regression). Both of these methods add a penalty term to the loss function, which encourages the model to use simpler fitting functions and reduces the magnitude of the model parameters.
-
-
 ### Optimizations
 Gradient Descent
 

@@ -5,18 +5,20 @@ $$
 \|\bm{x}\|_1 := \sum_{i=1}^n |x_i|.
 $$
 
-## L2 Norm
+## L2 Norm (Euclidean Norm)
 The L2 Norm $|x|$ is a vector norm defined for a complex vector (A vector whose elements are complex numbers.)
 when 
-$
+$$
 \mathbf{x} = \begin{bmatrix} 
 x_1 \\ 
 x_2 \\ 
 \vdots \\ 
 x_n 
-\end{bmatrix}, \\
+\end{bmatrix}, 
 \|\mathbf{x}\| = \sqrt{\sum_{k=1}^n |x_k|^2},
-$
+$$
+
+Euclidean Norm is equivalent to the length of the line from the origin to the point and this concept extends to higher dimensions(more than 2-D) as well.
 
 ## P-Norm
 Let $p\geq 1$ be a real number. The p-norm of vector(also called $\ell^p$-norm) of vector $\bm{x} = (x_1, \dots, x_n)$ is,  
@@ -321,4 +323,48 @@ If the joint probability density function of random variable $X$ and $Y$ is $f_{
 $$
 f_X(x) = \int f_{X,Y}(x, y) \, dy \\
 f_Y(y) = \int f_{X,Y}(x, y) \, dx
+$$
+
+
+## Normalization and Regularization
+- Normalization: A data preprocessing technique that adjusts the values of features to a common scale, typically between 0 and 1, without distorting the differences in the range of values. 
+- Regularization: A technique used to prevent overfitting in a model by adding a penalty term to the loss function. Regularization helps the model generalize better by preventing it from becoming too complex.  
+
+There are two common types of regularization: L1-norm (Lasso) and L2-norm (Ridge Regression). Both of these methods add a penalty term to the loss function, which encourages the model to use simpler fitting functions and reduces the magnitude of the model parameters.
+
+### Standard Normalization
+In mathematical statistics, a random variable $$ is standardized by subtracting its expected value $\operatorname {E} [X]$ and dividing the difference by its standard deviation $\sigma (X)={\sqrt {\operatorname {Var} (X)}}$,
+$$
+Z={X-\operatorname {E} [X] \over \sigma (X)}
+$$
+
+For standard normalized value $z$, mean of $z$ is 0 and variance is 1.
+
+#### Mean of Standard Normalized value $z$
+$$
+\mu_z = \mathbb{E}[z] = \frac{1}{n} \sum_{i=1}^{n} z_i = \frac{1}{n} \sum_{i=1}^{n} \frac{x_i - \mu_x}{\sigma_x}
+$$
+Split the right hand side as follow,
+$$
+\mu_z = \frac{1}{\sigma_x} \left( \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu_x) \right)
+$$
+Since we know that $\mu_x = \frac{1}{n} \sum_{i=1}^{n} x_i$, 
+$$
+\mu_z = \frac{1}{\sigma_x} \left( \frac{1}{n} \sum_{i=1}^{n} x_i \right ) - \frac{1}{\sigma_x} \mu_x \\
+\mu_z = \frac{1}{\sigma_x} ( \mu_x -  \mu_x) = 0 \\
+\therefore \mu_z = 0
+$$
+
+#### Variance of Standard Normalized value $z$
+$$
+\operatorname{Var}(z) = \mathbb{E}[z^2] = \frac{1}{n} \sum_{i=1}^{n} z_i^2 = \frac{1}{n} \sum_{i=1}^{n} \left( \frac{x_i - \mu_x}{\sigma_x} \right)^2
+$$
+Factoring out the $\sigma_x$ in the right hand side we get,
+$$
+\operatorname{Var}(z) = \frac{1}{\sigma_x^2} \cdot \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu_x)^2
+$$
+Since we know that $\frac{1}{n} \sum_{i=1}^{n} (x_i - \mu_x)^2 = \sigma_x^2$, 
+$$
+\frac{1}{n} \sum_{i=1}^{n} (x_i - \mu_x)^2 = \sigma_x^2 \\
+\therefore \operatorname{Var}(z) = \frac{1}{\sigma_x^2} \cdot \sigma_x^2 = 1
 $$
