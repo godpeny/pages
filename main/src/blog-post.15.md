@@ -87,6 +87,79 @@ The column space (also called the range or image) of a matrix $A$ is the span (s
 Whil the row space of this matrix is the vector space spanned by the row vectors.
 
 
+### Vector Projection
+![alt text](images/blog15_vector_projection.png)  
+Projection of $a$ on $b$ ($a_1$), and rejection of $a$ from $b ($a2$).
+![alt text](images/blog15_vector_projection2.png) 
+
+When $90^\circ < \theta \leq 180^\circ
+$, $a_1$ has an opposite direction with respect to $b$.
+
+The vector projection of a vector $a$ on onto a nonzero vector $b$ is the orthogonal projection of $a$ onto a straight line parallel to $b$.  
+The projection of a onto b is often written as $\displaystyle \operatorname {proj} _{\mathbf {b} }\mathbf {a} $ or a∥b.
+
+The projection of a onto b can be decomposed into a direction and a scalar magnitude by writing it as 
+$$
+{a} _{1}=a_{1}\mathbf {\hat {b}}
+$$
+Where $a_1$ is a scalar, called the scalar projection of $a$ onto $b$, and $\hat{b} is the unit vector in the direction of $b$. 
+
+#### Definitions based on angle $\theta$
+The scalar projection of $a$ on $b$ is a scalar equal to, 
+$$
+a_1=\left\|\mathbf {a} \right\|\cos \theta 
+$$
+Where $\theta$ is the angle between $a$ and $b$.
+A scalar projection can be used as a scale factor to compute the corresponding vector projection.
+
+The vector projection of a on b is a vector whose magnitude is the scalar projection of a on b with the same direction as b. Namely, it is defined as
+$$
+ a_{1}=a_{1}\hat {b} =(\left\|a \right\|\cos \theta )\hat {b} 
+$$
+Where $a_{1}$ is the corresponding scalar projection, as defined above, and $\hat {b}$ is the unit vector with the same direction as $b$.
+($\hat {b} ={\frac {b }{\left\|b \right\|}}$)
+
+#### Definitions in terms of vector $a$ and $b$
+Remind the definition of dot product that,
+When $\theta$ is not known, the cosine of θ can be computed in terms of $a$ and $b$, by the following property of the dot product $a \cdot b$,
+$$
+\displaystyle a \cdot b =\left\| a \right\|\left\|b\right\|\cos \theta 
+$$
+
+Using the property of the dot product mentioned above, the definition of the scalar projection becomes,
+$$
+{a_{1}=\left\|a \right\|\cos \theta ={\frac {a \cdot b }{\left\|b \right\|}}}
+$$
+
+In two dimensions, this becomes,
+$$
+a_{1}={\frac {a_{x}b _{x}+a _{y}b _{y}}{\left\|b \right\|}}
+$$
+
+Similarly, the definition of the vector projection of $a$ onto $b$ becomes,
+$$
+{\displaystyle a_{1}=a_{1} \hat {b} ={\frac {a \cdot b}{\left\| b  \right\|}}{\frac {b}{\left\|b \right\|}},}
+$$
+With the property of unit vectgor($\hat{b}$) Above can be equivalent to 
+$$
+a_{1}=\left(a \cdot \hat {b} \right){\hat {b}}
+$$
+
+#### Scalar Projection, Vector Projection and Length of Projection
+ - Scalar projection gives the magnitude of one vector along the direction of another and can be positive or negative.
+- Vector projection not only considers the magnitude but also gives the direction of the projection as a vector
+ - Length of the projection is always positive and represents the magnitude of the projection.
+
+So absolute value of scalar projection can be the length of the projection.
+
+$$
+\text{Scalar projection} = \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \\
+\text{Length of projection} = \left| \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \right|
+$$
+
+
+
+
 ### Null Space
 
 ### Span (Linear Span)
@@ -149,7 +222,7 @@ When $\|\mathbf{a}\|$ denotes for magnitude(lenght) of vecdtor.
 If vecdtor $\mathbf{a}$ and $\mathbf{b}$ are orthogonal, (the angle is $ 90^\circ$, which mneans $\theta = \pi / 2$).  
 Since $\cos \pi / 2 = 0$, 
 $$
-mathbf{a} \cdot \mathbf{b} = 0
+\mathbf{a} \cdot \mathbf{b} = 0
 $$
 
 
