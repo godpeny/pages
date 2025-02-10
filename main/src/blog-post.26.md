@@ -128,8 +128,62 @@ Indeed, we might posit that the data actually likes along some diagonal axis (th
 After normalization from pre-processing, we need to compute the “major axis of variation” $u$—that is, which is the direction on which the data approximately lies.  
 One way to do this is finding the unit vector $u$ so that when the data is projected onto the direction corresponding to $u$, the variance of the projected data is maximized. In other word, choose a direction $u$ so that if we were to approximate the data as lying in the direction/subspace corresponding to $u$, as much as possible of this variance is still retained.
 
-### Example
+### Intuition of PCA
 Consider the following dataset, on which we have already carried out the normalization steps.
 ![alt text](images/blog26_pca_construction_example_graph.png)
 Suppose we pick $u$ to correspond the the direction shown in the figure (2-1). The circles denote the projections of the original data onto this line. We see that the projected data still has a fairly large variance, and the points tend to be far from zero.  
 In contrast, suppose had instead picked the direction as figure (2-2), the projections have a significantly smaller variance, and are much closer to the origin.
+
+### Formalization of the Intuition
+Given a unit vector $u$ and a point $x$, the length of the projection of $x$ onto $u$ is given by $x^{T}u$. This is derived by the formula of scalar projection. 
+$$
+\text{Projection length of } x \text{ onto } u = \lvert \text{Scalar projection} \rvert = \frac{x \cdot u}{\| u \|} = x \cdot u = u^{T} x
+$$
+Also remember the definition of unit vector that if $u$ is a unit vector, then by definition, $ || u || = 1$.
+
+![alt text](images/blog26_pca_vector_projection.png)
+As shown above, if $x^{(i)}$ is a point in our dataset then its projection onto $u$ (which is unit  vector) is distance $x^Tu$ from the origin.
+Since we want to maximize the variance of the projections onto unit vector $u$, we would like to choose a unit-length $u$ to maximize below.
+$$
+\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 = \frac{1}{m} \sum_{i=1}^{m} u^T x^{(i)} x^{(i)T} u = u^T \left( \frac{1}{m} \sum_{i=1}^{m} x^{(i)} x^{(i)T} \right) u
+$$
+Let's put it simply, 
+$$
+\max_{ \| u \|_2 = 1 } u^T \Sigma u
+$$
+Where $u$ is the principal eigenvector of the covariance matrix $\Sigma$.
+Now, since there is equation constraint $ \| u \|_2 = 1$, we can apply the method of Lagrange multiplier.
+The objective function and constraint of the original equations is below.
+$$
+\mathbb{f}(u, \Sigma) =  u^T \Sigma u 
+$$
+$$
+\| u \|_2 = 1
+$$
+Applying Method of Lagrangie multiplier, we get $\mathcal{L}(u, \lambda)$ as following.
+$$
+\mathcal{L}(u, \lambda) = u^T \Sigma u - \lambda (u^T u - 1)
+$$
+Now, let's take the partial derivative with respect to each of parameters of Lagrangian function, $u$ and $\lambda$.
+
+$$
+\frac{\partial \mathcal{L}}{\partial u} = 2 \Sigma u - 2 \lambda u = 0 \quad \Rightarrow \quad \Sigma u = \lambda u
+$$
+
+$$
+\frac{\partial \mathcal{L}}{\partial \lambda} = -(u^T u - 1) = 0 \quad \Rightarrow \quad u^T u = 1
+$$
+
+From The equation $\Sigma u = \lambda u$, we found that it is eigenvector equation and $u$ is the eigenvector equation with $u$ is the eigen vector and $\lambda$ is the corresponding eigenvalue.  
+So in order to maximize $u^T \Sigma u$(with the constraint $\| u \|_2 = 1$), $u$ has to be the principal eigenvector and $\lambda$ is the largest eigenvalue. 
+
+#### Summary
+So we have found that if we wish to find a 1-dimensional subspace with with to approximate the data, we should choose $u$ to be the principal eigenvector of $\Sigma$.  
+More generally, if we wish to project our data into a $k$-dimensional subspace ($k < n$), we should choose $u_1,...,u_k$ to be the top $k$ eigenvectors of $\Sigma$.  
+For example, if $ x^{(i)} \in \mathbb{R}^n \, (n = 1000)$ and eigenvector $u=\{ u_1, u_2, \dots, u_n \} \quad (k = 10)$ then,
+$$
+x^{(i)} \Rightarrow [u_1^T x^{(i)}, u_2^T x^{(i)}, \dots, u_k^T x^{(i)}] = y^{(i)} \in \mathbb{R}^k
+$$
+You can see that $1000(=n)$ dimension $x^{(i)}$ is now $10(=k)$ dimensional vector $y^{(i)}$.  
+
+Therefore PCA also referred to as a dimensionality reduction algorithm. The vectors $u_1, \cdots, u_k$ are called the first $k$ principal components of the data.
