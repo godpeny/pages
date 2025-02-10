@@ -10,8 +10,6 @@ $$
 Above formula can be stated equivalently as $\left(A - \lambda I \right)v = 0$
 where $I$ is the $n \times n$ identity matrix and $0$ is the zero vector.
 
-#### Principal Eigenvector
-
 ### Method of Lagrangie Multiplier
 In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equation constraints.  
 (i.e., subject to the condition that one or more equations have to be satisfied exactly by the chosen values of the variables)
@@ -85,6 +83,54 @@ Reducing the number of variables of a data set naturally comes at the expense of
 In conclusionthe idea of PCA is simple: reduce the number of variables of a data set, while preserving as much information as possible.
 
 ### Why Caputuring Variance of data?
+It is because variance is directly related to the amount of information (or spread) present in the data.
+
+#### Geometric Interpretation - Spread Implies Distinctive Features
+Imagine a 2D scatter plot of data points shaped like an elongated ellipse. The long axis of the ellipse represents the direction of maximum variance, meaning most of the data’s variability lies along this direction.
+PCA will choose this direction as the first principal component because it captures the most distinctive variation between the data points.
+Conversely, the short axis of the ellipse has much smaller variance and likely represents redundant or less important features that PCA can ignore during dimensionality reduction.
+Check picture in "Construction of PCA".
+
+The variance along a particular direction tells us how spread out or informative the data is in that direction.
+ - High variance means that the data points are more spread out, indicating that this direction captures a significant amount of variation (or patterns) in the dataset.
+ - Low variance suggests that most of the data points are clustered closely together in that direction, meaning that direction doesn’t add much new information.
+
+#### Higher variance implies more information
+Data points with high variance typically carry more distinguishing features and useful differences between samples.  
+Low variance components are often considered noise or redundant, as they contribute less to distinguishing different observations.
+
+#### Dimensionality reduction without significant information loss
+By retaining only the components (principal components) with the highest variance, PCA ensures that the reduced representation of the data still preserves the most critical structure.   
+The components with lower variance are discarded since they contribute little to the overall variability or structure of the dataset.
+
+
+### Principal Eigenvector in PCA
+The principal eigenvector is the eigenvector corresponding to the largest eigenvalue of the data covariance matrix $\Sigma$ where,
+$$
+\Sigma = \frac{1}{m} \sum_{i=1}^{m} \tilde{x}^{(i)} {\tilde{x}^{(i)}}^T.
+$$
+More details of derivation of above formula are explained in the "Construction of PCA".
+
+From the eigenvector equation of PCA,
+$$
+\Sigma u =\lambda u
+$$
+
+From the property of eigenvector, the eigenvector $u$ of PCA is a vector that, when multiplied by the covariance matrix $\Sigma$, does not change its direction and only gets scaled by a factor $\lambda$ (the eigenvalue).  
+Thus, the eigenvector $u$ points in a direction of maximum variance(which is the eigenvector with the maximum eigenvalue), and we want to project data along this direction to reduce dimensionality while retaining information.  
+For example, when covariance matrix $\Sigma$ is as following,
+$$
+\Sigma = \begin{bmatrix} 3 & 2 \\ 2 & 3 \end{bmatrix}
+$$
+You want to solve $\Sigma u =\lambda u$. Using eigenvalue equation, you get two sets of eigenvalue and eigenvector.
+ - $u_1 = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}$ and $\lambda_1 = 5$
+
+ - $u_2 = \frac{1}{\sqrt{2}} \begin{bmatrix} -1 \\ 1 \end{bmatrix}$ and $\lambda_2 = 1$.
+
+Since eigenvector $u$ is scaled with the eigenvalue $\lambda$,  
+$\Sigma u_1$ will be the long axis of the ellipse of dataset indicating the largest variance.  
+Conversely, $\Sigma u_2$ will be the short axis of the ellipse of dataset.  
+(It will be helpful to see the picture in "Construction of PCA")
 
 ## Pre-Processing
 Pre-process the data to normalize its mean and variance as following.
