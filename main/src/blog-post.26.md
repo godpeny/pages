@@ -187,3 +187,18 @@ $$
 You can see that $1000(=n)$ dimension $x^{(i)}$ is now $10(=k)$ dimensional vector $y^{(i)}$.  
 
 Therefore PCA also referred to as a dimensionality reduction algorithm. The vectors $u_1, \cdots, u_k$ are called the first $k$ principal components of the data.
+
+## How to choose $k$?
+Since PCA maximize the variance, retain 90% of variance. (percentages could be 95%, 99% and so on)
+$$
+\frac{\lambda_1 + \lambda_2 + \dots + \lambda_k}{\lambda_1 + \lambda_2 + \dots + \lambda_n} = 0.90
+$$
+
+## Applicantions of PCA
+ - Compression: representing $x^{(i)}$’s with lower dimension $y^{(i)}$’s is an obvious application. Also we can preprocess a dataset to reduce its dimension before running a supervised learning learning algorithm with the $x^{(i)}$’s as inputs.
+ - Visualization: if we reduce high dimensional data to k = 2 or 3 dimensions, then we can also plot the  $y^{(i)}$’s to visualize the data.
+ - Avoid Overfitting: reduce the complexity of the hypothesis class considered and help avoid overfitting.
+ - Noise Reduction: PCA reduces noise by discarding low variance components that typically represent random or irrelevant variations(which is noise) while retaining high variance components that capture meaningful structure in the data. This is processed by representing high dimension data $x^{(i)}$’s with a much lower imensional $y^{(i)}$’s .
+
+## Remark using PCA
+Before using PCA, consider just using original dataset  $x^{(i)}$'s.
