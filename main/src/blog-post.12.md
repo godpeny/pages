@@ -9,6 +9,9 @@ where $\|\mathbf{u}\|$ is the norm (or length) of $u$.
 The term normalized vector is sometimes used as a synonym for unit vector.  
 A unit vector is often used to represent direction.
 
+If $ || u || = 1$, $u$ is a unit vector.
+Conversely, if $u$ is a unit vector, then by definition, $ || u || = 1$,
+
 ## Support Vector
 Support Vectors are datapoints that are closest to the hyperplane.
 
