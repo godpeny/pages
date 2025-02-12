@@ -246,5 +246,38 @@ $$
  - Avoid Overfitting: reduce the complexity of the hypothesis class considered and help avoid overfitting.
  - Noise Reduction: PCA reduces noise by discarding low variance components that typically represent random or irrelevant variations(which is noise) while retaining high variance components that capture meaningful structure in the data. This is processed by representing high dimension data $x^{(i)}$’s with a much lower imensional $y^{(i)}$’s .
 
+## Orthogonality of Principal Components
+The first principal component can equivalently be defined as a direction that maximizes the variance of the projected data. The $i$-th principal component can be taken as a direction orthogonal to the first 
+$i-1$ principal components that maximizes the variance of the projected data.  
+
+The covariance matrix $\Sigma$ is symmetric ($\Sigma = \Sigma^T$).  
+One fundamental property of symmetric matrices is that their eigenvectors corresponding to distinct eigenvalues are orthogonal due to the spectral theorem.
+That is, if $v_1$ and $v_2$ are two eigenvectors corresponding to different eigenvalues of $\lambda_1$ and $\lambda_2$, then: $v_1^T v_2 = 0$.  
+Thus, all principal components (eigenvectors of $\Sigma$) are mutually orthogonal.
+
+### Why Covariance Matrix $\Sigma$ is Symmetric?
+1. Each outer product $xx^T$ is symmetric because $(xx^T)^T=xx^T$.
+$$
+x = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}
+$$
+
+$$
+xx^T = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}
+\begin{bmatrix} x_1 & x_2 & \cdots & x_n \end{bmatrix}
+$$
+
+$$
+xx^T =
+\begin{bmatrix}
+x_1 x_1 & x_1 x_2 & \cdots & x_1 x_n \\
+x_2 x_1 & x_2 x_2 & \cdots & x_2 x_n \\
+\vdots & \vdots & \ddots & \vdots \\
+x_n x_1 & x_n x_2 & \cdots & x_n x_n
+\end{bmatrix}
+$$
+2. The sum of symmetric matrices remains symmetric.
+
+
+
 ## Remark using PCA
 Before using PCA, consider just using original dataset  $x^{(i)}$'s.
