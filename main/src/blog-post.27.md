@@ -74,5 +74,94 @@ $$
 $$
 
 ## Ambiguities of ICA
+It is easy to see that the following ambiguities will hold.
+
+1. We cannot determine the correct scaler of the sources($A, s$).  
+The reason is that, both $s$ and $A$ being unknown, any scalar multiplier in one of the sources $s_k$ could always be cancelled by dividing the corresponding column $a_j$ of by the same scalar.  
+For example, if $A$ were replaced with $2A$ and every $s_k$ were replaced with $(0.5)s_k$,observed $x_k=2A·(0.5)s_k$ would still be the same.
+
+2. We cannot determine the order of the sources($A, s$).  
+The reason is that, again both $s$ and $A$ being unknown, we can freely change the order of the terms in the sum.  
+For example, below is the case when $S_{\text{estimated}}$ is correctly recovered.
+$$
+X = AS =
+\begin{bmatrix} 
+2 & 1 \\ 
+1 & 3 
+\end{bmatrix}
+\begin{bmatrix} 
+1 & 2 \\ 
+3 & 4 
+\end{bmatrix}  =
+\begin{bmatrix}
+5 & 8 \\
+10 & 14
+\end{bmatrix}
+$$
+$$
+W = A^{-1} =
+\begin{bmatrix}
+2 & 1 \\
+1 & 3
+\end{bmatrix}^{-1}
+=
+\begin{bmatrix}
+\frac{3}{5} & -\frac{1}{5} \\
+-\frac{1}{5} & \frac{2}{5}
+\end{bmatrix}
+$$
+$$
+S_{\text{estimated}} = WX = 
+\begin{bmatrix}
+\frac{3}{5} & -\frac{1}{5} \\
+-\frac{1}{5} & \frac{2}{5}
+\end{bmatrix}
+\begin{bmatrix}
+5 & 8 \\
+10 & 14
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 2 \\
+3 & 4
+\end{bmatrix}
+$$
+However, with permutation matrix $P = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$, 
+$$
+\tilde{W} = PW
+$$
+$$
+\tilde{W} =
+\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+\frac{3}{5} & -\frac{1}{5} \\
+-\frac{1}{5} & \frac{2}{5}
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\frac{1}{5} & \frac{2}{5} \\
+\frac{3}{5} & -\frac{1}{5}
+\end{bmatrix}
+$$
+$$
+S_{\text{estimated, permuted}} = \tilde{W} X = 
+\begin{bmatrix}
+-\frac{1}{5} & \frac{2}{5} \\
+\frac{3}{5} & -\frac{1}{5}
+\end{bmatrix}
+\begin{bmatrix}
+5 & 8 \\
+10 & 14
+\end{bmatrix}
+=
+\begin{bmatrix}
+3 & 4 \\
+1 & 2
+\end{bmatrix}
+$$
+The estimated sources are permuted but still correct in terms of independence. (column space = span remains unchanged )
 
 ## Algorithm
