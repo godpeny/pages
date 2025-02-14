@@ -76,11 +76,13 @@ $$
 ## Ambiguities of ICA
 It is easy to see that the following ambiguities will hold.
 
-1. We cannot determine the correct scaler of the sources($A, s$).  
+### Scalar of the Sources($A, s$)  
+We cannot determine the correct scaler of the sources($A, s$).  
 The reason is that, both $s$ and $A$ being unknown, any scalar multiplier in one of the sources $s_k$ could always be cancelled by dividing the corresponding column $a_j$ of by the same scalar.  
 For example, if $A$ were replaced with $2A$ and every $s_k$ were replaced with $(0.5)s_k$,observed $x_k=2A·(0.5)s_k$ would still be the same.
 
-2. We cannot determine the order of the sources($A, s$).  
+### Order of the Sources($A, s$)  
+We cannot determine the order of the sources($A, s$).  
 The reason is that, again both $s$ and $A$ being unknown, we can freely change the order of the terms in the sum.  
 For example, below is the case when $S_{\text{estimated}}$ is correctly recovered.
 $$
@@ -162,6 +164,40 @@ S_{\text{estimated, permuted}} = \tilde{W} X =
 1 & 2
 \end{bmatrix}
 $$
-The estimated sources are permuted but still correct in terms of independence. (column space = span remains unchanged )
+The estimated sources are permuted but still correct in terms of independence. (column space = span remains unchanged)
+
+### Why $s$ has to be Non-Gaussian?
+It turns out that these two are the only ambuguities so long as the sources $s$ are non-Gaussian.   
+Let's see what the difficulty is with Gaussian data. But before move on, you should know several notes as below.
+
+ - Note 1: In ICA, the source signals $s$ are typically assumed to have zero mean and unit variance (variance = 1). 
+ - Note 2: Also Note that the contours of the density of the standard normal distribution $N(0,I)$ are circles centered on the origin, and the density is rotationally symmetric. 
+ - Note 3: A multivariate Gaussian distribution(which is $s$ in this case) has a spherical symmetry in high dimensions. This means that any orthogonal rotation of $s$ will still be Gaussian.
+
+Using above notes, let $s \sim \text{N}(0,I)$ is independent variable with zero mean and unit variance. Consier observed value $x = As$,
+$$
+\mathbb{E}[xx^T] = \mathbb{E}[A s s^T A^T] = A A^T.
+$$ 
+Where $A$ is our mixing matrix.
+Above equation can be derived because covariance of $s$ can be calculated as, 
+$$
+\text{Cov}(s) = \mathbb{E} \left[ (s - \mathbb{E}[s])(s - \mathbb{E}[s])^T \right] = \mathbb{E}[s s^T]
+$$
+Since $\mathbb{E}[s] = 0$ from given condition.
+
+Now Let's think of rotational matrix $R$ and apply to mixing matrix $A$. When $A' = AR$, Then if the data $x$ had been mixed according to $A$ would have instead observed as $x' = A's$.  
+The distribution of $x'$ is also Gaussian, with zero mean and covariance $AA^T$.  
+This is because mean can be calcuated as 
+$$\mathbb{E}[x'] = A \mathbb{E}[s]$$ 
+When $\mathbb{E}[s] = 0$.  
+
+Also variance is 
+$$\mathbb{E}[x' (x')^T] = \mathbb{E}[A' s s^T (A')^T] = \mathbb{E}[A R S S^T (A R)^T] = A R R^T A^T = A A^T
+$$
+
+Therefore, whether the mixing matrix is $A$ or $A'$, we would observe data from $x \sim \text{N}(0,AA^T)$ distribution.  
+So, there is no way to tell if the sources were mixed using $A$ and $A'$.
+If there is an arbitrary rotational component $R$ in the mixing matrix that cannot be determined from the data, we cannot recover the original sources.  
+In other words, as long as the data is not Gaussian, it is possible to recover the $n$ independent sources.
 
 ## Algorithm
