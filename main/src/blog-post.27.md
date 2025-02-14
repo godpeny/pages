@@ -1,6 +1,5 @@
 # Independent Components Analysis (ICA)
 ## Preliminaries
-### CDF and PDF
 ### Density and Probability
 ### Permutation Matrix
 A permutation matrix is a square binary matrix that has exactly one entry of 1 in each row and each column with all other entries 0.
@@ -208,5 +207,32 @@ Therefore, whether the mixing matrix is $A$ or $A'$, we would observe data from 
 So, there is no way to tell if the sources were mixed using $A$ and $A'$.
 If there is an arbitrary rotational component $R$ in the mixing matrix that cannot be determined from the data, we cannot recover the original sources.  
 In other words, as long as the data is not Gaussian, it is possible to recover the $n$ independent sources.
+
+## Linear Transformations on Densities
+If $s$ is a vector-valued distribution with density $p_s$, and $x =As$ for a square and invertible matrix $A$, then the density of $x$ is given by,
+$$
+p_x(x) = p_s(Wx) \cdot |\det W|,
+$$
+Where $W = A^{-1}$.
+
+For example, Let's say mixing matrix $A$ and unmixing matrix $W$ as below.
+$$
+A =
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}, \quad
+|A| = ad - bc
+\\
+W = \frac{1}{ad - bc}
+\begin{bmatrix}
+d & -b \\
+-c & a
+\end{bmatrix}, \quad
+|W| = \left| \frac{\det A}{(\det A)^2} \right| = \frac{1}{ad - bc}
+$$
+When $x=As$, $x$ can be considered as the linear transformed vector $s$ with matrix $A$. Since PDF always integrates to 1, the area of the parallelogram formed by the vectors has to be also 1.   
+![alt text](images/blog27_linear_transformation_of_densities.png)  
+Since the area of the parallelogram is the absolute value of the determinant of the matrix formed by the vectors, which is $ad-bc$, scaling with $|W|$ makes the area always 1.
 
 ## Algorithm
