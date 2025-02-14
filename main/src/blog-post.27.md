@@ -41,6 +41,15 @@ $$
 This holds for all permutation matrices, regardless of size.
 
 ### Rotatinal Matrix
+Rotation matrix is a transformation matrix that is used to perform a rotation in Euclidean space. 
+$$
+{\displaystyle R={\begin{bmatrix}\cos \theta &-\sin \theta \\\sin \theta &\cos \theta \end{bmatrix}}}
+$$
+For example, above matrix rotates points in the $xy$ plane counterclockwise through an angle $\theta$ about the origin of a two-dimensional Cartesian coordinate system.
+ - ${\displaystyle R^{\mathsf {T}}R = {\displaystyle RR^{\mathsf {T}}} =  I}$
+ - ${\displaystyle \det R=+1}$
+
+
 ### Rotational Symmetric
 
 
