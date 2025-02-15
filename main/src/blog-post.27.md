@@ -236,3 +236,39 @@ When $x=As$, $x$ can be considered as the linear transformed vector $s$ with mat
 Since the area of the parallelogram is the absolute value of the determinant of the matrix formed by the vectors, which is $ad-bc$, scaling with $|W|$ makes the area always 1.
 
 ## Algorithm
+Since the distribution of each source $s_k$ is given by a density $p_s$, 
+the joint distribution of the sources $s_k$ is given by,
+$$
+p(s) = \prod_{k=1}^{n} p_s(s_k).
+$$
+Assuming that the sources are independent.  
+Note that the joint distribution $p(s)$ represents the product of the individual source distributions. In other words, it is probability of all independent source variables($s_k$) occurring together.
+
+Using the formulas $p_x(x) = p_s(Wx) \cdot |\det W|$ from "Linear Transformations on Densities" let's find out the density on $x = A s = W^{-1} s$.
+$$
+p(x) = \prod_{i=1}^{n} p_s(w_i^T x) \cdot |\det W| = p_s(Wx) \cdot |\det W|
+$$
+
+Now, let's specify a density for the individual sources $p_s$ from above $p(x)$.
+To specify a density for the $s_k$’s, all we need to do is to specify some cdf for it. Following our previous discussion("Why $s$ has to be Non-Gaussian?"), we cannot choose cdf of the Gaussian as cdf of $s_k$, as ICA doesn’t work on Gaussian data.  
+What we’ll choose as a reasonable cdf is the sigmoid function $g(s) = \frac{1}{1 + e^{-s}}$. Hence, $p_s(s) = g'(s)$, since CDF $F(s) = g(s)$.
+The reason why this works is that the sigmoid function satisfies the properties of a cumulative distribution function(monotonic function that increases from zero to one), and by differentiating such a function, we get a probability density function.
+
+Now, keep in mind that square matrix $W$ is the parameter for the model, we use MLE to find out the matrix $W$ that maximize the log liklihood. Which is,
+$$
+\ell(W) = \sum_{i=1}^{m} \left( \sum_{j=1}^{n} \log g'(w_j^T x^{(i)}) + \log |W| \right)
+$$
+By taking derivatives of log likelihood $\nabla_W \ell(W)$ and using the fact that $\nabla_W |W| = |W| (W^{-1})^T$, we easily derive a stochastic gradient ascent learning rule as follow.
+$$
+W := W + \alpha \left( 
+\begin{bmatrix}
+1 - 2g(w_1^T x^{(i)}) \\
+1 - 2g(w_2^T x^{(i)}) \\
+\vdots \\
+1 - 2g(w_n^T x^{(i)})
+\end{bmatrix} 
+x^{(i)T} + (W^T)^{-1}
+\right)
+$$
+Where $\alpha$ is learning rate.
+After the algorithm converges, compute $s^{(i)} = Wx^{(i)}$ to recover the original sources $s$.
