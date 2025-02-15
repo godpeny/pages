@@ -174,6 +174,11 @@ S_{\text{estimated, permuted}} = \tilde{W} X =
 $$
 The estimated sources are permuted but still correct in terms of independence. (column space = span remains unchanged)
 
+### Ambiguities in practice
+However, for the applications that we are concerned with(including cocktail problem) this ambiguity also does not matter.  
+Specifically, scaling a speaker’s speech signal $s_k^{(i)}$ j by some positive factor $\alpha$ affects only the volume of the sound.  
+Also, sign changes do not matter,and $s_k^{(i)}$ and $−s_k^{(i)}$ sound identical when played on a speaker. This is also true for the ICA for the brain/MEG data.
+
 ### Why $s$ has to be Non-Gaussian?
 It turns out that these two are the only ambuguities so long as the sources $s$ are non-Gaussian.   
 Let's see what the difficulty is with Gaussian data. But before move on, you should know several notes as below.
