@@ -4,6 +4,13 @@ In RL, an agent learns to achieve a goal in an uncertain, potentially complex en
 
 The environment is typically stated in the form of a Markov Decision Process (MDP), as many reinforcement learning algorithms use dynamic programming techniques. 
 
+## Preliminaries
+
+## Finite-State Machine
+
+## Bellman Equation
+
+
 ## Credit Assignment Problem
 The credit assignment problem (CAP) is a fundamental challenge in reinforcement learning. It arises when an agent receives a reward for a particular action, but the agent must determine which of its previous actions led to the reward.  
 The credit assignment problem refers to the problem of measuring the influence and impact of an action taken by an agent on future rewards. The core aim is to guide the agents to take corrective actions which can maximize the reward.  
@@ -18,3 +25,13 @@ MDP is a mathematical framework used to describe an environment in decision maki
 MDP provides a formalism for modeling decision making in situations where outcomes are uncertain, making them essential for Reinforcement Learning.
 
 ### Component of MDP
+
+### How to Compute Optimal Policy Value Function for Policy $\pi$
+
+### Value Iteration
+
+### Policy Iteration
+
+### Exploration vs Exploitation in RL(MDP)
+
+### Epsilon-Greedy Algorithm in RL(MDP)
