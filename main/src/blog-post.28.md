@@ -6,10 +6,26 @@ The environment is typically stated in the form of a Markov Decision Process (MD
 
 ## Preliminaries
 
-## Finite-State Machine
+## Finite-State Machine (FSM)
+FSM is a mathematical model of computation. It is an abstract machine that can be in exactly one of a finite number of states at any given time. The FSM can change from one state to another in response to some inputs; the change from one state to another is called a transition.  
+An FSM is defined by a list of its states, its initial state, and the inputs that trigger each transition. A state is a description of the status of a system that is waiting to execute a transition. A transition is a set of actions to be executed when a condition is fulfilled or when an event is received. 
 
 ## Bellman Equation
+The Bellman Equation is a recursive formula used in decision-making and reinforcement learning. It shows how the value of being in a certain state depends on the rewards received and the value of future states.   
+The Bellman Equation breaks down a complex problem into smaller steps, making it easier to solve. The equation helps find the best way to make decisions when outcomes depend on a series of actions.
+$$
+V(s) = \max_{a} \left[ R(s,a) + \gamma \sum_{s'} P(s' | s, a) V(s') \right]
+$$
+ - $V(s)$ : The value of state $s$, which represents the long-term reward of being in that state.
+ - $R(s,a)$ : The immediate reward received for taking action $a$ in state $s$.
+ - $\gamma$: The discount factor (between 0 and 1) that determines the importance of future rewards compared to immediate rewards.
+ - $ P(s' | s, a)$:  The probability of transitioning to state $s′$ from state $s$ by taking action $a$.
+ - $\max_{a}$: The optimal action that maximizes the expected value of future rewards.
 
+
+### Bellman Equation vs Dynamic Programming
+ - Dynamic Programming: A method to solve optimization problems using subproblem decomposition and memoization.
+ - Bellman Equation: A recursive equation that expresses the value of a state based on the values of successor states.
 
 ## Credit Assignment Problem
 The credit assignment problem (CAP) is a fundamental challenge in reinforcement learning. It arises when an agent receives a reward for a particular action, but the agent must determine which of its previous actions led to the reward.  
