@@ -41,6 +41,16 @@ MDP is a mathematical framework used to describe an environment in decision maki
 MDP provides a formalism for modeling decision making in situations where outcomes are uncertain, making them essential for Reinforcement Learning.
 
 ### Component of MDP
+An MDP is defined by a tuple $(S, A, \{ P_{sa} \}, \gamma, R)$ where:
+
+ - States ($S$): A finite set of states representing all possible situations in which the agent can find itself. Each state encapsulates all the relevant information needed to make a decision.
+ - Actions ($A$): A finite set of actions available to the agent. At each state, the agent can choose from these actions to influence its environment.
+ - Transition Probability ($\{ P_{sa} \}$): A probability function that defines the probability of transitioning from state $s$ to state $s′$ after taking action $a$. This encapsulates the dynamics of the environment. In other words, it gives the distribution over what states($s'$) we will transition to if we take action $a$ in state $s$.
+ - Reward Function (R): A reward function $R: S \times A \to \mathbb{R}
+$  that provides a scalar reward received after transitioning from state $s$ to state $s′$ due to action $a$. This reward guides the agent towards desirable outcomes.
+ - Discount Factor ($\gamma$): A discount factor $\gamma \in [0,1)$ that determines the importance of future rewards. A discount factor close to 1 makes the agent prioritize long-term rewards, while a factor close to 0 makes it focus on immediate rewards.
+ - Policy($\pi$): A policy is any function $\pi: S \to A$ mapping from the states to the actions. We say that we are executing some policy $\pi$ if, whenever we are in state $s$, we take action $a = \pi(s)$.
+
 
 ### How to Compute Optimal Policy Value Function for Policy $\pi$
 
