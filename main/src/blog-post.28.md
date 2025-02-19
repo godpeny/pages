@@ -51,6 +51,48 @@ $  that provides a scalar reward received after transitioning from state $s$ to 
  - Discount Factor ($\gamma$): A discount factor $\gamma \in [0,1)$ that determines the importance of future rewards. A discount factor close to 1 makes the agent prioritize long-term rewards, while a factor close to 0 makes it focus on immediate rewards.
  - Policy($\pi$): A policy is any function $\pi: S \to A$ mapping from the states to the actions. We say that we are executing some policy $\pi$ if, whenever we are in state $s$, we take action $a = \pi(s)$.
 
+### Basics
+The dynamics of an MDP proceeds as follows:  
+Starting in some state $s_0$, and choose some action $a_0 \in A$ to take in the MDP. As a result of our choice, the state of the MDP randomly transitions to some successor state $s_1$, drawn according to $s_1 \sim P_{s_0 a_0}$.  
+Then, pick another action $a_1$. As a result of this action, the state transitions again, now to some $s_2 \sim P_{s_1 a_1}$. We then pick $a_2$, and so on...  
+If you put it into picture, it will be as below.
+$$
+s_0 \xrightarrow{a_0} s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_3 \xrightarrow{a_3} \cdots
+$$
+Upon visiting the sequence of states $s_0, s_1, \cdots$ with actions $a_0,a_1, \cdots$ our total payoff is given by,
+$$
+R(s_0, a_0) + \gamma R(s_1, a_1) + \gamma^2 R(s_2, a_2) + \cdots
+$$
+In Reinforcement Learning, the goal is to choose actions over time so as to maximize the expected value of the total payoff:
+$$
+\mathbb{E} \left[ R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots \right]
+$$
+
+Now, let's define the value function for a policy $\pi$.  
+$V^{\pi}(s)$ is simply the expected sum of discounted rewards upon starting in state $s$, and taking actions according to a fixed policy $\pi$.
+
+$$
+V^{\pi}(s) = \mathbb{E} \left[ R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots \mid s_0 = s, \pi \right]
+$$
+
+This can be also expressed as,
+$$
+V^{\pi}(s) = \mathbb{E} \left[ R(s_0) + \gamma (R(s_1) + \gamma R(s_2) + + \gamma^2 R(s_3)\cdots) \mid s_0 = s, \pi \right]
+$$
+Now you can see that  value function $V^{\pi}(s)$ satisfies the Bellman equations as below.
+$$
+V^{\pi}(s) = R(s) + \gamma \sum_{s' \in S} P_{s \pi(s)}(s') V^{\pi}(s').
+$$
+Where $s$ is current state and $s'$ is the state after one step.
+As you can see there are two terms in the equation.
+ - $R(s)$: immediate reward that we get rightaway simply for starting in state $s$. 
+ - $\sum_{s' \in S} P_{s \pi(s)}(s') V^{\pi}(s')$: the expected sum of future discounted rewards.  
+
+
+The second term can be interpreted as below which is the expected sum of discounted rewards for starting in state $s′$.  
+$$\mathbb{E}_{s' \sim P_{s\pi(s)}} \left[ V^{\pi}(s') \right]$$
+Where $s'$ is distributed according $P_{s \pi(s)}(s')$, which is the distribution over where we will end up "after" taking the first action $\pi(s)$ in the MDP from state $s$.  
+Therefore the second term gives the expected sum of discounted rewards obtained "after" the first step in the MDP.
 
 ### How to Compute Optimal Policy Value Function for Policy $\pi$
 
