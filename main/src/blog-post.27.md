@@ -39,7 +39,7 @@ $$
 
 This holds for all permutation matrices, regardless of size.
 
-### Rotatinal Matrix
+### Rotational Matrix
 Rotation matrix is a transformation matrix that is used to perform a rotation in Euclidean space. 
 $$
 {\displaystyle R={\begin{bmatrix}\cos \theta &-\sin \theta \\\sin \theta &\cos \theta \end{bmatrix}}}
@@ -50,14 +50,15 @@ For example, above matrix rotates points in the $xy$ plane counterclockwise thro
 
 
 ### Rotational Symmetric
-
+Rotational symmetry, also known as radial symmetry in geometry, is the property a shape has when it looks the same after some rotation by a partial turn.
 
 ## Basics
 Independent Component Analysis attempts to decompose a multivariate signal into independent non-Gaussian signals. It aims to find a linear transformation of data that maximizes statistical independence among the components.  
 ICA is widely applied in fields like audio, image processing, and biomedical signal analysis to isolate distinct sources from mixed signals.
 
 ### Cocktail Party Problem
-
+The $n$ speakers are speaking simultaneously at a party, and any microphone placed in the room records only an overlapping combination of the $n$ speakers’ voices.  
+But let’s say we have $n$ different microphones placed in the room, and because each microphone is a different distance from each of the speakers, it records a different combination of the speakers’ voices. Using these microphone recordings, can we separate out the original $n$ speakers’ speech signals?
 
 ## Definition of ICA
 Assume that we observe $n$ linear mixtures $x_1, 
