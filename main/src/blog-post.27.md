@@ -1,6 +1,9 @@
 # Independent Components Analysis (ICA)
 ## Preliminaries
 ### Density and Probability
+Probability($\rho(x) \delta x $) is the computing the integral of probability density ($\rho(x)$) over a given interval($\delta x$).  
+In simple terms, a probability density tells us how likely different values of a random variable are.
+But unlike discrete probabilities, it does not directly give probabilities. Instead, we integrate the density function to find probabilities over intervals.
 ### Permutation Matrix
 A permutation matrix is a square binary matrix that has exactly one entry of 1 in each row and each column with all other entries 0.
 For example,
