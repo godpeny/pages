@@ -94,12 +94,92 @@ $$\mathbb{E}_{s' \sim P_{s\pi(s)}} \left[ V^{\pi}(s') \right]$$
 Where $s'$ is distributed according $P_{s \pi(s)}(s')$, which is the distribution over where we will end up "after" taking the first action $\pi(s)$ in the MDP from state $s$.  
 Therefore the second term gives the expected sum of discounted rewards obtained "after" the first step in the MDP.
 
-### How to Compute Optimal Policy Value Function for Policy $\pi$
+### Optimal Value Function and Optimal Policy
+From the value functions above $V^{\pi}(s)$, we define the optimal value function is,
+$$
+V^*(s) = \max_{\pi} V^{\pi}(s).
+$$
+This is the best possible expected sum of discounted rewards that can be attained using any policy. There is Bellman's Equations version of optimal value function as below.
+$$
+V^*(s) = R(s) + \max_{a \in A} \gamma \sum_{s' \in S} P_{sa}(s') V^*(s').
+$$
+From the above equation first term $R(s)$ is an immediate reward like the value function before.  
+The second term is the maximum over all actions $a$ of the expected future sum of discounted rewards we’ll get upon after action $a$. Meaning that it finds the maximum possible expected value over all actions $a \in A$.
+
+There is also optimal policy which is the best action should be taken from state $s$.
+$$
+\pi^*(s) = \arg\max_{a \in A} \sum_{s' \in S} P_{sa}(s') V^*(s')
+$$
+Note that $\pi^*(s)$ gives the action $a$ that attains the maximum in the second term in $V^*(s)$ (which is $\sum_{s' \in S} P_{sa}(s') V^*(s')$).
+
+Note that $\pi^*(s)$ has the interesting property that it is the optimal policy for all states $s$.  
+Therefore, it is "not" the case that if we were starting in some state $s$ then there’d be some optimal policy for that state, and if we
+were starting in some other state $s′$ then there’d be some other policy that’s optimal policy for $s′$.  
+The same policy $\pi^*(s)$ attains the maximum in value function for all states $s$. This means that we can use the same policy $\pi^*(s)$ no matter what the initial state of our MDP is.
+
+It is a fact that for every state $s$ and every policy $\pi$, 
+$$
+V^*(s) = V^{\pi^*}(s) \geq V^{\pi}(s).
+$$
+Which means that value function for optimal policy $V^{\pi^*}(s)$ is equal to the optimal value function $V^*(s)$ for every state $s$. 
 
 ### Value Iteration
+One efficient algorithm for solving finite-state MDP is value iteration.  
+1. For each state $s$, initialize $V(s) := 0$.
+2. Repeat until convergence:  
+{  
+    For every state, update $V(s) := R(s) + \max_{a \in A} \gamma \sum_{s' \in S} P_{sa}(s') V^*(s')$   
+}  
+
+In value iteration, the {\displaystyle \pi } function is not used and instead value function is used.
+This can be interpreted as repeatedly trying to update the estimated value function using Bellman Equations.  
+Also there are two ways of performing the updates.
+ - Synchronous Update: compute the new values for $V(s)$ for every state $s$, and then overwrite all the old values with the new values.
+ - Asynchronous Update: loop over the states (in some order) and update the values one at a time.
+
+Under either synchronous or asynchronous updates, value iteration will cause $V$ to converge to $V∗$.
+With the optained $V∗$, we can then use find the optimal policy as the equation shown above $\pi^*(s) = \arg\max_{a \in A} \sum_{s' \in S} P_{sa}(s') V^*(s')$.
 
 ### Policy Iteration
+Apart from value iteration, there is a second standard algorithm for finding an optimal policy for an MDP which is policy iteration.
+1. Initialize $\pi$ randomly.
+2. Repeat until convergence:  
+{   
+    a. Let $V := V^{\pi}$.  
+    b. For each state $s$, let $\pi(s) := \arg\max_{a \in A} \sum_{s' \in S} P_{sa}(s') V^*(s')$   
+}
 
-### Exploration vs Exploitation in RL(MDP)
+For small MDPs, policy iteration is often very fast and converges with very few iterations.  
+However, for MDPs with large state spaces, solving for $V^{\pi}$ explicitly would involve solving a large system of linear equations, and could be difficult. 
 
-### Epsilon-Greedy Algorithm in RL(MDP)
+### MDP Model Learning
+In many realistic problems, we are not given state transition probabilities and rewards explicitly,
+but must instead estimate them from data. ($S$, $A$ and $\gamma$)  
+Given this “experience” in the MDP consisting of a number of trials, we can then easily derive the maximum likelihood estimates for the state transition probabilities as below.  
+$$
+P_{sa}(s') = \frac{\# \text{times took action } a \text{ in state } s \text{ and got to } s'}
+{\# \text{times we took action } a \text{ in state } s}
+$$
+Or, if the ratio above is “0/0”—corresponding to the case of never having taken action $a$in state $s$ before. then we might simply estimate $P_{sa}(s') = \frac{1}{|S|}$.   
+Using a similar procedure, if reward function $R$ is unknown, we can also pick our estimate of the expected immediate reward $R(s)$ in state $s$ to be the average reward observed in state $s$.
+
+Having learned a model for the MDP, we can then use either value iteration or policy iteration to solve the MDP using the estimated transition probabilities and rewards.
+
+If putting together model learning ane value iteration(or it can be policy iteation), we can have an algorithm for learning ina an MDP with unknown state transition probabilities.
+
+1. Initialize $\pi$ randomly.
+2. Repeat {  
+(a) Execute $\pi$ in the MDP for some number of trials.  
+(b) Using the accumulated experience in the MDP, update our estimates for $P_{sa}$ (state transition probabilities) (and reward function $R$, if possible).  
+(c) Apply value iteration with the estimated state transition probabilities and rewards to get a new estimated value function $V$ .  
+(d) Update $\pi$ to be the greedy policy with respect to $V$ .  
+}
+
+### Exploration vs Exploitation in RL(MDP) - Exploration–Exploitation dilemma,
+Exploitation involves choosing the best option based on current knowledge of the system (which may be incomplete or misleading), while exploration involves trying out new options that may lead to better outcomes in the future at the expense of an exploitation opportunity.  
+Finding the optimal balance between these two strategies is a crucial challenge in many decision-making problems whose goal is to maximize long-term benefits.
+
+#### Epsilon-Greedy Algorithm in RL(MDP)
+Epsilon-Greedy is a simple method to balance exploration and exploitation by choosing between exploration and exploitation randomly.
+The epsilon-greedy, where epsilon refers to the probability of choosing to explore, exploits most of the time with a small chance of exploring.   
+For example, at action time $t$, one can take an action $a$ to maximize current reward(greedy with respect to $v$) with probability of $1-\epsilon$, and otherwise you can take an random action with probability of $\epsilon$.
