@@ -183,3 +183,9 @@ Finding the optimal balance between these two strategies is a crucial challenge 
 Epsilon-Greedy is a simple method to balance exploration and exploitation by choosing between exploration and exploitation randomly.
 The epsilon-greedy, where epsilon refers to the probability of choosing to explore, exploits most of the time with a small chance of exploring.   
 For example, at action time $t$, one can take an action $a$ to maximize current reward(greedy with respect to $v$) with probability of $1-\epsilon$, and otherwise you can take an random action with probability of $\epsilon$.
+
+## Continuous State MDPs
+### Discretization
+### Value Function Approximation
+#### Model Simulator
+#### Fitted Value Iteration
