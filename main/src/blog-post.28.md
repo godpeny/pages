@@ -186,6 +186,9 @@ For example, at action time $t$, one can take an action $a$ to maximize current 
 
 ## Continuous State MDPs
 ### Discretization
+Discretization is the process of transferring continuous functions, models, variables, and equations into discrete counterparts. 
+연속적인 함수, 모델, 변수, 방정식을 이산적인 구성요소로 변환하는 프로세스이다. 이 프로세스는 일반적으로 디지털 컴퓨터에서 수치적 평가 및 구현에 적합하도록 하는 첫 단계로 수행된다.
+
 ### Value Function Approximation
 #### Model Simulator
 #### Fitted Value Iteration
