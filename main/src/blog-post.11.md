@@ -136,6 +136,19 @@ GOROOT="/opt/homebrew/Cellar/go@1.20/1.20.14/libexec"
 - GONOPROXY: Lists packages that are considered private. The go command does not use the proxy when downloading these packages. GONOPROXY overrides GOPRIVATE.
 - GONOSUMDB: Lists packages that are considered private. The go command does not use the checksum database during validation of these packages. Overrides GOPRIVATE.
 
+### Gofmt
+Gofmt formats Go programs. It uses tabs for indentation and blanks for alignment. Alignment assumes that an editor is using a fixed-width font.  
+For example,
+ - To check files for unnecessary parentheses:  
+ ``gofmt -r '(a) -> a' -l *.go``  
+ - To remove the parentheses:  
+ ``gofmt -r '(a) -> a' -w *.go``  
+ - To convert the package tree from explicit slice upper bounds to implicit ones:  
+ ``gofmt -r 'α[β:len(α)] -> α[β:]' -w $GOROOT/src``
+
+The most obvious benefit of using gofmt is that when you open an unfamiliar Go program, your brain doesn't get distracted, even subconsciously, about why that brace is in the wrong place; you can focus on the code, not the formatting.   
+But there are many more interesting uses for gofmt. Gofmt can take any file in the Go source tree, parse it into an internal representation, and then write exactly the same bytes back out to the file. So gofmt only has to worry about one formatting convention, and we've agreed to accept that as the official one.
+
 
 ### Naked Return
 A return statement without arguments returns the named return values. This is known as a "naked" return.
@@ -560,6 +573,9 @@ Where to use Coroutines in Go?
 
 Implement  
 (DIY) https://research.swtch.com/coro
+
+#### Storing Data in Control Flow (Concurrency and Parallelism) 
+https://research.swtch.com/pcdata
 
 ### Memory Models in Go
 https://research.swtch.com/gomm
