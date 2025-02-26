@@ -189,6 +189,14 @@ For example, at action time $t$, one can take an action $a$ to maximize current 
 Discretization is the process of transferring continuous functions, models, variables, and equations into discrete counterparts. 
 연속적인 함수, 모델, 변수, 방정식을 이산적인 구성요소로 변환하는 프로세스이다. 이 프로세스는 일반적으로 디지털 컴퓨터에서 수치적 평가 및 구현에 적합하도록 하는 첫 단계로 수행된다.
 
+#### Downside of Discretization in Continuous State MDPs
+First, It is a fairly naive representation for value function ($V$) and policy($\pi$).  
+Second, because of the curse of dimensionality.  
+Suppose $S = \mathbb{R}^{n}$, and we discretize each of the $n$ dimensions of the state into $k$ values. Then the total number of discrete states we have is $k^{n}$.  
+This grows exponentially quickly in the dimension of the state space $n$, and thus does not scale well to large problems.  
+For example, with a $10$-d state, if we discretize each state variable into $100$ values, we would have $100^{10} = 1020$ discrete states, which is far too many to represent.  
+Therefore, discretization very rarely works for problems any higher dimensional than certain number.
+
 ### Value Function Approximation
 #### Model Simulator
 #### Fitted Value Iteration
