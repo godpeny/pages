@@ -106,6 +106,15 @@ $$
 \text{If } \sum_{j=1}^\infty \sum_{k=1}^\infty |a_{jk}| < \infty, \text{ then } \sum_{j=1}^\infty \sum_{k=1}^\infty a_{jk} = \sum_{k=1}^\infty \sum_{j=1}^\infty a_{jk}.
 $$
 
+### Orientation
+The orientation also knwon as attitude, bearing, direction, or angular position of an object – such as a line, plane or rigid body – is part of the description of how it is placed in the space it occupies. It refers to the imaginary rotation that is needed to move the object from a reference placement to its current placement.  
+
+A rotation may not be enough to reach the current placement, in which case it may be necessary to add an imaginary translation to change the object's position (or linear position). The position and orientation together fully describe how the object is placed in space. 
+
+### Angular Orientation
+Angular Orientation($\displaystyle {\vec {\omega }}$) is a pseudovector representation of how the angular position or orientation of an object changes with time.  
+For example, how quickly an object rotates (spins or revolves) around an axis of rotation and how fast the axis itself changes direction.
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
