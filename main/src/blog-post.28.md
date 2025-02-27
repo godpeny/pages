@@ -251,5 +251,25 @@ The reason why adding noise is that without noise(= deterministirc model) algori
 ##### Model-Based RL vs Model-Free RL
  - Model-Based RL: Build a model and train the algorithm in the model. Then, take the policy learned from the model and apply it to the real time.
  - Model-Free RL: Run learning algorithm on the real time directly.
- 
+
 #### Fitted Value Iteration
+Let's recall the value iteration from discrete MDP from above section, which repeat below equation until convergence.  
+$$
+V(s) := R(s) + \max_{a \in A} \gamma \sum_{s' \in S} P_{sa}(s') V^*(s')
+$$
+ - The first term $R(s)$: An immediate reward that we get rightaway simply for starting in state $s$.
+ - The second term: The maximum over all actions $a$ of the expected future sum of discounted rewards we’ll get upon after action $a$. (the expected sum of future discounted rewards)
+ - Value Function $V(s)$: Expected payoff from the state $s$(expected sum of discounted reward)
+
+However, since now we are now dealing with the continous states rather than discrete states, we have to use integral over states instead of summation. 
+$$
+V(s) \coloneqq R(s) + \gamma \max_{a} \int_{s'} P_{sa}(s') V(s') \,ds' \\ 
+= R(s) + \gamma \max_{a} \mathbb{E}_{s' \sim P_{sa}} \left[ V(s') \right]
+$$
+
+The main idea of fitted value iteration is that we are going to approximately carry out this step, over a finite sample of states $s^{(1)}, \cdots, s^{(m)}$.  
+What do you mean by approximately carry out? It means that we will use a supervised learning algorithm(linear regression as shown below) to approximate the value function $V(s)$ as a linear or non-linear function of the states:
+$$
+V(s) = \theta^T \phi(s).
+$$
+Where $\phi(s)$ is a feature mapping of state $s$.
