@@ -202,14 +202,54 @@ For example, with a $10$-d state, if we discretize each state variable into $100
 Therefore, discretization very rarely works for problems any higher dimensional than certain number.
 
 ### Value Function Approximation
-The alternative method for finding policies in continuousstate MDPs, in which we approximate $V^{*}$ directly, without resorting to discretization.
+The alternative method for finding policies in continuousstate MDPs, in which we approximate $V^{*}$ directly, without resorting to discretization.  
+In linear regression, you can approximate $y$ as a linear function of $x$ as below.
+$$
+y \approx \theta^T \phi(x), \quad \text{where } \phi(x) = \text{feature of } x =  \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_i^k \end{bmatrix}
+$$
+Fitted Value Iteration is a model approxmiate $V^*$ of state $s$ as a linear function of the state.
+$$
+ V^*(s) \approx \theta^T \phi(s)
+$$
 
 #### Model(Simulator)
 A Model (or simulator) is a black-box that takes as input any (continuous-valued) state $s_t$ and action $a_t$, and outputs a next-state $s_{t+1}$ sampled according to the state transition probabilities $P_{s_ta_t}$.  
-You can get a model by using the laws of physics calculate or use open-source software simulator, but we will get a mode by learning from the data collected in the MDP. 
+You can get a model by using the laws of physics calculate or use open-source software simulator, but we will get a mode by learning from the data collected in the MDP. Let's suppose  execute $m$ trials in which we repeatedly take actions in an MDP, each trial for $T$ timesteps. This can be done picking actions at random, executing some specific policy, or via some other way of choosing actions. Then we can observe $m$ state sequences like the following:
+$$
+\begin{aligned}
+    &s_0^{(1)} \xrightarrow{a_0^{(1)}} s_1^{(1)} \xrightarrow{a_1^{(1)}} s_2^{(1)} \xrightarrow{a_2^{(1)}} \dots \xrightarrow{a_{T-1}^{(1)}} s_T^{(1)} \\
+    &s_0^{(2)} \xrightarrow{a_0^{(2)}} s_1^{(2)} \xrightarrow{a_1^{(2)}} s_2^{(2)} \xrightarrow{a_2^{(2)}} \dots \xrightarrow{a_{T-1}^{(2)}} s_T^{(2)} \\
+    &\vdots \\
+    &s_0^{(m)} \xrightarrow{a_0^{(m)}} s_1^{(m)} \xrightarrow{a_1^{(m)}} s_2^{(m)} \xrightarrow{a_2^{(m)}} \dots \xrightarrow{a_{T-1}^{(m)}} s_T^{(m)}
+\end{aligned}
+$$
+We can then apply a supervised learning algorithm to predict $s_{t+1} $ as a function of $s_t$ and $a_t$.
+For example, with the parameter matrices $A$ and $B$, you can choose a linear model of the below form.
+$$
+s_{t+1} = A s_t + B a_t,
+$$
+We can estimate them using the data collected from $m$ trials,
+$$
+\arg\min_{A,B} \sum_{i=1}^{m} \sum_{t=0}^{T-1} \left\| s_{t+1}^{(i)} - \left( A s_t^{(i)} + B a_t^{(i)} \right) \right\|^2.
+$$
+Note that this corresponds to maximum likelihood estimate.
 
 ##### Deterministic Model
-##### Stochastic Model
-why use noise?
+Having learned $A$ and $B$, you can build deterministic model, in which given an input $s_t$ and $a_t$, the output $s_{t+1}$ is exactly determined as above equation.
+$$
+s_{t+1} = A s_t + B a_t,
+$$
 
+##### Stochastic Model
+ Or you can build a stochastic model, in which $s_{t+1}$ is a random function of the inputs, by modelling it as
+$$
+s_{t+1} = A s_t + B a_t + \epsilon_t
+$$
+Where $\epsilon_t$ is a noise term, usually modeled as $\epsilon_t \sim \mathcal{N}(0, \Sigma)$.  
+The reason why adding noise is that without noise(= deterministirc model) algorithm might work in the simulator but not in real time. This is because your simulator can never be 100% accurate so adding noise to the simulator can make more roubst policy out of the model. So the odds of generalizaing to real time is much higher.
+
+##### Model-Based RL vs Model-Free RL
+ - Model-Based RL: Build a model and train the algorithm in the model. Then, take the policy learned from the model and apply it to the real time.
+ - Model-Free RL: Run learning algorithm on the real time directly.
+ 
 #### Fitted Value Iteration
