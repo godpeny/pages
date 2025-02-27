@@ -185,6 +185,10 @@ The epsilon-greedy, where epsilon refers to the probability of choosing to explo
 For example, at action time $t$, one can take an action $a$ to maximize current reward(greedy with respect to $v$) with probability of $1-\epsilon$, and otherwise you can take an random action with probability of $\epsilon$.
 
 ## Continuous State MDPs
+We now discuss algorithms for MDPs that may have an infinite number of states, instead of a finite number of states.  
+The one simplest way to solve a continuous-state MDP is to discretize the state space, and then to use an algorithm like value iteration or policy iteration, as described previously.  
+The alternative method for finding policies in continuous state MDPs, in which we approximate $V^{*}$ directly, without resorting to discretization. 
+
 ### Discretization
 Discretization is the process of transferring continuous functions, models, variables, and equations into discrete counterparts. 
 연속적인 함수, 모델, 변수, 방정식을 이산적인 구성요소로 변환하는 프로세스이다. 이 프로세스는 일반적으로 디지털 컴퓨터에서 수치적 평가 및 구현에 적합하도록 하는 첫 단계로 수행된다.
@@ -198,5 +202,14 @@ For example, with a $10$-d state, if we discretize each state variable into $100
 Therefore, discretization very rarely works for problems any higher dimensional than certain number.
 
 ### Value Function Approximation
-#### Model Simulator
+The alternative method for finding policies in continuousstate MDPs, in which we approximate $V^{*}$ directly, without resorting to discretization.
+
+#### Model(Simulator)
+A Model (or simulator) is a black-box that takes as input any (continuous-valued) state $s_t$ and action $a_t$, and outputs a next-state $s_{t+1}$ sampled according to the state transition probabilities $P_{s_ta_t}$.  
+You can get a model by using the laws of physics calculate or use open-source software simulator, but we will get a mode by learning from the data collected in the MDP. 
+
+##### Deterministic Model
+##### Stochastic Model
+why use noise?
+
 #### Fitted Value Iteration
