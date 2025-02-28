@@ -268,8 +268,65 @@ V(s) \coloneqq R(s) + \gamma \max_{a} \int_{s'} P_{sa}(s') V(s') \,ds' \\
 $$
 
 The main idea of fitted value iteration is that we are going to approximately carry out this step, over a finite sample of states $s^{(1)}, \cdots, s^{(m)}$.  
-What do you mean by approximately carry out? It means that we will use a supervised learning algorithm(linear regression as shown below) to approximate the value function $V(s)$ as a linear or non-linear function of the states:
+What do you mean by approximately carry out? It means that we will use a supervised learning algorithm(linear regression as shown below) to approximate the value function $V(s)$ as a linear or non-linear function of the sampled $m$ states:
 $$
 V(s) = \theta^T \phi(s).
 $$
 Where $\phi(s)$ is a feature mapping of state $s$.
+
+##### Algorithm of Fitted Value Iteration
+1. Randomly sample $m$ states $s^{(1)}, s^{(2)}, \cdots,  s^{(m)} \in S$. 
+2. Initialize $\theta := 0$. 
+3. Repeat  
+{  
+&emsp;For $i = 1, \cdots ,m$, {  
+&emsp;&emsp;For each action $a \in A$  {  
+&emsp;&emsp;&emsp;Sample $s'_1, \cdots, s'_k ∼ P_{s^{(i)}a}$ (using a model of the MDP)  
+&emsp;&emsp;&emsp;Set $q(a) = \frac{1}{k} \sum_{j=1}^{k} R(s^{(i)}) + \gamma V(s'_j)$  
+&emsp;&emsp;}  
+&emsp;&emsp;Set $y(i) = \max_{a} q(a)$.  
+&emsp;&emsp;}  
+$\theta := \arg\min_{\theta} \frac{1}{2} \sum_{i=1}^{m} \left( \theta^T \phi(s^{(i)}) - y^{(i)} \right)^2$  
+}
+
+From above, $q(a)$ is an estimate of $R(s^{(i)}) + \gamma \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right]$. This is because,
+$$
+R(s^{(i)}) + \gamma \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right] = \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[R(s^{(i)}) + \gamma V(s') \right]
+$$
+And since we don’t know the exact transition probabilities, we approximate this expectation using sampled next states $s'_j$.
+In short, $q(a)$ is an estimate of the expected future due to approximation via sampling.
+
+Similarly, $y(i)$ is an estimate of $R(s^{(i)}) + \gamma \max_{a} \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right]$.
+
+Since we defined value function as a linear or non-linear function of the sampled $m$ states, $V(s^{(i)}) =  \theta^T \phi(s^{(i)})$ and we want $V(s^{(i)}) \approx y^{(i)}$, we’ll be using supervised learning (linear regression).  
+$$
+\theta := \arg\min_{\theta} \frac{1}{2} \sum_{i=1}^{m} \left( \theta^T \phi(s^{(i)}) - y^{(i)} \right)^2
+$$
+##### Policy of Fitted Value Iteration
+Finally, fitted value iteration algorithm outputs $V$ , which is an approximation to $V^{*}$. This implicitly defines our policy because now we have value function $V$.    
+Specifically, when our system is in some state s, and we need to choose an action, we would like to choose the action to get optimal policy $\pi^{*},$
+$$
+\pi^*(s) = \arg\max_{a} \mathbb{E}_{s' \sim P_{s a}} \left[ V(s') \right]
+$$
+ The process for computing/approximating this is similar to the inner-loop of f itted value iteration, where for each action, we sample $s'_1, \cdots, s'_k ∼ P_{s^{(i)}a}$ to approximate the expectation.
+
+#### In Real Time
+You can represent the simulator as, 
+$$
+s_{t+1} = f(s_t, a_t) + \epsilon_t
+$$
+Where $f$ is some deterministirc function $f(s_t, a_t) = A s_t + B a_t$ and $\epsilon$ is noise.  
+So if you want to use deterministic simulator you have to set nose $\epsilon =0$ and set $k=1$ where $k$ is sampling algorithim from fitted value iteration.  
+This is because you are sampling from the expectation over a deterministic distribution, so a single example is sufficient to exactly compute that expectation. (Because no matter how many you sample, result is same in deterministic function)
+
+In real time you don't want the to random sample, because it generates random value and some unlucky value might be very critical.
+
+- Model: Use Stochastic Model.  
+$$S_{t+1} = f(S_t, a_t) + \epsilon_t \quad \text{(e.g., } A s_t + B a_t + \epsilon_t \text{)}
+$$
+- In Real:
+Set $\epsilon_t = 0 $ and sampling number $k = 1$.  In other word,  
+When in state $s$, pick action, $$\arg\max_{a} V(f(s, a))$$ (Simulator without noise)
+
+During training, add noise to the simulator because it causes the policy you learned to be more robust,
+But when deploying in real, it is reasonable to get rid of the noise and set $k=1$ to avoid randomness.
