@@ -48,6 +48,49 @@ Where $w$ represent weight, $x$ represent input and $b$ represent bias.
 The result of the linear transformation($z$) is then passed through an activation function. The activation function is crucial because it introduces non-linearity into the system, enabling the network to learn more complex patterns.  
 Popular activation functions include ReLU, sigmoid, and tanh.
 
+#### Why Activation Function Shouldn't be linear
+ - It’s not possible to use backpropagation as the derivative of the function is a constant and has no relation to the input $x$. 
+ - All layers of the neural network will collapse into one if a linear activation function is used. No matter the number of layers in the neural network, the last layer will still be a linear function of the first layer. So, essentially, a linear activation function turns the neural network into just one layer.  
+ For example, 
+ $$
+ o = \sigma\bigl(z^{[2]}\bigr)
+ = \sigma\bigl(W^{[2]}h + W_0^{[2]}\bigr)
+ = \sigma\Bigl(W^{[2]}\bigl(W^{[1]}x + W_0^{[1]}\bigr) + W_0^{[2]}\Bigr)
+ = \sigma\bigl(W^{[2]}W^{[1]}x + W^{[2]}W_0^{[1]} + W_0^{[2]}\bigr)
+ = \sigma\bigl(\widetilde{W}x + \widetilde{W}_0\bigr),
+ $$ 
+
+ where 
+
+ $$
+ \widetilde{W} = W^{[2]} W^{[1]}, 
+ \quad
+ \widetilde{W}_0 = W^{[2]} W_0^{[1]} + W_0^{[2]}.
+ $$
+ Therefore linear function can't capture the complex non-linearity pattern of the dataset. Because a linear combination of linear functions is still a linear function. 
+
+#### Perceptron and Step Function
+The perceptron is an algorithm for learning a binary classifier called a threshold function. Which is a function that maps its input $x$ (a real-valued vector) to an output value $f(x)$ (a single binary value):
+$$
+f(x)= h((w \cdot x) +b)
+$$
+where $h$ is the Heaviside step-function(below described).
+$$
+h(x) = 
+\begin{cases}
+1, & x \ge 0, \\
+0, & x < 0.
+\end{cases}
+$$
+Back to perceptron, in function $f(x)$, $w$ is a vector of real-valued weights, and $w \cdot x$ is the dot product $\sum _{i=1}^{m}w_{i}x_{i}$, where $m$ is the number of inputs to the perceptron, and $b$ is the bias.
+
+Using Step function, you can capture the non-linearity. This is because the neurons applied step function as activation function can be treated as three independent linear classifiers. Therefore their decision boundaries
+form a non linear shape and it can classify the outside and the inside class of dataset.  
+For example, Let's consider below data set $X$(left) and simple neural network with one hidden layer(right).
+![alt text](images/blog1_example_step_function_non_linearity.png)  
+If each hidden layer $h_1, h_2, h_3$ use step function, these three neurons can be treated as three independent linear classifiers.   
+Therefore the three decision boundaries form a triangle that classifies the outside data into class 1, and the inside ones into class 0.
+
 ## Feed-Forward Neural Network
 ![alt text](images/blog1_feed_forward_neural_network.png)  
 A Feedforward Neural Network (FNN) is a type of artificial neural network where connections between the nodes do not form cycles. This characteristic differentiates it from recurrent neural networks (RNNs). Recurrent neural networks, or neural networks with loops allow information from later processing stages to earlier stages for sequence processing.  
