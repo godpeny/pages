@@ -222,8 +222,10 @@ $$
 https://www.deeplearning.ai/ai-notes/initialization/index.html#III
 
 
-### Optimizations
+## Optimizations
 Gradient Descent
+### How Gradient Descent works in optimization?
+
 
 ### Parameter Sharing
 Parameter sharing is a well-known approach for controlling the complexity of Deep Neural Networks by forcing certain weights to share the same value.
