@@ -3,8 +3,28 @@
  - point : A point x that satisfies all the constraints is called a feasible point and thus is a feasible solution to the problem. 
  - region : A set of all possible points (sets of values of the choice variables) of an optimization problem that satisfy the problem's constraints, potentially including inequalities, equalities, and integer constraints.
 ## Convex and Concave Function
+![alt text](images/blog15_convex_function.png)
 Convex function : function is convex if the line segment between any two distinct points on the graph of the function lies above the graph between the two points. (볼록 함수 - 아래로 볼록)
 Concave function : function is concave if the line segment between any two distinct points on the graph of the function lies below the graph between the two points. (오목 함수 - 아래로 오목)
+
+### Mathmatic Definition of Convex(Concave) Function
+In mathematics, a real-valued function is called convex if the line segment between any two distinct points on the graph of the function lies above or on the graph between the two points. 
+
+For all ${\displaystyle 0\leq t\leq 1}$ and all ${\displaystyle x_{1},x_{2}\in X}$:
+$$
+f\left(tx_{1}+(1-t)x_{2}\right)\leq tf\left(x_{1}\right)+(1-t)f\left(x_{2}\right)
+$$
+The right hand side, $tf\left(x_{1}\right)+(1-t)f\left(x_{2}\right)$ represents the straight line between ${\displaystyle \left(x_{1},f\left(x_{1}\right)\right)}$ and ${\displaystyle \left(x_{2},f\left(x_{2}\right)\right)}$ in the graph of $f$ as a function of $t$.  
+Similarly, the argument of the function $f$ in the left hand side, $tx_{1}+(1-t)x_{2}$ represents the straight line between ${\displaystyle x_{1}}$ and ${\displaystyle x_{2}}$ in the $x$-axis of the graph of $f$.  
+Simply speaking, $tA_1 + (1-t)A_2$ is weighted average (or often called convex combination) of two points $A_1$ and $A_2$. Therefore left hand side $tx_{1}+(1-t)x_{2}$ is weighted sum of $x_1$ and $x_2$. While, right hand side is weighted sum of $f(x_1)$ and $f(x_2)$. 
+
+### Strictly Convex(Concave)
+Explicitly, the function $f$ is called strictly convex if and only if for all real $0<t<1$ and all $x_{1},x_{2}\in X$ such that $x_{1}\neq x_{2}$, 
+$$
+f\left(tx_{1}+(1-t)x_{2}\right)<tf\left(x_{1}\right)+(1-t)f\left(x_{2}\right)
+$$
+It is a function that the straight line between any pair of points on the curve $f$ is above the curve $f$ except for the intersection points between the straight line and the curve.
+
 ## Convex Optimization
 - Convex optimization problems : subfield of mathematical optimization that studies the problem of minimizing convex functions over convex sets (or, equivalently, maximizing concave functions over convex sets).
 - Convex set : given any two points in the subset, the subset contains the whole line segment that joins them. 
