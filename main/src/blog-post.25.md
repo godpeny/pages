@@ -21,8 +21,11 @@ $$
 Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a constant)
 
 ### Entorpy
+Information Theory and Machine Learning
 
 ### Cross Entropy
+Information Theory and Machine Learning
+
 https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
 
@@ -38,7 +41,15 @@ A simple interpretation of the KL Divergence of $P$ from $Q$ is the expected exc
 While it is a measure of how different two distributions are and is thus a "distance" in some sense, it is not actually a metric(a set together with a notion of distance between its elements, usually called points. ), which is the most familiar and formal type of distance.  
 Instead, it is a type of divergence, a generalization of squared distance, and for certain classes of distributions (notably an exponential family), it satisfies a generalized Pythagorean theorem (which applies to squared distances).
 
+#### Property of KL-Divergence
+
  - reference1: https://homes.cs.washington.edu/~anuprao/pubs/CSE533Autumn2010/lecture3.pdf
+
+### Score Function
+
+### Fisher Information
+
+### Natural Gradient
 
 ## K-means Clustering
 K-means clustering is a method that aims to partition $n$ observations into $k$ clusters in which each observation belongs to the cluster with the nearest mean (cluster centers or cluster centroid), serving as a prototype of the cluster.
