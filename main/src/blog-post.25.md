@@ -20,17 +20,22 @@ $$
 $$
 Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a constant)
 
-### Entorpy
+### Information Theory
+https://en.wikipedia.org/wiki/Information_theory
+
+#### Log Sum Inequality
+https://en.wikipedia.org/wiki/Log_sum_inequality
+#### Entorpy
 Information Theory and Machine Learning
 
-### Cross Entropy
+#### Cross Entropy
 Information Theory and Machine Learning
 
 https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
 
 
-### Kullback–Leibler Divergence (KL-Divergence)
+#### Kullback–Leibler Divergence (KL-Divergence)
 The Kullback–Leibler (KL) is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
 Mathematically, it is defined as
 $$
@@ -41,7 +46,7 @@ A simple interpretation of the KL Divergence of $P$ from $Q$ is the expected exc
 While it is a measure of how different two distributions are and is thus a "distance" in some sense, it is not actually a metric(a set together with a notion of distance between its elements, usually called points. ), which is the most familiar and formal type of distance.  
 Instead, it is a type of divergence, a generalization of squared distance, and for certain classes of distributions (notably an exponential family), it satisfies a generalized Pythagorean theorem (which applies to squared distances).
 
-#### Property of KL-Divergence
+##### Property of KL-Divergence
 
  - reference1: https://homes.cs.washington.edu/~anuprao/pubs/CSE533Autumn2010/lecture3.pdf
 
