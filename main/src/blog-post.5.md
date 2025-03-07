@@ -138,6 +138,40 @@ $$
 \end{align*}
 $$
 
+## Probability Distribution
+Probability Distribution is a mathematical description of the probabilities of events, subsets of the sample space. The sample space, is the set of all possible outcomes of a random phenomenon being observed.  
+The sample space may be any set: a set of real numbers, a set of descriptive labels, a set of vectors, a set of arbitrary non-numerical values, etc. For example, the sample space of a coin flip could be  $\omega = \{ "heads", "tails" \}$ .
+
+
+https://en.wikipedia.org/wiki/Probability_distribution
+
+### Terminology of Probability Distribution
+
+#### Discrete Probability Distributions
+
+#### Absolutely Continuous Probability Distributions
+
+### Properties of Probability Distribution
+1. Under the distribution $P$, if $X$ is a random variable with distribution $P$, then for any function $f$, expectation is as below.
+$$
+\mathbb{E}_{X\sim P}[f(X)]
+\;=\;
+\sum_{x \in \mathcal{X}}\,P(x)\,f(x).
+$$
+2. Any probability distribution must sum (or integrate) to 1 over its entire support. 
+$$
+\sum_{x\in \mathcal{X}}\,P(x) \;=\; 1.
+$$
+3. Intuitively, if you try to sum a function over all possible $x$, that indicator acts like a filter that leaves only the single term at $x^{(i)}$.
+$$
+\sum_{x}\,\mathbf{1}\{x^{(i)} = x\}\,\log P_\theta(x)
+\;=\;
+\log P_\theta\!\bigl(x^{(i)}\bigr).
+$$
+So you can think of it as “selecting” precisely the $\log P_\theta(x)$ value at the observed data point $x^{(i)}$.
+
+
+
 ## Cumulative Distribution Function(CDF) vs Probability Density Function(PDF) vs Probability Mass Function(PMF)
 ### PDF: continuous random variable
 ![alt text](images/blog5_pdf.png)
