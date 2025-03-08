@@ -155,3 +155,30 @@ $$
 p_1^\top A p_2 = \left(p_2^\top A p_1\right)^\top = p_2^\top A^\top p_1 = p_2^\top A p_1
 $$
 
+## Integral
+
+### Leibniz Integral Rule
+Leibniz Integral Rule is for differentiation under the integral sign.  
+When $-\infty <a(x),b(x)<\infty$ and the integrands $a(x), b(x)$ are functions dependent on $x$, the derivative of this integral is expressible as below.
+$$
+\frac{d}{dx}
+\Biggl(\int_{a(x)}^{\,b(x)} f\bigl(x,t\bigr)\,dt\Biggr)
+= \\
+f\bigl(x, b(x)\bigr)\,\frac{d}{dx}\,b(x)
+\;-\;
+f\bigl(x, a(x)\bigr)\,\frac{d}{dx}\,a(x)
+\;+\;
+\int_{a(x)}^{\,b(x)} \frac{\partial}{\partial x}f\bigl(x,t\bigr)\,dt
+$$
+
+In the special case where the functions $a(x)$ and $b(x)$ are constants $a(x)=a$ and $b(x)=b$ with values that do not depend on $x$, above equation can be  simplified as below.
+(Simply, under standard regularity conditions (everything is nicely continuous/differentiable), you can swap the order of “take gradient w.r.t. $\theta$" and “integrate w.r.t. $y$".  
+$$
+{\frac {d}{dx}}\left(\int _{a}^{b}f(x,t)\,dt\right)=\int _{a}^{b}{\frac {\partial }{\partial x}}f(x,t)\,dt
+$$
+
+If $a(x)=a$ is constant and $b(x)=x$, which is another common situation, the Leibniz integral rule becomes:
+$$
+{\frac {d}{dx}}\left(\int _{a}^{x}f(x,t)\,dt\right)=f{\big (}x,x{\big )}+\int _{a}^{x}{\frac {\partial }{\partial x}}f(x,t)\,dt
+$$
+
