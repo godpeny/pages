@@ -442,6 +442,11 @@ $$
 A \text{ is symmetric} <=> \text{for every } i,j \quad a_{ij} = a_{ji}
 $$
 
+Moreover, since ${A^{T}}^{-1} = {A^{-1}}^{T}$, If $A$ is symmetric and invertible, then $A^{-1}$ is also symmetric.
+$$
+{A^{-1}}= {A^{-1}}^{T}
+$$
+
 #### Using Symmetric Matrix
  1. If Matrix $W$ is symmetric, $AWA^T$ is also symmetric because $(AWA^T)^T = AW^TA^T$, and since $W=W^T$, in result, $(AWA^T)^T = AWA^T$.
 
