@@ -139,21 +139,6 @@ f(x + h) = (x + h)^T A (x + h) \\
 $$
 So $\frac{\partial}{\partial x} \left (x^T A x \right)$ is $(A + A^T) x$ if $A$ is not symmetric, and $2Ax$ if $A$ is symmetric because $A^T = A$ when $A$ is symmetric matrix.
 
-## Symmetric Matrix
-A symmetric matrix is a square matrix that is equal to its transpose. Formally,
-$$ A = A^T $$  
-The entries of a symmetric matrix are symmetric with respect to the main diagonal. So if $\displaystyle a_{ij}$ denotes the entry in the $i$ th row and $j$ th column then, 
-$$
-A \text{ is symmetric} <=> \text{for every } i,j \quad a_{ij} = a_{ji}
-$$
-
-### Using Symmetric Matrix
- 1. If Matrix $W$ is symmetric, $AWA^T$ is also symmetric because $(AWA^T)^T = AW^TA^T$, and since $W=W^T$, in result, $(AWA^T)^T = AWA^T$.
-
- 2. If $p_1$, $p_2$ is vector and $A$ is symmetric matrix, following formula is true.
-$$
-p_1^\top A p_2 = \left(p_2^\top A p_1\right)^\top = p_2^\top A^\top p_1 = p_2^\top A p_1
-$$
 
 ## Integral
 

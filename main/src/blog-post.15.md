@@ -434,6 +434,22 @@ $$
 M \text{ negative-semidefinite } \iff \mathbf{x}^\top M \mathbf{x} \leq 0 \quad \text{for all } \mathbf{x} \in \mathbb{R}^n.
 $$
 
+### Symmetric Matrix
+A symmetric matrix is a square matrix that is equal to its transpose. Formally,
+$$ A = A^T $$  
+The entries of a symmetric matrix are symmetric with respect to the main diagonal. So if $\displaystyle a_{ij}$ denotes the entry in the $i$ th row and $j$ th column then, 
+$$
+A \text{ is symmetric} <=> \text{for every } i,j \quad a_{ij} = a_{ji}
+$$
+
+#### Using Symmetric Matrix
+ 1. If Matrix $W$ is symmetric, $AWA^T$ is also symmetric because $(AWA^T)^T = AW^TA^T$, and since $W=W^T$, in result, $(AWA^T)^T = AWA^T$.
+
+ 2. If $p_1$, $p_2$ is vector and $A$ is symmetric matrix, following formula is true.
+$$
+p_1^\top A p_2 = \left(p_2^\top A p_1\right)^\top = p_2^\top A^\top p_1 = p_2^\top A p_1
+$$
+
 ## Linear Combination
 In mathematics, a linear combination is an expression constructed from a set of terms by multiplying each term by a constant and adding the results. (e.g. a linear combination of $x$ and $y$ would be any expression of the form $ax + by$, where a and b are constants).  
 Let $V$ be a vector space over the field $K$. As usual, we call elements of $V$ vectors and call elements of $K$ scalars. If $v_1, \cdots, v_n$ are vectors and $a_1, \cdots, a_n$ are scalars, then the linear combination of those vectors with those scalars as coefficients is as below.
