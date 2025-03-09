@@ -140,6 +140,39 @@ $$
 So $\frac{\partial}{\partial x} \left (x^T A x \right)$ is $(A + A^T) x$ if $A$ is not symmetric, and $2Ax$ if $A$ is symmetric because $A^T = A$ when $A$ is symmetric matrix.
 
 
+## Product Rule
+It is a formula used to find the derivatives of products of two or more functions. For two functions,
+$$
+{\displaystyle (u\cdot v)'=u'\cdot v+u\cdot v'}
+$$
+Put it differently,
+$$
+{\displaystyle {\frac {d}{dx}}(u\cdot v)={\frac {du}{dx}}\cdot v+u\cdot {\frac {dv}{dx}}.}
+$$
+
+## Derivative of Vector and Matrix
+1. 
+$$
+\frac{\partial}{\partial x}\bigl(x^\top a\bigr)
+\;=\;
+\frac{\partial}{\partial x}\bigl(a^\top x\bigr)
+\;=\;
+a
+$$
+
+2. 
+$$
+\frac{\partial}{\partial x}\bigl(x^\top B\,x\bigr)
+\;=\;
+\bigl(B + B^\top\bigr)\,x
+$$
+3. if $B$ is symmetric matrix,
+$$
+\frac{\partial}{\partial x}\bigl(x^\top B\,x\bigr)
+\;=\;
+\bigl(2B)\,x
+$$
+
 ## Integral
 
 ### Leibniz Integral Rule
