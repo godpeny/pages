@@ -167,7 +167,7 @@ $$
 = \sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \\ 
 \geq \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
 $$
-For the understading of the derivation above, consider following as an expectation of the quantity $$ with respect to $z^{(i)}$ from distribution $Q_i$.  
+For the understading of the derivation above, consider following as an expectation of $\log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$ with respect to $z^{(i)}$ from distribution $Q_i$.  
 (For example, when $z = \{1, 2, \cdots, 10 \}$, $\mathbb{E}[g(z)] = \sum_z p(z)g(z)$ and $\mathbb{E} = \sum_z p(z) z$.)
 $$
 \sum_{z^{(i)}} Q_i(z^{(i)}) \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]
@@ -245,7 +245,7 @@ Q_i^{(t)}(z^{(i)}) = p(z^{(i)} \mid x^{(i)}; \theta^{(t)}) \\
 $$
 with difference of $t$ which indicates the iteration.  
 $$
-\ell(\theta) \geq \sum_i \sum_{z^{(i)}} Q_i (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta}{Q_i (z^{(i)})} 
+\ell(\theta) \geq \sum_i \sum_{z^{(i)}} Q_i (z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i (z^{(i)})} 
 $$
 Since above equation is true for any values of $Q_i$'s and $\theta$, particularly it holds also true for  $Q_i = Q_i^{(t)}$ and $\theta = \theta^{(t+1)}$ as below.
 $$
