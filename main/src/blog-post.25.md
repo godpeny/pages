@@ -362,11 +362,45 @@ old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussi
 First, initialize our model parameters like the mean($\mu_j$), covariance matrix($\Sigma_j$), and mixing coefficients($\phi_j$).  
 Calculate the posterior probabilities of data points belonging to each centroid using the current parameter values. In other words, using current paratmers values(mean, covariance and mixing probability), calculate the posterior probability of $z^{(i)}$'s given $x^{(i)}$'s.
 
+When $w_j^{(i)} 
+\;=\;
+Q_i(z^{(i)} = j)$,
 $$
 \textbf{(For each $i$,$j$)} \quad w_j^{(i)} := p(z^{(i)} = j \mid x^{(i)}; \phi, \mu, \Sigma)
 $$
 
-The values $w^{(i)}_j$ calculated in the E-step abvove is soft guesses for the $z^{(i)}$, whici is the probability of how much $x^{(i)}$ is assigned to the $j$ Gaussian.
+The values $w^{(i)}_j$ calculated in the E-step abvove is soft guesses for the $z^{(i)}$, which is the probability of how much $x^{(i)}$ is assigned to the $j$ Gaussian.
+
+Applying Bayes' Rule to $w^{(i)}_j$,
+$${\displaystyle P(A\vert B)={\frac {P(A\cap B)}{P(B)}},{\text{ if }}P(B)\neq 0,}$$
+ we can get, 
+$$
+w_j^{(i)} 
+\;=\;
+Q_i(z^{(i)} = j) \;=\;
+p\bigl(z^{(i)}=j \mid x^{(i)}; \,\phi,\mu,\Sigma\bigr)
+\;=\;
+\frac{p\bigl(x^{(i)}\mid z^{(i)}=j;\,\mu,\Sigma\bigr)\,p\bigl(z^{(i)}=j;\,\phi\bigr)}
+{\displaystyle\sum_{l=1}^{k}
+  p\bigl(x^{(i)}\mid z^{(i)}=l;\,\mu,\Sigma\bigr)\,p\bigl(z^{(i)}=l;\,\phi\bigr)
+}
+$$
+
+Since $x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$ and $\phi_j = p(z^{(i)} = j)$,  
+$$
+w_j^{(i)} 
+\;=\;
+\frac{
+\displaystyle
+\frac{1}{(2\pi)^{\frac{n}{2}}\!\bigl|\Sigma_j\bigr|^{\tfrac12}}
+\exp\!\Bigl(-\tfrac12\bigl(x^{(i)} - \mu_j\bigr)^{\!T}\Sigma_j^{-1}\bigl(x^{(i)} - \mu_j\bigr)\Bigr)\;\phi_j
+}{
+\displaystyle
+\sum_{l=1}^{k}
+  \frac{1}{(2\pi)^{\frac{n}{2}}\!\bigl|\Sigma_l\bigr|^{\tfrac12}}
+  \exp\!\Bigl(-\tfrac12\bigl(x^{(i)} - \mu_l\bigr)^{\!T}\Sigma_l^{-1}\bigl(x^{(i)} - \mu_l\bigr)\Bigr)\;\phi_l
+}
+$$
 
 #### Maximazation Step (M): Update parameter values($\phi, \mu, \Sigma$)
 In M Step, pretending that the guesses in the E step were correct, updates the parameters of the model based on the guesses.  
