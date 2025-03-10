@@ -43,6 +43,27 @@ As it is such a basic quantity, it also appears in several other settings, such 
 It is closely related to entropy, which is the expected value of Information Content of a random variable, quantifying how surprising the random variable is "on average".  
 In other words, entropy is the average amount of self-information an observer would expect to gain about a random variable when measuring it.
 
+#### Bit(=Shannon)
+The shannon is sort of unit of information named after Claude Shannon, the founder of information theory.
+IEC 80000-13 defines the shannon as the information content associated with an event when the probability of the event occurring is ⁠$\frac{1}{2}$. 
+
+![alt text](images/blog25_information_theory_bit.png)
+If you have one bit, you can specify one of two possibilities, usually written 0 and 1.
+![alt text](images/blog25_information_theory_bit2.png)
+Same thing applying to when $n$ outcomes. In general, if you have $b$ bits, you can indicate one of $2^{b} = n$ values.  
+For example, suppose you want to store a letter of the alphabet. There are $26$ letters, so how many bits do you need? With $4$ bits, you can specify one of $16$ values, so that’s not enough. With $5$ bits, you can specify up to $32$ values, so that’s enough for all the letters, with a few values left over.  
+Let's see another example. If flip a coin and tell you the outcome. I have given you one bit of information. If I roll a six-sided die and tell you the outcome, I have given you  $\log_2{6}$ bits of information.
+
+In general, if the number of outcome is $N$, then the outcome contains  $\log_2{𝑁}$ bits of information.
+
+##### Relationship With Self-Information
+The Bit is unit of self-information. If you measure self‐information using a base‐$2$ logarithm, then the unit is the “bit.”   
+Recall that if the number of outcome is $N$, then the outcome contains $\log_2{𝑁}$ bits of information.  
+Equivalently, if the probability of the outcome is $p = \frac{1}{N}$, then the information content is $\log_2{\frac{1}{p}} = - \log_2{p} ( = \log_2{N} )$.  
+This quantity is called the self-information of the outcome. It measures how surprising the outcome is, which is why it is also called surprisal. 
+
+For example, if your horse has only one chance in $16$ of winning, and he wins, you get $4$ bits of information (along with the payout). But if the favorite wins $75$% of the time, the news of the win contains only $0.42$ bits.
+
 ##### Axioms of Information Content
 Claude Shannon's definition of self-information has to meet below axioms.
 
@@ -51,7 +72,7 @@ Claude Shannon's definition of self-information has to meet below axioms.
 3. If two independent events are measured separately, the total amount of information is the sum of the self-informations of the individual events.
 
 ##### Definition of Information Content
-Given a real number $b > 1$ and an event $x$ with probability $P$,  the information content is defined as follows:
+Given a real number $b > 1$ and an event $x$ with probability $P$, the information content is defined as follows:
 $$
 {\displaystyle \mathrm {I} (x):=-\log _{b}{\left[\Pr {\left(x\right)}\right]}=-\log _{b}{\left(P\right)}.}
 $$
@@ -66,11 +87,6 @@ $$
 $$
 It is equal to the expected information content of measurement of $X$.
 
-#### Bit(=Shannon)
-The shannon is a unit of information named after Claude Shannon, the founder of information theory.
-IEC 80000-13 defines the shannon as the information content associated with an event when the probability of the event occurring is ⁠$\frac{1}{2}$.  
-It is as a unit of the information entropy of an event, which is defined as the expected value of the information content of the event.
-(i.e., the probability-weighted average of the information content of all potential events)
 
 #### Entorpy
 Entropy quantifies the amount of uncertainty involved in the value of a random variable or the outcome of a random process.
