@@ -174,7 +174,7 @@ $$
 $$
 
  - $ p(x^{(i)}, z^{(i)}) = p(x^{(i)} \mid z^{(i)})p(z^{(i)})$ 
-   - indicates the probability of observing $x^{(i)}$ along with its corresponding latent variable $Z^{(i)}$, and applying Bayes' rule.  
+   - indicates the probability of observing $x^{(i)}$ along with its corresponding latent variable $z^{(i)}$, and applying Bayes' rule.  
  - $\phi_j = p(z^{(i)} = j)$
    - indicates that $\phi_j$ is the probability that the $z^{(i)}$ belongs to the $j$-th cluster.
  - $z^{(i)} \sim \text{Multinomial}(\phi), \quad (\phi_j \geq 0, \quad \sum_{j=1}^{k} \phi_j = 1)$
@@ -404,6 +404,63 @@ $$
 
 #### Maximazation Step (M): Update parameter values($\phi, \mu, \Sigma$)
 In M Step, pretending that the guesses in the E step were correct, updates the parameters of the model based on the guesses.  
+In other words, since if we knew what the $z(i)$’s were from E-Step, we can maximum likelihood estimate(MLE).  
+
+Let's recall the log likelihood function we drived.
+$$
+\sum_{i=1}^{m}\sum_{z^{(i)}} 
+Q_{i}\bigl(z^{(i)}\bigr)\;
+\log\!
+\frac{p\bigl(x^{(i)},\,z^{(i)};\,\phi,\mu,\Sigma\bigr)}
+     {Q_{i}\bigl(z^{(i)}\bigr)}
+$$
+If $z^{(i)}$ can take on $k$ discrete values, we can rewrite that as 
+$z^{(i)} = j \;\text{for}\; j \in \{1,\dots,k\}$.  
+Hence the sum over all possible becomes as follow.
+$$
+\sum_{z^{(i)}} 
+\;\;\longrightarrow\;\;
+\sum_{j=1}^{k},
+$$
+There fore log likihood function can be rewritten as,
+$$
+
+\sum_{i=1}^{m}\sum_{j=1}^{k}
+Q_{i}\bigl(z^{(i)}=j\bigr)\;
+\log\!
+\frac{p\bigl(x^{(i)},\,z^{(i)};\,\phi,\mu,\Sigma\bigr)}
+     {Q_{i}\bigl(z^{(i)}=j\bigr)}
+$$
+Using the property of conditional probability,
+$$
+{\displaystyle P(A\mid B)={\frac {P(A\cap B)}{P(B)}}}
+$$
+We get,
+
+$$
+\sum_{i=1}^{m}\sum_{j=1}^{k}
+Q_{i}\bigl(z^{(i)}=j\bigr)\;
+\log\!
+\frac{p\bigl(x^{(i)}\mid z^{(i)}=j;\,\mu,\Sigma\bigr)\;p\bigl(z^{(i)}=j;\,\phi\bigr)}
+     {Q_{i}\bigl(z^{(i)}=j\bigr)}
+$$
+Again, since $x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$ and $\phi_j = p(z^{(i)} = j)$, after applying these, we get the final formula before getting derivatives w.r.t parameters $\mu, \Sigma, \phi$.
+$$
+\sum_{i=1}^{m}\sum_{j=1}^{k}
+w_{j}^{(i)}\;\log\!
+\frac{
+   \displaystyle
+   \frac{1}{(2\pi)^{n/2}\!\bigl|\Sigma_{j}\bigr|^{1/2}}
+   \exp\!\Bigl(-\tfrac{1}{2}\bigl(x^{(i)} - \mu_{j}\bigr)^{\!T}
+               \Sigma_{j}^{-1}\bigl(x^{(i)} - \mu_{j}\bigr)\Bigr)
+   \;\phi_{j}
+}{
+   w_{j}^{(i)}
+}
+$$
+
+Now, what we have to do is maximize the formula with respect to each parameters by getting derivatives.
+
 
 $$
 \phi_j := \frac{1}{m} \sum_{i=1}^m w_j^{(i)}, \\
