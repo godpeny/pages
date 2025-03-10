@@ -21,11 +21,60 @@ $$
 Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a constant)
 
 ### Information Theory
-https://en.wikipedia.org/wiki/Information_theory
+Information theory is the mathematical study of the quantification, storage, and communication of information.
+A key measure in information theory is entropy.  
 
-#### Log Sum Inequality
-https://en.wikipedia.org/wiki/Log_sum_inequality
+Information theory is based on probability theory and statistics, where quantified information is usually described in terms of bits.
+One of the most important measures is called entropy, which forms the building block of many other measures.  
+Entropy allows quantification of measure of information in a single random variable.
+Another useful concept is mutual information defined on two random variables, 
+which describes the measure of information in common between those variables, which can be used to describe their correlation. 
+
+The choice of logarithmic base in the following formulas determines the unit of information entropy that is used.  
+A common unit of information is the bit(or shannon), based on the binary logarithm($\log_{2}$). 
+
+Note that an expression of the form $p\log p$ is considered by convention to be equal to zero whenever $p = 0$.  
+This is justified because ${\displaystyle \lim _{p\rightarrow 0+}p\log p=0}$ or any logarithmic base.
+
+#### Information Content(Self-Information, Shannon information)
+It is a basic quantity derived from the probability of a particular event occurring from a random variable. It can be interpreted as quantifying the level of "surprise" of a particular outcome.   
+As it is such a basic quantity, it also appears in several other settings, such as "the length of a message needed to transmit the event" given an optimal source coding of the random variable.
+
+It is closely related to entropy, which is the expected value of Information Content of a random variable, quantifying how surprising the random variable is "on average".  
+In other words, entropy is the average amount of self-information an observer would expect to gain about a random variable when measuring it.
+
+##### Axioms of Information Content
+Claude Shannon's definition of self-information has to meet below axioms.
+
+1. An event with probability 100% is perfectly unsurprising and yields no information.
+2. The less probable an event is, the more surprising it is and the more information it yields.
+3. If two independent events are measured separately, the total amount of information is the sum of the self-informations of the individual events.
+
+##### Definition of Information Content
+Given a real number $b > 1$ and an event $x$ with probability $P$,  the information content is defined as follows:
+$$
+{\displaystyle \mathrm {I} (x):=-\log _{b}{\left[\Pr {\left(x\right)}\right]}=-\log _{b}{\left(P\right)}.}
+$$
+Above is a unique function of probability that meets the three axioms, up to a multiplicative scaling factor. 
+Note that the base $b$ corresponds to the scaling factor above and different choices of base $b$ correspond to different units of information.  
+(e.g., when $b = 2$, the unit is the shannon.)
+
+##### Relationship to Entropy
+Entropy of the random variable $X$ can be defined as below.
+$$
+{\displaystyle {\begin{alignedat}{2}\mathrm {H} (X)&=\sum _{x}{-p_{X}{\left(x\right)}\log {p_{X}{\left(x\right)}}}\\&=\sum _{x}{p_{X}{\left(x\right)}\operatorname {I} _{X}(x)}\\&{\overset {\underset {\mathrm {def} }{}}{=}}\ \operatorname {E} {\left[\operatorname {I} _{X}(X)\right]},\end{alignedat}}}
+$$
+It is equal to the expected information content of measurement of $X$.
+
+#### Bit(=Shannon)
+The shannon is a unit of information named after Claude Shannon, the founder of information theory.
+IEC 80000-13 defines the shannon as the information content associated with an event when the probability of the event occurring is ⁠$\frac{1}{2}$.  
+It is as a unit of the information entropy of an event, which is defined as the expected value of the information content of the event.
+(i.e., the probability-weighted average of the information content of all potential events)
+
 #### Entorpy
+Entropy quantifies the amount of uncertainty involved in the value of a random variable or the outcome of a random process.
+
 Information Theory and Machine Learning
 
 #### Cross Entropy
@@ -34,6 +83,9 @@ Information Theory and Machine Learning
 https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
 
+
+### Log Sum Inequality
+https://en.wikipedia.org/wiki/Log_sum_inequality
 
 #### Kullback–Leibler Divergence (KL-Divergence)
 The Kullback–Leibler (KL) is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
