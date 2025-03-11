@@ -166,12 +166,46 @@ $$
 \;=\;
 \bigl(B + B^\top\bigr)\,x
 $$
-3. if $B$ is symmetric matrix,
+3. If $B$ is symmetric matrix,
 $$
 \frac{\partial}{\partial x}\bigl(x^\top B\,x\bigr)
 \;=\;
 \bigl(2B)\,x
 $$
+
+4. Note that below two derivations are different. This is because  for the first one, each component of $\mu_l$ appears in a simple linear product with the (fixed) vector $x$, so the derivative is just $Mx$.  
+While the second expression is quadratic in $\mu_l$.  So sum of all pairwise products $\mu_{l,i}, \mu_{l,j}$, differentiating w.r.t. each component “hits” two terms whenever $i=k$ and $j=k$.  
+Hence the factor of 2 again.
+$$
+\mu_l^\top M \,\mu_l 
+\;=\;
+\bigl(\mu_{l1}\;\;\mu_{l2}\bigr)
+\begin{pmatrix}
+m_{11} & m_{12} \\
+m_{21} & m_{22}
+\end{pmatrix}
+\begin{pmatrix}
+\mu_{l1}\\
+\mu_{l2}
+\end{pmatrix}
+$$
+$$
+m_{11}\,\mu_{l1}^2
+\;+\;
+\bigl(m_{12} + m_{21}\bigr)\,\mu_{l1}\,\mu_{l2}
+\;+\;
+m_{22}\,\mu_{l2}^2
+$$
+$$
+\mu_l^\top M \,\mu_l 
+\;=\;
+\sum_{i=1}^n \sum_{j=1}^n \mu_{l,i}\,M_{ij}\,\mu_{l,j}
+$$ 
+$$
+\nabla_{\mu_l}\bigl(\mu_l^\top M x\bigr) = Mx \\
+\nabla_{\mu_l}\bigl(\mu_l^\top M \,\mu_l\bigr) = 2(M + M^{T}) \mu_l
+$$
+
 
 ## Integral
 
