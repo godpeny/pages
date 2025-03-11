@@ -459,7 +459,9 @@ w_{j}^{(i)}\;\log\!
 }
 $$
 
-Now, what we have to do is maximize the formula with respect to each parameters by getting derivatives.
+Now, what we have to do is maximize the formula with respect to each parameters by either below.
+ 1. Getting derivatives.
+ 2. Getting Lagrange Multiplier on single constraint condition first then taking derivaties.
 
 
 $$
