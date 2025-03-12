@@ -98,7 +98,44 @@ $$
 &= \log \prod_{i=1}^{m} p(x^{(i)} \mid y^{(i)}; \mu_0, \mu_1, \Sigma) p(y^{(i)}; \phi).
 \end{align*}
 $$
-By maximizing $\ell$ with respect to the parameters($ \phi, \mu_0, \mu_1, \Sigma$), we find the maximum likelihood estimate of the parameters to be:  
+This can be express as below because.
+$$
+\ell(\phi, \mu_0, \mu_1, \Sigma) =\;
+\log \prod_{i=1}^m
+\Bigl[
+  p\bigl(x^{(i)} \mid y^{(i)}=1;\,\mu_0,\mu_1,\Sigma\bigr)
+  \;p\bigl(y^{(i)}=1;\,\phi\bigr)
+\Bigr]^{\mathbf{1}\{y^{(i)}=1\}}
+\,
+\Bigl[
+  p\bigl(x^{(i)} \mid y^{(i)}=0;\,\mu_0,\mu_1,\Sigma\bigr)
+  \;p\bigl(y^{(i)}=0;\,\phi\bigr)
+\Bigr]^{\mathbf{1}\{y^{(i)}=0\}}
+$$
+The reason is that, for each $i$, if $y^{(i)}=1$, then the factor is $p(x^{(i)} | y^{(i)}=1)p(y^{(i)}=1)$. While if $y^{(i)}=0$, you use $p(x^{(i)} | y^{(i)}=0)p(y^{(i)}=0)$.  
+In other words, The exponent $\mathbf{1}\{y^{(i)}=1\}$ “selects” the class‐1 part when $p(y^{(i)}=1)$, and the class‐0 part is raised to the power 0 (which is 1 and thus dropped). Conversely, if $p(y^{(i)}=0)$ the class‐0 part remains and the class‐1 part disappears.   
+
+Now, using the distribution above, we get the equation with $\Sigma$.
+$$
+\ell(\phi, \mu_0, \mu_1, \Sigma) =\;
+\sum_{i=1}^m \mathbf{1}\{y^{(i)}=1\}
+\Bigl[
+  -\tfrac12\bigl(x^{(i)} - \mu_1\bigr)^{\!T}
+           \Sigma^{-1}\bigl(x^{(i)} - \mu_1\bigr)
+  \;+\;\log\phi
+\Bigr]
+\;+\;
+\sum_{i=1}^m \mathbf{1}\{y^{(i)}=0\}
+\Bigl[
+  -\tfrac12\bigl(x^{(i)} - \mu_0\bigr)^{\!T}
+           \Sigma^{-1}\bigl(x^{(i)} - \mu_0\bigr)
+  \;+\;\log\bigl(1-\phi\bigr)
+\Bigr]
+\;+\; C.
+$$
+Note that $C$ does not contain $\phi$, $\mu_0$ or $\mu_1$.
+
+By maximizing log likelihood function we earend $\ell$ with respect to the parameters($ \phi, \mu_0, \mu_1, \Sigma$), we find the maximum likelihood estimate of the parameters to be:  
 $$
 \begin{align*}
 \phi &= \frac{1}{m} \sum_{i=1}^{m} \mathbb{1}\{y^{(i)} = 1\} \\
@@ -126,6 +163,14 @@ p(y = 1 \mid x) &= \frac{p(x \mid y = 1)p(y = 1)}{p(x \mid y = 1)p(y = 1) + p(x 
 \theta_0 &= \frac{1}{2} (\mu_0 + \mu_1)^T \Sigma^{-1} (\mu_0 - \mu_1) - \ln\left(\frac{1 - \phi}{\phi}\right)
 \end{align*}
 $$
+
+Note that Bayes’ Rule was used in the first step in the above derivation. 
+$$
+p\bigl(y=1 \mid x\bigr)
+\;=\;
+\frac{p\bigl(x \mid y=1\bigr)\,p\bigl(y=1\bigr)}{\,p(x)\,}
+$$
+
 #### GDA vs Logistic Regression
 If $p(x \mid y)$ is multivariate gaussian (with shared $\Sigma$),
 then $p(y \mid x)$ necessarily follows a logistic function.  
@@ -136,6 +181,58 @@ In short,
  - GDA makes stronger modeling assumptions, and is more
 data efficient (i.e., requires less training data to learn “well”) when the modeling assumptions are correct or at least approximately correct.  
  - Logisticregression makes weaker assumptions, and is significantly more robust to deviations from modeling assumptions.
+ 
+### GDA for non binary case (generalized case)
+You can model each class $y = k \quad\text{for}\quad k \;=\; 1,\dots,K$ with its own Gaussian parameters—and class‐specific mixing proportions $\phi_k = p(y=k)$.  
+$$
+p\bigl(y=k \mid x\bigr)
+\;=\;
+\frac{\,p\bigl(x \mid y=k\bigr)\,p\bigl(y=k\bigr)\,}
+     {\sum_{\ell=1}^K p\bigl(x \mid y=\ell\bigr)\,p\bigl(y=\ell\bigr)}.
+$$
+It means that predicting the class for a new $x$ by evaluating each Gaussian $p(x|y=k)$ multiplied by the prior $\phi_k$ and then you classify to whichever class has the highest posterior probability(largest result).
+
+Let's see the log likelihood function for the general case of GDA.  
+Given the datasets and models are as below(which are same as binary case of GDA).
+$$
+\bigl\{\,(x^{(i)},\,y^{(i)})\bigr\}_{i=1}^m
+\quad\text{with}\quad y^{(i)}\in\{1,\dots,K\} \\
+p\bigl(y=k\bigr)
+\;=\;\phi_k,
+\quad
+\sum_{k=1}^K \phi_k \;=\; 1,
+\quad
+p\bigl(x \mid y=k\bigr) \sim \mathcal{N}\bigl(x \mid \mu_k,\;\Sigma_k\bigr)
+$$
+The likelihood of the entire dataset is then
+$$
+\prod_{i=1}^m p\bigl(x^{(i)},\,y^{(i)}\bigr)
+\;=\;
+\prod_{i=1}^m
+\Bigl[
+  \phi_{\,y^{(i)}}
+  \;\times\;
+  \mathcal{N}\bigl(x^{(i)} \mid \mu_{y^{(i)}},\;\Sigma_{y^{(i)}}\bigr)
+\Bigr]
+$$
+
+Taking the log and using indicator notation $\mathbf{1}\{\,y^{(i)}=k\}$,
+$$
+ \ell\bigl(\{\phi_k,\mu_k,\Sigma_k\}_{k=1}^K\bigr)
+\;=\;
+\sum_{i=1}^m 
+\log \Bigl[
+  \phi_{\,y^{(i)}}
+  \;\mathcal{N}\!\bigl(x^{(i)} \mid \mu_{y^{(i)}},\Sigma_{y^{(i)}}\bigr)
+\Bigr]
+\;=\;
+\sum_{i=1}^m \sum_{k=1}^K
+\mathbf{1}\{\,y^{(i)}=k\}\,
+\Bigl[
+  \log \phi_k
+  \;+\;\log \mathcal{N}\!\bigl(x^{(i)} \mid \mu_k,\Sigma_k\bigr)
+\Bigr].
+$$
 
 ## Naive Bayes
 나이브 베이지안(Naive Bayesian) 알고리즘은 베이즈 정리를 이용한 확률적 기계학습 알고리즘이다. 사전 확률에 기반을 두고 사후 확률을 추론하는 확률적 예측을 하는데, 이 때 모든 사건이 독립사건이라는 순진한(naive) 가정을 하고 있기 때문에 나이브 베이지안이라는 이름을 가지게 되었다.  
