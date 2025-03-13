@@ -205,6 +205,19 @@ $$
 \nabla_{\mu_l}\bigl(\mu_l^\top M x\bigr) = Mx \\
 \nabla_{\mu_l}\bigl(\mu_l^\top M \,\mu_l\bigr) = 2(M + M^{T}) \mu_l
 $$
+5. Derivative of Inverse Marix.
+$$
+\frac{\partial}{\partial X}
+\bigl[a^{T}\,X^{-1}\,b\bigr]
+\;=\;
+-\;X^{-T}\;a\,b^{T}\;X^{-T}.
+$$
+6. Derivative of Determinant of Matrix.
+$$
+\frac{\partial \,\det(X)}{\partial X}
+\;=\;
+\det(X)\,\bigl(X^{-1}\bigr)^{T}.
+$$
 
 
 ## Integral
