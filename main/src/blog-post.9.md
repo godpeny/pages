@@ -204,7 +204,7 @@ p\bigl(y=k\bigr)
 \quad
 p\bigl(x \mid y=k\bigr) \sim \mathcal{N}\bigl(x \mid \mu_k,\;\Sigma_k\bigr)
 $$
-The likelihood of the entire dataset is then
+The likelihood of the entire dataset is then, 
 $$
 \prod_{i=1}^m p\bigl(x^{(i)},\,y^{(i)}\bigr)
 \;=\;
@@ -215,6 +215,21 @@ $$
   \mathcal{N}\bigl(x^{(i)} \mid \mu_{y^{(i)}},\;\Sigma_{y^{(i)}}\bigr)
 \Bigr]
 $$
+Note that, 
+$$
+\mathcal{N}\!\bigl(x^{(i)} \mid \mu_{y^{(i)}}, \Sigma_{y^{(i)}}\bigr)
+=
+\frac{1}{
+  (2\pi)^{\tfrac{d}{2}}\,
+  \bigl|\Sigma_{y^{(i)}}\bigr|^{\tfrac12}
+}
+\exp\!\Bigl(
+  -\,\tfrac12
+  \bigl(x^{(i)} - \mu_{y^{(i)}}\bigr)^{\!T}\,
+           \Sigma_{y^{(i)}}^{\!-1}\,
+  \bigl(x^{(i)} - \mu_{y^{(i)}}\bigr)
+\Bigr).
+$$
 
 Taking the log and using indicator notation $\mathbf{1}\{\,y^{(i)}=k\}$,
 $$
@@ -224,14 +239,26 @@ $$
 \log \Bigl[
   \phi_{\,y^{(i)}}
   \;\mathcal{N}\!\bigl(x^{(i)} \mid \mu_{y^{(i)}},\Sigma_{y^{(i)}}\bigr)
-\Bigr]
+\Bigr] \\
 \;=\;
 \sum_{i=1}^m \sum_{k=1}^K
 \mathbf{1}\{\,y^{(i)}=k\}\,
 \Bigl[
   \log \phi_k
   \;+\;\log \mathcal{N}\!\bigl(x^{(i)} \mid \mu_k,\Sigma_k\bigr)
-\Bigr].
+\Bigr] \\
+=\;
+\sum_{i=1}^m\sum_{k=1}^K
+\mathbf{1}\!\bigl\{y^{(i)} = k\bigr\}
+\Bigl[
+  \log \phi_k
+  \;-\;
+  \frac{d}{2}\,\log\bigl(2\pi\bigr)
+  \;-\;
+  \frac12\,\log\bigl|\Sigma_k\bigr|
+  \;-\;
+  \frac12\,\bigl(x^{(i)} - \mu_k\bigr)^{\!T}\,\Sigma_k^{-1}\,\bigl(x^{(i)} - \mu_k\bigr)
+\Bigr]
 $$
 
 ## Naive Bayes
