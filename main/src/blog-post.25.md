@@ -87,11 +87,10 @@ $$
 $$
 It is equal to the expected information content of measurement of $X$.
 
-
 #### Entorpy
-Entropy quantifies the amount of uncertainty involved in the value of a random variable or the outcome of a random process.
-
-Information Theory and Machine Learning
+Entorpy is the expected information content of measurement of $X$.  
+It  measures the expected amount of information earned by identifying the outcome of a random trial.  
+In other words, Entropy implies that rolling a die has higher entropy than tossing a coin because each outcome of a die toss has smaller probability $\frac{1}{6}$ than each outcome of a coin toss $\frac{1}{2}$.
 
 #### Cross Entropy
 Information Theory and Machine Learning
