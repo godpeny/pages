@@ -118,8 +118,44 @@ Instead, it is a type of divergence, a generalization of squared distance, and f
  - reference1: https://homes.cs.washington.edu/~anuprao/pubs/CSE533Autumn2010/lecture3.pdf
 
 ### Score Function
+Score Functiont is the gradient of the log-likelihood function with respect to the parameter vector.  
+It indicates the steepness(gradient) of the log-likelihood function and thereby the sensitivity to infinitesimal(극소) changes to the parameter values.  
+If the log-likelihood function is continuous over the parameter space, the score will vanish at a local maximum or minimum.  
+
+The score is the gradient (the vector of partial derivatives) of $\log {\mathcal {L}}(\theta ;x)$, the natural logarithm of the likelihood function, with respect to an $m$-dimensional parameter vector $\theta$ is,
+$$
+s(\theta ;x)\equiv {\frac {\partial \log {\mathcal {L}}(\theta ;x)}{\partial \theta }}
+$$
 
 ### Fisher Information
+Fisher Information is is the variance of the score, or the expected value of the observed information.
+
+#### Definition
+Formally, the partial derivative with respect to $\theta$ of the natural logarithm of the likelihood function is called the score. Under certain regularity conditions, if $X$ is actually distributed as $f(X;\theta )$, it can be shown that the expected value of the score, evaluated at $\theta$ is $0$
+
+$$
+{\displaystyle {\begin{aligned}\operatorname {E} \left[\left.{\frac {\partial }{\partial \theta }}\log f(X;\theta )\,\,\right|\,\,\theta \right]={}&\int _{\mathbb {R} }{\frac {{\frac {\partial }{\partial \theta }}f(x;\theta )}{f(x;\theta )}}f(x;\theta )\,dx\\[6pt]={}&{\frac {\partial }{\partial \theta }}\int _{\mathbb {R} }f(x;\theta )\,dx\\[6pt]={}&{\frac {\partial }{\partial \theta }}1\\[6pt]={}&0.\end{aligned}}}
+$$
+
+Using the fact that expected value of score is $0$, we derive Fisher Information as bellow.
+$$
+{\displaystyle {\mathcal {I}}(\theta )=\operatorname {E} \left[\left.\left({\frac {\partial }{\partial \theta }}\log f(X;\theta )\right)^{2}\,\,\right|\,\,\theta \right]=\int _{\mathbb {R} }\left({\frac {\partial }{\partial \theta }}\log f(x;\theta )\right)^{2}f(x;\theta )\,dx,}
+$$
+
+Note that, 
+$$
+\mathrm{Cov}[X]
+\;=\;
+\mathbb{E}\!\Bigl[(X - \mathbb{E}[X])\,(X - \mathbb{E}[X])^{T}\Bigr]
+\;=\;
+\mathbb{E}[\,X\,X^{T}\,]\;\;
+\text{when}\;\mathbb{E}[X] = 0.
+$$
+
+#### Observed (Fihser) Information
+Observed (Fisher) Information is the negative of the second derivative (the Hessian matrix) of the "log-likelihood" (the logarithm of the likelihood function). It is a sample-based version of the Fisher information.
+
+? need to show the relation with fisher information in formula
 
 ### Natural Gradient
 
