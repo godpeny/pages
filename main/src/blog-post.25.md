@@ -407,7 +407,7 @@ $$
 The values $w^{(i)}_j$ calculated in the E-step abvove is soft guesses for the $z^{(i)}$, which is the probability of how much $x^{(i)}$ is assigned to the $j$ Gaussian.
 
 Applying Bayes' Rule to $w^{(i)}_j$,
-$${\displaystyle P(A\vert B)={\frac {P(A\cap B)}{P(B)}},{\text{ if }}P(B)\neq 0,}$$
+$${\displaystyle P(A|B)={\frac {P(B|A)P(A)}{P(B)}}.}$$
  we can get, 
 $$
 w_j^{(i)} 
