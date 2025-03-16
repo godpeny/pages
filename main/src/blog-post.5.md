@@ -147,9 +147,15 @@ https://en.wikipedia.org/wiki/Probability_distribution
 
 ### Terminology of Probability Distribution
 
-#### Discrete Probability Distributions
+### Discrete Probability Distributions
 
-#### Absolutely Continuous Probability Distributions
+### Absolutely Continuous Probability Distributions
+An absolutely continuous probability distribution is a probability distribution on the real numbers with uncountably many possible values, such as a whole interval in the real line, and where the probability of any event can be expressed as an integral.  
+More precisely, a real random variable $X$ has an absolutely continuous probability distribution if there is a function $f:\mathbb {R} \to [0,\infty]$ such that for each interval $ I=[a,b]\subset \mathbb {R}$, the probability of $X$ belonging to $I$ is given by the integral of $f$ over $I$:
+$$
+{\displaystyle P\left(a\leq X\leq b\right)=\int _{a}^{b}f(x)\,dx.}
+$$
+This is the definition of a probability density function, so that absolutely continuous probability distributions are exactly those with a probability density function.
 
 ### Properties of Probability Distribution
 1. Under the distribution $P$, if $X$ is a random variable with distribution $P$, then for any function $f$, expectation is as below.
