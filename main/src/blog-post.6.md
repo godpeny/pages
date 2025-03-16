@@ -218,6 +218,28 @@ $$
 \;=\;
 \det(X)\,\bigl(X^{-1}\bigr)^{T}.
 $$
+7. Derivative of "1/x" as $\frac{d}{dx} \,\frac{1}{x}
+\;=\;
+-\,\frac{1}{x^{2}}$
+$$
+\frac{d}{dx}\bigl[x^n\bigr]
+\;=\;
+n\,x^{\,n-1}
+$$
+8. Derivative of function "1/f" as $\frac{d}{dx} \,\frac{1}{f(x)}
+\;=\;
+-\;\frac{f'(x)}{\bigl(f(x)\bigr)^{2}}$
+$$
+g(x)= \frac{1}{f(x)} = \bigl(f(x)\bigr)^{-1}
+\\
+\frac{d}{g(x)}\bigl(g(x)^{-1}\bigr) = g(x)^{-2} 
+\\
+\frac{d}{dx}\bigl[f(x)\bigr]^{-1}=
+\frac{d}{du}\bigl[g(x)^{-1}\bigr]\;\cdot\;\frac{d g(x)}{dx}
+= - g(x) ^{-2}\,\cdot\,f'(x)
+=
+\frac{f'(x)}{\bigl(f(x)\bigr)^2}
+$$
 
 
 ## Integral
