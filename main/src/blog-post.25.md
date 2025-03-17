@@ -158,6 +158,11 @@ Observed (Fisher) Information is the negative of the second derivative (the Hess
 ? need to show the relation with fisher information in formula
 
 ### Natural Gradient
+In the usual gradient descent, we fist choose the direction by calculating the gradient of the MLE objective w.r.t the parameters, and then move a magnitude of step size along that direction.  
+Whereas in natural gradient, we first choose a divergence amount by which we would like to move, in the $D_{\text{KL}}$ sense. This gives us a perimeter(둘레) around the current parameters.  
+These points of the perimeter along this perimeter correspond to distributions which are at an equal $D_{\text{KL}}$-distance away from the current parameter. 
+These points of the perimeter along this perimeter correspond to distributions which are at an equal $D_{\text{KL}}$-distance away from the current parameter.  
+Then among the set of all distributions along this perimeter, we move to the distribution that maximizes the objective (i.e minimize $D_{\text{KL}}$ between data and itself) the most. So, we always descend down the same sequence of distributions towards the optimum.
 
 ## K-means Clustering
 K-means clustering is a method that aims to partition $n$ observations into $k$ clusters in which each observation belongs to the cluster with the nearest mean (cluster centers or cluster centroid), serving as a prototype of the cluster.
