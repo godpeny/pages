@@ -233,7 +233,7 @@ $$
 
 Taking the log and using indicator notation $\mathbf{1}\{\,y^{(i)}=k\}$,
 $$
- \ell\bigl(\{\phi_k,\mu_k,\Sigma_k\}_{k=1}^K\bigr)
+ \ell\bigl(\phi,\mu,\Sigma)
 \;=\;
 \sum_{i=1}^m 
 \log \Bigl[
@@ -253,7 +253,7 @@ $$
 \Bigl[
   \log \phi_k
   \;-\;
-  \frac{d}{2}\,\log\bigl(2\pi\bigr)
+  \frac{n}{2}\,\log\bigl(2\pi\bigr)
   \;-\;
   \frac12\,\log\bigl|\Sigma_k\bigr|
   \;-\;
