@@ -389,11 +389,11 @@ respect to $Q$(choosing $Q_i$ in E step) and the M-step maximizes it with respec
 Armed with our general definition of the EM algorithm, let’s go back to our
 old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussians.
 
-### Differences between $p(z^{(i)} = j; \phi)$ and $Q_i(z^{(i)} = j)$
-#### $p(z^{(i)} = j; \phi)$
+#### Differences between $p(z^{(i)} = j; \phi)$ and $Q_i(z^{(i)} = j)$
+##### $p(z^{(i)} = j; \phi)$
  - A prior belief about how likely cluster $j$ is to generate a random point $x$.
  - It is a fixed prior that does not depend on the data. (only how large the cluster matters)
-#### $Q_i(z^{(i)} = j)$ 
+##### $Q_i(z^{(i)} = j)$ 
  - An updated probability (posterior) that cluster $j$ generated point $x^{(i)}$.
  - It shows how well cluster $j$ explains the specific data point $x^{(i)}$ given the current parameters.
  - It depends on the data and reflects the posterior belief after seeing the data.
@@ -468,7 +468,7 @@ $$
 \sum_{i=1}^{m}\sum_{j=1}^{k}
 Q_{i}\bigl(z^{(i)}=j\bigr)\;
 \log\!
-\frac{p\bigl(x^{(i)},\,z^{(i)};\,\phi,\mu,\Sigma\bigr)}
+\frac{p\bigl(x^{(i)},\,z^{(i)}=j;\,\phi,\mu,\Sigma\bigr)}
      {Q_{i}\bigl(z^{(i)}=j\bigr)}
 $$
 Using the property of conditional probability,
