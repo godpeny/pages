@@ -80,20 +80,47 @@ Above is a unique function of probability that meets the three axioms, up to a m
 Note that the base $b$ corresponds to the scaling factor above and different choices of base $b$ correspond to different units of information.  
 (e.g., when $b = 2$, the unit is the shannon.)
 
-##### Relationship to Entropy
+#### Entorpy
+Entorpy is the expected information content of measurement of $X$.  
+It  measures the expected amount of information earned by identifying the outcome of a random trial.  
+In other words, Entropy implies that rolling a die has higher entropy than tossing a coin because each outcome of a die toss has smaller probability $\frac{1}{6}$ than each outcome of a coin toss $\frac{1}{2}$.
+
+##### Relationship of Entropy and Information Content
 Entropy of the random variable $X$ can be defined as below.
 $$
 {\displaystyle {\begin{alignedat}{2}\mathrm {H} (X)&=\sum _{x}{-p_{X}{\left(x\right)}\log {p_{X}{\left(x\right)}}}\\&=\sum _{x}{p_{X}{\left(x\right)}\operatorname {I} _{X}(x)}\\&{\overset {\underset {\mathrm {def} }{}}{=}}\ \operatorname {E} {\left[\operatorname {I} _{X}(X)\right]},\end{alignedat}}}
 $$
 It is equal to the expected information content of measurement of $X$.
 
-#### Entorpy
-Entorpy is the expected information content of measurement of $X$.  
-It  measures the expected amount of information earned by identifying the outcome of a random trial.  
-In other words, Entropy implies that rolling a die has higher entropy than tossing a coin because each outcome of a die toss has smaller probability $\frac{1}{6}$ than each outcome of a coin toss $\frac{1}{2}$.
-
 #### Cross Entropy
-Information Theory and Machine Learning
+The cross-entropy between two probability distributions $p$ and $q$, over the same underlying set of events, measures the average number of bits needed to identify an event drawn from the set when the coding scheme used for the set is optimized for an estimated probability distribution $q$, rather than the true distribution $p$.
+
+The cross-entropy of the distribution $q$ relative to a distribution $p$ over a given set is defined as follows:
+$$
+{\displaystyle H(p,q)=-\operatorname {E} _{p}[\log q],}
+$$
+Where ${E} _{p}$ is expected value respect to the distribution $p$.
+
+The definition may be formulated using the Kullback–Leibler divergence 
+${\displaystyle D_{\mathrm {KL} }(p\parallel q)}$, which represents the divergence of $p$ from $q$ (also known as the relative entropy of 
+$p$ with respect to $q$).
+
+$$
+{\displaystyle H(p,q)=H(p)+D_{\mathrm {KL} }(p\parallel q)}
+$$
+Where $H(p)$ is the entropy of $p$.
+
+For discrete probability distributions $p$ and $q$, 
+$$
+{\displaystyle H(p,q)=-\sum _{x\in {\mathcal {X}}}p(x)\,\log q(x)} 
+$$
+
+Similarly, for continuous distributions,
+$$
+{\displaystyle H(p,q)=-\int _{\mathcal {X}}P(x)\,\log Q(x)\,\mathrm {d} x.} 
+$$
+Where $P$ and $Q$ be probability density functions of $p$ and $q$.
+
 
 https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
