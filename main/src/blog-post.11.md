@@ -48,6 +48,56 @@ result = a @ b  # Dot product
 print(result)  # Outputs: 32 (1*4 + 2*5 + 3*6)
 ```
 
+### '*" vs '@' in matrices
+ - '$@$': Matrix Multiplication(i.e. the dot product)
+$$
+A @ A \;=\;
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+@
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\;=\;
+\begin{pmatrix}
+a \cdot a + b \cdot c & a \cdot b + b \cdot d \\
+c \cdot a + d \cdot c & c \cdot b + d \cdot d
+\end{pmatrix}.
+$$
+ - '*': Elementwise Multiplication(computes the product of each corresponding element)
+$$
+A \ast A \;=\;
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\ast
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\;=\;
+\begin{pmatrix}
+a \cdot a & b \cdot b \\
+c \cdot c & d \cdot d
+\end{pmatrix}.
+$$
+
+### Einsum
+Einsum provides further flexibility to compute other array operations by 'explicit' mode. The term 'explicit' mode refers to usage of numpy einsum using identifier ‘->’.  
+Using identifier '->', the output of einsum can be directly controlled by specifying output subscript labels. This feature increases the flexibility of the function since summing can be disabled or forced when required.  
+
+For example, 
+"np.einsum('ij,jk,ij->i', x, sigma_j, x)"
+
+Any index that appears in more than one input but not in the output is summed over. From above, 'j' appears in all three inputs ('ij', 'jk', 'ij') but not in the output, so we sum over 'j'. 'k' appears in the second input ('jk') but not in the output, so we also sum over 'k'.  
+'i' appears in the first and third inputs and in the output, so it remains a free index (i.e.,  keep dimension 'i' in the result).
+Because only 'i' remains in the output, the result has shape ('i',)
+
+
 ### '|' In Python
 #### 1. Union
 when used with data structure such as dictionary or set, it performs a union operation and returns a set/dictionary containingitems from both initial data structures.
