@@ -91,12 +91,52 @@ Einsum provides further flexibility to compute other array operations by 'explic
 Using identifier '->', the output of einsum can be directly controlled by specifying output subscript labels. This feature increases the flexibility of the function since summing can be disabled or forced when required.  
 
 For example, 
-"np.einsum('ij,jk,ij->i', x, sigma_j, x)"
-
-Any index that appears in more than one input but not in the output is summed over. From above, 'j' appears in all three inputs ('ij', 'jk', 'ij') but not in the output, so we sum over 'j'. 'k' appears in the second input ('jk') but not in the output, so we also sum over 'k'.  
+"np.einsum('ij,jk,ik->i', x, sigma_j, x)"
+This can be expressed as, 
+$$
+x^{(i)^T} \Sigma_j^{-1} x^{(i)} = 
+[x_1,\,x_2]\;\Sigma_j^{-1}\;\begin{pmatrix} x_1 \\ x_2 \end{pmatrix}
+\;=\;
+\sum_{l=1}^{2}\sum_{k=1}^{2} (x-\mu)_j \, (\Sigma^{-1}_j)_{l,k} \, (x-\mu)_k
+$$
+Any index that appears in more than one input but not in the output is summed over. From above, 'j' appears in all three inputs ('ij', 'jk', 'ik') but not in the output, so we sum over 'j'. 'k' appears in the second input ('jk') but not in the output, so we also sum over 'k'.  
 'i' appears in the first and third inputs and in the output, so it remains a free index (i.e.,  keep dimension 'i' in the result).
 Because only 'i' remains in the output, the result has shape ('i',)
 
+Let's see in expending form.
+$$
+\Sigma_j^{-1} \, x^{(i)}
+=
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\begin{pmatrix}
+x^{(i)}_0 \\
+x^{(i)}_1
+\end{pmatrix}
+=
+\begin{pmatrix}
+a\,x^{(i)}_0 + b\,x^{(i)}_1 \\
+c\,x^{(i)}_0 + d\,x^{(i)}_1
+\end{pmatrix}
+$$
+$$
+(x^{(i)})^T \,\bigl(\Sigma_j^{-1}\,x^{(i)}\bigr)
+=
+\begin{pmatrix}
+x^{(i)}_0 & x^{(i)}_1
+\end{pmatrix}
+\begin{pmatrix}
+a\,x^{(i)}_0 + b\,x^{(i)}_1 \\
+c\,x^{(i)}_0 + d\,x^{(i)}_1
+\end{pmatrix}
+$$
+$$
+x^{(i)}_0\,(a\,x^{(i)}_0 + b\,x^{(i)}_1)
+\;+\;
+x^{(i)}_1\,(c\,x^{(i)}_0 + d\,x^{(i)}_1) 
+$$
 
 ### '|' In Python
 #### 1. Union
