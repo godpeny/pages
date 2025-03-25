@@ -212,6 +212,21 @@ func incrementor() func() int {
 }
  ```
 
+### Sum() in Python
+```
+z = [3, 2, 3, 1, 3, 2]
+i = 3
+```
+ - ``sum(x for x in z if x == i)`` : Sums the actual values equal to ``i`` (resulting in ``i`` * count). So the result is ``9``.
+ - ``sum(z == i)`` : Counts the number of elements equal to ``i`` (resulting in just the count). So the reulst is ``3``.
+
+### Uniform Groupping in Python
+```python
+m = x.shape[0]
+idx = np.random.permutation(m)  # randomly permute indices from 0 to m-1
+samples = np.array(np.array_split(x[idx], K))
+```
+
 ## Golang
 ### Goroot, GoPath, GoProxy, GoSumDB
  - Goroot : GOROOT is for compiler and tools that come from go installation and is used to find the standard libraries. It should always be set to the installation directory. 
