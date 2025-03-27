@@ -194,7 +194,9 @@ Then among the set of all distributions along this perimeter, we move to the dis
 ## K-means Clustering
 K-means clustering is a method that aims to partition $n$ observations into $k$ clusters in which each observation belongs to the cluster with the nearest mean (cluster centers or cluster centroid), serving as a prototype of the cluster.
 
-Given a training set $\{ x^{(1)}, \ldots, x^{(m)} \}$ and no labels $y^{(i}$, 
+![alt text](images/blog25_k-means_demonstration.png)
+
+Given a training set $\{ x^{(1)}, \ldots, x^{(m)} \}$ and no labels $y^{(i)}$, 
 
 1. Initialize cluster centroids $\mu_1, \mu_2, \ldots, \mu_k \in \mathbb{R}^n$ randomly.
 
