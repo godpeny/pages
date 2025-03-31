@@ -13,6 +13,10 @@ These networks are built from several key components:
  - Propagation Functions: Mechanisms that help process and transfer data across layers of neurons.
  - Learning Rule: The method that adjusts weights and biases over time to improve accuracy. (such as supervised learning, unsupervised learning and reinforcement learning)
 
+## Encoding
+The encoding refers to transforming data into a format suitable for processing by the network. This technique whitens the real-valued input data delivered to the first hidden layer of a network.  
+Encoding helps you capture the important features or patterns in the input data.
+
 ## Logistic Regression as a specific case of a Neural Network
 Mathematically a certain neural network architecture trained with a certain loss coincides exactly with logistic regression at the optimal parameters.  
 $$
