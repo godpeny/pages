@@ -146,10 +146,11 @@ $$
 
 ## delta
 
-## Initialization Techniques
+## Initialization Techniques (Symmetery Breaking Problem)
 The initialization step can be critical to the model’s ultimate performance, and it requires the right method. Initializing all the weights with zeros leads the neurons to learn the same features during training.  
 In fact, any constant initialization scheme will perform very poorly. Consider a neural network with two hidden units, and assume we initialize all the biases to 0 and the weights with some constant $\alpha$. If we forward propagate an input $(x_1, x_2)$ in this network, the output of both hidden units will be $\text{relu}({\alpha x_1 + \alpha x_2})$.  
-Thus, both hidden units will have identical influence on the cost, which will lead to identical gradients. Thus, both neurons will evolve symmetrically throughout training, effectively preventing different neurons from learning different things.
+Thus, both hidden units will have identical influence on the cost, which will lead to identical gradients. Thus, both neurons will evolve symmetrically throughout training, effectively preventing different neurons from learning different things.  
+So it makes pointless to have more tehan one hidden unit in the layer.
 
 ### Vanishing / Exploding Gradient
 ![alt text](images/blog1_vanishing_exploding_gradient.png)
