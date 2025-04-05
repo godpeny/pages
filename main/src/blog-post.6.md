@@ -19,6 +19,20 @@ and below expression for indicating at which points the derivatives have to be e
 $$
 \left. \frac{dz}{dx} \right|_{x} = \left. \frac{dz}{dy} \right|_{y(x)} \cdot \left. \frac{dy}{dx} \right|_{x}.
 $$
+
+## Single Derivative vs Partial Derivative
+A single derivative (or ordinary derivative) deals with functions of a single variable, while a partial derivative deals with functions of multiple variables.  
+For example, single derivative is expressed as below.
+$$
+f'(x) \quad \text{or} \quad \frac{df}{dx}
+$$
+While partial derivative is expressed as below. (using gradient - vector of its partial derivatives)
+$$
+\nabla f(x,y,z) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right)
+$$
+
+
+
 ## Jacobian vs Gradients vs Hessian vs Laplacian
 https://darkpgmr.tistory.com/132
 
