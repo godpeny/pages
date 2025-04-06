@@ -176,11 +176,9 @@ $$
 \text{Scalar projection} = \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \\
 \text{Length of projection} = \left| \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \right|
 $$
-
-
-
-
-### Null Space
+### Null Space (Kernel)
+In mathematics, the kernel of a linear map, also known as the null space or nullspace, is the part of the domain which is mapped to the zero vector of the co-domain.  
+The kernel is always a linear subspace of the domain. That is, given a linear map $L : V \to W$ between two vector spaces $V$ and $W$, the kernel of $L$ is the vector space of all elements $v$ of $V$ such that $L(v) = 0$, where $0$ denotes the zero vector in $W$.
 
 ### Span (Linear Span)
 The linear span of a set $S$ of elements of a vector space $V$ is the smallest linear subspace of 
