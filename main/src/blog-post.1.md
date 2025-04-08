@@ -103,7 +103,9 @@ However, at every stage of inference a feedforward multiplication remains the co
 ## Forward Propagation
 When data is input into the network, it passes through the network in the forward direction, from the input layer through the hidden layers to the output layer. This process is known as forward propagation. 
 
-## Backpropagation
+## Math in Forward Propagation
+
+## Back propagation
 In machine learning, backpropagation is a gradient estimation method commonly used for training a neural network to computes the gradient in weight space of a feedforward neural network, with respect to a loss function.  
 Backpropagation computes the gradient of a loss function with respect to the weights and bias of the network for a single input–output example, computing the gradient one layer at a time, iterating backward from the last layer to avoid redundant calculations of intermediate terms in the chain rule.  
 For example consider below gradient of loss with respect to weight $W^{[3]}$, 
@@ -124,6 +126,9 @@ $$
 \underbrace{g'(z^{[2]})}_{\frac{\partial a^{[2]}}{\partial z^{[2]}}}
 \underbrace{a^{[1]}}_{\frac{\partial z^{[2]}}{\partial W^{[2]}}}.
 $$
+
+## Math in Back Propagation
+
 
 ### Why element wise multiplication?
 From above equation, the shapes of therms do not align properly.
