@@ -307,18 +307,28 @@ $
 Logistic regression is a supervised machine learning algorithm used for classification tasks, where the goal is to predict the probability that an instance belongs to a given class or not.   
 Logistic regression is a statistical algorithm which analyze the relationship between two data factors. 
 
+Mathmatically, the goal of Logistic Regression is to learn parameters $w \in \mathbb{R}^n, b \in \mathbb{R}$ to make $\hat{y}$ good estimate of the chance(probability) of $y=1$.   
+So Given $x \in \mathbb{R}^n$, we want $\hat{y} = P(y = 1 \mid x)$, with $0 \;\le\; \hat{y} \;\le\; 1$.  
+Using the parameters $w,b$ and sigmoid function to yield the output
+$\hat{y} \;=\; \sigma\!\bigl(w^\top x + b\bigr)$.  
+(Note that we use sigmoid function to make $\hat{y}$ between 0 and 1)
+
+
 ### Logistic Function (Sigmoid Function)
+![alt text](images/blog8_sigmoid_function.png)
 when $h_{\theta}(x)$ is hypothesis, and $\theta^{T} x = \theta_{0} + \sum_{j=1}^{n} \theta_{j} x_{j}$,  
 $$
 h_{\theta}(x) = g(\theta^{T} x) = \frac{1}{1 + e^{-\theta^{T} x}},
 $$  
-It is also useful to check derivate of sigmoid function which is:  
+It is also useful to check derivative of sigmoid function which is:  
 $$
 g'(z) = \frac{d}{dz} \left(\frac{1}{1 + e^{-z}}\right) \\
 = \frac{1}{(1 + e^{-z})^2} \left(e^{-z}\right) \\
 = \frac{1}{(1 + e^{-z})} \cdot \left(1 - \frac{1}{(1 + e^{-z})}\right) \\
 = g(z)(1 - g(z)).
 $$
+
+#### Cost(Loss) Function of Sigmoid Function
 
 ### Bernoulli Distribution
 The discrete probability distribution of a random variable which takes the value 1 with probability $p$ and the value 0 with probability $ q=1-p$.  
