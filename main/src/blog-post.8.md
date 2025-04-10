@@ -329,6 +329,101 @@ g'(z) = \frac{d}{dz} \left(\frac{1}{1 + e^{-z}}\right) \\
 $$
 
 #### Cost(Loss) Function of Sigmoid Function
+Recall the logistic function that $\hat{y} = \sigma\bigl(w^\top x + b\bigr)$, Where $\sigma(z) = \frac{1}{1 + e^{-z}}$. And we want $\hat{y} \approx y$.  
+So we need cost(loss) function to measure how well algorithm is performing using loss($\mathcal{L}(\hat{y}, y)$).  
+We don't define loss function as squared error loss as below.  
+$$
+\mathcal{L}(\hat{y}, y) = \tfrac{1}{2}\,(y - \hat{y})^2.
+$$
+This is because this loss function might not convex so the gradient descent may not find the global optimum. In other word, $\mathcal{L}(\hat{y}, y)$ might have multiple regions of curvature (with some regions being concave) instead of being a single “bowl-shaped” (convex) function.  
+Therefore, we use cross-entropy loss function as following.
+$$
+\mathcal{L}(\hat{y}, y) 
+= - \Bigl[\, y \,\log\bigl(\hat{y}\bigr) 
+   \;+\; \bigl(1 - y\bigr)\,\log\bigl(1 - \hat{y}\bigr) \Bigr]
+$$
+Let's see why this binary cross-entropy is convex function. This function could be simplified when $y \,\in\, \{0,1\}$.
+$$
+\mathcal{L}(\hat{y}, y) = \log\bigl(\hat{y}\bigr), \text{ when } y=1
+$$
+Since $\hat{y} = \sigma\bigl(w^\top x + b\bigr)$, we can rewrite this expression as below, putting $(w^\top x + b\bigr) = z$.
+$$
+\mathcal{L}'(z) 
+= \frac{d}{dz}\,\log\Bigl(1+e^{-z}\Bigr)
+= \frac{1}{\Bigl(1+e^{-z}\Bigr)}\cdot\Bigl(-e^{-z}\Bigr)
+= -\,\frac{e^{-z}}{\Bigl(1+e^{-z}\Bigr)} \\
+$$
+Since $\sigma(z) = \frac{1}{\Bigl(1+e^{-z}\Bigr)}$, we can conclude that 
+$$
+\mathcal{L}'(z) = -\Bigl(1-\sigma(z)\Bigr)
+= -\,\sigma\Bigl(-z\Bigr)
+$$
+Now let's check second derivative. 
+$$
+\mathcal{L}''(z)
+= \frac{d}{dz}\Bigl[-\,\sigma\Bigl(-z\Bigr)\Bigr]
+= \sigma\Bigl(-z\Bigr)\,\Bigl(1-\sigma\Bigl(-z\Bigr)\Bigr)
+$$
+Since $0 < \sigma(z) < 1 $, 
+$$
+\mathcal{L}''(z) = \sigma\Bigl(-z\Bigr)\,\Bigl(1-\sigma\Bigl(-z\Bigr)\Bigr)  \ge 0
+$$
+Therefore we can conclude that the function $\mathcal{L}''(z)$ is convex.
+Now, Let's get back to loss and how the loss is calcuated when ground truth $y=1$ and $y=0$.  
+When $y=1$, 
+$$
+\mathcal{L}\bigl(\hat{y}, 1\bigr)
+= -\Bigl[\,1 \cdot \log\bigl(\hat{y}\bigr) + 0 \cdot \log\bigl(1 - \hat{y}\bigr)\Bigr]
+= -\log\Bigl(\hat{y}\Bigr)
+$$
+If $\hat{y}$ is close to 1, the loss $\log(\hat{y})$ is also close to 0. So it reflects a correct prediction that the model’s $y$ agrees with $\hat{y}$.  
+If $\hat{y}$ is close to 0, the loss $\log(\hat{y})$ is a large positive number. It indicates the large loss and poor prediction.
+Therefore when $y=1$, $\hat{y}$ should be very close to 1, so that the loss can be near to 0.
+
+When $y=0$,
+$$
+\mathcal{L}\bigl(\hat{y}, 0\bigr)
+= -\Bigl[\,0 \cdot \log\bigl(\hat{y}\bigr) + 1 \cdot \log\bigl(1 - \hat{y}\bigr)\Bigr]
+= -\log\Bigl(1 - \hat{y}\Bigr).
+$$
+If $\hat{y}$ is close to 1, the loss $-\log\Bigl(1 - \hat{y}\Bigr)$ iis a large positive number. 
+If $\hat{y}$ is close to 0, the loss $\log(\hat{y})$ is also close to 0.
+Therefore when $y=0$, $\hat{y}$ should be very close to 0, so that the loss can be minimized.
+
+#### Loss Function vs Cost Function
+Loss function is for single training example and Cost function is for entire training example. Cost function use jacobian $J$ as follow.
+$$
+J(w,b)
+= -\frac{1}{m}\sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)}, y^{(i)}\bigr)
+= -\frac{1}{m}\sum_{i=1}^m 
+\Bigl[
+\,y^{(i)} \log\!\bigl(\hat{y}^{(i)}\bigr)
+\;+\;
+\bigl(1-y^{(i)}\bigr)\,\log\!\bigl(1-\hat{y}^{(i)}\bigr)
+\Bigr].
+$$
+
+### Gradient Descent of Logistic Regression
+We want to find $w, b$ that minimize $J(w, b)$.
+$$
+J(w,b)
+= \frac{1}{m} \sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)}, y^{(i)}\bigr)
+= -\,\frac{1}{m}\sum_{i=1}^m \Bigl[\,y^{(i)} \log\bigl(\hat{y}^{(i)}\bigr)
+\;+\;\bigl(1 - y^{(i)}\bigr)\,\log\bigl(1 - \hat{y}^{(i)}\bigr)\Bigr].
+$$
+That means, we want to find the global optimum in convex function. That's where gradient descent shows up. The goal of gradient descent is to minimize the cost function, or the error between predicted($\hat{y}$) and actual $y$.  
+
+#### Concept of Gradient Descent
+![alt text](images/blog8_gradient_descent.png)
+The starting point is just an arbitrary point for us to evaluate the performance. From that starting point, we will find the derivative(= slope), and from there, we can use a tangent line to observe the steepness of the slope.  The slope will inform the updates to the parameters(the weights and bias).  
+The slope at the starting point will be steeper, but as new parameters are generated, the steepness should gradually reduce until it reaches the lowest point on the curve, known as the point of convergence.
+
+$$
+\text{Repeat:}
+\quad
+w \;:=\; w \;-\; \alpha\,\frac{dJ(w)}{dw},
+$$
+It is important to consider derivative as slope of the point. So if the slope $\frac{dJ(w)}{dw}$ is positive, point $w$ is moved to left. On the contrary, if the slope is negative in ceratin point, according to the above expression, $w$ will be moved to the right. So the sequence converges to the global minimum eventually.
 
 ### Bernoulli Distribution
 The discrete probability distribution of a random variable which takes the value 1 with probability $p$ and the value 0 with probability $ q=1-p$.  
