@@ -417,13 +417,100 @@ That means, we want to find the global optimum in convex function. That's where 
 ![alt text](images/blog8_gradient_descent.png)
 The starting point is just an arbitrary point for us to evaluate the performance. From that starting point, we will find the derivative(= slope), and from there, we can use a tangent line to observe the steepness of the slope.  The slope will inform the updates to the parameters(the weights and bias).  
 The slope at the starting point will be steeper, but as new parameters are generated, the steepness should gradually reduce until it reaches the lowest point on the curve, known as the point of convergence.
-
 $$
 \text{Repeat:}
 \quad
 w \;:=\; w \;-\; \alpha\,\frac{dJ(w)}{dw},
 $$
 It is important to consider derivative as slope of the point. So if the slope $\frac{dJ(w)}{dw}$ is positive, point $w$ is moved to left. On the contrary, if the slope is negative in ceratin point, according to the above expression, $w$ will be moved to the right. So the sequence converges to the global minimum eventually.
+
+#### Math of Gradient Descent in Logistic Regression
+Let's see an simple logistic regression example.
+$$
+z = w^\top x + b = w_1\,x_1 + w_2\,x_2 + b \\
+\hat{y} = a = \sigma(z) \\
+\mathcal{L}(a, y)
+   = -\Bigl[y \,\log(a) + \bigl(1 - y\bigr)\,\log(1 - a)]
+$$
+Where $\sigma$ is sigmoid function.
+Let's see how the calculation works in gradient descent. First we need to find $\frac{d\mathcal{L}}{dz}$.  
+Using chain rule, $\frac{d\mathcal{L}}{da} \;\cdot\;\frac{da}{dz}$, each term is as below. 
+$$
+\frac{d\mathcal{L}}{da}
+= -\frac{y}{a} + \frac{1-y}{1-a}
+= \frac{-y(1-a) + a(1-y)}{a(1-a)} = \frac{a - y}{a\,(1 - a)},
+\quad
+\frac{da}{dz}
+= a\,(1 - a)
+$$
+Combining both term together we get,
+$$
+\frac{d\mathcal{L}}{dz}
+= \Bigl(\frac{a - y}{a\,(1 - a)}\Bigr)\,\cdot\,\bigl(a\,(1 - a)\bigr)
+= a - y
+$$
+Using $\frac{d\mathcal{L}}{dz}$, we can do gradient descent w.r.t $w$ and $b$.  
+$$
+\frac{\partial L}{\partial w_1} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw_1} =  (a-y) \cdot x_1
+$$
+$$
+\frac{\partial L}{\partial w_2} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw_2} =  (a-y) \cdot x_2
+$$
+$$
+\frac{\partial L}{\partial b} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{db} =  (a-y) \cdot 1
+$$
+
+Using above derivative, we can update parameters.
+$$
+\begin{aligned}
+w_1 &:= w_1 \;-\;\alpha\,dw_1,\\[6pt]
+w_2 &:= w_2 \;-\;\alpha\,dw_2,\\[6pt]
+b &:= b \;-\;\alpha\,db.
+\end{aligned}
+$$
+Where $\alpha$ is learning rate.
+
+##### Applying Vectorization
+$$
+\frac{d\mathcal{L}}{dZ}
+= \bigl[\;\ \frac{d\mathcal{L}}{dz_1},\;\frac{d\mathcal{L}}{dz_2},\;\dots,\;\frac{d\mathcal{L}}{dz_m}\bigr]
+\quad\in\;\mathbb{R}^{1\times m}, \\
+A = \bigl[a^{(1)},\;a^{(2)},\;\dots,\;a^{(m)}\bigr] \\
+Y = \bigl[y^{(1)},\;y^{(2)},\;\dots,\;y^{(m)}\bigr]
+$$
+Using above vector we can calculate using vectorizatioin as below.
+$$
+\frac{d\mathcal{L}}{dZ} = (A - Y)
+= \bigl[a^{(1)} - y^{(1)},\;a^{(2)} - y^{(2)},\;\dots,\;a^{(m)} - y^{(m)}\bigr]
+$$
+Let's see how parameters $w,b$ are vectorized in the gradient descent algorithm.
+$$
+\frac{\partial L}{\partial b} = \frac{1}{m}\,\sum_{i=1}^m \frac{d\mathcal{L}}{dz^{(i)}}
+= \frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ}),
+\\ 
+
+\frac{\partial L}{\partial w} = \frac{1}{m} \, X \,\frac{d\mathcal{L}}{dZ}
+\;=\;
+\frac{1}{m}
+\begin{pmatrix}
+x_1^{(1)} & \dots & x_1^{(m)} \\
+\vdots    & \ddots & \vdots \\
+x_n^{(1)} & \dots & x_n^{(m)}
+\end{pmatrix}
+\begin{pmatrix}
+\frac{d\mathcal{L}}{dz^{(i)}}\\
+\vdots \\
+\frac{d\mathcal{L}}{dz^{(m)}}
+\end{pmatrix}
+$$
+Similarly when calculating the cost function among all $m$ examples, the cost to minimize is:
+$$
+J(w,b) = \frac{1}{m}\sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)},\,y^{(i)}\bigr).
+$$
+
+You should note that when vectorizing the gradient computation, you’re essentially summing (or averaging) the contributions from all $m$ training examples. For example, if you’re looking at the input feature $x_1$, the vectorized operation will compute the average of $x_1$ across all $m$ examples when updating the corresponding weight.  
+
+This averaging is what stabilizes the update during gradient descent, ensuring that a single example (or a small group of examples) doesn’t dominate the gradient, and it also helps the algorithm converge more smoothly.
 
 ### Bernoulli Distribution
 The discrete probability distribution of a random variable which takes the value 1 with probability $p$ and the value 0 with probability $ q=1-p$.  
