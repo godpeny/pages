@@ -44,8 +44,10 @@ Therefore, in architecture perspective, logistic regression is a special case of
 ### Linear Function
 Each neuron in a layer receives inputs, which are multiplied by the weights associated with the connections. These products are summed together, and a bias is added to the sum. This can be represented mathematically as:
 $$
-z = w_1x_1 + w_2x_2 + \ldots + w_nx_n + b
+z = w_1x_1 + w_2x_2 + \ldots + w_nx_n + b \\
+y = f(z)
 $$
+
 Where $w$ represent weight, $x$ represent input and $b$ represent bias.
 
 ### Active Function
@@ -103,7 +105,104 @@ However, at every stage of inference a feedforward multiplication remains the co
 ## Forward Propagation
 When data is input into the network, it passes through the network in the forward direction, from the input layer through the hidden layers to the output layer. This process is known as forward propagation. 
 
-## Math in Forward Propagation
+### Math in Forward Propagation
+![alt text](images/blog1_math_neuron.png)
+Let's see more detail of neuron mathmatically. Single neuron receives multiple input $x$, which is vector of $[x_1, x_2,  x_3, \cdots , x_n]$ are multipliled by the weight $w$, which is also vector of $[w_1, w_2,  w_3, \cdots ,wx_n]$ and bias $b_1$ is added. This result can be represented as $z$
+$$z = w^{T} x + b = w_1x_1 + w_2x_2 + \ldots + w_nx_n + b_1 $$
+
+Then $z$ is input of activation function (in this picture, sigmoid function $\sigma$), and the output $a$ comes from activation function.
+
+![alt text](images/blog1_math_ff.png)
+Now, based on our knowledges from single neuron, let's consider the neural network with one hidden layer which is composed of multiple neurons.  
+
+Please note that from the notation as $a_1^{[1]}$, number from upper part "[1]" represents the layer (in this case since there is only one hidden layer, this number is fixed to 1), and the number from lower part "1" indicates the node in layer. So $a_1^{[1]}$ means first neuron node in the first layer of the network.
+
+The first thing you should notice is that (of course) input $x$ are consistent. In other words, inputs $[x_1, x_2, \cdots x_n]$ from one neuron is identical to the inputs of any other neuron. The second thing to note is that however parameters $w,b$ are different among the neurons.  
+For your understanding, the first neuron which results $a_1^{[1]}$ can be expanded as below.
+$$
+z_1^{[1]} = w_{1}^{[1]T}\,x + b_{1}^{[1]} \\
+z_1^{[1]}
+= w_{1,1}^{[1]}\,x_1
+  + w_{1,2}^{[1]}\,x_2
+  + w_{1,3}^{[1]}\,x_3
+  + b_{1}^{[1]}, \quad a_1^{[1]} = \sigma(z_1^{[1]}) 
+$$
+Where vector $x = [x_1, x_2, x_3]$ and vector $w = [w_1, w_2,  w_3]$.  
+Combining other neurons together, we can get expanding form like following.
+$$
+\underbrace{
+\begin{pmatrix}
+w_{1,1}^{[1]} & w_{1,2}^{[1]} & w_{1,3}^{[1]}\\
+w_{2,1}^{[1]} & w_{2,2}^{[1]} & w_{2,3}^{[1]}\\
+w_{3,1}^{[1]} & w_{3,2}^{[1]} & w_{3,3}^{[1]}\\
+w_{4,1}^{[1]} & w_{4,2}^{[1]} & w_{4,3}^{[1]}
+\end{pmatrix}
+}_{\displaystyle W^{[1]}}
+\,
+\underbrace{
+\begin{pmatrix}
+x_1\\
+x_2\\
+x_3
+\end{pmatrix}
+}_{\displaystyle x}
+\;+\;
+\underbrace{
+\begin{pmatrix}
+b_{1}^{[1]}\\
+b_{2}^{[1]}\\
+b_{3}^{[1]}\\
+b_{4}^{[1]}
+\end{pmatrix}
+}_{\displaystyle b^{[1]}}
+=
+\underbrace{
+\begin{pmatrix}
+z_1^{[1]}\\
+z_2^{[1]}\\
+z_3^{[1]}\\
+z_4^{[1]}
+\end{pmatrix}
+}_{\displaystyle z^{[1]}}
+$$
+Where each neuron is calculated as:
+$$
+z_1^{[1]}
+= w_{1,1}^{[1]}\,x_1
+  + w_{1,2}^{[1]}\,x_2
+  + w_{1,3}^{[1]}\,x_3
+  + b_{1}^{[1]} \\
+z_2^{[1]}
+= w_{2,1}^{[1]}\,x_1
+  + w_{2,2}^{[1]}\,x_2
+  + w_{2,3}^{[1]}\,x_3
+  + b_{2}^{[1]} \\
+z_3^{[1]}
+= w_{3,1}^{[1]}\,x_1
+  + w_{3,2}^{[1]}\,x_2
+  + w_{3,3}^{[1]}\,x_3
+  + b_{3}^{[1]} \\
+z_4^{[1]}
+= w_{4,1}^{[1]}\,x_1
+  + w_{4,2}^{[1]}\,x_2
+  + w_{4,3}^{[1]}\,x_3
+  + b_{4}^{[1]}
+$$
+
+Now applying element wise activation function to each $z$.
+$$
+a_i^{[1]} = \sigma\Bigl(z_i^{[1]}\Bigr), 
+\quad i=1,2,3,4. \\
+a^{[1]}
+= \begin{pmatrix}
+a_1^{[1]}\\
+a_2^{[1]}\\
+a_3^{[1]}\\
+a_4^{[1]}
+\end{pmatrix}
+= \sigma\Bigl(W^{[1]} x + b^{[1]}\Bigr).
+$$
+
 
 ## Back propagation
 In machine learning, backpropagation is a gradient estimation method commonly used for training a neural network to computes the gradient in weight space of a feedforward neural network, with respect to a loss function.  
