@@ -394,7 +394,7 @@ Therefore when $y=0$, $\hat{y}$ should be very close to 0, so that the loss can 
 Loss function is for single training example and Cost function is for entire training example. Cost function use jacobian $J$ as follow.
 $$
 J(w,b)
-= -\frac{1}{m}\sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)}, y^{(i)}\bigr)
+= \frac{1}{m}\sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)}, y^{(i)}\bigr)
 = -\frac{1}{m}\sum_{i=1}^m 
 \Bigl[
 \,y^{(i)} \log\!\bigl(\hat{y}^{(i)}\bigr)
