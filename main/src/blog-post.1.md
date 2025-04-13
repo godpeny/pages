@@ -50,11 +50,11 @@ $$
 
 Where $w$ represent weight, $x$ represent input and $b$ represent bias.
 
-### Active Function
+## Active Function
 The result of the linear transformation($z$) is then passed through an activation function. The activation function is crucial because it introduces non-linearity into the system, enabling the network to learn more complex patterns.  
 Popular activation functions include ReLU, sigmoid, and tanh.
 
-#### Why Activation Function Shouldn't be linear
+### Why Activation Function Shouldn't be linear
  - It’s not possible to use backpropagation as the derivative of the function is a constant and has no relation to the input $x$. 
  - All layers of the neural network will collapse into one if a linear activation function is used. No matter the number of layers in the neural network, the last layer will still be a linear function of the first layer. So, essentially, a linear activation function turns the neural network into just one layer.  
  For example, 
@@ -75,7 +75,7 @@ Popular activation functions include ReLU, sigmoid, and tanh.
  $$
  Therefore linear function can't capture the complex non-linearity pattern of the dataset. Because a linear combination of linear functions is still a linear function. 
 
-#### Perceptron and Step Function
+### Perceptron and Step Function
 The perceptron is an algorithm for learning a binary classifier called a threshold function. Which is a function that maps its input $x$ (a real-valued vector) to an output value $f(x)$ (a single binary value):
 $$
 f(x)= h((w \cdot x) +b)
@@ -96,6 +96,46 @@ For example, Let's consider below data set $X$(left) and simple neural network w
 ![alt text](images/blog1_example_step_function_non_linearity.png)  
 If each hidden layer $h_1, h_2, h_3$ use step function, these three neurons can be treated as three independent linear classifiers.   
 Therefore the three decision boundaries form a triangle that classifies the outside data into class 1, and the inside ones into class 0.
+
+### Popular Active Functions
+Let's see some popular active functions. 
+
+![alt text](images/blog1_popular_active_funcions.png)
+
+First, sigmoid function and its derivative.
+$$
+g(z) = a = \frac{1}{1 + e^{-z}}  \\[5pt]
+g'(z) = \frac{d}{dz}\,g(z) = a\,(1 - a).
+$$
+
+Second, tanh function and its derivative.
+$$
+g(z) = a = \tanh(z) 
+= \frac{e^z - e^{-z}}{\,e^z + e^{-z}\,} \\[5pt]
+g'(z) = 1 - a^{2}
+$$
+
+Third, Relu function and its derivative.
+$$
+g(z) 
+= \max(0,\,z) \\[5pt]
+g'(z)
+= \begin{cases}
+0 & z < 0\\[3pt]
+1 & z \ge 0
+\end{cases}
+$$
+
+Lastly, leaky Relu function and its derivative.
+$$
+g(z)
+= \max\bigl(0.01\cdot z,\;z\bigr) \\[5pt]
+g'(z)
+= \begin{cases}
+0.01, & z < 0 \\[3pt]
+1 & z \ge 0
+\end{cases}
+$$
 
 ## Feed-Forward Neural Network
 ![alt text](images/blog1_feed_forward_neural_network.png)  
