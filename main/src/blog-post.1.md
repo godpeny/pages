@@ -341,7 +341,7 @@ Where row $m$ indicates the examples and the column $n$ represents the dimension
 $$
 X = 
 \begin{pmatrix}
-^{(1)} \quad x^{(2)}  \quad x^{(3)} \quad   \cdots \quad x^{(m)} 
+x^{(1)} \quad x^{(2)}  \quad x^{(3)} \quad   \cdots \quad x^{(m)} 
 \end{pmatrix} \\[5pt]
 Z^{[1]} = 
 \begin{pmatrix}
@@ -386,6 +386,38 @@ $$
 $$
 
 ## Math in Back Propagation
+Let's consider simple neural network with 2 layers(1 hidden + 1output).
+![alt text](images/blog1_math_back_propagation.png)
+There are 4 parameters, $W^{[1]}, W^{[2]}, b^{[1]},  b^{[2]}$.  
+Consider $X$ as the input matrix with $m$ examples(row) and $n$ dimension(column).
+$$
+\begin{aligned}
+z^{[1]} &= W^{[1]} X + b^{[1]} \\[5pt]
+A^{[1]} &= g^{[1]}\!\bigl(z^{[1]}\bigr), \\[5pt]
+z^{[2]} &= W^{[2]} A^{[1]} + b^{[2]} \\[5pt]
+A^{[2]} &= g^{[2]}\!\bigl(z^{[2]}\bigr) \;=\; \sigma\!\bigl(z^{[2]}\bigr) = \hat{y}
+\end{aligned}
+$$
+Cost function $J$ is as below and we want to use derivative of the cost function w.r.t each parameters to use gradient descent algorithm to find the predict $\hat{y}$ that has the least loss difference with ground true $y$.
+$$
+\mathcal{J} \bigl(W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}\bigr)
+= \frac{1}{m} \sum_{i=1}^m 
+\mathcal{L}\!\bigl(\hat{y}^{(i)},\,y^{(i)}\bigr) = -\frac{1}{m}\sum_{i=1}^m 
+\Bigl[
+\,y^{(i)} \log\!\bigl(\hat{y}^{(i)}\bigr)
+\;+\;
+\bigl(1-y^{(i)}\bigr)\,\log\!\bigl(1-\hat{y}^{(i)}\bigr)
+\Bigr]
+$$
+
+$$
+\frac{d\mathcal{J}}{dZ^{[2]}} 
+= A^{[2]} - Y \\[5pt]
+\frac{d\mathcal{J}}{dW^{[2]}} 
+= \frac{1}{m} \cdot \frac{d\mathcal{J}}{dZ^{[2]}} \bigl(A^{[1]}\bigr)^\top \\[5pt]
+\frac{d\mathcal{J}}{dZ^{[1]}} \\[5pt]
+\frac{d\mathcal{J}}{dW^{[1]}} 
+$$
 
 
 ### Why element wise multiplication?
