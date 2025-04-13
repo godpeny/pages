@@ -203,6 +203,125 @@ a_4^{[1]}
 = \sigma\Bigl(W^{[1]} x + b^{[1]}\Bigr).
 $$
 
+### Vectorization across examples
+When there are $m$ training examples, $a^{[1](i)}$ is the result from $i$-th example. For the whole examples,
+$$
+\text{For } i = 1 \text{ to } m:
+\quad
+\begin{cases}
+z^{[1](i)} = W^{[1]}\,x^{(i)} + b^{[1]},\\[5pt]
+a^{[1](i)} = \sigma\!\bigl(z^{[1](i)}\bigr)
+\end{cases}
+$$
+
+To vectorize, you can consider matrix $x$, $z^{[1]}$ and $a^{[1]}$ as following. 
+$$
+x =
+\begin{pmatrix}
+\left[\begin{array}{c}
+x_1^{(1)}\\[4pt]
+x_2^{(1)}\\[4pt]
+\vdots\\[4pt]
+x_n^{(1)}
+\end{array}\right]
+&
+\left[\begin{array}{c}
+x_1^{(2)}\\[4pt]
+x_2^{(2)}\\[4pt]
+\vdots\\[4pt]
+x_n^{(2)}
+\end{array}\right]
+&
+\cdots
+&
+\left[\begin{array}{c}
+x_1^{(m)}\\[4pt]
+x_2^{(m)}\\[4pt]
+\vdots\\[4pt]
+x_n^{(m)}
+\end{array}\right]
+\end{pmatrix}
+\in \mathbb{R}^{n\times m} \\[5pt]
+
+z^{[1]} =
+\begin{pmatrix}
+\left[\begin{array}{c}
+z_1^{[1](1)}\\[4pt]
+z_2^{[1](1)}\\[4pt]
+\vdots\\[4pt]
+z_n^{[1](1)}
+\end{array}\right]
+&
+\left[\begin{array}{c}
+z_1^{[1](2)}\\[4pt]
+z_2^{[1](2)}\\[4pt]
+\vdots\\[4pt]
+z_n^{[1](2)}
+\end{array}\right]
+&
+\cdots
+&
+\left[\begin{array}{c}
+z_1^{[1](m)}\\[4pt]
+z_2^{[1](m)}\\[4pt]
+\vdots\\[4pt]
+z_n^{[1](m)}
+\end{array}\right]
+\end{pmatrix}
+\in \mathbb{R}^{n\times m} \\[5pt]
+
+a^{[1]} =
+\begin{pmatrix}
+\left[\begin{array}{c}
+a_1^{[1](1)}\\[4pt]
+a_2^{[1](1)}\\[4pt]
+\vdots\\[4pt]
+a_n^{[1](1)}
+\end{array}\right]
+&
+\left[\begin{array}{c}
+a_1^{[1](2)}\\[4pt]
+a_2^{[1](2)}\\[4pt]
+\vdots\\[4pt]
+a_n^{[1](2)}
+\end{array}\right]
+&
+\cdots
+&
+\left[\begin{array}{c}
+a_1^{[1](m)}\\[4pt]
+a_2^{[1](m)}\\[4pt]
+\vdots\\[4pt]
+a_n^{[1](m)}
+\end{array}\right]
+\end{pmatrix}
+\in \mathbb{R}^{n\times m}
+$$
+Where row $m$ indicates the examples and the column $n$ represents the dimension. From above we know that these matrices can be simplified as following. 
+$$
+X = 
+\begin{pmatrix}
+^{(1)} \quad x^{(2)}  \quad x^{(3)} \quad   \cdots \quad x^{(m)} 
+\end{pmatrix} \\[5pt]
+Z^{[1]} = 
+\begin{pmatrix}
+z^{[1](1)} \quad z^{[1](2)}  \quad z^{[1](3)} \quad   \cdots \quad z^{[1](m)} 
+\end{pmatrix} \\[5pt]
+A^{[1]} = 
+\begin{pmatrix}
+a^{[1](1)} \quad a^{[1](2)}  \quad a^{[1](3)} \quad   \cdots \quad a^{[1](m)} 
+\end{pmatrix} \\[5pt]
+$$
+Finally combining with the parameters $W, b$ that we defined from earlier,
+$$
+\begin{aligned}
+Z^{[1]} &= W^{[1]} \, X+ b^{[1]},\\
+A^{[1]} &= \sigma\bigl(Z^{[1]}\bigr)\\
+\end{aligned}
+$$
+So to wrap up, the whole process can be describe as below image.  
+(when bias $b$ is $0$ just for simplication)
+![alt text](images/blog1_forward_propagation_vectorization.png)
 
 ## Back propagation
 In machine learning, backpropagation is a gradient estimation method commonly used for training a neural network to computes the gradient in weight space of a feedforward neural network, with respect to a loss function.  
