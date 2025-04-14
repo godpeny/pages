@@ -451,10 +451,12 @@ $$
 $$
 Using $\frac{d\mathcal{L}}{dz}$, we can do gradient descent w.r.t $w$ and $b$.  
 $$
-\frac{\partial L}{\partial w_1} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw_1} =  (a-y) \cdot x_1
-$$
-$$
+\frac{\partial L}{\partial w_1} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw_1} =  (a-y) \cdot x_1, \quad
 \frac{\partial L}{\partial w_2} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw_2} =  (a-y) \cdot x_2
+$$
+When $w=[w_1, w_2]$ and $x=[x_1,x_2]$,
+$$
+\frac{\partial L}{\partial w} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw} =  (a-y) \cdot x, \quad
 $$
 $$
 \frac{\partial L}{\partial b} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{db} =  (a-y) \cdot 1
@@ -463,8 +465,8 @@ $$
 Using above derivative, we can update parameters.
 $$
 \begin{aligned}
-w_1 &:= w_1 \;-\;\alpha\,dw_1,\\[6pt]
-w_2 &:= w_2 \;-\;\alpha\,dw_2,\\[6pt]
+w &:= w \;-\;\alpha\,dw \quad (w_1 &:= w_1 \;-\;\alpha\,dw_1,\quad
+w_2 &:= w_2 \;-\;\alpha\,dw_2) \\
 b &:= b \;-\;\alpha\,db.
 \end{aligned}
 $$
@@ -474,8 +476,8 @@ Where $\alpha$ is learning rate.
 $$
 \frac{d\mathcal{L}}{dZ}
 = \bigl[\;\ \frac{d\mathcal{L}}{dz_1},\;\frac{d\mathcal{L}}{dz_2},\;\dots,\;\frac{d\mathcal{L}}{dz_m}\bigr]
-\quad\in\;\mathbb{R}^{1\times m}, \\
-A = \bigl[a^{(1)},\;a^{(2)},\;\dots,\;a^{(m)}\bigr] \\
+\quad\in\;\mathbb{R}^{1\times m}, \\[3pt]
+A = \bigl[a^{(1)},\;a^{(2)},\;\dots,\;a^{(m)}\bigr] \\[3pt]
 Y = \bigl[y^{(1)},\;y^{(2)},\;\dots,\;y^{(m)}\bigr]
 $$
 Using above vector we can calculate using vectorizatioin as below.
@@ -489,12 +491,11 @@ Since what we are interested in are gradients of these parametres for optimizati
 Let's see how parameters $w,b$ are vectorized in the gradient descent algorithm.
 $$
 \frac{\partial L}{\partial b} = \frac{1}{m}\,\sum_{i=1}^m \frac{d\mathcal{L}}{dz^{(i)}} = 
-= \frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ})
+\frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ})
 \\[5pt]
-
 \frac{\partial L}{\partial w} = \frac{\partial \mathcal{L}}{\partial w} = \frac{1}{m} \sum_{i=1}^{m} x^{(i)} \cdot \frac{\partial \mathcal{L}}{\partial z^{(i)}}
  = \\[3pt]
- \frac{1}{m} \, X \,\frac{d\mathcal{L}}{dZ}
+ \frac{1}{m} \, X \,(\frac{d\mathcal{L}}{dZ})^{T}
 \;=\;
 \frac{1}{m}
 \begin{pmatrix}
