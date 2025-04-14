@@ -483,13 +483,18 @@ $$
 \frac{d\mathcal{L}}{dZ} = (A - Y)
 = \bigl[a^{(1)} - y^{(1)},\;a^{(2)} - y^{(2)},\;\dots,\;a^{(m)} - y^{(m)}\bigr]
 $$
+You can see that it is vector of the result from each iteration, not aggregated value. This is because these values are "per-example loss gradients" that are needed for computing gradients w.r.t. paramters $w$ and $b$.  
+Since what we are interested in are gradients of these parametres for optimization(gradient descent) and $z$ is just intermediate value that is used for calculating these gradients of parameters.  So keep all of these so we can reuse them in vectorized computation.  
+(Note that vectorization technique is used for computing efficiently in $w$ case.)
 Let's see how parameters $w,b$ are vectorized in the gradient descent algorithm.
 $$
-\frac{\partial L}{\partial b} = \frac{1}{m}\,\sum_{i=1}^m \frac{d\mathcal{L}}{dz^{(i)}}
-= \frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ}),
-\\ 
+\frac{\partial L}{\partial b} = \frac{1}{m}\,\sum_{i=1}^m \frac{d\mathcal{L}}{dz^{(i)}} = 
+= \frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ})
+\\[5pt]
 
-\frac{\partial L}{\partial w} = \frac{1}{m} \, X \,\frac{d\mathcal{L}}{dZ}
+\frac{\partial L}{\partial w} = \frac{\partial \mathcal{L}}{\partial w} = \frac{1}{m} \sum_{i=1}^{m} x^{(i)} \cdot \frac{\partial \mathcal{L}}{\partial z^{(i)}}
+ = \\[3pt]
+ \frac{1}{m} \, X \,\frac{d\mathcal{L}}{dZ}
 \;=\;
 \frac{1}{m}
 \begin{pmatrix}
@@ -503,7 +508,9 @@ x_n^{(1)} & \dots & x_n^{(m)}
 \frac{d\mathcal{L}}{dz^{(m)}}
 \end{pmatrix}
 $$
-Similarly when calculating the cost function among all $m$ examples, the cost to minimize is:
+Since parameters $w$ and $b$ is shared across all samples. So when differentiating, we use the average of the gradients over all samples.
+
+Let's see when calculating the cost function among all $m$ examples, the cost to minimize is:
 $$
 J(w,b) = \frac{1}{m}\sum_{i=1}^m \mathcal{L}\bigl(\hat{y}^{(i)},\,y^{(i)}\bigr).
 $$
