@@ -392,10 +392,10 @@ There are 4 parameters, $W^{[1]}, W^{[2]}, b^{[1]},  b^{[2]}$.
 Consider $X$ as the input matrix with $m$ examples(row) and $n$ dimension(column).
 $$
 \begin{aligned}
-z^{[1]} &= W^{[1]} X + b^{[1]} \\[5pt]
-A^{[1]} &= g^{[1]}\!\bigl(z^{[1]}\bigr), \\[5pt]
-z^{[2]} &= W^{[2]} A^{[1]} + b^{[2]} \\[5pt]
-A^{[2]} &= g^{[2]}\!\bigl(z^{[2]}\bigr) \;=\; \sigma\!\bigl(z^{[2]}\bigr) = \hat{y}
+Z^{[1]} &= W^{[1]} X + b^{[1]} \\[5pt]
+A^{[1]} &= g^{[1]}\!\bigl(Z^{[1]}\bigr), \\[5pt]
+Z^{[2]} &= W^{[2]} A^{[1]} + b^{[2]} \\[5pt]
+A^{[2]} &= g^{[2]}\!\bigl(Z^{[2]}\bigr) \;=\; \sigma\!\bigl(Z^{[2]}\bigr) = \hat{y}
 \end{aligned}
 $$
 Cost function $J$ is as below and we want to use derivative of the cost function w.r.t each parameters to use gradient descent algorithm to find the predict $\hat{y}$ that has the least loss difference with ground true $y$.
@@ -409,16 +409,90 @@ $$
 \bigl(1-y^{(i)}\bigr)\,\log\!\bigl(1-\hat{y}^{(i)}\bigr)
 \Bigr]
 $$
+Now, Let's see the derivative of cost function $J$ w.r.t each parameters.
+(Recap from logistic regression part)  
+Recall the loss function, 
+$$
+\mathcal{L}(a=\hat{y}, y)
+   = -\Bigl[y \,\log(a) + \bigl(1 - y\bigr)\,\log(1 - a)]
+$$
+Using chain rule, $\frac{d\mathcal{L}}{da} \;\cdot\;\frac{da}{dz}$, each term is as below. 
+$$
+\frac{d\mathcal{L}}{da}
+= -\frac{y}{a} + \frac{1-y}{1-a}
+= \frac{-y(1-a) + a(1-y)}{a(1-a)} = \frac{a - y}{a\,(1 - a)}\\[5pt]
+\frac{da}{dz}
+= a\,(1 - a)
+$$
+Combining both term together we get,
+$$
+\frac{d\mathcal{L}}{dz}
+= \Bigl(\frac{a - y}{a\,(1 - a)}\Bigr)\,\cdot\,\bigl(a\,(1 - a)\bigr)
+= a - y
+$$
+Using $\frac{d\mathcal{L}}{dz}$, we can do gradient descent w.r.t $w$ and $b$.  
+$$
+\frac{\partial L}{\partial w} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{dw} =  (a-y) \cdot x
+$$
+$$
+\frac{\partial L}{\partial b} = \frac{d\mathcal{L}}{dz} \cdot \frac{d\mathcal{z}}{db} =  (a-y) \cdot 1
+$$
+Now use vectorization to apply for the whole examples.
+
+$$
+\frac{d\mathcal{L}}{dZ}
+= \bigl[\;\ \frac{d\mathcal{L}}{dz_1},\;\frac{d\mathcal{L}}{dz_2},\;\dots,\;\frac{d\mathcal{L}}{dz_m}\bigr]
+\quad\in\;\mathbb{R}^{1\times m}, \\[3pt]
+A = \bigl[a^{(1)},\;a^{(2)},\;\dots,\;a^{(m)}\bigr] \\[3pt]
+Y = \bigl[y^{(1)},\;y^{(2)},\;\dots,\;y^{(m)}\bigr] \\[3pt]
+\frac{d\mathcal{L}}{dZ} = (A - Y)
+= \bigl[a^{(1)} - y^{(1)},\;a^{(2)} - y^{(2)},\;\dots,\;a^{(m)} - y^{(m)}\bigr]
+$$
+You can see that it is vector of the result from each iteration. Now use these intermediate values from each iteration, we will get the parameters $w$ and $b$. Since the parameters are shared across all samples, when differentiating, we use the average of the gradients over all samples.
 
 $$
 \frac{d\mathcal{J}}{dZ^{[2]}} 
 = A^{[2]} - Y \\[5pt]
 \frac{d\mathcal{J}}{dW^{[2]}} 
 = \frac{1}{m} \cdot \frac{d\mathcal{J}}{dZ^{[2]}} \bigl(A^{[1]}\bigr)^\top \\[5pt]
-\frac{d\mathcal{J}}{dZ^{[1]}} \\[5pt]
-\frac{d\mathcal{J}}{dW^{[1]}} 
+\frac{\partial \mathcal{J}}{\partial b^{[2]}} = \frac{1}{m}\,\sum_{i=1}^m 
+\frac{d\mathcal{L}}{dz^{[2](i)}} = 
+\frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ^{[2]}})
 $$
-
+Now Let's see the gradients of the previous layer.
+$$
+\frac{d\mathcal{J}}{dZ^{[1]}}  = \frac{d\mathcal{J}}{dZ^{[2]}} \frac{dZ^{[2]}}{dA^{[1]}} \frac{dA^{[1]}}{dZ^{[1]}} = \frac{d\mathcal{J}}{dZ^{[2]}} W^{[2]} g'^{[1]}\!\bigl(Z^{[1]}\bigr) = \left(W^{[2]}\right)^\top \cdot \frac{d\mathcal{J}}{dZ^{[2]}} \circ g^{[1]'}(Z^{[1]})
+\\[5pt]
+\frac{d\mathcal{J}}{dW^{[1]}} = \frac{1}{m} \cdot \frac{d\mathcal{J}}{dZ^{[1]}} \bigl(X\bigr)^\top \\[5pt]
+\frac{\partial \mathcal{J}}{\partial b^{[1]}} = \frac{1}{m}\,\sum_{i=1}^m 
+\frac{d\mathcal{L}}{dz^{[1](i)}} = 
+\frac{1}{m}\,\mathrm{np.\,sum}(\frac{d\mathcal{L}}{dZ^{[1]}})
+$$
+$\frac{d\mathcal{J}}{dW^{[1]}}$ and $\frac{\partial \mathcal{J}}{\partial b^{[1]}}$ are same calculated as same way as before, but $\frac{d\mathcal{J}}{dZ^{[1]}}$ is somewhat different.  
+First, why transpose? This transpose is needed because you want to propagate gradients from $Z^{[2]}$ back to $A^{[1]}$ and the shapes must align.  
+Consider the shape of $A^{[1]}$ is $(n_1, m)$, $W^{[2]}$ is $(n_2, n_1)$ and $Z^{[2]}$ is $(n_2, m)$. Shape below is just alligned right.
+$$
+Z^{[2]} = W^{[2]} A^{[1]}
+$$
+Then back propagation, you need to make $(n_2, m)$ back to $(n_1, m)$ shape. 
+$$
+\frac{\partial Z^{[2]}}{\partial A^{[1]}} = W^{[2]}
+$$
+So transpose the $w$ matrix and apply to chain rule as below.
+$$
+\frac{\partial \mathcal{J}}{\partial A^{[1]}} = \frac{\partial \mathcal{J}}{\partial Z^{[2]}} \cdot \frac{\partial Z^{[2]}}{\partial A^{[1]}} \Rightarrow \\[5pt]
+\frac{\partial \mathcal{J}}{\partial A^{[1]}} = \left( \frac{\partial Z^{[2]}}{\partial A^{[1]}} \right)^\top \cdot \frac{\partial \mathcal{J}}{\partial Z^{[2]}}
+$$
+Secondly, why element wise product? Consider $A=g(Z)$, it can be represented as following expression.
+$$
+A_{ij} = g(Z_{ij}) \\[5pt]
+A = \begin{bmatrix}
+g(Z_{11}) & \cdots & g(Z_{1m}) \\
+\vdots & \ddots & \vdots \\
+g(Z_{n1}) & \cdots & g(Z_{nm})
+\end{bmatrix}
+$$
+So as you can see, originally $A$ is a vector (or matrix) obtained by applying $g()$ elementwise to each entry of $Z$. So in backprop, the derivative should also be applied elementwise.
 
 ### Why element wise multiplication?
 From above equation, the shapes of therms do not align properly.
