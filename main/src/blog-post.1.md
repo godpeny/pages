@@ -575,7 +575,25 @@ $$
 $$
 Therefore, ensuring zero-mean and maintaining the value of the variance of the input of every layer guarantees no exploding/vanishing signal, we want this method applies both to the forward propagation (for activations) and backward propagation (for gradients of the cost with respect to activations).
 
-#### Xavier Initialization (Glorot Initialization) and He Initialization (Kaiming Initialization)
+### Random Initialization
+When initializing, weights should be small random values in order to avoid "Symmetry Breaking Problem". Also, let's see the reason why values should be small.  
+Consider activation function $a^{[1]}$ below.
+$$
+z^{[1]} = W^{[1]} x + b^{[1]} \\
+a^{[1]} = g^{[1]}(z^{[1]})
+$$ 
+In this case, if $W^{[1]}$ is too big, $z^{[1]}$ will be also very big or very small.
+![alt text](images/blog1_random_small_weight.png)
+In that case, the value of activation function might end up at the either flat parts. This leads to the slope of gradient very small, then graidnet descent will be very slow, then learning will be very slow.  
+
+Biases can be zero. Since bias are additive constants, not multiplier, symmetry doesn’t hurt as long as weights are randomly initialized.
+
+#### What happens if you initialize weights of neuron to zero in neural network?
+If you initialize all weights to zero, then all neurons in the same layer receive identical gradients during training. So all updates of neurion happend in exactly the same way and they all compute the same output.  
+Therefore, model never learns anything meaningful. This is called "Symmetry Breaking Problem".
+
+
+### Xavier Initialization (Glorot Initialization) and He Initialization (Kaiming Initialization)
 Xavier Initialization 혹은 Glorot Initialization라고도 불리는 초기화 방법은 이전 노드와 다음 노드의 개수에 의존하는 방법이다. Uniform 분포를 따르는 방법과 Normal분포를 따르는 두가지 방법이 사용된다.  
 (우리는 Normal Distribution 경우만 확인한다.)  
 The recommended initialization method for finding appropriate initialization values is Xavier initialization (or one of its derived methods), for every layer $l$,
@@ -599,7 +617,16 @@ https://www.deeplearning.ai/ai-notes/initialization/index.html#III
 ## Optimizations
 Gradient Descent
 ### How Gradient Descent works in optimization?
-
+Let's recap from logistic regression. 
+![alt text](images/blog8_gradient_descent.png)
+The starting point is just an arbitrary point for us to evaluate the performance. From that starting point, we will find the derivative(= slope), and from there, we can use a tangent line to observe the steepness of the slope.  The slope will inform the updates to the parameters(the weights and bias).  
+The slope at the starting point will be steeper, but as new parameters are generated, the steepness should gradually reduce until it reaches the lowest point on the curve, known as the point of convergence.
+$$
+\text{Repeat:}
+\quad
+w \;:=\; w \;-\; \alpha\,\frac{dJ(w)}{dw},
+$$
+It is important to consider derivative as slope of the point. So if the slope $\frac{dJ(w)}{dw}$ is positive, point $w$ is moved to left. On the contrary, if the slope is negative in ceratin point, according to the above expression, $w$ will be moved to the right. So the sequence converges to the global minimum eventually.
 
 ### Parameter Sharing
 Parameter sharing is a well-known approach for controlling the complexity of Deep Neural Networks by forcing certain weights to share the same value.
@@ -615,3 +642,48 @@ $$
 ![alt text](images/blog1_parameter_sharing_window_slide.png)
 Once we have reached the end of the image, the parameters $\theta$ have "seen" all pixels of the image. So $\theta_1$ is no longer related to only the top left pixel. As a result, whether the soccer ball appears in the bottom right or top left of the image, the neural network will successfully detect the soccer ball.
 This technique is comonly used in convolutional neural network.
+
+## Deep Neural Networks
+### Intuition of Deep Neural Networks
+![alt text](images/blog1_deep_nn_concept.png)
+In deep neural network, earlier layers is detecting simpler functions like "edges". Then, composing these functions("edges") in the later layers so that model can learn more and more complex functions("part of  faces" and "types of faces").
+
+Also, (informally) the functions to compute are relatively small(number of hidden units are small) in deep neural networks. But if you try to compute the same functions with shallow network, you might need exponentially more hidden units.
+![alt text](images/blog1_deep_nn_circuit_theory.png)
+Consider above parity function example. Given a binary vector input $x \in \{0, 1\}^n$, the parity function outputs $1$ if the number of $1$ s in $x$ is even and outputs $0$ if the number of $1$ s in $x$ is odd.  
+If shallow network, it requires exponentially many neurons to represent all patterns of parity. ($2^{n-1}$)  
+However, using deep neural network, You only needs $O(n)$ neurons and $O(\log n)$ depth.
+
+### Forward and Backward Propagation in Deep Neural Network
+![alt text](images/blog1_deep_nn_forward_and_backward_functions_1.png)
+In forward function, input is $a^{[\ell-1]}$ and output is $a^{[\ell]}$. Check below equation for help understanding.
+$$
+z^{[l]} = W^{[l]} a^{[l-1]} + b^{[l]} \\
+a^{[l]} = g^{[l]}(z^{[l]})
+$$
+In backward function, input is $\frac{d\mathcal{L}}{da^{[l]}}$ and output is $\frac{d\mathcal{L}}{da^{[l-1]}}$
+
+Now, putting together all layers, the whole picture can be expressed as below.
+![alt text](images/blog1_deep_nn_forward_and_backward_functions_2.png)
+For Forward Propagation, 
+$$
+Z^{[1]} = W^{[1]} X + b^{[1]} \\
+A^{[1]} = g^{[1]}(Z^{[1]}) \\
+Z^{[2]} = W^{[2]} A^{[1]} + b^{[2]} \\
+A^{[2]} = g^{[2]}(Z^{[2]}) \\
+\vdots \\
+A^{[L]} = g^{[L]}(Z^{[L]}) = \hat{Y}
+$$
+
+For Backward Propagation,
+$$
+dZ^{[L]} = A^{[L]} - Y \\
+dW^{[L]} = \frac{1}{m} dZ^{[L]} A^{[L-1] \top} \\
+db^{[L]} = \frac{1}{m} \, \text{np.sum}(dZ^{[L]}, \text{axis} = 1, \text{keepdims} = \text{True}) \\
+dZ^{[L-1]} = W^{[L] \top} dZ^{[L]} \circ g^{[L-1]'}(Z^{[L-1]}) \\
+\vdots \\
+dZ^{[1]} = W^{[2] \top} dZ^{[2]} \circ g^{[1]'}(Z^{[1]}) \\
+dW^{[1]} = \frac{1}{m} dZ^{[1]} X^\top \\
+db^{[1]} = \frac{1}{m} \, \text{np.sum}(dZ^{[1]}, \text{axis} = 1, \text{keepdims} = \text{True})
+
+$$
