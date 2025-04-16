@@ -13,6 +13,13 @@ The bias error is an error from erroneous assumptions in the learning algorithm.
 ### Variance
 The variance is an error from sensitivity to small fluctuations in the training set. High variance may result from an algorithm modeling the random noise in the training data (overfitting).
 
+### Recipe
+![alt text](images/blog23_bias_and_variance_receipe.png)
+
+### Benefit of Deep Learning
+In modern deep learning big data era, training a bigger network almost always reduce bias without hurting variance much (if regularized properly). Also, getting more data almost always reduce variance without hurting bias much.  
+This is the why Deep Learning is so useful in supervised learning.
+
 ## Approximation and Estimation
 ![alt text](images/blog23_approximation_and_estimation_error.png)
 
