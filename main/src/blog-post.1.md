@@ -592,6 +592,7 @@ Biases can be zero. Since bias are additive constants, not multiplier, symmetry 
 If you initialize all weights to zero, then all neurons in the same layer receive identical gradients during training. So all updates of neurion happend in exactly the same way and they all compute the same output.  
 Therefore, model never learns anything meaningful. This is called "Symmetry Breaking Problem".
 
+#### Initialization for Relu
 
 ### Xavier Initialization (Glorot Initialization) and He Initialization (Kaiming Initialization)
 Xavier Initialization 혹은 Glorot Initialization라고도 불리는 초기화 방법은 이전 노드와 다음 노드의 개수에 의존하는 방법이다. Uniform 분포를 따르는 방법과 Normal분포를 따르는 두가지 방법이 사용된다.  
