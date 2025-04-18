@@ -86,6 +86,15 @@ why increasing lambda leads to weight close to 0?
 #### Why Dropout Works?
 
 ### Data Augmentation
+A technique of artificially increasing the training set by creating modified copies of a dataset using existing data. For example, in image processing, applying transformations like rotations, flips, or color adjustments to existing images can help models generalize better.  
+It helps machine learning models perform better by making the most of existing data. It prevents overfitting, improves accuracy, and creates diversity in training data, which is crucial when datasets are small or imbalanced.
+
+#### Data Augmentation Advantages
+ - To prevent models from overfitting.
+ - The initial training set is too small.
+ - To improve the model accuracy.
+ - To Reduce the operational cost of labeling and cleaning the raw dataset.
+
 ### Early Stopping
 ### Standard Normalization
 
