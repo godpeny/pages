@@ -77,6 +77,17 @@ L1 regularization (also called LASSO) leads to sparse models by adding a penalty
 L2 regularization (also called ridge regression) encourages smaller, more evenly distributed weights by adding a penalty based on the square of the coefficients.
 
 ### Applying to Logistic Regression
+$$
+\mathcal{J}(w, b) = \frac{1}{m} \sum_{i=1}^{m} \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2m} \| w \|_2^2 \\[6pt]
+\text{Where,} \quad \| w \|_2^2 = \sum_{j=1}^{n_x} w_j^2 = w^\top w
+$$
+From above, L2 Regularization is applied.  
+$\lambda$ is a regularization parameter (hyperparameter).  
+Note that you can use L1 Regulariztion, but L2 is more generally used.
+$$
+\frac{\lambda}{2m} \sum_{j=1}^{n_x} |w_j| = \frac{\lambda}{2m} \| w \|_1
+$$
+
 ### Applying to Neural Network
 ### How regularization prevent overfitting
 why increasing lambda leads to weight close to 0?
