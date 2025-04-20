@@ -89,6 +89,33 @@ $$
 $$
 
 ### Applying to Neural Network
+$$
+\mathcal{J}(W^{[1]}, b^{[1]}, \dots, W^{[L]}, b^{[L]}) =
+\frac{1}{m} \sum_{i=1}^{m} \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) +
+\frac{\lambda}{2m} \sum_{\ell=1}^{L} \| W^{[\ell]} \|_F^2 \\[6pt]
+\| W^{[\ell]} \|_F^2 = \sum_{i=1}^{n^{[\ell]}} \sum_{j=1}^{n^{[\ell-1]}} \left( W_{ij}^{[\ell]} \right)^2, \quad W^{[\ell]} : \left( n^{[\ell]}, \; n^{[\ell - 1]} \right)
+$$
+
+From above, Frobenius Norm is applied.  
+
+When $\frac{\partial \mathcal{J}}{\partial W^{[\ell]}} = \frac{1}{m} dZ^{[L]} A^{[L-1] \top}$, regularization on backpropagation is,
+$$
+\frac{\partial \mathcal{J}}{\partial W^{[\ell]}} = \frac{1}{m} dZ^{[L]} A^{[L-1] \top} + \frac{\lambda}{m} W^{[\ell]}
+$$
+Therefore, gradient descent is, 
+$$
+W^{[\ell]} := W^{[\ell]} - \alpha \cdot \frac{\partial \mathcal{J}}{\partial W^{[\ell]}} 
+$$
+
+### Weight Decay
+$$
+W^{[\ell]} := W^{[\ell]} - \alpha \left[ \frac{1}{m} dZ^{[L]} A^{[L-1] \top} + \frac{\lambda}{m} W^{[\ell]} \right] \\
+= W^{[\ell]} - \frac{\alpha \lambda}{m} W^{[\ell]} - \alpha \cdot \frac{1}{m} dZ^{[L]} A^{[L-1] \top}\\
+= \left( 1 - \frac{\alpha \lambda}{m} \right) W^{[\ell]} - \alpha \cdot \frac{1}{m} dZ^{[L]} A^{[L-1] \top}
+$$
+When applying graient descent with regularization, $\left( 1 - \frac{\alpha \lambda}{m} \right)$ is less than $1$ and it is keep multiplying to weight. So you can call L2 Regularization as weight decay.
+
+
 ### How regularization prevent overfitting
 why increasing lambda leads to weight close to 0?
 
