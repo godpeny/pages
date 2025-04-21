@@ -117,7 +117,15 @@ When applying graient descent with regularization, $\left( 1 - \frac{\alpha \lam
 
 
 ### How regularization prevent overfitting
-why increasing lambda leads to weight close to 0?
+#### Why increasing lambda leads to weight close to 0?
+Let's see the original gradient descent and the one with regularization applied.
+$$
+w \leftarrow w - \alpha \cdot \frac{\partial \mathcal{L}}{\partial w} \\[6pt]
+\text{When applying regularization,} \quad
+w \leftarrow w - \alpha \left( \frac{\partial \mathcal{L}}{\partial w} + \lambda w \right)
+$$
+The higher $\lambda$, The larger the penalty gradient, $ \lambda w$. This leads to the stronger "shrinkage" in every update step.  
+Therefore increasing $\lambda$ cause more aggressive pull toward $0$, smaller final values for $w$ and even some weights effectively going to $0$.
 
 ### Dropout
 #### Inverted Dropout
