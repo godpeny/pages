@@ -117,6 +117,30 @@ When applying graient descent with regularization, $\left( 1 - \frac{\alpha \lam
 
 
 ### How regularization prevent overfitting
+Recall regulariztion in neural network,
+$$
+\mathcal{J}(W, b) =
+\frac{1}{m} \sum_{i=1}^{m} \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) +
+\frac{\lambda}{2m} \sum_{\ell=1}^{L} \| W^{[\ell]} \|_F^2 
+$$
+Note that increasing regularization parameter $\lambda$ leads to weight $W$ close to $0$. Since $W$ is close to 0, overall impact of hidden units decreases. Therfore, the whole network is not very far from a big linear function when $W \approx 0$. 
+
+For example, consdier tanh function as activate function.
+![alt text](images/blog23_regularization_tanh.png)  
+
+Consider tanh function above.
+$$
+g(Z) = \tanh(Z) \\[6pt]
+Z = W \cdot A + b
+$$
+
+When $\lambda$ is big and $W$ is close to $0$, $Z$ is also close to $0$. Then from the graph above, we can find out that $g(Z)$ is roughly linear. 
+Since $W = [W^{[1]}, W^{[1]}, \cdots, W^{[l]}]$, every layer $W^{[k]}$ is linear and the whole network is linear. ("Why Activation Function Shouldn't be linear")
+$$
+\sigma\bigl(W^{[2]}h + W_0^{[2]}\bigr)
+= \sigma\Bigl(W^{[2]}\bigl(W^{[1]}x + W_0^{[1]}\bigr) + W_0^{[2]}) \cdots
+$$
+
 #### Why increasing lambda leads to weight close to 0?
 Let's see the original gradient descent and the one with regularization applied.
 $$
