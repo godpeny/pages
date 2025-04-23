@@ -152,7 +152,28 @@ The higher $\lambda$, The larger the penalty gradient, $ \lambda w$. This leads 
 Therefore increasing $\lambda$ cause more aggressive pull toward $0$, smaller final values for $w$ and even some weights effectively going to $0$.
 
 ### Dropout
+Dropout is a regularization technique used in neural network that randomly shuts down some neurons in each iteration.
+
 #### Inverted Dropout
+Inverted dropout modifies the standard dropout technique by scaling the remaining active neurons 
+during training to maintain consistent expectations between the training and inference phases.  
+This is done by dividing the result of the element-wise multiplication by the keep probability (1 - dropout rate).  
+With Inverted Dropout, expected value is not reduced due to scaling(keep probability).
+For example, consider inverted dropout in python code below.
+```python
+d3 = np.random.rand(a3.shape[0], a3.shape[1]) < keep_prob # keep_prob = 0.8
+a3 = np.multiply(a3, d3)  # a3 *= d3
+```
+This "a3" will be used in the next layer. 
+$$
+z^{[4]} = W^{[4]} \cdot a^{[3]} + b^{[4]}
+$$
+In this expression, since dropout is applied to "a3", "a3" is redued to 80%.  
+So in order to prevent the expected value not to reduce, you need to scale the activations.  
+```python
+a3 /= keep_prob
+```
+
 #### Why Dropout Works?
 
 ### Data Augmentation
