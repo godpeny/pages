@@ -175,6 +175,15 @@ a3 /= keep_prob
 ```
 
 #### Why Dropout Works?
+Dropout makes neurons can’t rely on any one feature, so dropout works as spreading out the weights.  
+This leads to the impact of shrinking the squared norm of weights, which is same to L2 regularization (weight decay).  
+
+#### Applying Dropout
+ - Usually no dropout in the input layer (or very close to $1$).
+ - You can set different dropout ratio on layers. So if you are more worried about some layers overfitting than others,
+ you can set higher dropout ratio.
+ - Dropout makes cost function $J$ not defined well, because you kill some hidden unit on each iteration. 
+ It makes hard to check cost function going down hill on every iteration.
 
 ### Data Augmentation
 A technique of artificially increasing the training set by creating modified copies of a dataset using existing data. For example, in image processing, applying transformations like rotations, flips, or color adjustments to existing images can help models generalize better.  
