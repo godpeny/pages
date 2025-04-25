@@ -196,7 +196,20 @@ It helps machine learning models perform better by making the most of existing d
  - To Reduce the operational cost of labeling and cleaning the raw dataset.
 
 ### Early Stopping
+In ML, the dataset is divided into a training set and a dev set. After each iteration of training, the parameters are updated accordingly after understanding the dataset. Finally, this trained model is applied to the dev set.  
+Generally, the training set error will be less compared to the dev set error. This is because of overfitting whereby the algorithm memorizes the training data and produces the right results on the training set. So, the model becomes highly exclusive to the training set and fails to produce accurate results for other datasets including the dev set.  
+
+Regularization techniques are used in such situations to reduce overfitting and increase the model’s performance on any general dataset.  
+
+![alt text](images/blog1_early_stopping.png)  
+When Early Stop, we stop training the model when the performance on the dev set is getting worse- increasing loss decreasing accuracy, or poorer scores of the scoring metric.  
+By plotting the error on the training dataset and the validation dataset together, both the errors decrease with a number of iterations until the point where the model starts to overfit. After this point, the training error still decreases but the dev set error increases.  
+
 ### Standard Normalization
+In mathematical statistics, a random variable $$ is standardized by subtracting its expected value $\operatorname {E} [X]$ and dividing the difference by its standard deviation $\sigma (X)={\sqrt {\operatorname {Var} (X)}}$,
+$$
+Z={X-\operatorname {E} [X] \over \sigma (X)}
+$$
 
 ### Gradients Checking
 
