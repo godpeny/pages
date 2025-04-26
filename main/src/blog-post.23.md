@@ -212,6 +212,33 @@ Z={X-\operatorname {E} [X] \over \sigma (X)}
 $$
 
 ### Gradients Checking
+The backpropagation step can be a tricky area where mistakes are more likely to happen. Thus, a method to debug this step can be a real lifesaver by fixing mistakes and making our predictions even more accurate. That's when gradient checking comes in!.  
+
+Let's consider all parameters $W^{[1]}, b^{[1]}, \cdots W^{[l]}, b^{[l]}$ as theta.  
+$$
+J(\theta) = J(W^{[1]}, b^{[1]}, \cdots W^{[l]}, b^{[l]}) = J(\theta_1, \theta_2, \cdots \theta_l)
+$$
+We want to check if $d \theta$ is gradient of $J(\theta)$. Using the idea that two-side difference of derivation is more accurate, we can consider as below.  
+$$
+\text{for each } i: \\
+\quad d\theta_{\text{approx [i]}} = \frac{\mathcal{J}(\theta_1, \theta_2, \ldots, \theta_i + \varepsilon, \ldots) - \mathcal{J}(\theta_1, \theta_2, \ldots, \theta_i - \varepsilon, \ldots)}{2 \varepsilon} \approx d\theta[i]  = \frac{\partial \mathcal{J}}{\partial \theta_i} \\[1em]
+$$
+Putting together, what we want to find out ratio below.
+$$
+\Sigma = \frac{ \left\| d\theta_{\text{approx}} - d\theta \right\|_2 }{ \left\| d\theta_{\text{approx}} \right\|_2 + \left\| d\theta \right\|_2 }
+$$
+If this ratio is less than $10^{-7}$, great!, bigger than $10^{-3}$, you should be worried.
+
+#### Notes of Gradients Checking
+ - Don't use in training. Only Debugging!
+ - If gradient checking fails, (above $\Sigma \geq 10^{-3}$) look at each component to try to find the bug($d\theta_{\text{approx [i]}}$ and $d\theta_{[i]}$).
+ - Don't forget regularization in backpropagation.  
+ ($\mathcal{J}(W^{[1]}, b^{[1]}, \dots, W^{[L]}, b^{[L]}) =
+\frac{1}{m} \sum_{i=1}^{m} \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) +
+\frac{\lambda}{2m} \sum_{\ell=1}^{L} \| W^{[\ell]} \|_F^2$)
+ - Don't use dropout. (turn off dropout first -> gradient check -> check algorithm correct -> turn on dropout)
+ - Use random initialization and Run again after some training iteration. (Initially when $W,b$ is close to $0$, there might be no problem. But if training is done and $W,b$ is large, problem might occurs.) 
+
 
 ## Cross Validation
 Cross validation is a technique used in machine learning to evaluate the performance of a model on unseen data. It involves dividing the available data into multiple folds or subsets, using one of these folds as a validation set, and training the model on the remaining folds. This process is repeated multiple times, each time using a different fold as the validation set. Finally, the results from each validation step are averaged to produce a more robust estimate of the model’s performance. Cross validation is an important step in the machine learning process and helps to ensure that the model selected for deployment is robust and generalizes well to new data.
