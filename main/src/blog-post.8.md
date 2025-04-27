@@ -172,11 +172,23 @@ Where $B$ is the size of mini batch.
 Because Gradient is the steepest ascent(or descent).
 
 #### Why Graidnt is same as steepest ascent(descent?)
+Formally, for a function $mathcal{L}(\theta)$, the directional derivative in a unit direction $u$ is,
+$$
+D_u \mathcal{L}(\theta) = \nabla \mathcal{L}(\theta)^\top u
+$$
+It measures how fast $mathcal{L}$ changes if you move in direction $u$.
+
+Now, among all possible directions $u$(when $||u||=1$), which one gives the largest decrease in $mathcal{L}$?
+The answer is the opposite of gradient.
+This is because the maximum of $- \nabla \mathcal{L}(\theta)^\top u$ occurs when $u$ aligns exactly opposite to $\nabla \mathcal{L}(\theta)$.  
+Geometrically, it’s where the cosine of the angle between $u$ and $\nabla \mathcal{L}(\theta)$ is $-1$.
 
 https://en.wikipedia.org/wiki/Dot_product
 
 https://math.stackexchange.com/questions/223252/why-is-gradient-the-direction-of-steepest-ascent
 
+##### Directional derivative
+https://en.wikipedia.org/wiki/Directional_derivative
 
 #### Least Mean Square Algorithm (LMS)
 LMS algorithm is a stochastic gradient descent method that iteratively updates filter coefficients to minimize the mean square error between the desired and actual signals.  
