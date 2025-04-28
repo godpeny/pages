@@ -140,6 +140,7 @@ In other word, choose $\theta$ so as to minimize $J(\theta)$.
 Loss function is usually a function defined on a data point, prediction and label, and measures the penalty. While cost function is a sum of loss functions over your training set plus some model complexity penalty (regularization). Also, objective function is the most general term for any function that you optimize during training.  
 Therefore, A loss function is a part of a cost function which is a type of an objective function.
 
+## Optimization Algorithms
 ### Gradient Descent
 The idea is to take repeated steps in the opposite direction of the gradient (or approximate gradient) of the functio(loss function) at the current point, because this is the direction of steepest descent.  
 $$
@@ -205,6 +206,8 @@ $$
 = \left( h_\theta(x) - y \right) x_j.
 $$  
 
+### Exponentially Weighted (Moving) Averages
+#### Bias Correction
 
 ### Normal Equation
 ### Jacobian with Matrix
