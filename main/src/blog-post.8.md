@@ -136,6 +136,37 @@ An objective function is either a loss function or its opposite (in specific dom
 It is a function that measures, for each value of the $\theta$, how close the $h_\theta(x^{(i)})$ are to the corresponding $y^{(i)}$.  
 In other word, choose $\theta$ so as to minimize $J(\theta)$.  
 
+#### Probabilistic Interpretation (Maximum Likelihood)
+Why least-squre cost function is reasonable choice when faced regression problem?  
+Consider hypothesis of regression problem, when $ \epsilon$ is IID(Independently and Identically Distributed) according to Gaussian distribution with mean zero and some variance $\sigma^2$.  
+$y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \ \epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$   
+Since $\epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$, $
+p(\epsilon^{(i)}) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(\epsilon^{(i)})^2}{2\sigma^2}\right)$  
+Which means it can be interpreted as the distribution of $y^{(i)}$ given $x^{(i)}$ parameterized by $\theta$ as $y^{(i)} \mid x^{(i)}; \theta \sim \mathcal{N}(\theta^T x^{(i)}, \sigma^2)$.  
+Which is:  
+$$
+p(y^{(i)} | x^{(i)}; \theta) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{\left(y^{(i)} - \theta^T x^{(i)}\right)^2}{2\sigma^2}\right).
+$$  
+Note that we should not condition on $\theta$
+$p(y^{(i)} | x^{(i)}; \theta)$, since $\theta$ is not a random variable. (Remeber that Gaussian distribution is a type of continuous probability distribution for a real-valued random variable)  
+Given $X$ (which is design matrix with all elements are $x^{(i)}$) and $\theta$, the distribution of $y^{(i)}$ is $p(\vec{y} | X; \theta)$ (function of $y^{(i)}$).  
+We can view this as function of $\theta$ instead of $y^{(i)}$, and this is call likelihood.  
+$L(\theta) = L(\theta; X, \vec{y}) = p(\vec{y} | X; \theta).$  
+$$
+L(\theta) = \prod_{i=1}^{m} p(y^{(i)} \mid x^{(i)}; \theta) = \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
+$$  
+Now, given this probabilistic model relating the $y^{(i)}s$ and the $x^{(i)}s$, reasonable way of choosing best guess of parameter $\theta$ in the principal of maximum likelihood is that choose $\theta$ so as to make the data as high probability as possible.  
+I.e., Choose $\theta$ to maximize $L(\theta)$.  
+Instead of maximizing $L(\theta)$, we can maximiae log liklihood $log(\theta)$.  
+$$
+\ell(\theta) = \log L(\theta) \\
+= \log \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
+= \sum_{i=1}^{m} \log \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
+= m \log \frac{1}{\sqrt{2\pi\sigma}} - \frac{1}{2\sigma^2} \sum_{i=1}^{m} \left( y^{(i)} - \theta^T x^{(i)} \right)^2.
+$$  
+Above derivation, we can find the fact that maximizing $log(\theta)$ is same as minimizing 
+$\sum_{i=1}^{m} \left( y^{(i)} - \theta^T x^{(i)} \right)^2$, which is original loss function $J(\theta)$.
+
 #### Loss Function vs Cost Function vs Objective Function
 Loss function is usually a function defined on a data point, prediction and label, and measures the penalty. While cost function is a sum of loss functions over your training set plus some model complexity penalty (regularization). Also, objective function is the most general term for any function that you optimize during training.  
 Therefore, A loss function is a part of a cost function which is a type of an objective function.
@@ -198,7 +229,7 @@ $\left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right)$, the magnitude of the
 $$
 \theta_j := \theta_j + \alpha \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)}.
 $$
-#### Relation with Gradient Descent
+##### Relation with Gradient Descent
 $$
 \frac{\partial}{\partial \theta_j} J(\theta) = \frac{\partial}{\partial \theta_j} \frac{1}{2} \left( h_\theta(x) - y \right)^2
 = 2 \cdot \frac{1}{2} \left( h_\theta(x) - y \right) \cdot \frac{\partial}{\partial \theta_j} \left( h_\theta(x) - y \right)
@@ -266,38 +297,7 @@ X^T X \theta =  X^T \vec{y} \\
  \theta = X^T X \theta - X^T \vec{y}
 $$
 
-### Probabilistic Interpretation (Maximum Likelihood)
-Why least-squre cost function is reasonable choice when faced regression problem?  
-Consider hypothesis of regression problem, when $ \epsilon$ is IID(Independently and Identically Distributed) according to Gaussian distribution with mean zero and some variance $\sigma^2$.  
-$y^{(i)} = \theta^T x^{(i)} + \epsilon^{(i)}, \ \epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$   
-Since $\epsilon^{(i)} \sim \ \mathcal{N}(0, \sigma^2)$, $
-p(\epsilon^{(i)}) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(\epsilon^{(i)})^2}{2\sigma^2}\right)$  
-Which means it can be interpreted as the distribution of $y^{(i)}$ given $x^{(i)}$ parameterized by $\theta$ as $y^{(i)} \mid x^{(i)}; \theta \sim \mathcal{N}(\theta^T x^{(i)}, \sigma^2)$.  
-Which is:  
-$$
-p(y^{(i)} | x^{(i)}; \theta) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{\left(y^{(i)} - \theta^T x^{(i)}\right)^2}{2\sigma^2}\right).
-$$  
-Note that we should not condition on $\theta$
-$p(y^{(i)} | x^{(i)}; \theta)$, since $\theta$ is not a random variable. (Remeber that Gaussian distribution is a type of continuous probability distribution for a real-valued random variable)  
-Given $X$ (which is design matrix with all elements are $x^{(i)}$) and $\theta$, the distribution of $y^{(i)}$ is $p(\vec{y} | X; \theta)$ (function of $y^{(i)}$).  
-We can view this as function of $\theta$ instead of $y^{(i)}$, and this is call likelihood.  
-$L(\theta) = L(\theta; X, \vec{y}) = p(\vec{y} | X; \theta).$  
-$$
-L(\theta) = \prod_{i=1}^{m} p(y^{(i)} \mid x^{(i)}; \theta) = \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
-$$  
-Now, given this probabilistic model relating the $y^{(i)}s$ and the $x^{(i)}s$, reasonable way of choosing best guess of parameter $\theta$ in the principal of maximum likelihood is that choose $\theta$ so as to make the data as high probability as possible.  
-I.e., Choose $\theta$ to maximize $L(\theta)$.  
-Instead of maximizing $L(\theta)$, we can maximiae log liklihood $log(\theta)$.  
-$$
-\ell(\theta) = \log L(\theta) \\
-= \log \prod_{i=1}^{m} \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
-= \sum_{i=1}^{m} \log \frac{1}{\sqrt{2\pi\sigma}} \exp \left( -\frac{\left( y^{(i)} - \theta^T x^{(i)} \right)^2}{2\sigma^2} \right) \\
-= m \log \frac{1}{\sqrt{2\pi\sigma}} - \frac{1}{2\sigma^2} \sum_{i=1}^{m} \left( y^{(i)} - \theta^T x^{(i)} \right)^2.
-$$  
-Above derivation, we can find the fact that maximizing $log(\theta)$ is same as minimizing 
-$\sum_{i=1}^{m} \left( y^{(i)} - \theta^T x^{(i)} \right)^2$, which is original loss function $J(\theta)$.
-
-### Locally Weighted Linear Regression (LWR)
+## Locally Weighted Linear Regression (LWR)
 Rather than learning a fixed set of parameters as is done in ordinary linear regression, parameters $\theta$ are computed individually for each query point $x$.
 $
 J(\theta) = \sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2
@@ -310,7 +310,7 @@ LWR:
  - fit $\theta$ to minimize $\sum_{i=1}^{m} w^{(i)} \left( \theta^T x^{(i)} - y^{(i)} \right)^2$
  - predict with $ \theta^T x^{(i)}$.  
 
-#### Weight
+### Weight
 Weight $w^{(i)}s$ are non negative value. A standard choice the weight is  
 $
 w^{(i)} = \exp \left( -\frac{\left(x^{(i)} - x\right)^2}{2\tau^2} \right)
