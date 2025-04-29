@@ -240,6 +240,11 @@ $$
 ### Exponentially Weighted (Moving) Averages
 #### Bias Correction
 
+### Gradient Descent with Momentum
+### Root Mean Square Propagation (RMSProps)
+### Adam Optimization Algorithm
+### Learning Rate Decay
+
 ### Normal Equation
 ### Jacobian with Matrix
 Given a training set let's define the design matrix $X$ which contains the training examples’ input values in its rows:  
