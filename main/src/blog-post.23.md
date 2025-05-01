@@ -229,6 +229,17 @@ $$
 $$
 If this ratio is less than $10^{-7}$, great!, bigger than $10^{-3}$, you should be worried.
 
+#### How does Gradients Checking works?
+Backpropagation computes the gradients $\frac{\partial J}{\partial \theta}$, where $\theta$ denotes the parameters of the model. $J$ is computed using forward propagation and your loss function.
+
+Because forward propagation is relatively easy to implement, you're confident you got that right, and so you're almost  100% sure that you're computing the cost $J$ correctly. Thus, you can use your code for computing $J$ to verify the code for computing $\frac{\partial J}{\partial \theta}$. 
+
+Let's look back at the definition of a derivative (or gradient):
+$$ \frac{\partial J}{\partial \theta} = \lim_{\varepsilon \to 0} \frac{J(\theta + \varepsilon) - J(\theta - \varepsilon)}{2 \varepsilon} \tag{1}$$
+
+We know the following:
+- $\frac{\partial J}{\partial \theta}$ is what you want to make sure you're computing correctly. 
+- You can compute $J(\theta + \varepsilon)$ and $J(\theta - \varepsilon)$ (in the case that $\theta$ is a real number), since you're confident your implementation for $J$ is correct. 
 #### Notes of Gradients Checking
  - Don't use in training. Only Debugging!
  - If gradient checking fails, (above $\Sigma \geq 10^{-3}$) look at each component to try to find the bug($d\theta_{\text{approx [i]}}$ and $d\theta_{[i]}$).
