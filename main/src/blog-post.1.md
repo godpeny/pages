@@ -688,3 +688,6 @@ dW^{[1]} = \frac{1}{m} dZ^{[1]} X^\top \\
 db^{[1]} = \frac{1}{m} \, \text{np.sum}(dZ^{[1]}, \text{axis} = 1, \text{keepdims} = \text{True})
 
 $$
+
+## Adversarial Attacks
+### Generative Adversarial Networks (GANs)
