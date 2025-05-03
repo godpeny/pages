@@ -606,3 +606,8 @@ More precisely, the sample complexity is the number of training-samples that we 
 In general, the strong sample complexity is infinite, i.e. that there is no algorithm that can learn the globally-optimal target function using a finite number of training samples.  
 But If we are only interested in a particular class of target functions (e.g., only linear functions) then the sample complexity is finite, and it depends linearly on the VC dimension on the class of target functions.
 
+## Hyperparameter Tunning in practice
+
+## Batch Normalization (Normalizing Activation Functions)
+
+## The Problem of Local Optima
