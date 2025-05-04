@@ -294,7 +294,7 @@ In conclusion,
 ## Expectation–Maximization Algorithm (EM Algorithm)
 An expectation–maximization (EM) algorithm is an iterative method to find (local) maximum likelihood estimates of parameters in statistical models, where the model depends on unobserved(latent) variables.  
 EM Algorithm chooses some random values for the latent data points and estimates a new set of data. These new values are then recursively used to estimate a better first date, by filling up unknown points, until the values get fixed.  
-The EM iteration alternates between performing an expectation (E) step, which creates a function for the expectation of the log-likelihood evaluated using the current estimate for the parameters, and a maximization (M) step, which computes parameters maximizing the expected log-likelihood found on the E step.   
+The EM iteration alternates between performing an expectation (E) step, which creates the expectation of the log-likelihood function evaluated using the current estimate for the parameters, and a maximization (M) step, which computes parameters maximizing the expected log-likelihood found on the E step.   
 These parameter-estimates are then used to determine the distribution of the latent variables in the next E step.  
 It can be used, for example, to estimate a mixture of gaussians.
 
@@ -429,10 +429,6 @@ $$
 From the view of definition of coordinate ascent, EM can also be viewed a coordinate ascent on $J$, in which the E-step maximizes it with
 respect to $Q$(choosing $Q_i$ in E step) and the M-step maximizes it with respect to $\theta$.
 
-### Applying EM Algorithm to Mixture of Gaussians
-Armed with our general definition of the EM algorithm, let’s go back to our
-old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussians.
-
 #### Differences between $p(z^{(i)} = j; \phi)$ and $Q_i(z^{(i)} = j)$
 ##### $p(z^{(i)} = j; \phi)$
  - A prior belief about how likely cluster $j$ is to generate a random point $x$.
@@ -441,6 +437,41 @@ old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussi
  - An updated probability (posterior) that cluster $j$ generated point $x^{(i)}$.
  - It shows how well cluster $j$ explains the specific data point $x^{(i)}$ given the current parameters.
  - It depends on the data and reflects the posterior belief after seeing the data.
+
+
+### Applying EM Algorithm to Mixture of Gaussians
+Armed with our general definition of the EM algorithm, let’s go back to our
+old example of fitting the parameters $\phi, \mu, \Sigma$ in a mixture of Gaussians.
+Before that, let's check the log-likelihood function for a Gaussian Mixture Model (GMM)
+$$
+\ell(\phi, \mu, \Sigma) = \sum_{i=1}^{m} \log p(x^{(i)}; \phi, \mu, \Sigma) \\
+= \sum_{i=1}^{m} \log \sum_{z^{(i)}=1}^{k} p(x^{(i)} \mid z^{(i)}; \mu, \Sigma) p(z^{(i)}; \phi) \\[6pt]
+= \sum_{i=1}^{m} \log p(x^{(i)} \mid z^{(i)}; \mu, \Sigma) + \log p(z^{(i)}; \phi)s
+$$
+If we assume that we knew what the $z(i)$’s were, we can just us Maximum Likelihood Estimation (MLE) to solve maximum likelihood problem.
+Maximizing this with respect to $\phi, \mu, \Sigma$ gives the maximum likelihood estimate of the parameters as below, which are similar to parameters of GDA.
+$$
+\phi_j = \frac{1}{m} \sum_{i=1}^{m} 1\{ z^{(i)} = j \}, \\[10pt]
+\mu_j = \frac{\sum_{i=1}^{m} 1\{ z^{(i)} = j \} x^{(i)}}{\sum_{i=1}^{m} 1\{ z^{(i)} = j \}}, \\[6pt]
+\Sigma_j = \frac{\sum_{i=1}^{m} 1\{ z^{(i)} = j \} (x^{(i)} - \mu_j)(x^{(i)} - \mu_j)^T}{\sum_{i=1}^{m} 1\{ z^{(i)} = j \}}
+$$
+Compare to the maximum likelihood estimate of the parameters from GDA below.
+$$
+\phi = \frac{1}{m} \sum_{i=1}^{m} 1\{ y^{(i)} = 1 \}, \\[10pt]
+\mu_0 = \frac{\sum_{i=1}^{m} 1\{ y^{(i)} = 0 \} x^{(i)}}{\sum_{i=1}^{m} 1\{ y^{(i)} = 0 \}}, \\[6pt]
+\mu_1 = \frac{\sum_{i=1}^{m} 1\{ y^{(i)} = 1 \} x^{(i)}}{\sum_{i=1}^{m} 1\{ y^{(i)} = 1 \}}, \\[6pt]
+\Sigma = \frac{1}{m} \sum_{i=1}^{m} (x^{(i)} - \mu_{y^{(i)}})(x^{(i)} - \mu_{y^{(i)}})^T
+$$
+Note that there are several differences between GDA and Mixture of Gaussian model.
+ - Mixture of Gaussian is using $z$'s instead of labels $y$'s.
+ - $z$'s are from multinominal distribution, while GDA is from Bernoulli distribution.
+ - Mixture of Gaussian is using different covariance matrix $\Sigma_j$ for each Gaussian distribution.
+
+However, as from density estimation problem, what if the $z$’s are not known, what can we do?
+We will use following EM Algorithm.
+
+#### How to get maximum likelihood estimate of the parameters from GDA and Mixture of Gaussian Model
+
 
 #### Estimation Step (E): Tries to “guess” the latent values of the $z^{(i)}$
 First, initialize our model parameters like the mean($\mu_j$), covariance matrix($\Sigma_j$), and mixing coefficients($\phi_j$).  
