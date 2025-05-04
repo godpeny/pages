@@ -212,14 +212,29 @@ $$
 $$
 Where , $k$ (a parameter of the algorithm) is the number of clusters we want to find, and the cluster centroids $\mu_j$ represent our current guesses for the positions of the centers of the clusters.
 
-Mathmatically, partition the $n$ observations into $k (≤ n)$ sets $S = \{S_1, S_2, \cdots, S_k\}$ so as to minimize the within-cluster sum of squares (WCSS) (i.e. variance). 
+Let's see more Mathmatically. Partition the $m$ observations into $k (k \leq m)$ sets $S = \{S_1, S_2, \cdots, S_k\}$ so as to minimize the within-cluster sum of squares (WCSS) (i.e. variance).  
+The objective of K-means algorithm can be described as below.
 $$
-\arg\min_{\mathcal{S}} \sum_{i=1}^k \sum_{\mathbf{x} \in S_i} \|\mathbf{x} - \mu_i\|^2 = \arg\min_{\mathcal{S}} \sum_{i=1}^k |S_i| \operatorname{Var}(S_i)
+\arg\min_{\mathcal{S}} \sum_{j=1}^k \sum_{\mathbf{x} \in S_j} \|\mathbf{x} - \mu_j\|^2 = \arg\min_{\mathcal{S}} \sum_{j=1}^k |S_j| \operatorname{Var}(S_j)
 $$
 Where mean(cluster centroid) of points in $S_i$ is, 
 $$
-\mu_i = \frac{1}{|S_i|} \sum_{\mathbf{x} \in S_i} \mathbf{x},
+\mu_j = \frac{1}{|S_j|} \sum_{\mathbf{x} \in S_j} \mathbf{x},
 $$
+and $|S_i|$ indcates the number of elements in $S_i$
+
+This objective can be achieved using following steps. First, assign each observation to the cluster with the nearest mean(using the least squared Euclidean distance). 
+$$
+S_i^{(t)} = \left\{ x_p : \| x_p - m_i^{(t)} \|^2 \leq \| x_p - m_j^{(t)} \|^2 \; \forall j, \; 1 \leq j \leq k \right\}
+$$
+Where $x_{p}$ is assigned to exactly one $S^{(t)}$. Next, Recalculate means(centroids) for observations assigned to each cluster.
+(note that $(t)$ is the iteration number or time step in the algorithm.)
+$$
+m_i^{(t+1)} = \frac{1}{|S_i^{(t)}|} \sum_{x_j \in S_i^{(t)}} x_j
+$$
+
+### Is the k-means algorithm guaranteed to converge?
+#### Distortion Function
 
 ## Density Estimation
 Density Estimation is the construction of an estimate of an unobservable underlying probability density function, based on observed data. A very natural use of density estimates is in the informal investigation of the properties of a given set of data.  
