@@ -1,10 +1,11 @@
 # Softmax and Cross Entropy
-
-## Basic
-
 ## Softmax
+### Basics
 
-## Gradient of Softmax
+### How Softmax works?
+
+### Loss Function of Softmax
+#### Gradient of Softmax
 
 ## Cross Entropy
 https://en.wikipedia.org/wiki/Cross-entropy
