@@ -1,6 +1,7 @@
 # EM Algorithm
 ## Preliminaries
 ### Jensen's Inequality
+![alt text](images/blog25_jensen_inequality.jpg)
 Jensen's inequality generalizes the statement that the secant line(a line that intersects a curve at a minimum of two distinct points) of a convex function lies above the graph of the function. In the context of probability theory, it is generally stated in the following form:  
 If $X$ is a random variable and $\varphi$ is a convex function, then
 $$
@@ -319,13 +320,22 @@ $$
 = \sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \\ 
 \geq \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}
 $$
-For the understading of the derivation above, consider following as an expectation of $\log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$ with respect to $z^{(i)}$ from distribution $Q_i$.  
-(For example, when $z = \{1, 2, \cdots, 10 \}$, $\mathbb{E}[g(z)] = \sum_z p(z)g(z)$ and $\mathbb{E} = \sum_z p(z) z$.)
+For the understading of the derivation above, firstly consider following idea that considering $\sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$ as an expectation of $\frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})}$ drawn according to the distribution given by $Q_i$.
 $$
-\sum_{z^{(i)}} Q_i(z^{(i)}) \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right]
+\frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} = X^{(i)}, \\[6pt]
+\sum_{z^{(i)}} Q_i(z^{(i)}) \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right] = \sum_{z^{(i)}} Q_i(z^{(i)}) \cdot X^{(i)} = \mathbb{E}[X^{(i)}], \\[6pt]
+\text{when } \sum_{z^{(i)}} Q_i(z^{(i)}) = 1
 $$
-From this idea, we apply Jensen's inequality and we have as below.
+For example, when $z = \{1, 2, \cdots, 10 \}$, $\mathbb{E}[g(z)] = \sum_z p(z)g(z)$ and $\mathbb{E} = \sum_z p(z) z$.  
+Now you got the idea, then second idea is as below.
 $$
+\log = f \\[6pt]
+\log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} = f(\mathbb{E}[X^{(i)}]) \\[6pt]
+\sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} = \mathbb{E}[f(X^{(i)}])
+$$   
+From this idea, we apply Jensen's inequality and we have as below. Remember that $f = \log$, which means that it is concave function.
+$$
+\log(\mathbb{E}[X]) \geq \mathbb{E}[\log(X)], \quad f = \log \\[6pt]
 f \left( \mathbb{E}_{z^{(i)} \sim Q_i} \left[ \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right] \right) 
 \geq 
 \mathbb{E}_{z^{(i)} \sim Q_i} \left[ f \left( \frac{p(x^{(i)}, z^{(i)}; \theta)}{Q_i(z^{(i)})} \right) \right],
@@ -356,7 +366,7 @@ f(c)
 \mathbb{E} \left[ f \left( c \right) \right] = 
 f(c)
 $$
-This can be accomplished by setting $Q_i(z^{(i)})$ is proportion of $p(x^{(i)}, z^{(i)})$.
+This can be accomplished by setting $Q_i(z^{(i)})$ is proportion of $p(x^{(i)}, z^{(i)})$. In other words ratio between numerator and denominator must be same.
 $$
 Q_i(z^{(i)}) \propto p(x^{(i)}, z^{(i)}; \theta).
 $$
@@ -501,7 +511,7 @@ p\bigl(z^{(i)}=j \mid x^{(i)}; \,\phi,\mu,\Sigma\bigr)
 }
 $$
 
-Since $x^{(i)} \mid z^{(i)} = j \sim \mathcal{N}(\mu_j, \Sigma_j)$ and $\phi_j = p(z^{(i)} = j)$,  
+Since $(x^{(i)} \mid z^{(i)} = j) \sim \mathcal{N}(\mu_j, \Sigma_j)$ and $\phi_j = p(z^{(i)} = j)$,  
 $$
 w_j^{(i)} 
 \;=\;
