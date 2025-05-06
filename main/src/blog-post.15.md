@@ -198,6 +198,9 @@ $$
 $$
 This is because last component $(1, 1, 0)$ is a linear combination of $(1, 0, 0)$ and $(0, 1, 0)$. Thus, the spanned space is not $\mathbb{R}^{3}$.
 
+### Order
+The order of a matrix refers to its dimensions, i.e., the number of rows and columns. If a matrix has $m$ rows and $n$ columns, its order is denoted as $(m \times n)$.
+
 ### Rank
 The rank of a matrix $A$ is the dimension of the vector space generated (or spanned) by its columns.  
 This corresponds to the maximal number of linearly independent columns of $A$. This, in turn, is identical to the dimension of the vector space spanned by its rows. In other words,  
