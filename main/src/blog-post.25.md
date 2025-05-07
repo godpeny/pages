@@ -647,6 +647,10 @@ $$
 $$
 As you can see from above equation, outer product generates the matrix whose first row is $u_1(v_1, v_2, \cdots, v_n)$ and the $i$-th row is $u_i(v_1, v_2, \cdots, v_n)$.  
 
+### Idea of Factor Analysis
+Factor analysis is a statistical method used to describe variability(variance) among observed, correlated variables in terms of a potentially lower number of unobserved variables called factors($=z$).  
+For example, it is possible that variations in six observed variables mainly reflect the variations in two unobserved (underlying) variables. Factor analysis searches for such joint variations in response to unobserved latent variables. The observed variables are modelled as linear combinations of the potential factors($\Lambda z $) plus "error" terms($\mu$).
+
 ### Factor Analysis Model
 As mentioned earlier, by modeling the correlations in our data($x$), we can represent it with fewer variables or dimensions(factors = $z^{(i)}$'s).
 $$
@@ -803,7 +807,7 @@ $$
 \text{Since } z \sim \mathcal{N}(0, I), \text{ we easily find that } \Sigma_{zz} = \operatorname{Cov}(z) = I
 $$
 
-$\Sigma_zx$ can be derived as following with the fact that 
+$\Sigma_{zx}$ can be derived as following with the fact that 
 $E[zzT] = \text{Cov}(z)$ (since $z$ has zero mean) and $E[z \epsilon^{T}] = E[z]E[\epsilon^{T}] = 0$ (since $z$ and $\epsilon$ are independent, and hence the expectation of their product is the product of their expectations).
 $$
 \mathbb{E}\big[(z - \mathbb{E}[z])(x - \mathbb{E}[x])^T\big] 
@@ -934,3 +938,5 @@ $$
 \Phi = \frac{1}{m} \sum_{i=1}^{m} x^{(i)} x^{(i) T} - x^{(i)} \mu_{z^{(i)} \mid x^{(i)}}^T \Lambda^T 
 - \Lambda \mu_{z^{(i)} \mid x^{(i)}} x^{(i) T} + \Lambda \left( \mu_{z^{(i)} \mid x^{(i)}} \mu_{z^{(i)} \mid x^{(i)}}^T + \Sigma_{z^{(i)} \mid x^{(i)}} \right) \Lambda^T
 $$
+
+##### How to get the derivation of each parameter
