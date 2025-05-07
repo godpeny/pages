@@ -608,10 +608,44 @@ dimensional data($x$) using a small number of latent variables(factors = $z^{(i)
 
 ### Why Use Factor Analysis
 When $n$ is dimension of data from a mixture of Gaussian models and $m$ is the number of training set, if $n >> m$, we would find that the covariance matrix $\Sigma$  is singular.  
-This means that $(1/|\Sigma|^{1/2}) = \frac{1}{0}$ does not exist, and $\frac{1}/\Sigma1/2 = 1/0$.
+This means that $(1/|\Sigma|^{1/2}) = \frac{1}{0}$ does not exist. (part of denominator of PDF of Gaussian Distribution)
 
 More generally, unless $m$ exceeds $n$ by some reasonable amount, the maximum likelihood estimates of the mean and covariance may be quite poor.  
 Nonetheless, we would still like to be able to fit a reasonable Gaussian model to the data, and perhaps capture some interesting covariance structure in the data. We can do it by using Factor Analysis.
+
+#### Why Covariance Matrix is Singular when $n >> m$
+Remind the estimated mean and covariance matrix of Mixture of Gaussian Model.
+$$
+\mu \;=\; \frac{1}{m} \sum_{i=1}^{m} x^{(i)}, \\[10pt]
+\Sigma \;=\; \frac{1}{m} \sum_{i=1}^{m} \bigl(x^{(i)} - \mu\bigr)\bigl(x^{(i)} - \mu\bigr)^{\!\top}.
+$$
+When calculating the mean, $\bigl(x^{(i)} - \mu\bigr)\bigl(x^{(i)} - \mu\bigr)^{\!\top}$ generates matrix with rank $1$, because it is outer product. Using subadditivity of matrix rank, rank of $\Sigma$ is $ \leq 1 + 1 + 1 \cdots = m$, since there are $m$ examples.  
+Recall that the dimension of matrix ( = order of matrix) is $n$. Now rank is less than order of matrix so that the determinant is zero.  
+For example,
+$$
+\mathbf{u} = \bigl(x^{(i)} - \mu\bigr) = 
+\begin{bmatrix}
+    u_1 \\
+    u_2 \\
+    \vdots \\
+    u_m
+\end{bmatrix}, \quad
+\mathbf{v} = \bigl(x^{(i)} - \mu\bigr) = 
+\begin{bmatrix}
+    v_1 \\
+    v_2 \\
+    \vdots \\
+    v_n
+\end{bmatrix} \\[10pt]
+\mathbf{u} \mathbf{v}^{T} = \Sigma =
+\begin{bmatrix}
+    u_1 v_1 & u_1 v_2 & \cdots & u_1 v_n \\
+    u_2 v_1 & u_2 v_2 & \cdots & u_2 v_n \\
+    \vdots & \vdots & \ddots & \vdots \\
+    u_m v_1 & u_m v_2 & \cdots & u_m v_n
+\end{bmatrix}
+$$
+As you can see from above equation, outer product generates the matrix whose first row is $u_1(v_1, v_2, \cdots, v_n)$ and the $i$-th row is $u_i(v_1, v_2, \cdots, v_n)$.  
 
 ### Factor Analysis Model
 As mentioned earlier, by modeling the correlations in our data($x$), we can represent it with fewer variables or dimensions(factors = $z^{(i)}$'s).
