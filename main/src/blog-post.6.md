@@ -31,6 +31,24 @@ $$
 \nabla f(x,y,z) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right)
 $$
 
+## Derivative Function
+In calculus, a derivative test uses the derivatives of a function to locate the critical points of a function and determine whether each point is a local maximum, a local minimum, or a saddle point. Derivative tests can also give information about the concavity of a function.
+
+| Step                       | What you do                                                                                                                                                                                                                                             | Why it matters                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **First-derivative test**  | 1. Compute $f'(x)$. <br>2. Find **critical points** where $f'(x)=0$ or $f'$ is undefined.                                                                                                                                                               | At a local max/min the tangent is horizontal or doesn’t exist.              |
+| **Second-derivative test** | Evaluate $f''(x^{\star})$ at a critical point $x^{\star}$. <br>• $f''(x^{\star})>0$ → local **minimum** <br>• $f''(x^{\star})<0$ → local **maximum** <br>• $f''(x^{\star})=0$ → inconclusive (use first-derivative sign changes or higher derivatives). | The sign of curvature tells whether the graph bends up (cup) or down (cap). |
+For example, 
+$$
+\text{Minimize } f(x) = x^{3} - 3x^{2} + 1. \\[6pt]
+\begin{aligned}
+&\bullet\; f'(x) = 3x^{2} - 6x \;\;\Longrightarrow\;\; \text{critical points } x = 0,\; x = 2. \\[6pt]
+&\bullet\; f''(x) = 6x - 6. \\[6pt]
+&\quad\;\;\; f''(0) = -6 \;<\; 0 \;\Longrightarrow\; \text{local max at } x = 0. \\[6pt]
+&\quad\;\;\; f''(2) = 6 \;>\; 0 \;\Longrightarrow\; \text{local min at } x = 2.
+\end{aligned}
+$$
+
 
 
 ## Jacobian vs Gradients vs Hessian vs Laplacian
@@ -47,6 +65,7 @@ $
 \vdots \\
 \frac{\partial f}{\partial x_n}(p)
 ]$
+
 
 ### Hessian
 Hessian matrix is a square matrix of second-order partial derivatives of a scalar-valued function, or scalar field.
