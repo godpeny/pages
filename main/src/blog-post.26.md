@@ -3,7 +3,7 @@
 ### Eigenvector and Eigenvalue
 An eigenvector is a vector that has its direction unchanged by a given linear transformation.  
 Consider an $n{\times }n$ matrix A and a nonzero vector $v$ of length $n$. 
-If multiplying $A$ with $v$ (denoted by $A v$) simply scales $v$ by a factor of $\lambda$, where $\lambda$ is a scalar, then $v# is called an eigenvector of $A$, and $\lambda$ is the corresponding eigenvalue. This relationship can be expressed as,
+If multiplying $A$ with $v$ (denoted by $A v$) simply scales $v$ by a factor of $\lambda$, where $\lambda$ is a scalar, then $v$ is called an eigenvector of $A$, and $\lambda$ is the corresponding eigenvalue. This relationship can be expressed as,
 $$
 A v =\lambda v
 $$
@@ -15,18 +15,16 @@ In mathematical optimization, the method of Lagrange multipliers is a strategy f
 (i.e., subject to the condition that one or more equations have to be satisfied exactly by the chosen values of the variables)
 
 The basic idea is to convert a constrained problem into a form such that the derivative test of an unconstrained problem can still be applied.  
-(In calculus, a derivative testuses the derivatives of a function to locate the critical points of a function and determine whether each point is a local maximum, a local minimum, or a saddle point) 
+(In calculus, a derivative test uses the derivatives of a function to locate the critical points of a function and determine whether each point is a local maximum, a local minimum, or a saddle point) 
 
 The relationship between the gradient of the function and gradients of the constraints rather naturally leads to a reformulation of the original problem, known as the Lagrangian function or Lagrangian.
 
 #### Details
 $$
 \mathcal{L}(x, \lambda) \equiv f(x) + \langle \lambda, g(x) \rangle \equiv f(x) + \lambda \cdot g(x)
-
 $$
 Where $\langle \cdot, \cdot \rangle$ denotes dot product.  
-
-The Method of Lagrangie Multiplier can be summarized as in order to find the maximum or minimum of a function $f$ subject to the equality constraint $g(x)=0$, find the stationary points(points on the graph of the differentiable function where the function's derivative is zero) of ${\mathcal {L}}$ considered as a function of $x$ and the Lagrange multiplier $\lambda$.  
+The Method of Lagrangie Multiplier can be summarized as in order to find the maximum or minimum of a function $f$ subject to the equality constraint $g(x)=0$, find the stationary points(points on the graph of the differentiable function where the function's derivative is zero) of ${\mathcal {L}}$ (a function of $x$ and the Lagrange multiplier $\lambda$).  
 This means that all partial derivatives should be zero, including the partial derivative with respect to $\lambda$.
 
 $$
@@ -48,7 +46,7 @@ This is a function that is equivalent to $f(x,y)$ when $g(x,y)=0$
 
 Now we can calculate the gradient,
 $$
-\displaystyle {\begin{aligned}\nabla _{x,y,\lambda }{\mathcal {L}}(x,y,\lambda )&=\left({\frac {\partial {\mathcal {L}}}{\partial x}},{\frac {\partial {\mathcal {L}}}{\partial y}},{\frac {\partial {\mathcal {L}}}{\partial \lambda }}\right)\\[4pt]&=\left(1+2\lambda x,1+2\lambda y,x^{2}+y^{2}-1\right)\ \color {gray}{,}\end{aligned}}
+\displaystyle {\begin{aligned}\nabla _{x,y,\lambda }{\mathcal {L}}(x,y,\lambda )&=\left({\frac {\partial {\mathcal {L}}}{\partial x}}, {\frac {\partial {\mathcal {L}}}{\partial y}}, {\frac {\partial {\mathcal {L}}}{\partial \lambda }}\right)\\[4pt]&=\left(1+2\lambda x,1+2\lambda y,x^{2}+y^{2}-1\right)\ \color {gray}{,}\end{aligned}}
 $$
 By setting to zero, we get,
 $$
@@ -181,7 +179,8 @@ Suppose we pick $u$ to correspond the the direction shown in the figure (2-1). T
 In contrast, suppose had instead picked the direction as figure (2-2), the projections have a significantly smaller variance, and are much closer to the origin.
 
 ### Formalization of the Intuition
-Given a unit vector $u$ and a point $x$, the length of the projection of $x$ onto $u$ is given by $x^{T}u$. This is derived by the formula of scalar projection. 
+From the above intuition, we have to select the direction $u$ corresponding to
+the (2-1), because it has more variance which means more information (less information loss). Given a unit vector $u$ and a point $x$, the length of the projection of $x$ onto $u$ is given by $x^{T}u$. This is derived by the formula of scalar projection. 
 $$
 \text{Projection length of } x \text{ onto } u = \lvert \text{Scalar projection} \rvert = \frac{x \cdot u}{\| u \|} = x \cdot u = u^{T} x
 $$
@@ -193,7 +192,16 @@ Since we want to maximize the variance of the projections onto unit vector $u$, 
 $$
 \frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 = \frac{1}{m} \sum_{i=1}^{m} u^T x^{(i)} x^{(i)T} u = u^T \left( \frac{1}{m} \sum_{i=1}^{m} x^{(i)} x^{(i)T} \right) u
 $$
-Let's put it simply, 
+Above equation is calculating the variance of projection $u^{T}x$. Note that variance is $\text{Var}(X) = \mathbb{E}[(X - \mu)^2]$ and here, $X =  x^{(i)T} u$ as below.
+$$
+\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u - \left(\frac{1}{m}\sum_{i=1}^{m}\!\bigl(x^{(i)\!\top}u\bigr) \right)^{2} \right)^2  = \frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u - (\mu^T u)^2 \right)^2, \\[6pt]
+\text{When, } \quad \frac{1}{m}\sum_{i=1}^{m}\!\bigl(x^{(i)\!\top}u\bigr)
+\;=\;
+\left(\frac{1}{m}\sum_{i=1}^{m} x^{(i)}\right)^{\!\top} u
+$$
+Since we normalized the mean before PCA, $\mu =0$, therfore $\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 $ can be used to get variance omitting the substraction term.  
+
+Now, back to the variance and lget's put it simply, 
 $$
 \max_{ \| u \|_2 = 1 } u^T \Sigma u
 $$
