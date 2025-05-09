@@ -31,7 +31,7 @@ $$
 \nabla f(x,y,z) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right)
 $$
 
-## Derivative Function
+## Derivative Test
 In calculus, a derivative test uses the derivatives of a function to locate the critical points of a function and determine whether each point is a local maximum, a local minimum, or a saddle point. Derivative tests can also give information about the concavity of a function.
 
 | Step                       | What you do                                                                                                                                                                                                                                             | Why it matters                                                              |
