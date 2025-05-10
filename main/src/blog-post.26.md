@@ -231,16 +231,22 @@ $$
 From The equation $\Sigma u = \lambda u$, we found that it is eigenvector equation and $u$ is the eigenvector equation with $u$ is the eigen vector and $\lambda$ is the corresponding eigenvalue.  
 So in order to maximize $u^T \Sigma u$(with the constraint $\| u \|_2 = 1$), $u$ has to be the principal eigenvector and $\lambda$ is the largest eigenvalue. 
 
-#### Summary
-So we have found that if we wish to find a 1-dimensional subspace with with to approximate the data, we should choose $u$ to be the principal eigenvector of $\Sigma$.  
+### Summary
+So we have found that if we wish to find a 1-dimensional subspace with with to approximate the data, we should choose $u$ to be the principal eigenvector of $\Sigma$. Easily speaking, the line spanned by a single unit vector $u$ that best represents the data’s direction of largest variance.  
 More generally, if we wish to project our data into a $k$-dimensional subspace ($k < n$), we should choose $u_1,...,u_k$ to be the top $k$ eigenvectors of $\Sigma$.  
 For example, if $ x^{(i)} \in \mathbb{R}^n \, (n = 1000)$ and eigenvector $u=\{ u_1, u_2, \dots, u_n \} \quad (k = 10)$ then,
 $$
 x^{(i)} \Rightarrow [u_1^T x^{(i)}, u_2^T x^{(i)}, \dots, u_k^T x^{(i)}] = y^{(i)} \in \mathbb{R}^k
 $$
 You can see that $1000(=n)$ dimension $x^{(i)}$ is now $10(=k)$ dimensional vector $y^{(i)}$.  
-
-Therefore PCA also referred to as a dimensionality reduction algorithm. The vectors $u_1, \cdots, u_k$ are called the first $k$ principal components of the data.
+If you want to go back to $y$ to $x$, you can do it as below.
+$$
+x^{(i)} \approx\ y_{1}^{(i)}\,u_{1} + y_{2}^{(i)}\,u_{2} + \dots + y_{k}^{(i)}\,u_{k}, \qquad
+x^{(i)} \in \mathbb{R}^{n}
+$$
+Therefore PCA also referred to as a dimensionality reduction algorithm, because whereas $x^{(i)} \in \mathbb{R}^{n}$, the vector $y^{(i)}$ now gives a lower, k-dimensional,
+approximation/representation for $x^{(i)}$.  
+The vectors $u_1, \cdots, u_k$ are called the first $k$ principal components of the data.
 
 ## How to choose $k$?
 Since PCA maximize the variance, retain 90% of variance. (percentages could be 95%, 99% and so on)
@@ -250,8 +256,8 @@ $$
 
 ## Applicantions of PCA
  - Compression: representing $x^{(i)}$’s with lower dimension $y^{(i)}$’s is an obvious application. Also we can preprocess a dataset to reduce its dimension before running a supervised learning learning algorithm with the $x^{(i)}$’s as inputs.
- - Visualization: if we reduce high dimensional data to k = 2 or 3 dimensions, then we can also plot the  $y^{(i)}$’s to visualize the data.
- - Avoid Overfitting: reduce the complexity of the hypothesis class considered and help avoid overfitting.
+ - Visualization: if we reduce high dimensional data to 2 or 3 dimensions($k$), then we can also plot the  $y^{(i)}$’s to visualize the data.
+ - Avoid Overfitting: by reducing the data’s dimension, it reduces the complexity of the hypothesis class considered and help avoid overfitting.
  - Noise Reduction: PCA reduces noise by discarding low variance components that typically represent random or irrelevant variations(which is noise) while retaining high variance components that capture meaningful structure in the data. This is processed by representing high dimension data $x^{(i)}$’s with a much lower imensional $y^{(i)}$’s .
 
 ## Orthogonality of Principal Components
