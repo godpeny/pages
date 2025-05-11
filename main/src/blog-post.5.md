@@ -372,6 +372,9 @@ $$
 
 There are two common types of regularization: L1-norm (Lasso) and L2-norm (Ridge Regression). Both of these methods add a penalty term to the loss function, which encourages the model to use simpler fitting functions and reduces the magnitude of the model parameters.
 
+### Whitening transformation
+https://en.wikipedia.org/wiki/Whitening_transformation
+
 ### Standard Normalization
 In mathematical statistics, a random variable $$ is standardized by subtracting its expected value $\operatorname {E} [X]$ and dividing the difference by its standard deviation $\sigma (X)={\sqrt {\operatorname {Var} (X)}}$,
 $$
