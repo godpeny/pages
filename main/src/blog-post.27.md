@@ -187,7 +187,7 @@ Also, sign changes do not matter,and $s_k^{(i)}$ and $−s_k^{(i)}$ sound identi
 It turns out that these two are the only ambuguities so long as the sources $s$ are non-Gaussian.   
 Let's see what the difficulty is with Gaussian data. But before move on, you should know several notes as below.
 
- - Note 1: In ICA, the source signals $s$ are typically assumed to have zero mean and unit variance (variance = 1). 
+ - Note 1: In ICA, the source signals $s$ are typically assumed to have zero mean and unit variance (variance = 1). So technically $s$ has to be standard normal distribution. If $s$ is normally distributed, using Whitening transformation to make it standard distribution.
  - Note 2: Also Note that the contours of the density of the standard normal distribution $N(0,I)$ are circles centered on the origin, and the density is rotationally symmetric. 
  - Note 3: A multivariate Gaussian distribution(which is $s$ in this case) has a spherical symmetry in high dimensions. This means that any orthogonal rotation of $s$ will still be Gaussian.
 
@@ -280,4 +280,33 @@ x^{(i)T} + (W^T)^{-1}
 \right)
 $$
 Where $\alpha$ is learning rate.
-After the algorithm converges, compute $s^{(i)} = Wx^{(i)}$ to recover the original sources $s$.
+After the algorithm converges, compute $s^{(i)} = Wx^{(i)}$ to recover the original sources $s$.  
+Mathmatic derivation of gradient of log sigmod function is as below.
+$$
+g(u)=\sigma(u)=\frac{1}{1+e^{-u}}
+\;\;\Longrightarrow\;\;
+g'(u)=\sigma(u)\bigl(1-\sigma(u)\bigr) \\[6pt]
+\log g'(u)
+=\log\!\bigl[\sigma(u)\bigl(1-\sigma(u)\bigr)\bigr]
+=\underbrace{\log\sigma(u)}_{\text{term A}}
++\underbrace{\log\!\bigl(1-\sigma(u)\bigr)}_{\text{term B}} \\[6pt]
+\text{Term A:}\quad
+\frac{d}{du}\log\sigma(u)
+=\frac{\sigma'(u)}{\sigma(u)}
+=\frac{\sigma(u)\bigl(1-\sigma(u)\bigr)}{\sigma(u)}
+=1-\sigma(u).
+\\[6pt]
+\text{Term B:}\quad
+\frac{d}{du}\log\!\bigl(1-\sigma(u)\bigr)
+=-\frac{\sigma'(u)}{1-\sigma(u)}
+=-\,\frac{\sigma(u)\bigl(1-\sigma(u)\bigr)}{1-\sigma(u)}
+=-\sigma(u).
+\\[6pt]
+\frac{d}{du}\log g'(u)
+=\bigl(1-\sigma(u)\bigr)-\sigma(u)
+=\boxed{\,1-2\sigma(u)\,}.
+$$
+Also, Since $(W^{\top})^{-1} \;=\; \bigl(W^{-1}\bigr)^{\!\top}$ and $\nabla_W |W| = |W| (W^{-1})^T$, mathmatic derivation of gradient  log determinant of $W$ can be expressed as below.
+$$
+\nabla_{W}\,\log\bigl|W| = \bigl(W^{-1}\bigr)^{\!\top}
+$$
