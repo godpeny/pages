@@ -13,7 +13,7 @@ MCP is an open protocol that standardizes how applications provide context to LL
  - https://www.anthropic.com/news/model-context-protocol
  - https://modelcontextprotocol.io/introduction
 
- ### How It is Implemented (Focusesd on tools)
+ ### How It is Implemented (Focused on tools)
  참고: https://github.com/modelcontextprotocol/python-sdk
 
 MCP 서버와 클라이언트가 있을 때, 이 둘은 프로토콜로 각자의 리퀘스트와 리스폰스를 정의한다. 이 프로토콜은 Schema 이며 레퍼런스로 삼은 python-sdk 기준으로는 "pydantic"을 사용해서 validation을 한 Schema 이다.  
@@ -60,8 +60,8 @@ all_tools = []
                 "Please use only the tools that are explicitly defined above."
             )
 ```
-클라이언트는 서버의 tool 리스트를 받아오고, tool의 description을 파싱한 정보를 이용해서 쿼리 질의용 메시지를 만든다.
-이 질의를 통해서 LLM은 질의 내용에 따라서 어떤 Tool을 써야 할지, 어떻게 응답값을 주어야 할지를 알게 된다.
+클라이언트는 서버의 tool 리스트를 받아오고, tool의 description을 파싱한 정보를 이용해서 llm 질의용 메시지를 만든다.
+이 llm 질의용 메시지를 통해서 llm은 어떤 Tool을 써야 할지, 어떻게 응답값을 주어야 할지를 알게 된다.
 
 ```python
 # mcp-client
@@ -92,11 +92,12 @@ llm_response = self.llm_client.get_response(messages)
         except json.JSONDecodeError:
             return llm_response
 ```
-사전에 llm에게 response 값의 포맷을 알려주었기 때문에 이 포캣을 파싱해서 tool 사용을 llm 이 요청을 하였는 지 확인할 수 있고, 요청 하였을 시 이를 실행하고 응답값을 다시 기존 컨텍스트에 넘겨주게 된다.
+사전에 llm에게 response 값의 포맷을 알려주었기 때문에 이 포맷을 파싱해서 tool 사용을 llm 이 요청을 하였는 지 확인할 수 있고, 요청 하였을 시 이를 실행하고 응답값을 다시 기존 컨텍스트에 넘겨주게 된다.
 
 MCP 서버는 mcp-tools를 구현 해서 준비하는 것이 역할의 전부이다. 아래를 참고해보자.
 
 ```python
+# mcp-server
  app = Server("mcp-website-fetcher")
 
  @app.call_tool()
