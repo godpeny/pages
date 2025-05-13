@@ -131,8 +131,20 @@ One efficient algorithm for solving finite-state MDP is value iteration.
     For every state, update $V(s) := R(s) + \max_{a \in A} \gamma \sum_{s' \in S} P_{sa}(s') V^*(s')$   
 }  
 
-In value iteration, the {\displaystyle \pi } function is not used and instead value function is used.
-This can be interpreted as repeatedly trying to update the estimated value function using Bellman Equations.  
+In value iteration, the $\pi$ function is not used and instead value function is used.
+This can be interpreted as repeatedly trying to update the estimated value function using Bellman Equations.  So more precisely, 
+$$
+V_{k+1}(s)
+\;=\;
+R(s)
+\;+\;
+\gamma\;
+\max_{a\in A}
+\sum_{s'} P_{s a}(s')\,V_{k}(s').
+$$
+Note that each new estimate $V_{k+1}(s)$ is defined with the current estimates 
+$V_{k}(s)$ on the right-hand side. In other words, you keep applying this Bellman-update operator until the entire vector $V_{k}$ stops changing (converges).  So the recursion is not a separate process for every possible starting state; there is one global value function $V$ that is repeatedly fed back into its own right-hand side.  
+
 Also there are two ways of performing the updates.
  - Synchronous Update: compute the new values for $V(s)$ for every state $s$, and then overwrite all the old values with the new values.
  - Asynchronous Update: loop over the states (in some order) and update the values one at a time.
