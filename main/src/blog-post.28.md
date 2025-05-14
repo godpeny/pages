@@ -164,6 +164,14 @@ Apart from value iteration, there is a second standard algorithm for finding an 
 For small MDPs, policy iteration is often very fast and converges with very few iterations.  
 However, for MDPs with large state spaces, solving for $V^{\pi}$ explicitly would involve solving a large system of linear equations, and could be difficult. 
 
+### Value Iteration vs Policy Iteration
+ - VI: Solve for the $V^{*}$ first, then compute $\pi^*(s)$.
+ - PI: Solve Come up with the new policy on every single iteration.   
+
+
+For small MDPs, policy iteration is often very fast and converges with very few iterations.  
+However, for MDPs with large state spaces, solving for $V^{\pi}$$ explicitly would involve solving a large system of linear equations, and could be difficult. In these problems, value iteration may be preferred.
+
 ### MDP Model Learning
 In many realistic problems, we are not given state transition probabilities and rewards explicitly,
 but must instead estimate them from data. ($S$, $A$ and $\gamma$)  
