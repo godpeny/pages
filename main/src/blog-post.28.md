@@ -213,13 +213,14 @@ The alternative method for finding policies in continuous state MDPs, in which w
 Discretization is the process of transferring continuous functions, models, variables, and equations into discrete counterparts. 
 연속적인 함수, 모델, 변수, 방정식을 이산적인 구성요소로 변환하는 프로세스이다. 이 프로세스는 일반적으로 디지털 컴퓨터에서 수치적 평가 및 구현에 적합하도록 하는 첫 단계로 수행된다.
 
-#### Downside of Discretization in Continuous State MDPs
-First, It is a fairly naive representation for value function ($V$) and policy($\pi$).  
+#### Downsides of Discretization in Continuous State MDPs
+First, It is a fairly naive representation for value function ($V$) and policy($\pi$). We need a very fine discretization (very small grid cells) to get a
+good approximation.  
 Second, because of the curse of dimensionality.  
 Suppose $S = \mathbb{R}^{n}$, and we discretize each of the $n$ dimensions of the state into $k$ values. Then the total number of discrete states we have is $k^{n}$.  
 This grows exponentially quickly in the dimension of the state space $n$, and thus does not scale well to large problems.  
 For example, with a $10$-d state, if we discretize each state variable into $100$ values, we would have $100^{10} = 1020$ discrete states, which is far too many to represent.  
-Therefore, discretization very rarely works for problems any higher dimensional than certain number.
+Therefore, as a rule of thumb, discretization usually works extremely well for $1$-d and $2$-d problems, but very rarely works for problems with any higher dimensional.
 
 ### Value Function Approximation
 The alternative method for finding policies in continuousstate MDPs, in which we approximate $V^{*}$ directly, without resorting to discretization.  
