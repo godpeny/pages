@@ -267,7 +267,7 @@ $$
 s_{t+1} = A s_t + B a_t + \epsilon_t
 $$
 Where $\epsilon_t$ is a noise term, usually modeled as $\epsilon_t \sim \mathcal{N}(0, \Sigma)$.  
-The reason why adding noise is that without noise(= deterministirc model) algorithm might work in the simulator but not in real time. This is because your simulator can never be 100% accurate so adding noise to the simulator can make more roubst policy out of the model. So the odds of generalizaing to real time is much higher.
+The reason why adding noise is that without noise(= deterministirc model) algorithm might work in the simulator but not in real time. This is because your simulator can never be 100% accurate so adding noise to the simulator can make more robust policy out of the model. So the odds of generalizaing to real time is much higher.
 
 ##### Model-Based RL vs Model-Free RL
  - Model-Based RL: Build a model and train the algorithm in the model. Then, take the policy learned from the model and apply it to the real time.
@@ -276,7 +276,13 @@ The reason why adding noise is that without noise(= deterministirc model) algori
 #### Fitted Value Iteration
 Let's recall the value iteration from discrete MDP from above section, which repeat below equation until convergence.  
 $$
-V(s) := R(s) + \max_{a \in A} \gamma \sum_{s' \in S} P_{sa}(s') V^*(s')
+V_{k+1}(s)
+\;=\;
+R(s)
+\;+\;
+\gamma\;
+\max_{a\in A}
+\sum_{s'} P_{s a}(s')\,V_{k}(s')
 $$
  - The first term $R(s)$: An immediate reward that we get rightaway simply for starting in state $s$.
  - The second term: The maximum over all actions $a$ of the expected future sum of discounted rewards we’ll get upon after action $a$. (the expected sum of future discounted rewards)
@@ -305,7 +311,7 @@ Where $\phi(s)$ is a feature mapping of state $s$.
 &emsp;&emsp;&emsp;Sample $s'_1, \cdots, s'_k ∼ P_{s^{(i)}a}$ (using a model of the MDP)  
 &emsp;&emsp;&emsp;Set $q(a) = \frac{1}{k} \sum_{j=1}^{k} R(s^{(i)}) + \gamma V(s'_j)$  
 &emsp;&emsp;}  
-&emsp;&emsp;Set $y(i) = \max_{a} q(a)$.  
+&emsp;&emsp;Set $y^{(i)} = \max_{a} q(a)$.  
 &emsp;&emsp;}  
 $\theta := \arg\min_{\theta} \frac{1}{2} \sum_{i=1}^{m} \left( \theta^T \phi(s^{(i)}) - y^{(i)} \right)^2$  
 }
@@ -315,9 +321,11 @@ $$
 R(s^{(i)}) + \gamma \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right] = \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[R(s^{(i)}) + \gamma V(s') \right]
 $$
 And since we don’t know the exact transition probabilities, we approximate this expectation using sampled next states $s'_j$.
-In short, $q(a)$ is an estimate of the expected future due to approximation via sampling.
-
-Similarly, $y(i)$ is an estimate of $R(s^{(i)}) + \gamma \max_{a} \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right]$.
+In short, $q(a)$ is an estimate of the expected future due to approximation via sampling and $y^{(i)}$ is the best $q(a)$ for this state.
+$$
+q(a) = R\!\bigl(s^{(i)}\bigr) + \gamma\,\mathbb{E}_{\,s' \sim P_{s^{(i)}a}}\!\bigl[\,V(s')\,\bigr] \\[6pt]
+y^{(i)} = R(s^{(i)}) + \gamma \max_{a} \mathbb{E}_{s' \sim P_{s^{(i)} a}} \left[ V(s') \right]
+$$
 
 Since we defined value function as a linear or non-linear function of the sampled $m$ states, $V(s^{(i)}) =  \theta^T \phi(s^{(i)})$ and we want $V(s^{(i)}) \approx y^{(i)}$, we’ll be using supervised learning (linear regression).  
 $$
