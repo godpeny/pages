@@ -607,6 +607,19 @@ In general, the strong sample complexity is infinite, i.e. that there is no algo
 But If we are only interested in a particular class of target functions (e.g., only linear functions) then the sample complexity is finite, and it depends linearly on the VC dimension on the class of target functions.
 
 ## Hyperparameter Tunning in practice
+### Choose Hyperparameters
+![alt text](images/blog23_hyperparameters_tunning_1.png)
+First way to sample hyprerparameter is to go random. When there are many hyperparameters, it is hared to tell which is important hyperparameter. So go random helps richly exploring the set of possible values for the most important hyperparameters.  
+Second method is to try few sets of hyperparameters and if they are fine, choose set from the smaller region among those sets.
+
+### Scale of Hyperparameters
+![alt text](images/blog23_hyperparameters_tunning_2.png)
+When choosing hyperparameters, it is bad idea to choose on linear scale. If you choose on linear scale, for example learning rate, you have 10% chance to choose from $0.001$ ~ $0.1$ and 90% chance to choose from $0.1% to $1$.  
+Additionally, when choosing $\beta$ from exponentially weighted averages, as $\beta$ is close to $1$, sensitivity of the result changes even with the small change of $\beta$.
+
+### Panda vs Caviar
+ - Panda: Babysitting one model.
+ - Caviar: Training many models in parallels.
 
 ## Batch Normalization (Normalizing Activation Functions)
 
