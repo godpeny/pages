@@ -194,11 +194,23 @@ $$
 \theta_j := \theta_j + \alpha \left( y^{(i)} - h_\theta \left( x^{(i)} \right) \right) x_j^{(i)} \quad (\text{for every } j).
 $$
 
-- Mini-batch: a compromise between batch and stochastic gradient descent. The training dataset is split into smaller subsets, called mini-batches. Then, calculate gradients on each mini-batch and update the model parameters until convergence.  
+- Mini-batch: a compromise between batch and stochastic gradient descent. The training dataset is split into smaller subsets, called mini-batches. Then, calculate gradients on each mini-batch and update the model parameters until convergence. When $B$ is the size of mini batch, 
 $$
 J_{\text{mb}} = \frac{1}{B} \sum_{i=1}^{B} \mathcal{L}^{(i)}
 $$
-Where $B$ is the size of mini batch.
+
+#### Mini Batch
+![alt text](images/blog8_mini_batch.png)
+As you can see from above note, when $m=5000000$, you can split whole $m$ into $1000$ each and have $5000$ mini batches.  
+Each batch can be expressed as $X^{\{t\}}, Y^{\{t\}}$.
+
+When gradient descent on mini batch, you run $1$ step of gradient descent using $X^{\{t\}}, Y^{\{t\}}$.
+
+##### Choosing Mini Batch Size
+When mini batch size is $m$, it is same as batch gradient descent, while if size is $1$, it is same as stochastic gradient descent. In practice, you choose in between(mini batch).  
+If you use stochastic gradient descent, you will lose speedup from vectorization and if you use batch gradient descent, each iteration is too long, by using mini batch with choosing appropriate batch size, you can have two advantages. First, you can take advantage of vectorization. Second, you can make progress without processing entire training set.
+
+Typical batch size is $64, 128, 256, 512, \cdots$. Make sure to fit in your CPU/GPU memory.
 
 ### Why Gradient Descent goes to steepest part?
 Because Gradient is the steepest ascent(or descent).
