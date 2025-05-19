@@ -250,6 +250,12 @@ $$
 $$  
 
 ### Exponentially Weighted (Moving) Averages
+Exponential moving average(EMA) is a rule of thumb technique for smoothing time series data using the exponential window function. (window function is a mathematical function that is zero-valued outside of some chosen interval)  
+$$
+V_t \;=\; \beta\,V_{t-1} \;+\; (1-\beta)\,\Theta_t
+$$
+The raw data sequence is often represented by $\Theta_t$ beginning at time $\{ t=0 \}$, and the output of the exponential smoothing algorithm is commonly written as $V_t$, which may be regarded as a best estimate of what the next value of $\Theta$ will be.
+
 #### Bias Correction
 
 ### Gradient Descent with Momentum
