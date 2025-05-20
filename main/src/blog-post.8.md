@@ -256,6 +256,78 @@ V_t \;=\; \beta\,V_{t-1} \;+\; (1-\beta)\,\Theta_t
 $$
 The raw data sequence is often represented by $\Theta_t$ beginning at time $\{ t=0 \}$, and the output of the exponential smoothing algorithm is commonly written as $V_t$, which may be regarded as a best estimate of what the next value of $\Theta$ will be.
 
+#### Mean Lag ($E[k]$) vs Effective Widnow($N_{\mathrm{eff}}$) in EMA 
+$V_t$ can be calcuated as below
+$$
+V_t \;=\; \beta\,V_{t-1} \;+\; (1-\beta)\,\theta_t,
+\qquad 0 < \beta < 1. \\[6pt]
+V_t \;=\; (1-\beta)\sum_{k=0}^{\infty} \beta^{k}\,\theta_{t-k}.
+$$
+
+Hence the weight assigned to the sample that occurred $k$ time-steps ago is,
+$$
+(1-\beta)\,\beta^{k}
+$$
+
+A lag is simply how many steps back in time you look from the present observation. So the average lag of a data point, measured with the same exponential weights the EMA uses can be expressed as below.
+$$
+\mathbb{E}[K]
+\;=\;
+\sum_{k=0}^{\infty} k\,(1-\beta)\,\beta^{k}
+$$
+It is derived by the expectation (mean) of a discrete random variable, when $p(k) is the probability.
+$$
+\mathbb{E}[K]
+\;=\;
+\sum_{k} (\text{value }k)\,p(k)
+\;=\;
+\sum_{k} k\,p(k)
+$$
+
+This can be expressed in simpler form. Let's follow the mathmatic derivation below.
+$$
+S(\beta)
+=\sum_{k=0}^{\infty}\beta^{k}
+=\frac{1}{1-\beta} \\[6pt]
+
+\frac{dS}{d\beta}
+=\sum_{k=0}^{\infty} k\,\beta^{k-1}
+=\frac{1}{(1-\beta)^{2}} \\[6pt]
+
+\sum_{k=0}^{\infty} k\,\beta^{k}
+\;=\;
+\beta\,\frac{dS}{d\beta}
+\;=\;
+\frac{\beta}{(1-\beta)^{2}} \\[6pt]
+
+\mathbb{E}[K]
+\;=\;
+(1-\beta)\sum_{k=0}^{\infty} k\,\beta^{k}
+\;=\;
+(1-\beta)\,\frac{\beta}{(1-\beta)^{2}}
+\;=\;
+\boxed{\dfrac{\beta}{1-\beta}}
+$$
+
+Therefore, $E[k]$ is the average lag you would get if you drew one sample at random, with probability proportional to its weight.  
+For example, if $\beta = 0.9$, $E[k]$ = 9$.
+E[K]=9. This tells that, on average, the “weight-picked” sample comes from ~9 steps in the past. When $\beta = 0.98$, $E[k]$ = 49$. This tells that, on average, the “weight-picked” sample comes from ~49 steps in the past.
+
+Simply speaking, $E[k]$ indicates "On average, how many steps back does the bulk of the weight sit?".
+
+Lastly, let's add $1$ to the $E[k]$ to convert average lag into average window size. We add $1$ because The mean lag $E[k]$ excludes the present sample ($k=0$) contributes zero to the mean, so practitioners often add 1 to include “today” and obtain a window-length scale.
+$$
+N_{\mathrm{eff}}
+\;=\;
+\mathbb{E}[K] + 1
+\;=\;
+\frac{\beta}{1-\beta}+1
+\;\approx\;
+\frac{1}{1-\beta}.
+$$
+Therefore, $E[k]$ (Centre of mass) tells where the weighted average lag sits. (A point.)
+However, $N_{\mathrm{eff}}$ (Effective window length) tells how many recent samples you need before the older ones are practically negligible. In other words, “about how many of the most-recent samples carry most of the weight” in an exponential moving average, (A width.)
+
 #### Bias Correction
 
 ### Gradient Descent with Momentum
