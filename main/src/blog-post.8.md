@@ -328,7 +328,18 @@ $$
 Therefore, $E[k]$ (Centre of mass) tells where the weighted average lag sits. (A point.)
 However, $N_{\mathrm{eff}}$ (Effective window length) tells how many recent samples you need before the older ones are practically negligible. In other words, “about how many of the most-recent samples carry most of the weight” in an exponential moving average, (A width.)
 
-#### Bias Correction
+#### Bias Correction in EMA
+Bias correction is generally a method used to adjust estimates that are systematically different from the true values.  
+This is particularly important in scenarios where initial conditions or limited data can skew the results. One common case is in exponentially weighted moving averages, where the initial values can heavily influence the early part of the sequence, leading to inaccurate approximations.
+
+$$
+v_t \;=\; \beta\,v_{t-1} \;+\; (1-\beta)\,\theta_t,
+\\[6pt]
+\frac{v_t}{\,1-\beta^{\,t}}
+$$
+
+Instead of directly using the computed values $v_t$​, they are divided by a correction factor of $(1-\beta^{\,t})$, where $\beta$ is the weighting factor and $t$ is the iteration number.  
+This scaling factor adjusts the initial values upwards, compensating for the initial bias. As $t$ increases, the denominator approaches $1$, reducing the impact of the correction over time.
 
 ### Gradient Descent with Momentum
 ### Root Mean Square Propagation (RMSProps)
