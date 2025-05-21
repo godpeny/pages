@@ -49,7 +49,8 @@ $$
 \end{aligned}
 $$
 
-
+## Gradients vs Derivatives
+https://medium.com/@meisjoe8/difference-between-derivative-gradient-and-jacobian-3d0674494c62
 
 ## Jacobian vs Gradients vs Hessian vs Laplacian
 https://darkpgmr.tistory.com/132
