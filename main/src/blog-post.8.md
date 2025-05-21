@@ -310,8 +310,8 @@ S(\beta)
 $$
 
 Therefore, $E[k]$ is the average lag you would get if you drew one sample at random, with probability proportional to its weight.  
-For example, if $\beta = 0.9$, $E[k]$ = 9$.
-E[K]=9. This tells that, on average, the “weight-picked” sample comes from ~9 steps in the past. When $\beta = 0.98$, $E[k]$ = 49$. This tells that, on average, the “weight-picked” sample comes from ~49 steps in the past.
+For example, if $\beta = 0.9$, $E[k] = 9$.
+E[K]=9. This tells that, on average, the “weight-picked” sample comes from ~9 steps in the past. When $\beta = 0.98$, $E[k] = 49$. This tells that, on average, the “weight-picked” sample comes from ~49 steps in the past.
 
 Simply speaking, $E[k]$ indicates "On average, how many steps back does the bulk of the weight sit?".
 
@@ -342,6 +342,33 @@ Instead of directly using the computed values $v_t$​, they are divided by a co
 This scaling factor adjusts the initial values upwards, compensating for the initial bias. As $t$ increases, the denominator approaches $1$, reducing the impact of the correction over time.
 
 ### Gradient Descent with Momentum
+![alt text](images/blog8_momentum.png)
+When gradient descent, you might osciliate on every iteration as blue line in the image. You want to slow down up-and-down learning (vertical axis) while you want faster learning on horizontal axis.  
+So this is where momentum jumped in. Momentum is a concept from physics where an object’s motion depends not only on the current force but also on its previous velocity.  
+In the context of gradient optimization, it refers to a method that smoothens the optimization trajectory by adding a term that helps the optimizer remember the past gradients.
+
+On every iteration t,
+$$
+\begin{aligned}
+v_{\!dW} &\;=\; \beta\,v_{\!dW} \;+\;(1-\beta)\,\Delta W, \\
+v_{\!db} &\;=\; \beta\,v_{\!db} \;+\;(1-\beta)\,\Delta b,
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+W &\;:=\; W \;-\;\alpha\,v_{\!dW},\\
+b &\;:=\; b \;-\;\alpha\,v_{\!db}
+\end{aligned}
+$$
+
+$\beta$ is momentum factor that controls how much of the past gradients are remembered in the current update. A momentum factor value close to 1 means the optimizer will have more inertia while a value closer to 0 means less reliance on past gradients.  
+So you can also think $v_{\!dW}$ and $\beta\,v_{\!db}$ terms as previous velocity, while $(1-\beta)\,\Delta W$ $(1-\beta)\,\Delta b$ as acceleration.  
+Since $\beta$ controlls the EMA, if $\beta = 0.9$ (which is the most common case), it is averaging last 10 datapoints.  
+Additionally, you don't usually use bias correction in momentum, because in practice, after just $10$ iteration, there is no bias estimate.
+
+How can momentum slow-down the vertical osciliation while moving horizontally? Since derivatives'osciliate up and down on every iteration, the average of these gradients in vertical direction is close to $0$. On horizontal direction, however, all the derivatives are directing to the same direction. So the average in horizontal direction is still big. 
+
 ### Root Mean Square Propagation (RMSProps)
 ### Adam Optimization Algorithm
 ### Learning Rate Decay
