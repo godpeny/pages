@@ -372,6 +372,17 @@ $$
 
 There are two common types of regularization: L1-norm (Lasso) and L2-norm (Ridge Regression). Both of these methods add a penalty term to the loss function, which encourages the model to use simpler fitting functions and reduces the magnitude of the model parameters.
 
+### Types of Normalization
+There are two main forms of normalization, namely data normalization and activation normalization.    
+Data normalization (or feature scaling) includes methods that rescale input data so that the features have the same range, mean, variance, or other statistical properties.  
+Activation normalization, on the other hand, is specific to deep learning, and includes methods that rescale the activation of hidden neurons inside neural networks. Usually apply normalization before activation function. (= normalize $z$)
+
+
+### Why do we Normalize?
+ - Throughout the learning process, it guarantees that every feature contributes equally, preventing larger-magnitude features from overshadowing others when working with attributes that have different scales. Otherwise, the effectiveness of a significant attribute that is equally important (on a lower scale) could be diluted due to other attributes having values on a larger scale.
+ - Faster convergence of algorithms for optimisation, especially those that depend on gradient descent. This is because Normalization reduces the sensitivity of the cost function to feature scales, making the contours of the cost function more circular and less elongated. This allows gradient descent to converge faster, as it can take larger steps towards the minimum without oscillating wildly. 
+ - Similarly, Normalization helps to stabilize the optimization process and reduce the risk of exploding or vanishing gradients, which can slow down or prevent learning. It allows the model to reach optimal solutions more quickly and reliably. 
+
 ### Whitening transformation
 https://en.wikipedia.org/wiki/Whitening_transformation
 
