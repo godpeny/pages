@@ -347,7 +347,7 @@ When gradient descent, you might osciliate on every iteration as blue line in th
 So this is where momentum jumped in. Momentum is a concept from physics where an object’s motion depends not only on the current force but also on its previous velocity.  
 In the context of gradient optimization, it refers to a method that smoothens the optimization trajectory by adding a term that helps the optimizer remember the past gradients.
 
-On every iteration t,
+On every iteration $t$,
 $$
 \begin{aligned}
 v_{\!dW} &\;=\; \beta\,v_{\!dW} \;+\;(1-\beta)\,\Delta W, \\
@@ -370,8 +370,109 @@ Additionally, you don't usually use bias correction in momentum, because in prac
 How can momentum slow-down the vertical osciliation while moving horizontally? Since derivatives'osciliate up and down on every iteration, the average of these gradients in vertical direction is close to $0$. On horizontal direction, however, all the derivatives are directing to the same direction. So the average in horizontal direction is still big. 
 
 ### Root Mean Square Propagation (RMSProps)
-### Adam Optimization Algorithm
+When $W_1$ is vertical axis and $W_2$ is horizontal axis, RMSProps does,
+
+On every iteration $t$,
+$$
+S_{dW_1} \;=\; \beta_{2}\,S_{dW_1} \;+\; (1-\beta_{2})\,(\mathrm{d}W_1)^{2} \\
+S_{dW_2} \;=\; \beta_{2}\,S_{dW_2} \;+\; (1-\beta_{2})\,(\mathrm{d}W_2)^{2} \\[10pt]
+
+W _1\;:=\; W_1 \;-\; 
+\alpha\,\frac{\mathrm{d}W_1}{\sqrt{\,S_{dW_1}+\varepsilon\,}}, \quad
+W _2\;:=\; W_2 \;-\; 
+\alpha\,\frac{\mathrm{d}W_2}{\sqrt{\,S_{dW_2}+\varepsilon\,}}
+$$
+$\epsilon$: to prevent $0$.  
+$\beta_2$ is decay rate which determines how quickly the moving average of squared gradients decays.  
+
+Let's say during the learning, the osciliation of $W_1$ axis(vertical) is large and osciliation of $W_2$ is small.  
+Then, $\mathrm{d}W_1^{2}$ is also big and so is $S_{dW_1}$. However, $\mathrm{d}W_2^{2}$ and $S_{dW_2}$ will be small.  
+
+Now when updating each parameter $W_1$ and $W_2$, each parameters is being updated using the scaled factor. Which meants that if the vertical direction ($\mathrm{d}W_1$) is large, it will be divided by relatively large factor ($S_{dW_1}$),
+while horizontal direction is divided by the smaller factor ($S_{dW_2}$).  
+So the updates of each parameters are appropriately scaled for each parameter and reduce the osciliation during learning.
+
+### Adaptive Moment Estimation Optimization Algorithm (ADAM)
+Adam optimizer combines the momentum and RMSprop techniques to provide a more balanced and efficient optimization process.
+
+On every iteration $t$,
+$$
+\textbf{1. Update the first-moment estimates (momentum, \(\beta_1\))} \\
+v_{dW_1} \;=\; \beta_{1}\,v_{dW_1} \;+\;(1-\beta_{1})\,\Delta W_1,
+\qquad
+v_{dW_2} \;=\; \beta_{1}\,v_{dW_2} \;+\;(1-\beta_{1})\,\Delta W_2 \\[10pt]
+
+\textbf{2. Update the second-moment estimates (RMSProp, \(\beta_2\))} \\
+S_{dW_1} \;=\; \beta_{2}\,S_{dW_1} \;+\;(1-\beta_{2})\,(\Delta W_1)^{2},
+\qquad
+S_{dW_2} \;=\; \beta_{2}\,S_{dW_2} \;+\;(1-\beta_{2})\,(\Delta W_2)^{2} \\[10pt]
+
+\textbf{3. Bias correction} \\
+V^{\text{corr}}_{dW_1} \;=\; \frac{v_{dW_1}}{1-\beta_{1}^{\,t}},
+\qquad
+V^{\text{corr}}_{dW_2} \;=\; \frac{v_{dW_2}}{1-\beta_{1}^{\,t}},
+\\
+S^{\text{corr}}_{dW_1} \;=\; \frac{S_{dW_1}}{1-\beta_{2}^{\,t}},
+\qquad
+S^{\text{corr}}_{dW_2} \;=\; \frac{S_{dW_2}}{1-\beta_{2}^{\,t}} \\[10pt]
+
+\textbf{4. Parameter update} \\
+W_1
+\;:=\;
+W_1
+\;-\;
+\alpha\,
+\frac{v^{\text{corr}}_{dW_1}}
+{\sqrt{S^{\text{corr}}_{dW_1}+\varepsilon}},
+\qquad
+W_2
+\;:=\;
+b
+\;-\;
+\alpha\,
+\frac{v^{\text{corr}}_{db}}
+{\sqrt{S^{\text{corr}}_{db}+\varepsilon}}
+$$
+$\alpha$: The learning rate or step size. (needs to be tuned)  
+$\beta_1, \beta_2$​: Decay rates for the moving averages of the gradient and squared gradient. (0.9 for $\beta_1$ and 0.999 for $\beta_2$ in general)  
+$\epsilon$: A small positive constant used to avoid division by zero when computing the final update. ($10^{-8}$ in general)  
+
 ### Learning Rate Decay
+Throughout the training phase, learning rate decay entails gradually lowering the learning rate.  
+Learning rate decay is used to gradually adjust the learning rate, usually by lowering it, to facilitate the optimization algorithm's more rapid convergence to a better solution.  
+In machine learning, the learning rate determines how much the model changes based on the mistakes it makes. If it's too high, the model might miss the best fit; too low, and it's too slow. Learning rate decay starts with a higher learning rate, letting the model learn fast. As training progresses, the rate gradually decreases, making the model adjustments more precise. 
+$$
+\alpha_1
+\;=\;
+\frac{1}{\,1 + \text{decay\_rate}\;\times\;\text{epoch\_num}\,} \alpha_{0}
+$$
+Where $\alpha_{0}$ is initail learning rate. So if $\alpha_{0}$ is $0.2$,
+$$
+\begin{array}{c|c}
+\textbf{Epoch} & \boldsymbol{\alpha} \\ \hline
+0 & 0.2 \\
+1 & 0.1 \\
+2 & 0.067 \\
+3 & 0.05 \\
+4 & 0.04 \\
+\vdots & \vdots \\
+i & \alpha_i
+\end{array}
+$$
+
+Other learning rate decay oehtes are,
+$$
+\alpha \;=\; 0.95^{\,\text{epoch\_num}}\;\alpha_{0} \\[6pt]
+\alpha
+\;=\;
+\frac{k}{\sqrt{\text{epoch\_num}}}\;\alpha_{0} \\[6pt]
+\alpha
+\;=\;
+\frac{k}{\sqrt{t}}\;\alpha_{0},
+$$
+Or using discrete stair case like below pic.
+![alt text](images/blog8_learning_rate_decay_discrete_staircase.png)
+
 
 ### Normal Equation
 ### Jacobian with Matrix
