@@ -622,5 +622,50 @@ Additionally, when choosing $\beta$ from exponentially weighted averages, as $\b
  - Caviar: Training many models in parallels.
 
 ## Batch Normalization (Normalizing Activation Functions)
+Remind that normalization is as below.
+$$
+\mu \;=\; \frac{1}{m}\,\sum_{i=1}^{m} x^{(i)} \qquad
+\tilde{X} \;=\; X - \mu \\[6pt]
+\sigma^{2} \;=\; \frac{1}{m}\,\sum_{i=1}^{m} \bigl(\tilde{x}^{(i)}\bigr)^{2} \qquad
+\hat{X} \;=\; \frac{\tilde{X}}{\sigma}
+$$
+
+Batcn Normalization is one kind of activation normalization that relies on batch statistics. Let's consider batch norm for a certain hidden layer $l$ of train sets from $1$ to $m$.
+$$
+\mu^{[l]}
+\;=\;
+\frac{1}{m}\,
+\sum_{i=1}^{m} z^{[l](i)} \\[6pt]
+
+\bigl(\sigma^{[l]}\bigr)^{2}
+\;=\;
+\frac{1}{m}\,
+\sum_{i=1}^{m}
+\Bigl(z^{[l](i)} - \mu^{[l]}\Bigr)^{2} \\[6pt]
+
+\tilde z^{[l](i)}_{\text{norm}}
+\;=\;
+\frac{\;z^{[l](i)}-\mu^{[l]}\;}
+     {\sqrt{(\sigma^{[l]})^{2}+\varepsilon}},
+\qquad
+\text{now mean $0$ and variance $1$}
+$$
+Now, you can use $\tilde z$ instead of $z$. If you want to set mean and variance different than ($0,1$), you can do as below.
+$$
+\tilde z^{[l](i)}
+\;=\;
+\gamma^{[l]}\,z^{[l](i)}_{\text{norm}} + \beta^{[l]}
+$$
+Note that $\tilde z^{[l](i)} = z^{[l](i)}$,  if,
+$$
+\gamma^{[l]} = \sqrt{(\sigma^{[l]})^{2} + \varepsilon},
+\quad
+\beta^{[l]}  = \mu^{[l]}
+$$
+
+
+
+
+
 
 ## The Problem of Local Optima
