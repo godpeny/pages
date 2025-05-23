@@ -663,9 +663,20 @@ $$
 \beta^{[l]}  = \mu^{[l]}
 $$
 
+In batch normalization, subtracting the batch mean removes any constant shift. So the entire constant shift—including bias vanishes.  
+Since the batch-norm normalizes $z^{[l]}$ to mean $0$ and standard variance $1$ and then rescales by $\gamma^{[l]}$ and $\beta^{[l]}$, bias $b^{[l]}$ will be subtracted out.
 
+### Why does Batch Normalization Works?
+During Learning process, you might run on the shifting input distribution (Covariate Shift). So from $X$-$Y$ mapping, if the distribution of $X$ changes, you might need to retrain the learning algorithm.
 
+The batch norm reduces the amount the distribution of these $a^{[l]}$'s (hidden layers) values shift occured. This is because 
+batch norm assures that no matter how $z^{[l]}$'s changes, the mean and the variance will remain the same. Note that the $z^{[l]}$'s values change when the neural network updates parameters.  
+Therefore, Batch Norm limits the amount that updating the parameters in an earlier layer can affect the current layer.
+So you can think batch norm as weakening the coupling between what the earlier layers’ parameters do and what the later layers’ parameters do. And it leads to allow each layer to learn more independently and speeds up learning.
 
+### Batch Norm as Regularization
+Each mini-batch is scaled by the mean/variance computed
+on just that mini-batch. This adds some noise to the value within that minibatch because those mean and variance are not from entire datasets. So similar to dropout, it adds some noise to each hidden layer’s activations. This has a slight regularization effect.
 
 
 ## The Problem of Local Optima
