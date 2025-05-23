@@ -182,3 +182,10 @@ In the context of Bayesian statistics, it is a conditional distribution over the
 ### Training error(Empirical error) vs Generalization error
 Training error is measured on training data - the data used to construct the model.  
 Generalization error is the error expected on new cases, and is usually estimated by measuring the error on a test data set, which is not used during model construction.
+
+### Affine Layer
+An affine layer, also called a fully connected layer or dense layer, is a layer in which the input signal of the neuron is multiplied by the weight, summed, and biased. An affine layer can be a layer of an artificial neural network in which all contained nodes connect to all nodes of the subsequent layer.  
+It is a type of layer where each input is connected to each output by a learnable weight. Affine layers are commonly used in both traditional neural networks and deep learning models to transform input features into outputs that the network can use for prediction or classification tasks.  
+
+### Covariate Shift
+Covariate shift is a specific type of dataset shift often encountered in machine learning. It is when the distribution of input data shifts between the training environment and live environment. Although the input distribution may change, the output distribution or labels remain the same. Covariate shift is also known as covariate drift, and is a very common issue encountered in machine learning. Models are usually trained in offline or local environments on a sample of labelled training data. It’s not unusual for the distribution of inputs in a live and dynamic environment to be different from the controlled training environment.  
