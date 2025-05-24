@@ -680,3 +680,19 @@ on just that mini-batch. This adds some noise to the value within that minibatch
 
 
 ## The Problem of Local Optima
+In function minimization (the task of finding the input to a mathematical function which produces the smallest output), the symptom of being too exploitative is getting stuck in a so called "local minima" where an early non-optimal result leads you down a path of no return from which you can't improve.   
+The symptom of being too exploratory on the other hand is a "slow convergence rate", where it takes a long time to find the solution because so much time is spent exploring bad options with just a small chance of improvement on the current best result.
+
+### Saddle Points and Plateaus
+#### Saddle Points
+The saddle points are the name we give to points on the "minimization landscape" which are local minima on one axis but not on others. You can think of saddle points as points where taking one particular type of action can no longer improve the result of the task, but where other types of actions can still lead to an improvement.  
+Saddle points are not like local minima in that they are not "dead ends", and "exploitative" methods can still be effective when you encounter them - as long as you are flexible enough to stop moving on the axis which has hit a minima and to start moving on the axis upon which there is still room for improvement.  
+The thing with saddle points is that they are a type of optimum which combines a combination of minima and maxima. Because the number of dimensions are so large with deep learning, the probability that an optimum only consists of a combination of minima is very low. This means 'getting stuck' in a local minimum is rare. At the risk of oversimplifying, it's harder to 'get stuck' in a saddle point because you can 'slide down one of the dimensions'.
+
+#### Plateaus
+Plateaus are parts of the optimization landscape where the gradient is very small, or slightly undulating and noisy. In the real world we can think of plateaus as being akin to situations where it seems that whatever action is taken there is very little change in the result, with an apparent noisy or random component to all the observations.  
+The danger of plateaus is that the small and noisy gradient tends to encourage adaptive policies to slow down, and begin to explore more, to see if they can find a more optimal path, or at least gather some information about exactly what the effects of their actions are. The best way to escape a plateau is to speed up, and to move as fast as possible across the plateau in the rough direction you think it is sloping until you are able to find some curved surface which can give you actual information about which actions might be best.
+
+Reference: https://theorangeduck.com/page/local-minima-saddle-points-plateaus
+
+
