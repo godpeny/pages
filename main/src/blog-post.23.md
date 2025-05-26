@@ -324,7 +324,7 @@ $$
 h^* = \arg\min_{h \in \mathcal{H}} R(h).
 $$
 ### Basics of ERM
-In general, the risk $R(h)$cannot be computed because the distribution $P(x,y)$ is unknown to the learning algorithm.   
+In general, the risk $R(h)$ cannot be computed because the distribution $P(x,y)$ is unknown to the learning algorithm.   
 However, given a sample of iid training data points, we can compute an estimate, called the "empirical risk", by computing the average of the loss function over the training set.  
 More formally, computing the expectation with respect to the empirical measure:
 $$
@@ -400,9 +400,9 @@ A random sample can be thought of as a set of objects that are chosen randomly.
 More formally, it is "a sequence of independent, identically distributed (IID) random data points.".  
 In other words, the terms random sample and IID are synonymous. 
  - Identically distributed means that there are no overall trends — the distribution does not fluctuate and all items in the sample are taken from the same probability distribution.
- - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way;[2] knowledge of the value of one variable gives no information about the value of the other and vice versa.
+ - Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way. Knowledge of the value of one variable gives no information about the value of the other and vice versa.
  
-## Hypothesis(h) and Hypothesis
+## Hypothesis(h) and Hypothesis Space (H)
 ### Hypothesis Space (H)
 Hypothesis space is the set of all the possible legal hypothesis.  
 This is the set from which the machine learning algorithm would determine the best possible (only one) which would best describe the target function or the outputs.
