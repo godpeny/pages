@@ -304,6 +304,10 @@ Advantages:
 Empirical risk minimization is a principle in statistical learning theory which defines a family of learning algorithms based on evaluating performance over a known and fixed dataset.  
 The core idea is based on an application of the law of large numbers; more specifically, we cannot know exactly how well a predictive algorithm will work in practice (i.e. the true "risk") because we do not know the true distribution of the data.  
 But we can instead estimate and optimize the performance of the algorithm on a known set of training data. (i.e. the empirical risk)  
+
+실제 머신러닝 과제(task)를 받으면 한정된 훈련 데이터를 받기 때문에 리스크(risk)는 empirical risk 라고 부른다. 한정된 훈련 데이터에서 경험적으로 추정한 데이터 생성 분포라는 뜻이다.  
+즉, 주어진 한정된 훈련 데이터의 분포를 따르는 손실 함수의 기대값을 최소화시키는 과정을 empirical risk minimization 이라고 부른다.
+
 ### Background of ERM
 When there is a non-negative real-valued loss function ${\displaystyle L({\hat {y}},y)}$ which measures how different the prediction $\hat{y}$ of a hypothesis is from the true outcome $y$.  
 A loss function commonly used in theory is the 0-1 loss function: 
