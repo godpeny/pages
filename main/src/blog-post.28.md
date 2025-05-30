@@ -360,4 +360,12 @@ When in state $s$, pick action, $$\arg\max_{a} V(f(s, a))$$ (Simulator without n
 During training, add noise to the simulator because it causes the policy you learned to be more robust,
 But when deploying in real, it is reasonable to get rid of the noise and set $k=1$ to avoid randomness.
 
-## Linear Quadratic Regulation(LQR), Differential Dynamic Programming(DDP) and Linear Quadratic Gaussian(LQG)
+
+## State-Action Reward
+## Linear Dynamical System
+
+## Linear Quadratic Regulation(LQR)
+
+## Differential Dynamic Programming(DDP)
+
+## Linear Quadratic Gaussian(LQG)
