@@ -79,6 +79,9 @@ $$
 Generally, when there are $N$ metrics, optimizing $1$ metric and satisfying $N-1$ metrics.
 
 ## Train, Dev and Test Sets 
+Basically you train on the training set, evaluate results on the dev set, and test on the test set.
+
+
 ### Distributions
 ### Size of Sets
 ### When to change
