@@ -46,8 +46,7 @@ An MDP is defined by a tuple $(S, A, \{ P_{sa} \}, \gamma, R)$ where:
  - States ($S$): A finite set of states representing all possible situations in which the agent can find itself. Each state encapsulates all the relevant information needed to make a decision.
  - Actions ($A$): A finite set of actions available to the agent. At each state, the agent can choose from these actions to influence its environment.
  - Transition Probability ($\{ P_{sa} \}$): A probability function that defines the probability of transitioning from state $s$ to state $s′$ after taking action $a$. This encapsulates the dynamics of the environment. In other words, it gives the distribution over what states($s'$) we will transition to if we take action $a$ in state $s$.
- - Reward Function (R): A reward function $R: S \times A \to \mathbb{R}
-$  that provides a scalar reward received after transitioning from state $s$ to state $s′$ due to action $a$. This reward guides the agent towards desirable outcomes.
+ - Reward Function (R): A reward function $R: S \times A \to \mathbb{R}$ that provides a scalar reward received after transitioning from state $s$ to state $s′$ due to action $a$. This reward guides the agent towards desirable outcomes.
  - Discount Factor ($\gamma$): A discount factor $\gamma \in [0,1)$ that determines the importance of future rewards. A discount factor close to 1 makes the agent prioritize long-term rewards, while a factor close to 0 makes it focus on immediate rewards.
  - Policy($\pi$): A policy is any function $\pi: S \to A$ mapping from the states to the actions. We say that we are executing some policy $\pi$ if, whenever we are in state $s$, we take action $a = \pi(s)$.
 
@@ -63,6 +62,13 @@ Upon visiting the sequence of states $s_0, s_1, \cdots$ with actions $a_0,a_1, \
 $$
 R(s_0, a_0) + \gamma R(s_1, a_1) + \gamma^2 R(s_2, a_2) + \cdots
 $$
+
+Note that Rewards are sometimes also written as a function of a state $s$ only, in which case we would have $R: S \to \mathbb{R}$ from Now on. So, the total payoff is expressed as below.
+$$
+R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots
+$$
+From now, we are writing rewards as a function of the states only. More general setting which is function with both states and actions, will be introduced in the latter section "Generalized State-Action Reward".
+
 In Reinforcement Learning, the goal is to choose actions over time so as to maximize the expected value of the total payoff:
 $$
 \mathbb{E} \left[ R(s_0) + \gamma R(s_1) + \gamma^2 R(s_2) + \cdots \right]
@@ -361,7 +367,8 @@ During training, add noise to the simulator because it causes the policy you lea
 But when deploying in real, it is reasonable to get rid of the noise and set $k=1$ to avoid randomness.
 
 
-## State-Action Reward
+## Generalized State-Action Reward
+
 ## Linear Dynamical System
 
 ## Linear Quadratic Regulation(LQR)
