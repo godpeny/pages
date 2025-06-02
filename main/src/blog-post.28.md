@@ -413,6 +413,30 @@ $$
 s_{t+1} \sim P^{(t)}_{\,s_t,\,a_t}
 $$
 
+#### Optimal Value Function in Generalized State-Action Reward
+Now, these settings, how do we find the optimal value function? Note that now optimal value function depnds on what time it is. In other words, optimal value function is expected total payoff, starting in state $s$ at time $t$, executing $\pi^{*}$.
+$$
+ V^{*}_{t}(s) = \max_{\pi}\,V^{\pi}_{t}(s) \\[6pt]
+ = \mathbb{E} \Bigl[ R^{(t)}(s_{t},a_{t}) + R^{(t+1)}(s_{t+1},a_{t+1}) + \;\cdots\; + R^{(T)}(s_{T},a_{T})v \,\Bigm|\, s_{t}=s,\; \pi^{*} \Bigr]
+$$
+We will use dynamic programming to find optimal value function in time horizaon.
+
+$$
+\text{(1)} \quad \forall\,s \in \mathcal{S} :\quad
+V_{T}^{*}(s) = \max_{a \in \mathcal{A}} \,R^{(T)}(s,a) \\[6pt]
+
+\text{(2)} \quad \forall\,t < T,\; s \in \mathcal{S} :\quad
+V_{t}^{*}(s) = \max_{a \in \mathcal{A}} \Bigl[R^{(t)}(s,a) + \mathbb{E}_{s' \sim P_{sa}^{(t)}} \!\bigl[V_{t+1}^{*}(s')\bigr]\Bigr]
+$$
+(1): The optimal value is obvious at the end of the game (for time step $T$).  
+(2): For another time step $0 \leq t < T$, if we suppose that we know the
+optimal value function for the next time step $V^{*}_{T+1}(s)$, we can define $V_{t}^{*}(s)$.
+
+In short,
+1. Compute $V_{t}^{*}(s)$ using equation (1).
+2. for $t = T-1, \cdots, 0$, compute $V_{t}^{*}(s)$ using $V_{t+1}^{*}(s)$ using equation (2).
+
+
 ## Linear Dynamical System
 
 ## Linear Quadratic Regulation(LQR)
