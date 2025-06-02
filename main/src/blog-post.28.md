@@ -368,6 +368,50 @@ But when deploying in real, it is reasonable to get rid of the noise and set $k=
 
 
 ## Generalized State-Action Reward
+In this part, we will define Markov Decision Processes (MDPs) and Value Iteration / Policy Iteration covered previoysly, in a more general setting.  
+
+(1) We want to write equations that make sense for both the discrete and
+the continuous case. So In the finite case, we can rewrite the expectation as a sum over
+states, and the continuous case, we can rewrite the expectation as an integral.
+$$
+\mathbb{E}_{s' \sim P_{sa}}\!\Bigl[\,V^{\pi^{*}}(s') \Bigr] \quad \text{instead of} \sum_{s' \in S} P_{sa}(s')\,V^{\pi^{*}}(s')
+$$
+(2) The rewards depend on both states and actions. In other words, $R: S \times A \to \mathbb{R}$. Note that $s$ is current state and $s'$ is the state after one step.
+
+$$
+\pi^{*}(s)
+  \;=\;
+  \arg\max_{a \in \mathcal{A}}
+  \Bigl\{R(s,a) + \gamma \, \mathbb{E}_{s' \sim P_{sa}} \!\bigl[V^{\pi^{*}}(s') \bigr] \Bigr\} \\[10pt]
+
+V(^{*}s)
+  \;=\;
+  \max_{a \in \mathcal{A}}
+  \Bigl\{
+       R(s,a)
+       + \gamma \,
+         \mathbb{E}_{s' \sim P_{sa}}
+         \!\bigl[
+              V^{*}(s')
+           \bigr]
+  \Bigr\},
+$$
+
+(3) Instead of considering an infinite horizon MDP, we'll assume that we have a finite horizon MDP with the time horizon as below. Note that there is no discount factor $\gamma$ as the payoff is a finite sum.
+$$
+R(s_{0}, a_{0}) + R(s_{1}, a_{1}) + \cdots +  R(s_{T}, a_{T})
+$$
+
+With time horizn, the optimal policy might be non-stationary, meaning that it changes over time. Why does the optimal policy happen to be non-stationary in the finite-
+horizon setting? Intuitively, as we have a  nite numbers of actions to take, we might want to adopt di erent strategies depending on where we are in the environment and how much time we have left.
+$$
+\pi^{(t)} : \mathcal{S} \;\to\; \mathcal{A}
+$$  
+
+(4) Lastly, time dependent dynamics is applied. It means that the transition's distribution $P^{(t)}_{\,s_t,\,a_t}$ changes over time. The same thing can be said about $R(t)$. Note that this setting is a better model for real life. In a car, the gas tank empties, trac changes,etc.
+$$
+s_{t+1} \sim P^{(t)}_{\,s_t,\,a_t}
+$$
 
 ## Linear Dynamical System
 
