@@ -201,11 +201,11 @@ $$
 $$
 Since we normalized the mean before PCA, $\mu =0$, therfore $\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 $ can be used to get variance omitting the substraction term.  
 
-Now, back to the variance and lget's put it simply, 
+Now, back to the variance and let's put it simply, 
 $$
 \max_{ \| u \|_2 = 1 } u^T \Sigma u
 $$
-Where $u$ is the principal eigenvector of the covariance matrix $\Sigma$.
+Where $u$ is the principal eigenvector of the covariance matrix $\Sigma$. (We will see why)
 Now, since there is equation constraint $ \| u \|_2 = 1$, we can apply the method of Lagrange multiplier.
 The objective function and constraint of the original equations is below.
 $$
@@ -228,7 +228,7 @@ $$
 \frac{\partial \mathcal{L}}{\partial \lambda} = -(u^T u - 1) = 0 \quad \Rightarrow \quad u^T u = 1
 $$
 
-From The equation $\Sigma u = \lambda u$, we found that it is eigenvector equation and $u$ is the eigenvector equation with $u$ is the eigen vector and $\lambda$ is the corresponding eigenvalue.  
+From The equation $\Sigma u = \lambda u$, we found that it is the eigenvector equation with $u$ is the eigen vector and $\lambda$ is the corresponding eigenvalue.  
 So in order to maximize $u^T \Sigma u$(with the constraint $\| u \|_2 = 1$), $u$ has to be the principal eigenvector and $\lambda$ is the largest eigenvalue. 
 
 ### Summary
