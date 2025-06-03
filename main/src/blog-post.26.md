@@ -1,5 +1,14 @@
 # Principal Component Analysis (PCA)
 ## Preliminaries
+### Orthogonal Matrix
+Orthogonal matrix is a real square matrix whose columns and rows are orthogonal vectors.
+$$
+Q^{\top}Q=QQ^{\top}=I
+$$
+Where $Q^{\top}$ is the transpose of $Q$ and $I$ is the identity matrix.
+
+As a linear transformation, an orthogonal matrix preserves the inner product of vectors. Therefore it only acts as an isometry(a distance-preserving transformation) of Euclidean space, such as a rotation, reflection or rotoreflection. In other words, it is a unitary transformation(a linear transformation that preserves the inner product).
+
 ### Eigenvector and Eigenvalue
 An eigenvector is a vector that has its direction unchanged by a given linear transformation.  
 Consider an $n{\times }n$ matrix A and a nonzero vector $v$ of length $n$. 
@@ -9,6 +18,31 @@ A v =\lambda v
 $$
 Above formula can be stated equivalently as $\left(A - \lambda I \right)v = 0$
 where $I$ is the $n \times n$ identity matrix and $0$ is the zero vector.
+
+### Eigendecomposition of Matrix
+Eigen decomposition is a method used in linear algebra to break down a square matrix into simpler components called eigenvalues and eigenvectors.
+
+Let $A$ be a square $n \times n$ matrix with $n$ linearly independent eigenvectors $q_i$ (where $i = 1, \cdots, n$). Then $A$ can be decomposed as,
+$$
+\mathbf {A} =\mathbf {Q} \mathbf {\Lambda } \mathbf {Q} ^{-1}
+$$
+Where $Q$ is the square $n \times n$ matrix whose $i$-th column is the eigenvector $q_i$ of $A$, and $\Lambda$ is the diagonal matrix whose diagonal elements are the corresponding eigenvalues, $\Lambda_{i,i} = \lambda_{i}$. In other words, $Q$ is an orthogonal matrix composed of eigenvectors of $A$, and $\Lambda$ is a diagonal matrix. The eigenvalue $\Lambda_{i,i}$ is associated with the eigenvector in column $i$
+of $Q$($Q_{:,i}$).  
+Because $Q$ is an orthogonal matrix, we can think of $A$ as scaling space by $\lambda_{i}$ in direction $v(i)$. Note that $\Lambda$ is diagonal matrix with vector $\lambda$ and $Q$ is orthogonal matrix.
+$$
+Q\,(\lambda I)\,Q^{\top}x = \lambda\,Q\,Q^{\top}x = \lambda\,Ix = \lambda x,
+$$
+
+### Singular Value Decomposition (SVD)
+SVD (Singular Value Decomposition) is a method used in linear algebra to factorize(decompose) a matrix into three simpler matrices, making it easier to analyze and manipulate.  
+
+The singular value decomposition is similar to Eigendecomposition, except this time we will write $A$ as a product of three matrices:
+$$
+A \;=\; U\,D\,V^{\top}
+$$
+Suppose that $A$ is an $m \times n$ matrix. Then $U$ is defined to be an $m \times m$ matrix, $D$ to be an $m \times n$ matrix, and $V$ to be an $n \times n$ matrix.  
+Each of these matrices is defined to have a special structure. The matrices $U$ and $V$ are both defined to be orthogonal matrices. The matrix $D$ is defined to be a diagonal matrix. Note that $D$ is not necessarily square.  
+The elements along the diagonal of $D$ are known as the singular values of the matrix $A$. The columns of $U$ are known as the "left-singular vectors". The columns of $V$ are known as as the "right-singular vectors".
 
 ### Method of Lagrangie Multiplier
 In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equation constraints.  
