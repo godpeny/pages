@@ -257,7 +257,7 @@ s_{t+1} = A s_t + B a_t,
 $$
 We can estimate them using the data collected from $m$ trials,
 $$
-\arg\min_{A,B} \sum_{i=1}^{m} \sum_{t=0}^{T-1} \left\| s_{t+1}^{(i)} - \left( A s_t^{(i)} + B a_t^{(i)} \right) \right\|^2.
+\arg\min_{A,B} \sum_{i=1}^{m} \sum_{t=0}^{T-1} \left\| s_{t+1}^{(i)} - \left( A s_t^{(i)} + B a_t^{(i)} \right) \right\|^2
 $$
 Note that this corresponds to maximum likelihood estimate.
 
@@ -440,6 +440,210 @@ In short,
 ## Linear Dynamical System
 
 ## Linear Quadratic Regulation(LQR)
+While solving the dynamic programming problem for continuous systems is very hard in general, there are a few very important special cases where the solutions are very accessible. Most of these involve variants on the case of linear dynamics and convex (e.g. positive quadratic) cost. The simplest case, called the linear quadratic regulator (LQR), is formulated as stabilizing a time-invariant linear system to the origin.
+
+### Ket Assumptions of LQR
+1. State Transition Dynamics: the way states change in a linear function of the previous state and action plus some noise.
+$$
+s_{t+1} \;=\; A_t\,s_t \;+\; B_t\,a_t \;+\; w_t \\[10pt]
+\mathcal S \;=\; \mathbb R^{\,n}, \quad \mathcal A \;=\; \mathbb R^{\,d}, \quad
+A_t \;\in\; \mathbb R^{\,n\times n}, \quad
+B_t \;\in\; \mathbb R^{\,n\times d}, \quad 
+w_t \;\sim\; \mathcal N\!\bigl(0,\Sigma_t\bigr)
+$$
+2. Reward Function: quadratic cost function.
+$$
+R^{(t)}(s_t,a_t) = -\,s_t^{\!\top} U_t\,s_t - a_t^{\!\top} W_t\,a_t \\[6pt]
+U_t \;\in\; \mathbb R^{\,n\times n},\quad
+W_t \;\in\; \mathbb R^{\,d\times d},\\[6pt]
+U_t \geq 0,\; W_t \geq 0, \quad
+s_t^{\!\top} U\,s_t \;\ge 0, \quad
+a_t^{\!\top} V\,a_t \;\ge 0
+$$
+Where $U_t$ and $W_t$ are positive definite matrices.
+
+### Linearization of dymanics in LQR
+![alt text](images/blog28_linearization_of_dynamics.png)
+
+Let's suppose that at time $t$, the system spends most of its time in some state $\bar{s_t}$ and the actions we perform are around $\bar{at}$. So the idea of this linearization of non linear dynamics is that if you expect the system to spend most of time at ($\bar{s_t}$, $\bar{a_t}$), $F'$ is not bad approximation around the region ($\bar{s_t}$, $\bar{a_t}$).
+
+Using Taylor Series, $f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x - a)^n$, we get,
+$$
+s_{t+1} \approx
+F\bigl(\bar s_t,\bar a_t\bigr)
++ \nabla_{s} F\bigl(\bar s_t,\bar a_t\bigr)\,\bigl(s_t - \bar s_t\bigr)
++ \nabla_{a} F\bigl(\bar s_t,\bar a_t\bigr)\,\bigl(a_t - \bar a_t\bigr)
+$$
+As you can see, now, $s_{t+1}$ is linear in $s_t$ and $a_t$. This could be rewritten as below. 
+$$
+s_{t+1} \approx A\,s_t + B\,s_t + \kappa
+$$
+This is similar to the assumptions made for LQR, except for the $\kappa$ term, which is constant term. It turns out that the constant term can be absorbed into $s_t$ by artificially increasing the dimension by one.
+
+### LQR Algorithm
+There are two steps of the LQR algorithm.  
+1. Figure out the parameters. (Matrices $A,B,\Sigma$)
+2. Derive the optimal policy using dynamic programming with the parameters earned from 1.
+
+#### 1. Figure out the parameters
+There are two ways to figure out the parameters. 
+1. First way is to just learn it as following the idea of "Value function approximation". So collect the data and fit the model.
+$$
+\arg\min_{A,B} \sum_{i=1}^{m} \sum_{t=0}^{T-1} \left\| s_{t+1}^{(i)} - \left( A s_t^{(i)} + B a_t^{(i)} \right) \right\|^2
+$$
+And use GDA method to get $\Sigma$.
+$$
+\Sigma = \frac{1}{m} \sum_{i=1}^{m} \bigl(x^{(i)} - \mu_{y^{(i)}}\bigr) \bigl(x^{(i)} - \mu_{y^{(i)}}\bigr)^{\!\top}
+$$
+2. Second way to figure out the parameters is to "Linearization of dymanics in LQR".
+
+#### 2. Derive the optimal policy using dynamic programming
+Assuming that the parameters of our model are known (given or estimated with step 1), we can derive the optimal policy using dynamic programming.
+
+So we want to comput $V_{t}^{*}$ using dynamic programming given below.
+$$
+s_{t+1} = A_t\,s_t \;+\; B_t\,a_t \;+\; w_t \quad \bigl(A_t,\,B_t,\,U_t,\,W_t,\,\Sigma_t\text{ known}\bigr)\\[6pt]
+R^{(t)}(s_t,a_t) = -\,s_t^{\!\top} U_t\,s_t \;-\; a_t^{\!\top} W_t\,a_t
+$$
+
+##### 2-1. Initialization Step  
+For the last time step $T$,
+$$
+V_T^{*}(s_T)
+  = \max_{a_T \in \mathcal{A}} R_T(s_T,a_T)
+  = \max_{a_T \in \mathcal{A}} \bigl( -\,s_T^{\top} U_T s_T - a_T^{\top} W_T a_T \bigr)
+  = -\,s_T^{\top} U_T s_T
+$$
+Note that maximized for $a_T = 0$.
+
+##### 2-2. Recurrence Step
+When $t <T$, suppose we know $V^{*}_{t+1}$, if $V^{*}_{t+1}$ is a quadratic function in $s_t$, then $V^{*}_{t}$ is also a quadratic function. In other words, there exists some matrix $\Phi$ and some scalar $\Psi$ such that,
+$$
+V_{t+1}^{*}(s_{t+1}) = s_{t+1}^{\top} \Phi_{t+1} s_{t+1} + \Psi_{t+1} \Rightarrow V_{t}^{*}(s_{t}) = s_{t}^{\top} \Phi_{t} s_{t} + \Psi_{t}
+$$
+So if $t=T$, $\Phi_{t} = -s_T^{\top} U_T s_T$ and $\Psi_{t} = 0$.
+
+Now, since $V^{*}_{t+1}$ is composed of $\Phi_{t+1}$ and $\Psi_{t+1}$, if we know how to derive $\Phi_{t}, \Psi_{t+1}$ from  $\Phi_{t+1}, \Psi_{t+1}$, we can get $V^{*}_{t}$.
+
+$$
+V_t^{*}(s_t) = s_t^{\top} \Phi_t s_t + \Psi_t \\[6pt]
+  = \max_{a_t} \Bigl[\, R^{(t)}(s_t,a_t)
+      + \mathbb{E}_{\,s_{t+1}\sim P_{s_t,a_t}^{(t)}}\bigl[\, W_{t+1}^{*}(s_{t+1}) \bigr] \Bigr] \\[6pt]
+  = \max_{a_t} \Bigl[
+        -\,s_t^{\top} U_t s_t
+        - a_t^{\top} W_t a_t
+        + \mathbb{E}_{\,s_{t+1}\sim\mathcal{N}(A_t s_t + B_t a_t,\Sigma_t)}
+          \bigl[\, s_{t+1}^{\top} \Phi_{t+1} s_{t+1} + \Psi_{t+1} \bigr]
+      \Bigr]
+$$
+
+Note that expectation term can be calculated as below.
+$$
+s_{t+1}^{\top}\Phi_{t+1}s_{t+1} + \Psi_{t+1}
+  = (A_t s_t + B_t a_t + w_t)^{\top}\Phi_{t+1}(A_t s_t + B_t a_t + w_t) \\[4pt]
+  = (A_t s_t + B_t a_t)^{\top}\Phi_{t+1}(A_t s_t + B_t a_t) \\[2pt]
+  \phantom{=} + 2\,(A_t s_t + B_t a_t)^{\top}\Phi_{t+1}w_t \\[2pt]
+  \phantom{=} + w_t^{\top}\Phi_{t+1}w_t + \Psi_{t+1} \\[10pt]
+$$
+Note that, 
+$$
+s_{t+1} = A_t s_t + B_t a_t + w_t ,\quad
+w_t \sim \mathcal{N}(0,\Sigma_t) \\[6pt]
+s_{t+1} \sim \mathcal{N}\!\bigl(A_t s_t + B_t a_t,\Sigma_t\bigr)
+\Longleftrightarrow
+w_t \sim \mathcal{N}(0,\Sigma_t).
+$$
+So, $A_t s_t + B_t a_t$ is deterministic from the distribution. Therfore, expectation term can be shown as below.
+$$
+\mathbb{E}_{s_{t+1}\sim \mathcal{N}(A_t s_t + B_t a_t,\,\Sigma_t)}
+  \bigl[\,s_{t+1}^{\top}\Phi_{t+1}s_{t+1} + \Psi_{t+1}\bigr] \\[2pt]
+\quad = (A_t s_t + B_t a_t)^{\top}\Phi_{t+1}(A_t s_t + B_t a_t)
+        + \operatorname{tr}(\Phi_{t+1}\Sigma_t)
+        + \Psi_{t+1}.
+$$
+Note that it used the facts below.
+$$
+\mathbb{E}_{w_t}\!\bigl[\, (A_t s_t + B_t a_t)^{\top}\Phi_{t+1}w_t \bigr] = 0
+\qquad (\mathbb{E}[\,w_t\,] = 0) \\[6pt]
+
+\mathbb{E}_{w_t}\!\bigl[w_t^{\top}\Phi_{t+1}w_t\bigr]
+  = \operatorname{tr}\!\bigl(\Phi_{t+1}\,\mathbb{E}[\,w_t w_t^{\top}\,]\bigr)
+  = \operatorname{tr}(\Phi_{t+1}\Sigma_t)
+$$
+
+Now, using the expectation term, third line can be expressed as,
+$$
+\max_{a_t} \Bigl[
+-\,s_t^{\top} U_t s_t
+-a_t^{\top} W_t a_t + \mathbb{E}_{\,s_{t+1}\sim\mathcal{N}(A_t s_t + B_t a_t,\Sigma_t)} \bigl[\, s_{t+1}^{\top} \Phi_{t+1} s_{t+1} + \Psi_{t+1} \bigr] = \\[6pt]
+\max_{a_t} \Bigl[
+-\,s_t^{\top} U_t s_t
+- a_t^{\top} W_t a_t \\[3pt]
++ s_t^{\top} A_t^{\top} \Phi_{t+1} A_t s_t
++ s_t^{\top} A_t^{\top} \Phi_{t+1} B_t a_t
++ \,a_t^{\top} B_t^{\top} \Phi_{t+1} A_t s_t
++ a_t^{\top} B_t^{\top} \Phi_{t+1} B_t a_t \\[3pt]
++ \operatorname{tr}\!\bigl(\Phi_{t+1} \Sigma_t\bigr)
++ \Psi_{t+1}
+\Bigr]
+$$
+
+Take derivate of below term with respect to $a_t$ and set $0$ to solve for $a_t$.
+$$ 
+-a_t^{\top} W_t a_t + \mathbb{E}_{\,s_{t+1}\sim\mathcal{N}(A_t s_t + B_t a_t,\Sigma_t)} \bigl[\, s_{t+1}^{\top} \Phi_{t+1} s_{t+1} + \Psi_{t+1} \bigr]
+$$
+Then, you can get $a_t^{*}$ as below.
+$$
+\pi_t^{*}(s_t) = a_t^{*}
+  = \bigl[(B_t^{\top}\Phi_{t+1}B_t - W_t)^{-1}\,B_t\Phi_{t+1}A_t\bigr]\,s_t
+  = L_t\,s_t, \\[6pt]
+  a_t^{*} = \bigl[(B_t^{\top}\Phi_{t+1}B_t - W_t)^{-1}\,B_t\Phi_{t+1}A_t\bigr]
+$$
+
+Now insert $a_t^{*}$ back to third line expression of $V_t^{*}(s_t)$.
+$$
+V_t^{*}(s_t)
+  = s_t^{\top}\!\Bigl(
+      A_t^{\top}\Phi_{t+1}A_t
+      - A_t^{\top}\Phi_{t+1}B_t\,
+        \bigl(B_t^{\top}\Phi_{t+1}B_t - W_t\bigr)^{-1}
+        B_t^{\top}\Phi_{t+1}A_t
+      - U_t
+    \Bigr)s_t
+  - \operatorname{tr}\!\bigl(\Sigma_t\Phi_{t+1}\bigr)
+  + \Psi_{t+1}
+
+$$
+Note that, argmax term disappears since we  have found the optimizer $a_t^{*}$. So you can evaluate the cost at that optimizer and thus get the maximal value directly.
+$$
+V_t^{*}(s_t) = \max_{a_t}\, f(a_t) = f(a_t^{*})
+$$
+
+Then, match with the first line expression.
+$$
+s_t^{\top} \Phi_t s_t + \Psi_t
+$$
+
+You can get each $\Phi_t$ and $\Psi_t$.
+$$
+\Phi_t =
+A_t^{\top}\!
+\Bigl(\Phi_{t+1} - \Phi_{t+1} B_t \bigl( B_t^{\top} \Phi_{t+1} B_t - W_t \bigr)^{-1} B_t^{\top} \Phi_{t+1}
+\Bigr)A_t - U_t \\[6pt]
+
+\Psi_t = - \operatorname{tr}\!\bigl( \Sigma_t \Phi_{t+1} \bigr) + \Psi_{t+1}
+$$
+
+One Additional thing to remember here is that $\Phi_t$ depends on neither $\Psi_t$ nor the noise $\Sigma_t$. As $L_t$
+is a function of $A_t, B_t, \Phi_{t+1}$. This implies that the optimal policy also does not depend on the noise.  
+But $\Psi_t$ does depend on $\Sigma_t$, which implies that $V_t^{*}(s_t)$ depends on $\Psi_t$ (noise).
+
+#### Summary
+The LQR algorithm works as follows
+1. (if necessary) Estimate parameters $A_t, B_t, \Sigma_t$. (1)
+2. Initialize  $\Phi_{t} = -s_T^{\top} U_T s_T$ and $\Psi_{t} = 0$. (2-1)
+3. Iterate from $t = T-1, \cdots,  0$ to update $\Phi_t$ and $\Psi_t$ using  $\Phi_{t+1}$ and $\Psi_{t+1}$ (2-2). If there exists a policy that drives the state towards zero, then convergence is guaranteed.
+
 
 ## Differential Dynamic Programming(DDP)
 
