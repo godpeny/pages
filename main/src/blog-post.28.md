@@ -648,3 +648,9 @@ The LQR algorithm works as follows
 ## Differential Dynamic Programming(DDP)
 
 ## Linear Quadratic Gaussian(LQG)
+
+## RL Debugging and Diagnostics
+
+## Policy Search Algorithm (Direct Policy Search)
+
+### REINFORCE (Policy Gradient)
