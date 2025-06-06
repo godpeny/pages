@@ -652,5 +652,156 @@ The LQR algorithm works as follows
 ## RL Debugging and Diagnostics
 
 ## Policy Search Algorithm (Direct Policy Search)
+Instead of approximate the value function $V^{\star}$ and learn $\pi^{\star}$, try to find a good $\pi$ directly.
+$$
+a \approx \pi_{\theta}(s) = \frac{1}{1 + e^{-\theta^{\top}s}}
+$$
+A stochastic policy search is a function $\pi : \mathcal{S} \times \mathcal{A} \;\to\; \mathbb{R}$, where $\pi(s,a)$ is the probability of taking action $a$ in state $s$, when $ \sum_{a}\pi(s,a) = 1$.
+For example, let's think of inverted-pendulum (cart-pole) task.
+We use a binary stochastic policy $\pi_{\theta}$ that decides between pushing the cart Right or Left via sigmoid function.  
+$$
+\pi_\theta\bigl(s,\text{Right}\bigr)
+    = \frac{1}{1+\exp\!\bigl(-\theta^{\top}s\bigr)},\qquad
+\pi_\theta\bigl(s,\text{Left}\bigr)
+    = 1-\frac{1}{1+\exp\!\bigl(-\theta^{\top}s\bigr)}
+$$
 
-### REINFORCE (Policy Gradient)
+When State vector is as below, 
+$$
+s=\begin{pmatrix}
+1\\ x_c \\ \dot x_c \\ \theta \\ \dot\theta
+\end{pmatrix} \\[6pt]
+$$
+Given these parameters(weight vectors), inner product $\theta^{\top}s$ for each computation are as below.
+$$
+\begin{array}{lcl}
+\theta=\begin{bmatrix}0\\0\\0\\1\\0\end{bmatrix}
+ &\Longrightarrow&
+\theta^{\top}s=\theta
+\\[6pt]
+\theta=\begin{bmatrix}0\\-0.5\\0\\1\\0\end{bmatrix}
+ &\Longrightarrow&
+\theta^{\top}s=-0.5\,x_c + \theta .
+\end{array}
+$$
+The first one results in the policy depends only on pole angle, while the second one uses both cart position($x_c$) and angle($\theta$).
+
+### Goal of Policy Search
+Find the parameter vector $\theta$ so that, when we execute the policy $\pi_{\theta}(s,a)$
+the expected cumulative reward from the fixed initial state $s_0$.
+$$
+\underset{\theta}{\text{maximize}}\;
+\mathbb{E}\Bigl[
+      R(s_0,a_0) + R(s_1,a_1) + \cdots + R(s_T,a_T)
+      \,\Bigm|\, \pi_\theta
+\Bigr]
+$$
+Derive a stochastic gradient ascent algorithm as a function of $\theta$ to maximize the expected return. It is Reinforce algorithm.
+
+### Reinforce Algorithm (Policy Gradient)
+Consider below which is expected return for $T=1$.
+$$
+\max_{\theta}\;
+\mathbb{E}_{\tau\sim P_{\theta}}
+     \!\Bigl[\,R(s_{0},a_{0}) + R(s_{1},a_{1})\Bigr] 
+     \qquad (T=1) \\[6pt]
+= \sum_{s_{0},a_{0},s_{1},a_{1}}
+      P_{\theta}(s_{0},a_{0},s_{1},a_{1})\,
+      \bigl[R(s_{0},a_{0}) + R(s_{1},a_{1})\bigr]
+$$
+
+Using this return, let's derive reinforce algorithm.
+$$
+\begin{aligned}
+\textbf{repeat}\quad & \\[4pt]
+  &1. \quad\text{sample a set of trajectories using current policy } 
+     \tau=s_0,a_0,s_1,a_1\sim\pi_\theta \\[6pt]
+  &2. \quad \text{compute payoff: } \quad \sum_{t=0}^{T} R(s_t,a_t) = R(s_0,a_0) + R(s_1,a_1)\\[6pt]
+  &3. \quad \text{update } \theta \;:=\; \theta 
+        \;+\; \alpha\;
+        \biggl[
+            \frac{\nabla_{\theta}\pi_{\theta}(s_0,a_0)}{\pi_{\theta}(s_0,a_0)}
+          \;+\;
+            \frac{\nabla_{\theta}\pi_{\theta}(s_1,a_1)}{\pi_{\theta}(s_1,a_1)}
+        \biggr]\; \biggl[R(s_0,a_0) + R(s_1,a_1)  \biggr] \\[4pt]
+\end{aligned}
+$$
+
+Note that in Stochastic Gradient Ascent: every individual update is random because it depends on the particular action sequence we sample and the payoff of that trajectory.  
+However, when we average over many such updates, the expected update equals the gradient direction, so on average we ascend the objective.
+
+Note that the randomness comes from the stochastic state-transition probabilities and from drawing actions according to the policy. Even if you repeated the same sequence of actions, the next state $s_{t+1}$ may differ(state-transition probabilities: $P\!\bigl(s_{t+1}\mid s_t,a_t\bigr)$). Similarly, The policy deliberately “rolls a dice” to pick an action. Two runs starting from the same state $s_t$ can choose different $a_t$(policy sampling: $a_t \;\sim\; \pi_\theta(\,\cdot \mid s_t)$).
+
+Remind you that the expected return that we want to maximize is,
+$$
+\sum_{s_{0},a_{0},s_{1},a_{1}}
+      P_{\theta}(s_{0},a_{0},s_{1},a_{1})\,
+      \bigl[R(s_{0},a_{0}) + R(s_{1},a_{1})\bigr]
+$$
+Using the product rules,
+$$
+\frac{d}{d\theta}\,\bigl[f(\theta)\,g(\theta)\,h(\theta)\bigr]
+   \;=\;
+   f'(\theta)\,g(\theta)\,h(\theta)
+   \;+\;
+   f(\theta)\,g'(\theta)\,h(\theta)
+   \;+\;
+   f(\theta)\,g(\theta)\,h'(\theta)
+$$
+Let's take derivative of this expected return with respect to $\theta$.
+$$
+\begin{aligned}
+%
+&\nabla_{\theta}
+  \sum_{s_0,a_0,s_1,a_1}
+        P(s_0)\,
+        \pi_{\theta}(a_0\mid s_0)\,
+        P(s_1\mid s_0,a_0)\,
+        \pi_{\theta}(a_1\mid s_1)
+        \;\bigl[\text{payoff}\bigr]                            \\[6pt]
+%
+&=\sum_{s_0,a_0,s_1,a_1}
+  \Bigl[
+        P(s_0)\,\pi_{\theta}(a_0\mid s_0)
+        \frac{\nabla_{\theta}\pi_{\theta}(a_0\mid s_0)}
+             {\pi_{\theta}(a_0\mid s_0)}
+        P(s_1\mid s_0,a_0)\,\pi_{\theta}(a_1\mid s_1)          \\[6pt]
+&\hphantom{=\sum_{s_0,a_0,s_1,a_1}\Bigl[}\;
+      {}+P(s_0)\,\pi_{\theta}(a_0\mid s_0)\,
+        P(s_1\mid s_0,a_0)\,
+        \pi_{\theta}(a_1\mid s_1)
+        \frac{\nabla_{\theta}\pi_{\theta}(a_1\mid s_1)}
+             {\pi_{\theta}(a_1\mid s_1)}
+  \Bigr]\;
+  \bigl[\text{payoff}\bigr]                                    \\[10pt]
+%
+&=\sum_{s_0,a_0,s_1,a_1}
+      P(s_0,a_0,s_1,a_1)\,
+      \Bigl[
+        \nabla_{\theta}\log\pi_{\theta}(a_0\mid s_0)
+        +\nabla_{\theta}\log\pi_{\theta}(a_1\mid s_1)
+      \Bigr]\;
+      \bigl[\text{payoff}\bigr].
+\end{aligned}
+$$
+From the above derivation, the derivative of expected total payoff which is derivative of the return you want to maximize is equal to the expected value of your gradient update defiend before. So on average, with small learning rates, updates of reinforce is taking on every iteration is exactly in the direction of the derivative of the expected total payoff to maximize.
+
+$$
+\biggl[ \frac{\nabla_{\theta}\pi_{\theta}(s_0,a_0)}{\pi_{\theta}(s_0,a_0)}
++ \frac{\nabla_{\theta}\pi_{\theta}(s_1,a_1)}{\pi_{\theta}(s_1,a_1)} \biggr] \biggl[R(s_0,a_0) + R(s_1,a_1)  \biggr] 
+= \Bigl[ \nabla_{\theta}\log\pi_{\theta}(a_0\mid s_0) +\nabla_{\theta}\log\pi_{\theta}(a_1\mid s_1) \Bigr] \biggl[R(s_0,a_0) + R(s_1,a_1)  \biggr] 
+$$
+Note that,
+$$
+\nabla_{\theta}\log f(\theta)
+      = \frac{1}{f(\theta)}\,\nabla_{\theta} f(\theta)
+      = \frac{\nabla_{\theta} f(\theta)}{f(\theta)}
+$$
+
+Also the reinforce algorithm described above doesn't include discount factor and baseline function. If they are included, algorithm will be like below pic. (check the note for more detail)
+![alt text](images/blog28_reinforce.png)
+
+
+
+
+
