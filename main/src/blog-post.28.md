@@ -801,6 +801,47 @@ $$
 Also the reinforce algorithm described above doesn't include discount factor and baseline function. If they are included, algorithm will be like below pic. (check the note for more detail)
 ![alt text](images/blog28_reinforce.png)
 
+### When to use Policy Search Algorithm?
+#### 1. Partially Observable MDP (POMDP)
+At each step, get a partial(and potentially noisy) measurement of the state, and have to choose action "a" using them.
+$$
+\text{State (full):}\quad
+S \;=\;
+\begin{pmatrix}
+x_1 \\[1pt]
+x_2 \\[1pt]
+\theta_1 \\[1pt]
+\theta_2
+\end{pmatrix}
+$$
+When only $x_1, \theta_1$ are observable, 
+$$
+\text{observation }y
+   \;=\;
+\begin{pmatrix}
+x_1 \\[2pt]
+\theta_1
+\end{pmatrix}
+\;+\;\text{noise},  \qquad
+y=
+\begin{pmatrix}
+1 \\[2pt]
+x_1+\text{noise}\\[2pt]
+\theta_1+\text{noise}
+\end{pmatrix}
+$$
+The chance of going "Right" given observation $y$ is,
+$$
+\pi_{\theta}\bigl(y,\text{Right}\bigr)
+    = \frac{1}{1+\exp\!\bigl(-\theta^{\!\top}y\bigr)}
+$$
+
+#### 2. Low-level control Tasks
+Low-level control Tasks refers to tasks that focus on directly managing a hardware components like motors and sensors, translating algorithms and commands into physical actions. Such as flying helicopters or driving cars.  
+For These kind of tasks, policy search algorithm is appropriate.
+
+On the contrary, if your model needs multiple steps of reasoning to solve the problem, such as chess, go, value function approximation is more promising.
+
 
 
 
