@@ -172,8 +172,11 @@ Loss function is usually a function defined on a data point, prediction and labe
 Therefore, A loss function is a part of a cost function which is a type of an objective function.
 
 ## Optimization Algorithms
+### Direction of Gradient
+If the gradient of a function is non-zero at a point $p$, the direction of the gradient is the direction in which the function increases most quickly from $p$.
+
 ### Gradient Descent
-The idea is to take repeated steps in the opposite direction of the gradient (or approximate gradient) of the functio(loss function) at the current point, because this is the direction of steepest descent.  
+The idea is to take repeated steps in the opposite direction of the gradient (or approximate gradient) of the function(loss function) at the current point, because this is the direction of steepest descent.  
 $$
 \theta_j := \theta_j - \alpha \frac{\partial}{\partial \theta_j} J(\theta).
 $$
