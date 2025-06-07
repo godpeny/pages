@@ -20,6 +20,27 @@ $$
 \left. \frac{dz}{dx} \right|_{x} = \left. \frac{dz}{dy} \right|_{y(x)} \cdot \left. \frac{dy}{dx} \right|_{x}.
 $$
 
+## Stationary Point
+A stationary point of a differentiable function of one variable is a point on the graph of the function where the function's derivative is zero.  
+For example, let's consider the function below.
+$$
+f(x)=(x-1)^2\bigl((x-4)^2+1\bigr)
+\quad\Longrightarrow\quad
+f'(x)
+=2(x-1)\bigl((x-4)^2+1\bigr)
+ \;+\;2(x-1)^2(x-4).
+$$
+
+Setting  $f'(x)=0$ gives
+$$
+2(x-1)\Bigl[(x-4)^2+1 + (x-1)(x-4)\Bigr]=0
+\;\;\Longrightarrow\;\;
+x=1
+\quad\text{or}\quad
+x=4,
+$$
+So the stationary points of the function is $1$ and $4$.
+
 ## Single Derivative vs Partial Derivative
 A single derivative (or ordinary derivative) deals with functions of a single variable, while a partial derivative deals with functions of multiple variables.  
 For example, single derivative is expressed as below.
