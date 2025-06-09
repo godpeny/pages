@@ -51,6 +51,21 @@ $
 $  
 Loosely speaking, the Frobenius Norm is also equivalent to the Euclidean norm generalised to matrices instead of vectors.
 
+## Point Estimate vs Confidence Interval Estimate
+![alt text](images/blog5_point_estimation_and_confidence_interval_estimation.png)
+There are two major types of estimates: point estimate and confidence interval estimate. In the point estimate we try to choose a unique point in the parameter space which can reasonably be considered as the true value of the parameter.  
+On the other hand, instead of unique estimate of the parameter, we are interested in constructing a family of sets that contain the true (unknown) parameter value with a specified probability.  
+In many problems of statistical inference we are not interested only in estimating the parameter or testing some hypothesis concerning the parameter, we also want to get a lower or an upper bound or both, for the real-valued parameter. To do this, we need to construct a confidence interval.
+
+### Point Estimate
+The point estimation involves the use of sample data to calculate a single value which is to serve as a "best guess" or "best estimate" of an unknown population parameter(for example, the population mean).  
+More formally, it is the application of a point estimator to the data to obtain a point estimate.
+
+### Interval Estimate
+In statistics, interval estimation is the use of sample data to estimate an interval of possible values of a parameter of interest. This is in contrast to point estimation, which gives a single value.
+
+
+
 ## Gaussian Distribution (= Normal Distribution)
 A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
 $$
