@@ -157,5 +157,12 @@ This table shows why as you reach human level performance, it is harder to tease
 2. The training set performance generalizes pretty
 well to the dev/test set: The model’s error rate (or accuracy) on held-out data (dev/test) is very close to its error on the data it was trained on. So you can get not too bad variance.
 
+## Error Analysis
+
+## Mismatched Training and Dev/Test data
+### Training and Testing on different distribution
+### Bias and Variance with mismatched data distribution
+### Addressing data mismatch
+
 
 
