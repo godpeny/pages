@@ -113,7 +113,19 @@ W^{[\ell]} := W^{[\ell]} - \alpha \left[ \frac{1}{m} dZ^{[L]} A^{[L-1] \top} + \
 = W^{[\ell]} - \frac{\alpha \lambda}{m} W^{[\ell]} - \alpha \cdot \frac{1}{m} dZ^{[L]} A^{[L-1] \top}\\
 = \left( 1 - \frac{\alpha \lambda}{m} \right) W^{[\ell]} - \alpha \cdot \frac{1}{m} dZ^{[L]} A^{[L-1] \top}
 $$
-When applying graient descent with regularization, $\left( 1 - \frac{\alpha \lambda}{m} \right)$ is less than $1$ and it is keep multiplying to weight. So you can call L2 Regularization as weight decay.
+When applying graient descent with regularization, $\left( 1 - \frac{\alpha \lambda}{m} \right)$ is less than $1$ and it is keep multiplying to weight. So “weight decay” is just the update‐rule version of L2 regularization under plain SGD.  
+See below for your understanding of relationship of L2 regularization and weight decay.
+$$
+\begin{aligned}
+J(w)&=\mathrm{MSE}_{\mathrm{train}}(w)+\frac{\lambda}{m}\,w^\top w,\\
+\nabla_w J&=\nabla_w\mathrm{MSE}_{\mathrm{train}}(w)\;+\;\frac{2\lambda}{m}\,w,\\
+w&\leftarrow w-\alpha\,\nabla_wJ
+  =w-\alpha\,\nabla_w\mathrm{MSE}_{\mathrm{train}}(w)
+   -\alpha\,\frac{2\lambda}{m}\,w,\\
+w&\leftarrow\Bigl(1-\tfrac{\alpha\lambda}{m}\Bigr)\,w
+   -\alpha\,\nabla_w\mathrm{MSE}_{\mathrm{train}}(w).
+\end{aligned}
+$$
 
 
 ### How regularization prevent overfitting
