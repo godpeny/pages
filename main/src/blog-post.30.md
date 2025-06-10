@@ -164,5 +164,10 @@ well to the dev/test set: The model’s error rate (or accuracy) on held-out dat
 ### Bias and Variance with mismatched data distribution
 ### Addressing data mismatch
 
+## Transfer Learning
+## MultiTask Learning
+### Comparison to Softmax
+## End to End Deep Learning
+
 
 
