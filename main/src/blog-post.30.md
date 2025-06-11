@@ -158,11 +158,110 @@ This table shows why as you reach human level performance, it is harder to tease
 well to the dev/test set: The model’s error rate (or accuracy) on held-out data (dev/test) is very close to its error on the data it was trained on. So you can get not too bad variance.
 
 ## Error Analysis
+Error analysis is a systematic process of examining and understanding the errors made by a machine learning model.
+It is important to know which parts of the machine learning algorithm lead to the error rate is crucial.  
+Let's look at this face recognition example.
+![alt text](images/blog30_error_analysis.png)
+This algorithms is divided into several steps.
+1. The inputs are taken from a camera image.
+2. Preprocessing to remove the background on the image. (For instance, if the image are taken from a security camera, the background is always the same, and we could remove it easily by keeping the pixels that changed on the image)
+3. Detect the position of the face.
+4. Detect the eyes - Detect the nose - Detect the mouth
+5. Final logistic regression step to predict the label.
+
+If you build a complicated system like this one, you might want to figure out how much error is attributable to each of the components and how good is each of these green boxes.  
+If one of these boxes is really problematic, you might want to spend more time trying to improve the performance of that one green box. So how do you decide what part to focus on?  
+The one thing we can do is plug in the ground-truth for each component, and see how accuracy changes.
+
+$$
+\begin{array}{|l|c|}
+\hline
+\textbf{Component} & \textbf{Accuracy} \\ \hline
+\text{Overall system}                 & 85\%   \\ \hline
+\text{Preprocess (remove background)} & 85.1\% \\ \hline
+\text{Face detection}                 & 91\%   \\ \hline
+\text{Eyes segmentation}              & 95\%   \\ \hline
+\text{Nose segmentation}              & 96\%   \\ \hline
+\text{Mouth segmentation}             & 97\%   \\ \hline
+\text{Logistic regression}            & 100\%  \\ \hline
+\end{array}
+$$
+Looking at the table, we know that working on the background removal won't help much.
+It also tells us where the biggest jumps are. We notice that having an accurate face detection mechanism really improves the performance, and similarly, the eyes really help making the prediction more accurate.
+
+### Ablative analysis
+While error analysis tries to explain the difference between current performance and perfect performance,(85% to 100% in above example) ablative analysis tries to explain the difference between some baseline (much poorer) performance and current performance. In other words,it removes components from your system one at a time, to see how it breaks.
+
+Forinstance, suppose you have built a good anti-spam classifier by adding lots of clever features to logistic regression.  
+
+ - Spelling correction
+ - Sender host features
+ - Email header features
+ - Email text parser features
+ - Javascript parser
+ - Features from embedded images
+
+In this example, simple logistic regression without any clever features gets 94% performance, but when adding these clever features, we get 99.9% performance.
+
+$$
+\begin{array}{|l|c|}
+\hline
+\textbf{Component} & \textbf{Accuracy} \\ \hline
+\text{Overall system}              & 99.9\% \\ \hline
+\text{Spelling correction}         & 99.0\% \\ \hline
+\text{Sender host features}        & 98.9\% \\ \hline
+\text{Email header features}       & 98.9\% \\ \hline
+\text{Email text parser features}  & 95\%   \\ \hline
+\text{JavaScript parser}           & 94.5\% \\ \hline
+\text{Features from images}        & 94.0\% \\ \hline
+\end{array}
+$$
+Now you want to know how much did each of these components really help?
+In abaltive analysis, what we do is start from the current level of performance 99.9%, and slowly take away all of these features to see how it a ects performance.  
+By so, instead of simply giving the loss/error rate of the algorithm, we can provide evidence that some specific features are actually more important than others. We can conclude that the email text parser features account for most of the improvement in above example.
+
+### Analyze the mistakes
+Assume you are given a dataset with pictures of animals, and your goal is to identify pictures of cats that you would eventually send to the members of a community of cat lovers. You notice that there are many pictures of dogs in the original dataset, and wonders whether you should build a special algorithm to identify the pictures of dogs and avoid sending dogs pictures to cat lovers or not.
+One thing you can do is take a 100 examples from your dev set that are misclassified, and count up how many of these 100 mistakes are dogs. If 5% of them are dogs, then even if you come up with a solution to identidy the dogs, your error would only godown by 5%, that is your accuracy would go up from 90% to 90.5%.  
+However, if 50 of these 100 errors are dogs, then you could improve your accuracy to reach 95%.
+By analyzing your mistakes, you can focus on what's really important. If you notice that 80 out of your 100 mistakes are blurry images, then work hard on classifying correctly these blurry images. If you notice that 70 out of the 100 errors are great cats(tigers, lions..), then focus on this specific task of identifying great cats.  
+
+In brief, do not waste your time improving parts of your algorithm that won't really help decreasing your error rate, and focus on what really matters.
 
 ## Mismatched Training and Dev/Test data
+Deep Learning algorithms require lots of training data. Sometimes, this results in putting in whatever data they can find and putting them into training set even a lot of this data doesn't come from same distribution as dev/test sets. So nowadays more and more teams are training on data that comes from different distribution than dev/test sets.  
+There are some best practice that dealing with when your train and dev/test sets distribution differ from each other.
 ### Training and Testing on different distribution
+One thing to note is that goal of the dev sets is telling the model where to aim the target. So setting up the dev set to optimize for the different distribution of the data that what you actually care.  
+
+For example, when you are developing mobile app of cat that recognize the picture uploaded from users' mobile phone is cat or not. Suppose when you develop the model for the app, you have two different source of data, 200,000 cat images from web and 10,000 cat images from mobile upload. In this situation, rather than mixing two different distribution of data and split into train/dev/test sets,(such as 205,000/2,500/2,500) it is better to put all 200,000 data from web source to training set and fill the dev and test sets with only mobile source data. (such as 200,000(web)+5,000(mobile)/2,500(mobile)/2,500(mobile)) It is because the distribution of mobile source is what the app is recally care.
+
+Another example is speach recognition system in car. While there are lots of speach data, what you really care is the speach data earned from car. Because those data include much more specific data for speach recognition system in car. In this situation, similart to earlier example, set your trainin data with general speach data you have and set dev/test sets with the speach data earned from car. The reason is same as before, speach from the car is the data distribution that you really want.
+
 ### Bias and Variance with mismatched data distribution
-### Addressing data mismatch
+When train and dev/test sets are from different distribution, it is hard to diagnose the problem of bias and variance. For example if training error is 1% and dev error is 10%, if these two data sets are from same distribution, we can conclude that there is variance problem. But if they are from different distribution, we can't conclude so. This is  because there is possibility that the training sets are easier than dev/test sets so the model is actually doing just fine.  
+So we come up with "training-dev set", which is data from ame
+distribution as training set, but not used for training.
+$$
+\begin{array}{|l|c|l|}
+\hline
+\textbf{Metric} & \textbf{Error} & \textbf{Interpretation} \\ \hline
+\text{Human level (Bayes/optimum)}      & 4\%  & \text{} \\ \hline
+\text{Training-set error}               & 7\%  & \uparrow\; \text{avoidable bias} \\ \hline
+\text{Training-dev sets error}          & 10\% & \uparrow\; \text{variance} \\ \hline
+\text{Dev-set error}                    & 12\% & \uparrow\; \text{data mismatch} \\ \hline
+\text{Test-set error}                   & 12\% & \uparrow\; \text{degree of overfit to dev} \\ \hline
+\end{array}
+$$
+Training-dev sets error indicates the variance problem that your model is not generalized well to the data never seen before but same distribution. So the Dev-set error now indicates the data mismatch problem that the model is not doing well on the different distribution of the data that you really care.  
+Lastly, Test-set error says degree of overfit to dev sets data. In other words, if there is huge gap between dev set error and test set error, your model is overtuned to the dev sets. So you need to find the bigger dev sets.
+
+### Addressing data mismatch problem
+- Carry out manual error analysis to try to understand difference
+between training and dev/test sets.
+- Make training data more similar; or collect more data similar to
+dev/test sets. 
+  - e.g., simulate the noise in the car (artificial data synthesis)
 
 ## Transfer Learning
 ## MultiTask Learning
