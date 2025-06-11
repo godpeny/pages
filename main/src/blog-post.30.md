@@ -81,6 +81,18 @@ Generally, when there are $N$ metrics, optimizing $1$ metric and satisfying $N-1
 ## Train, Dev and Test Sets 
 Basically you train on the training set, evaluate results on the dev set, and test on the test set.
 
+### Train Sets
+Training data set,which is a set of examples used to fit the parameters (weights of connections between layers in the network) of the model. 
+
+### Dev Sets(Validation Sets)
+The validation data set provides first unbiased evaluation of a model fit on the training data set while tuning the model's hyperparameters. (e.g., the number of hidden units/layers and layer widths in a neural network)
+
+ - Never backpropagate using dev set.
+ - The dev set acts as your scoreboard for comparing different hyperparameter choices.
+
+### Test Sets
+The test data set is a data set used to provide an unbiased evaluation of a final model fit on the training data set. So a test set is therefore a set of examples used only to assess the performance of a fully specified classifier.
+
 ### Distributions
 Choose a dev set and test set to reflect data you expect to get in the future. In other words, dev and test sets should be come from same distribution.
 ### Size of Sets
