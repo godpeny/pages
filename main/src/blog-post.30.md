@@ -276,9 +276,63 @@ dev/test sets.
   - e.g., simulate the noise in the car (artificial data synthesis)
 
 ## Transfer Learning
-## MultiTask Learning
-### Comparison to Softmax
-## End to End Deep Learning
+Transfer learning is a technique in machine learningin which knowledge learned from a task is reused in order to boost performance on a related task.
+![alt text](images/blog30_transfer_learning.png)
+ - Pre-trained Model: Start with a model already trained on a large dataset for a specific task. This pre-trained model has learned general features and patterns that are relevant across related tasks. (M2)
+ - Transfer Layers: Identify layers within the pre-trained model that hold generic information applicable to both the original and new tasks. These layers often near the top of the network capture broad, reusable features. ($\ell$)
+ - Frozen Layers: These layers from a pre-trained model remain unchanged during fine-tuning. They retain general features learned from the original task, extracting universal patterns from input data. ($\ell_f$)
+ - Trainable Layers: These layers are adjusted during fine-tuning to learn task-specific features from the new dataset, allowing the model to meet the new task’s unique requirements.($\ell + \ell_0 - \ell_f$)
+ - Fine-tuning: Fine-tune these selected layers with data from the new task. This process helps retain the pre-trained knowledge while adjusting parameters to meet the specific requirements of the new task, improving accuracy and adaptability.
 
+### When TL Works
+ - You have a lot more data for task from pretrained model than task from new model.
+ - Task A and B have the same input x.
+ - Low level features from A could be helpful for learning B.
+
+For example, when you are training model for radiology diagnosis, you can use pretrained model from image recognition. The hierarchical representation and low-level to complex features from the image recognition model could be helpful to build the model of radiology diagnosis. Note there has to be lots more data from transferring from, which is image recognition model than the model transferring to, which is radiology diagnosis. For example, 100,000 data from image recognition and 10,000 from radiology diagnosis.
+
+## Multi-Task Learning
+Multi-Task Learning (MTL) is a type of machine learning technique where a model is trained to perform multiple tasks simultaneously. The goal of MTL is to improve the generalization performance of the model by leveraging the information shared across tasks. By sharing some of the network's parameters, the model can learn a more efficient and compact representation of the data, which can be beneficial when the tasks are related or have some commonalities.  
+The idea is that you can train a big enough neural network to do well on all the tasks than training each network for each task separately when the network is big enough.  
+### Loss Function of MTL
+The loss function for multi task learning is as below. Note that $L\!\bigl(\hat{y}_{j}^{(i)},y_{j}^{(i)}\bigr)$ is usual logistic loss. But the difference is that summing over all the values of $j$, which is the node for the single task. For example, when developing simple autonomous driving model, the model has to distinguish the cars, pedestrians, stop signs and traffic light from the image. If applying this example to loss function, $n=4$ and each node will be matched with the cars, pedestrians, stop signs and traffic light.
+$$
+J \;=\; \frac{1}{m}\sum_{i=1}^{m}\;\sum_{j=1}^{n}
+      L\!\bigl(\hat{y}_{j}^{(i)},\,y_{j}^{(i)}\bigr) \\[6pt]
+L\!\bigl(\hat{y}_{j}^{(i)},y_{j}^{(i)}\bigr)
+  \;=\;
+  -\,y_{j}^{(i)}\,\log\hat{y}_{j}^{(i)}
+  \;-\;\bigl(1-y_{j}^{(i)}\bigr)\,
+        \log\!\bigl(1-\hat{y}_{j}^{(i)}\bigr).
+$$
+In practice we sum only over those label indices $j$ for which a valid binary target, $y_{j}^{(i)} \;\in\; \{0,1\}$ is present (missing labels are skipped).
+If there are 4 features to detect, the $Y$ will be like below.
+$$
+Y \;=\;
+\left[
+\begin{array}{cccccc}
+\color{red}{1} & \color{red}{1} & \color{red}{0} & ? & \cdots & ?\\[4pt]
+0              & \color{red}{1} & \color{red}{1} & ? & \cdots & ?\\[4pt]
+?              & ?              & \color{red}{1} & ? & \cdots & ?\\[4pt]
+?              & ?              & \color{red}{0} & ? & \cdots & ?\\[2pt]
+\end{array}
+\right]
+$$
+As you can see from above $Y$, unlike softmax regrssion, in multi task learning one image could have multiple labels.
+### When MTL works?
+- When Training on a set of tasks that could benefit from having shared lower-level features.
+- When the Amount of data you have for each task is quite similar.
+
+## End to End Deep Learning
+End to End Deep Learning is a machine learning technique where train a single neural network for complex tasks using as input directly the raw input data without any manual feature extraction.
+The key when applying end to end deep learning is that whether you have sufficient data to learn a function of the complexity needed to map $x$ to $y$.  
+When data is not enough to solve end-to-end, you should use multi-step approach to the model.
+
+So the pros of end-to-end are that,
+ - Let the data speak.
+ - Less hand-designing of components needed.
+while the cons are, 
+ - May need large amount of data.
+ - Excludes potentially useful hand-designed components.
 
 
