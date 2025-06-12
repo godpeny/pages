@@ -64,7 +64,7 @@ More formally, it is the application of a point estimator to the data to obtain 
 ### Interval Estimate
 In statistics, interval estimation is the use of sample data to estimate an interval of possible values of a parameter of interest. This is in contrast to point estimation, which gives a single value.
 
-
+## Bayesian vs Frequentist
 
 ## Gaussian Distribution (= Normal Distribution)
 A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
@@ -136,7 +136,7 @@ To find the maximum, we take the derivative of the log-likelihood function with 
 Solving these equations provides the parameter values that maximize the likelihood function
 
 ## Maximum a posteriori estimation (MAP)
-사후확률(posterior probability)을 사전확률(prior probability)과 likelihood를 이용해서 계산할 수 있도록 해 주는 확률 변환식.  
+사후확률(posterior probability)을 사전확률(prior probability)과 likelihood를 이용해서 계산할 수 있도록 해 주는 확률 변환식. 
 In Bayesian statistics, a maximum a posteriori probability (MAP) estimate is an estimate of an unknown quantity, that equals the mode of the posterior distribution.  
 It is closely related to the method of maximum likelihood (ML) estimation, but employs an augmented optimization objective which incorporates a prior distribution (that quantifies the additional information available through prior knowledge of a related event) over the quantity one wants to estimate.
 Observe that the MAP estimate of 
@@ -152,6 +152,12 @@ $$
                       & = \arg \max_\theta p(y \ \vert \ x, \theta) \ p(\theta)
 \end{align*}
 $$
+
+### Background of MAP
+While the most principled approach is to make predictions using the full Bayesian posterior distribution over the parameter $\theta$ , it is still often desirable to have a single point estimate. One common reason for desiring a point estimate is that most operations involving the Bayesian posterior for most interesting models are intractable, and a point estimate offers a tractable approximation.  
+Rather than simply returning to the maximum likelihood estimate, we can still gain some of the benefit of the Bayesian approach by allowing the prior to influence the choice of the point estimate. One rational way to do this is to choose the maximum a posteriori (MAP) point estimate. 
+
+The MAP estimate chooses the point of maximal posterior probability ($p(\theta \mid x,y)$) (or maximal probability density in the more common case of continuous $\theta$)
 
 ## Probability Distribution
 Probability Distribution is a mathematical description of the probabilities of events, subsets of the sample space. The sample space, is the set of all possible outcomes of a random phenomenon being observed.  
