@@ -59,11 +59,91 @@ $$
 $$
 
 ## Convolutional Network
+### Convolution over volume
+![alt text](images/blog31_convolution_over_volume_1.png)
+You can stack multiple 2-D pixel matrix(height * width) to represent 3-D tensor(height * width * #channel). One thing to note is to match the number of channel of image and filters. So how do you convolve this pixel tensor with the 3D filter? Similar to 2-D convolution, take each numbers of the filter and multiply them with the corresponding numbers from the each channel of the tensor.  
+To put it simply using above image example, take the each $9$ numbers from the $3$ channels and multiply it with the corresponding $27$ numbers that gets covered by first left yellow cube show on the image. Then add up all those numbers and this gives you this first number in the output, and then to compute the next output you take this cube and slide it over by one, and again, due to 27 multiplications, add up the 27 numbers, that gives you this next output and so on.
+
+From the above image, you have to match the number of channel to $3$. When performing image processing in convolutional neural network, each channel represents a color. In a color image, there are three channels: red, green, and blue. An RGB image can be described as a $w \times h \times n\_c$ matrix, where each denotes the width, height, and the number of channels respectively. Thus, when an RGB image is processed, a three-dimensional tensor is applied to it.  
+
+Unlike RGB images, grayscale images are singled channeled and can be described as a $w \times h$ matrix, in which every pixel represents information about the intensity of light.
+
+### Multiple Filters
+![alt text](images/blog31_convolution_over_volume_2.png)
+When we want to detect not just single feature from the tensor, but multiple features, we can use multiple filters. (e.g., detect vertical, horizontal, 45 degree edges and so on)
+The output is the stack of the result of each convolution of filter. From the above image example, since it is using two filters to detect vertical and horizontal edges, the number of output is also two and you combine these two result.
+$$
+\begin{aligned}
+&\textbf{Input tensor:}  && n \times n \times n_c \\[2pt]
+&\textbf{Filter (kernel):} && f \times f \times n_c \\[2pt]
+&\textbf{Output tensor:} &&
+      (\,n - f + 1\,)\;\times\;(n - f + 1)\;\times\;n_c' \\[6pt]
+%-----------------------------------------------------------
+&\textit{Example:}  && 6 \times 6 \times 3 
+      \;\;{\xrightarrow{\;\;3 \times 3 \times 3,\; n_c'=2\;\;}}
+      \;\;4 \times 4 \times 2
+\end{aligned}
+$$
 ### Convolutional Layer
+![alt text](images/blog31_convolutional_layer.png)
+Consider above convolutional layer example.  
+$a^{[0]} = x$ is convolution with each filter $w^{[1]}$ and bias $b^{[1]}$ is added. So the result $z^{[1]} = w^{[1]} a^{[0]} + b^{[1]}$. Applying Relu function to $z^{[1]}$ to get output $a^{[1]}$.
+
+- $f^{[l]}$ is filter(kernel) size.
+- $p^{[l]}$ is padding.
+- $s^{[l]}$ is stride.
+- $n_c^{[l]}$ is number of channel of output(=number of filters). 
+- $f^{[l]} \times f^{[l]} \times n_c^{[\,l-1]}$ is each filter.
+- $f^{[l]} \times f^{[l]} \times n_c^{[\,l-1]} \times n_c^{[l]}$ is weight.
+- $b^{[l]}: 1 \times 1 \times 1 \times n_c^{[l]}$ is bias.
+- $a^{[l-1]} = n_H^{[\,l-1]} \times n_W^{[\,l-1]} \times n_c^{[\,l-1]}$ is input.
+- $a^{[l]} = n_H^{[\,l]} \times n_W^{[\,l]} \times n_c^{[\,l]}$ is output.  
+
+Note that the number of depth(channel) of output layer is same as the number of filters applied.
+Also remind that size of height and width is below.
+$$
+n_H^{[\,l]} = 
+\Bigl\lfloor \frac{n_H^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor,
+\qquad
+n_W^{[\,l]} = 
+\Bigl\lfloor \frac{n_W^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor 
+$$
+So the output layer dimension is, 
+$$
+\Bigl\lfloor \frac{n_H^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor \times \Bigl\lfloor \frac{n_W^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor  \times n_c^{[l]}
+$$
 ### Pooling
+A pooling layer is a kind of network layer that downsamples and aggregates information that is distributed among many vectors into fewer vectors. So pooling is basically convolution over data with filter but summarizing the features within the region covered by the filter.
+- Max Pooling: Max pooling selects the maximum element from the region of the feature map covered by the filter. Thus, the output after max-pooling layer would be a feature map containing the most prominent features of the previous feature map. Max pooling layer preserves the most important features (edges, textures, etc.) and provides better performance in most cases.
+- Average Pooling: Average pooling computes the average of the elements present in the region of feature map covered by the filter. Thus, while max pooling gives the most prominent feature in a particular patch of the feature map, average pooling gives the average of features present in a patch. Average pooling provides a more generalized representation of the input. It is useful in the cases where preserving the overall context is important. Also it is sometimes used in very deep neural network to collapse the representation.($n \times n$ to $1 \times 1$)
+
+The output dimension can be calculated just like before.
+$$
+\Bigl\lfloor \frac{n_H^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor \times \Bigl\lfloor \frac{n_W^{[\,l-1]} + 2p^{[l]} - f^{[l]}}{s^{[l]}} + 1 \Bigr\rfloor  \times n_c^{[l]}
+$$
+
 ### Convolutional Network Example
+General trend in Convolutional Network is that as go deeper in the network, size of height & width stays same for while and trend down, while the number of channer gradually increase.
+
+![alt text](images/blog31_convolutional_neural_network_1.png)
+![alt text](images/blog31_convolutional_neural_network_2.png)
+
+
+
 ### Why Convolutional Network?
+- Good at detecting patterns and features in images, videos, and audio signals.
+- Robust to translation, rotation, and scaling invariance.
+
+#### Invariance
+Invariance means that you can recognize an object as an object, even when its appearance varies in some way. This is generally a good thing, because it preserves the object's identity, category, (etc) across changes in the specifics of the visual input, like relative positions of the viewer/camera and the object.
+![alt text](images/blog31_invariance.png)
+
 #### Why Convolutional Network have small number of parameters?
+- Parameter sharing: A feature detector (such as a vertical
+edge detector) that’s useful in one part of the image is probably
+useful in another part of the image.
+- Sparsity of connections: In each layer, each output value
+depends only on a small number of inputs.
 
 ## Convolutional Network Case Study
 ### Classic Networks
