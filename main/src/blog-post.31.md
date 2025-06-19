@@ -145,6 +145,9 @@ useful in another part of the image.
 - Sparsity of connections: In each layer, each output value
 depends only on a small number of inputs.
 
+### Backpropagation of Convolutional Network
+https://pavisj.medium.com/convolutions-and-backpropagations-46026a8f5d2c
+
 ## Convolutional Network Case Study
 ### Classic Networks
 #### LeNet-5
