@@ -21,6 +21,7 @@ It is because minimizing cross entropy is same as maximizing  log likelihood.
 ### Cross Entropy Loss
 https://www.geeksforgeeks.org/what-is-cross-entropy-loss-function/
 https://stackoverflow.com/questions/41990250/what-is-cross-entropy
+https://jmlb.github.io/ml/2017/12/26/Calculate_Gradient_Softmax/
 
 
 ### Gradient of Cross Entropy Loss
