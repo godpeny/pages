@@ -129,7 +129,6 @@ General trend in Convolutional Network is that as go deeper in the network, size
 ![alt text](images/blog31_convolutional_neural_network_2.png)
 
 
-
 ### Why Convolutional Network?
 - Good at detecting patterns and features in images, videos, and audio signals.
 - Robust to translation, rotation, and scaling invariance.
@@ -147,6 +146,12 @@ depends only on a small number of inputs.
 
 ### Backpropagation of Convolutional Network
 https://pavisj.medium.com/convolutions-and-backpropagations-46026a8f5d2c
+
+### Backpropagation of MaxPooling
+https://towardsdatascience.com/forward-and-backward-propagation-of-pooling-layers-in-convolutional-neural-networks-11e36d169bec/
+
+### Backpropagation of Linear Layer
+https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backward-pass/
 
 ## Convolutional Network Case Study
 ### Classic Networks
