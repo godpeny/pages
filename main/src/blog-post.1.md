@@ -97,6 +97,12 @@ For example, Let's consider below data set $X$(left) and simple neural network w
 If each hidden layer $h_1, h_2, h_3$ use step function, these three neurons can be treated as three independent linear classifiers.   
 Therefore the three decision boundaries form a triangle that classifies the outside data into class 1, and the inside ones into class 0.
 
+### Non-linearity of Neural Network
+As soon as you stack activations like ReLU, tanh, GELU, etc., in neural network, the loss function is no longer “single-bowl” convex. Plateaus, ridges, saddle points, and many minima appear.
+Therefore, this nonlinearity of a neural network causes most interesting loss functions to become non-convex.
+
+Since the standard convergence proofs for SGD assume convexity, without it, the algorithm can settle in one of the many equivalent global minima or land in a good-but-not-optimal local basin. Therefore, when you apply gradient descent to this non-linear loss function, you can't gurantee the convergence to global optima.
+
 ### Popular Active Functions
 Let's see some popular active functions. 
 
