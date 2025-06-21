@@ -26,7 +26,7 @@ $$
 It is a function that the straight line between any pair of points on the curve $f$ is above the curve $f$ except for the intersection points between the straight line and the curve.
 
 ## Convex Optimization
-- Convex optimization problems : subfield of mathematical optimization that studies the problem of minimizing convex functions over convex sets (or, equivalently, maximizing concave functions over convex sets).
+- Convex optimization problems : subfield of mathematical optimization that studies the problem of minimizing convex functions over convex sets (or, equivalently, maximizing concave functions over concave sets).
 - Convex set : given any two points in the subset, the subset contains the whole line segment that joins them. 
   Equivalently, a convex set or a convex region is a subset that intersects every line into a single line segment.
 - Optima in Convex Optimization : local optima are global optima.
@@ -470,3 +470,14 @@ $$
 a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + \cdots + a_k \mathbf{v}_k = \mathbf{0},
 $$
 Where $\mathbf{0}$ denotes the zero vector.
+
+## Functional
+In functional analysis and related fields, functional refers to a mapping from a space $X$ into the field of real or complex numbers. Here, domain $X$ can be any vector.  
+In special case, where $X$ is specifically chosen to be a function space (its elements themselves are functions), functional refers to a mapping from functions to real numbers.
+$$
+J[y] \;=\; \displaystyle\int_{0}^{1} \Bigl((y(t))^{2} \;-\; 4t\,y(t) \;+\; 5t^{2}\Bigr)\,dt \\[6pt]
+
+\displaystyle \text{if, } y : x \;\mapsto\; 2x \\[6pt]
+
+J[y] \;=\; \displaystyle\int_{0}^{1} \Bigl(4t^{2} \;-\; 8t^{2} \;+\; 5t^{2}\Bigr)\,dt \;=\; \frac{1}{3}
+$$
