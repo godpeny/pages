@@ -156,8 +156,96 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
 ## Convolutional Network Case Study
 ### Classic Networks
 #### LeNet-5
+![alt text](images/blog31_lenet5.png)
+1. Input layer : (32,32,1) 
+   - Note that depth is 1 since it is grey scale.
+2. Convolution layer 1: 
+   - Convolution with Filter: (5,5,1) * 6, with stride=1 and padding=0
+   - ((((32 + (2 * 0) - 5) / 1) + 1), (((32 + (2 * 0) - 5) / 1) + 1)) * 6 = (28,28,6)
+3. Pooling(Subsampling) layer 1:
+   - Pool with Filter: (2,2,6) * 6, with stride=2 and padding=0
+   - ((((28 + (2 * 0) - 2) / 2) + 1), (((28 + (2 * 0) - 2) / 2) + 1)) * 6 = (14,14,6)
+4. Convolution layer 2: 
+   - Convolution with Filter: (5,5,6) * 16, with stride=1 and padding=0
+   - ((((14 + (2 * 0) - 5) / 1) + 1), (((14 + (2 * 0) - 5) / 1) + 1)) * 16 = (10,10,16)
+5. Pooling(Subsampling) layer 2:
+   - Pool with Filter: (2,2,6) * 16, with stride=2 and padding=0
+   - ((((10 + (2 * 0) - 2) / 2) + 1), (((28 + (2 * 0) - 2) / 2) + 1)) * 16 = (5,5,16)
+6. Fully Connected Layer 1:
+   - Weight: ((5*5*16), 120)
+   - Parameters: Weight(400 * 120) + Bias(120)
+7. Fully Connected Layer 2:
+   - Weight: (120, 84)
+   - Parameters: Weight(120 * 84) + Bias(84)
+8. Output Layer:
+   - Softmax Function of 10 output.
+
+##### Note on Lenet-5
+- As go deeper through the network, $N_h$, $N_w$ reduces, while $N_c$ increases.
+- The original Lenet-5 uses Euclidean Radial Basis Function(RBF) as output layer which is useless these days. 
+- The original Lenet-5 has non-linearity function (such as sigmoid) after convolution layers, (conv-sigmoid-pool-conv-sidmoid-pool) which is not done thesedays also. 
+- Lastly, Lenet-5 used average pool instead of max pool in pooling layer.
+
 #### AlexNet
+![alt text](images/blog31_alexnet.png)
+1. Input layer : (227,227,3)
+2. Convolution layer 1: 
+   - Convolution with Filter: (11, 11, 3) * 96, with stride=4 and padding=0
+   - ((((227 + (2 * 0) - 11) / 4) + 1), (((227 + (2 * 0) - 11) / 4) + 1)) * 96 = (55,55,96)
+3. Pooling(Subsampling) layer 1:
+   - Pool with Filter: (3,3,96) * 96, with stride=2 and padding=0
+   - ((((55 + (2 * 0) - 3) / 2) + 1),(((55 + (2 * 0) - 3) / 2) + 1)) * 96 = (27,27,96)
+4. Convolution layer 2: 
+   - Convolution with Filter: (5,5,96) * 256, with stride=1 and padding=2 (same convolution)
+   - ((((27 + (2 * 2) - 5) / 1) + 1), (((27 + (2 * 2) - 5) / 1) + 1)) * 256 = (27,27,256)
+5. Pooling(Subsampling) layer 2:
+   - Pool with Filter: (3,3,256) * 384, with stride=2 and padding=0
+   - ((((27 + (2 * 0) - 3) / 2) + 1), (((27 + (2 * 0) - 3) / 2) + 1)) * 384 = (13,13,384)
+6. Convolution layer 3 ~ 4: 
+   - Convolution with Filter: (3,3,384) * 384, with stride=1 and padding=1 (same convolution)
+   - ((((13 + (2 * 1) - 3) / 1) + 1), (((13 + (2 * 1) - 3) / 1) + 1)) * 384 = (13,13,384)
+   - Two Convolution Layers in a row.
+7. Convolution layer 5: 
+   - Convolution with Filter: (3,3,384) * 256, with stride=1 and padding=1 (same convolution)
+   - ((((13 + (2 * 1) - 3) / 1) + 1), (((13 + (2 * 1) - 3) / 1) + 1)) * 256 = (13,13,256)
+8. Pooling(Subsampling) layer 3:
+   - Pool with Filter: (3,3,256) * 256, with stride=2 and padding=0
+   - ((((13 + (2 * 0) - 3) / 2) + 1), (((27 + (2 * 0) - 3) / 2) + 1)) * 256 = (6,6,256)
+9. Fully Connected Layer 1:
+   - Weight: ((6 * 6 *256), 4096)
+10. Fully Connected Layer 2:
+   - Weight: (4096, 4096)
+8. Output Layer:
+   - Softmax Function of 1000 output.
+
+##### Overall
+[(CONV → RN → MP) * 2] → (CONV3 → MP) → [(FC → DO)*2] → Linear → Softmax
+ - CONV = convolutional layer (with ReLU activation)
+ - RN = local response normalization
+ - MP = max-pooling
+ - FC = fully connected layer (with ReLU activation)
+ - Linear = fully connected layer (without activation)
+ - DO = dropout
+
+##### Note on AlexNet
+- AlexNet is similar to Lenet-5 but much bigger size.
+- Apply ReLu function to the every output of convolutional layer to add non-linearity.
+- It used max pooling.
+- It used local response normalization(which is turned out to be effectless), and dropout regularization with drop probability 0.5.
+
+
 #### VGG-16
+![alt text](images/blog31_vgg16-1.png)
+![alt text](images/blog31_vgg16-2.png)
+
+- Input Size: (224, 224, 3)
+- Convolution: (3 * 3) filters with stride=1, same convolution
+- Max Pooling: (2 * 2) filters with stride=2
+
+##### Notes on VGG-16
+- All hidden layers are equipped with the rectification (ReLU) non-linearity. 
+- It is also noted that none of the networks (except for one) contain Local Response Normalisation (LRN), such normalization does not improve the performance on the ILSVRC dataset, but leads to increased memory consumption and computation time.
+
 ### Residual Networks(ResNets)
 ### 1*1 Convolution
 ### Newwork in Network
