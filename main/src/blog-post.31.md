@@ -247,12 +247,73 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
 - It is also noted that none of the networks (except for one) contain Local Response Normalisation (LRN), such normalization does not improve the performance on the ILSVRC dataset, but leads to increased memory consumption and computation time.
 
 ### Residual Networks(ResNets)
-### 1*1 Convolution
-### Newwork in Network
-### Inception Network
+![alt text](images/blog31_resnet.png)
+Above image show residual block in deep residual network whose residual connection skips two layers.  
+
+In a multilayer neural network model, consider a subnetwork with a certain number of stacked layers (e.g., 2 or 3). Denote the underlying function performed by this subnetwork as $H(x)$, where $x$ is the input to the subnetwork. Residual learning reparameterizes this subnetwork and lets the parameter layers(layer that actually learn) represent a "residual function" $F(x)=H(x)-x$. The output of this subnetwork is then represented as $H(x)=F(x)+x$.  
+The operation of $+ x$ is implemented via a "skip connection" that performs an identity mapping to connect the input of the subnetwork with its output. This connection is referred to as a "residual connection" in later work.  It helps to solve the problem of the vanishing/exploding gradient so that helps the model to learn deeper neural network.
+
+#### Mathmatics of ResNets
+$$
+\begin{aligned}
+&z^{[l+1]} = W^{[l+1]}\,a^{[l]} + b^{[l+1]}, \quad a^{[l+1]} = g\!\bigl(z^{[l+1]}\bigr) \\[6pt]
+&z^{[l+2]} = W^{[l+2]}\,a^{[l+1]} + b^{[l+2]} \\[6pt]
+&\cancel{a^{[l+2]} = g\!\bigl(z^{[l+2]}\bigr)} \\[6pt]
+&a^{[l+2]}_{residual} = g\!\bigl(z^{[l+2]} + a^{[l]}\bigr)
+\end{aligned}
+$$
+
+#### Why ResNets work?
+When the network is very deep, it's hard for the parameters in the network to learn even the identity function. On the other hand,the residual block makes easy to $H(x) = x$. Therfore, residual block doesn’t hurt performance and still leaves the possibility to do better than the identity function. So you can say that residual block lowers the baseline to “not hurting performance,” so gradient descent can only improve the solution from that baseline.
+
+$$
+a^{[l+2]} \;=\; g\!\bigl( z^{[l+2]} \;+\; a^{[l]} \bigr) \\[6pt]
+= g\!\bigl( W^{[l+2]}a^{[l+1]} + b^{[l+2]} + W_s a^{[l]} \bigr)
+$$
+Also note that dimension of the output and input of residual block should be equal. If not, you can add parameter(or constant) like $W_s$ to match the dimension. For example, when $a^{[l+2]} \in \mathbb{R}^{256}$ and $a^{[l]} \in  \mathbb{R}^{128}$, $W_s \in \mathbb{R}^{256 \times 128}$.
+
+### 1*1 Convolution (Network in Network)
+(1 * 1) Convolution simply means the filter is of size (1*1). This 1X1 filter will convolve over the entire input image pixel by pixel. So why this (1 * 1) convolution is used? mainly two reasons.
+1. Dimensionality Reduction/Augmentation of channel.
+2. Add additional non-linearity to the network.
+
+For example, Suppose you have layer A which is (28 * 28 * 192). If you use 32 (1 * 1 * 192) filters to convole with output of layer A, you get layer with (28 * 28 * 32) dimension. Also, if you apply this output through a non-linear activation(such as ReLU), it adds non-linearity to the network.
+
+#### Pooling vs 1*1 Convolution
+While Pooling helps to reduce the height/width of the layer ($N_h, N_w$), 1*1 convolution layer helps to reduce the depth(channel) of the layer ($N_c$).  
+
+### Inception Module
+![alt text](images/blog31_inception_module.png)
+Motivation of Inception module is that instead of handpicking filter size or pooling, concate them all layers and let the network learns whatever parameters it want to use and whatever combinations of the filter sizes it want to use.  
+One thing to note is that computational costs can be reduced drastically by introducing a (1 * 1) convolution. As you can see, the number of input channels is reduced by adding an extra (1 * 1) convolution before the (3 * 3) and (5 * 5) convolutions.  
+Secondly, intput and output dimension of convolutional network are also same, only the dimension temporarily reduced in (1 * 1) convolution layer(bottleneck).  
+For example, let's see (3 * 3) convolution layer. The channel of the output sholud be 32. But rather than applying (3 * 3) convolution directly to the previous layer (28 * 28 * 192), adding 16 (1 * 1) convolution filters prior to that, depth is temporarily reduced to 16 and recovered to 32.  
+Lastly, if the bottle neck layer is properly implemented, the performance of the network doesn't hurt.
+
+#### Inception Network
+![alt text](images/blog31_inception_network.png)
+Inception Network is more or less put a lot of these inception modules together. In the Inception Network, take some hidden layers and use them to make a prediction of the output labels. Since it has regularization effecdt to help prevent overfitting.  
+It was invented to build deeper network. 
 
 ## Practical Advices for ConvNets
 ### Transfer Learning
-### Data Augmentation
-### Tips
+In building computer vision application, you progress much faster when using open source weights that has already trained to pre-train and transfer to new task you are interested in.  
+One pattern is that if you have more data, the number of layer to freeze could be smaller and the number of layer to train on top could be greater. If you have a lot of data set, you can train the whole open source network.  
+From deep learning area, computer vision is one where you should do transfer learning almost always.
 
+### Data Augmentation
+Common augmentation methods are color shift and random cropping. Other than these, you can also use rotation, sheering, .. and so on.  
+One common way of implementing data augmentation is to have one or multiple threads that are responsible to load and disort the data and passing the output to other thread or process of training. Sometimes disorting and training can be happening parallely.
+
+### Tips
+#### Tips for doing well on benchmarks/winning competitions
+- Ensembling
+  - Train several networks independently and average their outputs.
+- Multi-crop at test time
+  - Run classifier on multiple versions of test images and average results.
+But these techniques are not used in production, because they consume lots of computational budget.
+#### Use Open Source Code
+Since lots of computer vision problem depends on small dataset regime, other have done a lot of work on architecture of the network. So a neural network works well on one computer vision problem oftern works well on other problems as well.
+- Use architectures of networks published in the literature
+- Use pretrained models and fine-tune on your dataset
+- Use open source implementations if possible
