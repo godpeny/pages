@@ -443,3 +443,11 @@ $$
 \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu_x)^2 = \sigma_x^2 \\
 \therefore \operatorname{Var}(z) = \frac{1}{\sigma_x^2} \cdot \sigma_x^2 = 1
 $$
+
+## Bias of an Estimator
+In statistics, the bias of an estimator is the difference between this estimator's expected value and the true value of the parameter being estimated.
+$$
+{\displaystyle \operatorname {Bias} ({\hat {\theta }},\theta )=\operatorname {Bias} _{\theta }[\,{\hat {\theta }}\,]=\operatorname {E} _{x\mid \theta }[\,{\hat {\theta }}\,]-\theta =\operatorname {E} _{x\mid \theta }[\,{\hat {\theta }}-\theta \,],}
+$$
+Suppose we have a statistical model, parameterized by $\theta$, giving rise to a probability distribution for observed data $P_{\theta }(x)=P(x\mid \theta )$, and a statistic ${\hat {\theta }}$ which serves as an estimator of $\theta$ based on any observed data $x$.  
+That is, we assume that our data follows some unknown distribution $P(x\mid \theta )$ (where $\theta$ is a fixed, unknown constant that is part of this distribution), and then we construct some estimator ${\hat {\theta }}$ that maps observed data to values that we hope are close to $\theta$. 
