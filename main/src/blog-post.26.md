@@ -233,7 +233,7 @@ $$
 \;=\;
 \left(\frac{1}{m}\sum_{i=1}^{m} x^{(i)}\right)^{\!\top} u
 $$
-Since we normalized the mean before PCA, $\mu =0$, therfore $\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 $ can be used to get variance omitting the substraction term.  
+Since we normalized the mean before PCA, $\mu =0$, therefore $\frac{1}{m} \sum_{i=1}^{m} \left( x^{(i)T} u \right)^2 $ can be used to get variance omitting the substraction term.  
 
 Now, back to the variance and let's put it simply, 
 $$
