@@ -295,6 +295,17 @@ g(x)= \frac{1}{f(x)} = \bigl(f(x)\bigr)^{-1}
 =
 \frac{f'(x)}{\bigl(f(x)\bigr)^2}
 $$
+9. Derivative of absolute value function: signum function. 
+$$
+\frac{d}{dx}\lvert x\rvert = \operatorname{sgn}(x) \\[6pt]
+\operatorname{sgn}(x)=
+\begin{cases}
+-1, & x<0,\\[6pt]
+\;0, & x=0,\\[6pt]
+\;1, & x>0.
+\end{cases}
+$$
+
 
 
 ## Integral
