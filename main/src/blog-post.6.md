@@ -306,6 +306,16 @@ $$
 \end{cases}
 $$
 
+### Derivatives with vectors
+https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_vectors
+#### Vector-by-scalar
+#### Scalar-by-vector
+#### Vector-by-vector
+
+### Derivatives with matrices
+https://en.wikipedia.org/wiki/Matrix_calculus#Derivatives_with_matrices
+#### Matrix-by-scalar
+#### Scalar-by-matrix
 
 
 ## Integral
