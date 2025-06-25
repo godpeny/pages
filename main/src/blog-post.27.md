@@ -217,6 +217,78 @@ So, there is no way to tell if the sources were mixed using $A$ and $A'$.
 If there is an arbitrary rotational component $R$ in the mixing matrix that cannot be determined from the data, we cannot recover the original sources.  
 In other words, as long as the data is not Gaussian, it is possible to recover the $n$ independent sources.
 
+### Why Permutation/Sign/Scale is okay but Rotation is not?
+ - Permutation ± sign ± scale: no cross-mixing, harmless for most applications.
+ - Rotation: mixes rows/columns, prevents source recovery unless the non-Gaussianity criterion can single out the true unmixing rotation.
+
+For example, consider below true sources.
+$$
+s_{1}(t)=\begin{bmatrix}1\\0\end{bmatrix},
+\qquad
+s_{2}(t)=\begin{bmatrix}0\\1\end{bmatrix}
+$$
+$A$ is mixing matrix and therefore $x$ is observed mixtures.
+$$
+A=\begin{bmatrix}
+2 & 1\\
+1 & 1.5
+\end{bmatrix},
+\qquad
+x = A\,s \\[6pt]
+$$
+When rotation matrix $R$ is below.
+$$
+R=\frac{1}{\sqrt{2}}
+\begin{bmatrix}
+ 1 & -1\\
+ 1 & \phantom{-}1
+\end{bmatrix}
+$$
+$$
+AR  = \frac{1}{\sqrt{2}}
+      \begin{bmatrix}
+        3 & -1\\[4pt]
+        2.5 & 0.5
+      \end{bmatrix} \\[6pt]
+x_{\text{rot}}
+      = (AR)s
+      = \frac{1}{\sqrt{2}}
+        \begin{bmatrix}
+          3\,s_{1} - 1\,s_{2}\\[6pt]
+          2.5\,s_{1} + 0.5\,s_{2}
+        \end{bmatrix}.
+$$
+You can see that column of $AR$ is not a scaled copy of either original column of $A$. It is already a linear combination of the two.
+
+When permuation matrix $P$ and scaling and singing matrix $D$ is each below.
+$$
+P =
+\begin{bmatrix}
+0 & 1\\
+1 & 0
+\end{bmatrix},
+\qquad
+D =
+\begin{bmatrix}
+1 & 0\\
+0 & -3
+\end{bmatrix},
+$$
+$$
+APD = \begin{bmatrix}
+        1 & -6\\[4pt]
+        1.5 & -3
+      \end{bmatrix} \\[6pt]
+x_{\text{pss}}
+      = (APD)s
+      = \begin{bmatrix}
+          1\,s_{2} - 6\,s_{1}\\[6pt]
+          1.5\,s_{2} - 3\,s_{1}
+        \end{bmatrix}
+$$
+However, when you see matrix $APD$, it's first column is the original second column of $A$ and second column is $-3$ scaled first column of $A$.
+
+
 ## Linear Transformations on Densities
 If $s$ is a vector-valued distribution with density $p_s$, and $x =As$ for a square and invertible matrix $A$, then the density of $x$ is given by,
 $$
