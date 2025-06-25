@@ -383,6 +383,9 @@ x = \sum_{i=1}^{m} \alpha_i x^{(i)}
 $$
 For some $\alpha_i$’s so that $\sum_{i=1}^{m} \alpha_i x^{(i)} = 1$
 
+### Matrix Representation as row/column vector
+
+
 ## Bounded/Unbounded
 A set is called bounded if all of its points are within a certain distance of each other. 
 Conversely, a set which is not bounded is called unbounded. 
