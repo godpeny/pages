@@ -66,6 +66,9 @@ In statistics, interval estimation is the use of sample data to estimate an inte
 
 ## Bayesian vs Frequentist
 
+## Normalized vs Unnormalized Probability
+ - Unnormalized probability: A positive score $\tilde{P}(y)$ that is proportional to the true probability but does not necessarily sum to 1 over all possible outcomes.
+ - Normalized probability: A set of numbers that do sum to 1, obtained by dividing each un-normalised score by the normalisation constant (also called the partition function or evidence)
 ## Gaussian Distribution (= Normal Distribution)
 A normal distribution or Gaussian distribution is a type of continuous probability distribution for a real-valued random variable. The general form of its probability density function is,  
 $$
