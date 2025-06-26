@@ -189,3 +189,8 @@ It is a type of layer where each input is connected to each output by a learnabl
 
 ### Covariate Shift
 Covariate shift is a specific type of dataset shift often encountered in machine learning. It is when the distribution of input data shifts between the training environment and live environment. Although the input distribution may change, the output distribution or labels remain the same. Covariate shift is also known as covariate drift, and is a very common issue encountered in machine learning. Models are usually trained in offline or local environments on a sample of labelled training data. It’s not unusual for the distribution of inputs in a live and dynamic environment to be different from the controlled training environment.  
+
+### Logit
+In machine learning, logit is the vector of raw (non-normalized) predictions that a classification model generates, which is ordinarily then passed to a normalization function.  
+If the model is solving a multi-class classification problem, logits typically become an input to the softmax function. The softmax function then generates a vector of (normalized) probabilities with one value for each possible class.
+
