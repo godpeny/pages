@@ -317,3 +317,10 @@ Since lots of computer vision problem depends on small dataset regime, other hav
 - Use architectures of networks published in the literature
 - Use pretrained models and fine-tune on your dataset
 - Use open source implementations if possible
+
+## Classification vs Localization vs Detection
+## Localization
+## Detection
+### Landmark Detection
+### Obejct Detection
+#### Sliding Window Detection
