@@ -319,8 +319,14 @@ Since lots of computer vision problem depends on small dataset regime, other hav
 - Use open source implementations if possible
 
 ## Classification vs Localization vs Detection
+![alt text](images/blog31_classification_vs_localization_vs_detection.png)
+- Classifiation: Outputs the label "car" or "truck" without indicating their positions in the image.
+- Object Localization(With Classification): Outputs one bounding box indicating the location of the car or the truck with label "car" or "truck".
+- Object Detection: Outputs bounding boxes for both the car and the truck, along with their respective labels "car" and "truck".
 ## Localization
+Object localization can be defined as an aspect of computer vision whereby the aim is to locate the exact position of an object as presented in an image or a frame of video. It comprises not only identifying objects but also locating them in a specific area. Used with Classification, label ("car" or "truck") is also included in the output.
 ## Detection
+Object detection in the domains of computer vision is the task of detecting and locating multiple objects within an image or a video frame. Detection identifies the presence of one or several objects in the same picture or frame.
 ### Landmark Detection
 ### Obejct Detection
 #### Sliding Window Detection
