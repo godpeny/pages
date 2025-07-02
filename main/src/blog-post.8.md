@@ -939,6 +939,7 @@ $$
 x_{n+1} = x_{n} - \frac{f(x_{n})}{f'(x_{n})}
 $$
 ## Softmax Regression
+### Softmax Function
 The softmax function takes as input a vector $z$ of $K$ real numbers, and normalizes it into a probability distribution consisting of $K$ probabilities proportional to the exponentials of the input numbers.  
 That is, prior to applying softmax, some vector components could be negative, or greater than one; and might not sum to 1; but after applying softmax, each component will be in the interval $(0,1)$.  
 Formally, the standard (unit) softmax function $\sigma$:  
@@ -954,6 +955,14 @@ $$
 The softmax applies the standard exponential function to each element 
 $z_{i}$ of the input vector $z$ (consisting of $K$), and normalizes these values by dividing by the sum of all these exponentials.  
 The normalization ensures that the sum of the components of the output vector $\sigma(z)$ is 1. 
+
+### Gradient of Softmax Function
+https://medium.com/@jsilvawasd/softmax-and-backpropagation-625c0c1f8241
+
+https://medium.com/data-science/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1
+
+### Loss Function of Softmax
+
 ### Multinomial Distribution
 The multinomial distribution is a generalization of the binomial distribution.  
 For $n$ independent trials each of which leads to a success for exactly one of $k$ categories, with each category having a given fixed success probability, the multinomial distribution gives the probability of any particular combination of numbers of successes for the various categories.  
