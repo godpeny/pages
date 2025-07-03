@@ -328,5 +328,6 @@ Object localization can be defined as an aspect of computer vision whereby the a
 ## Detection
 Object detection in the domains of computer vision is the task of detecting and locating multiple objects within an image or a video frame. Detection identifies the presence of one or several objects in the same picture or frame.
 ### Landmark Detection
-### Obejct Detection
-#### Sliding Window Detection
+### Sliding Window Detection
+#### Convolutional Implementing of Sliding Window
+### Bounding Box Predictions
