@@ -331,3 +331,10 @@ Object detection in the domains of computer vision is the task of detecting and 
 ### Sliding Window Detection
 #### Convolutional Implementing of Sliding Window
 ### Bounding Box Predictions
+### Non-Max Suppression
+#### Intersection over Union(IoU)
+### YOLO Algorithm
+#### Anchor boxes
+#### Detail of YOLO Algorithm
+### Region Proposals
+
