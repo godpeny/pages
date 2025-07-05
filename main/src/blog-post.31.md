@@ -328,13 +328,56 @@ Object localization can be defined as an aspect of computer vision whereby the a
 ## Detection
 Object detection in the domains of computer vision is the task of detecting and locating multiple objects within an image or a video frame. Detection identifies the presence of one or several objects in the same picture or frame.
 ### Landmark Detection
+Landmark detection in deep learning is the process of finding significant landmarks in an image, such as $(x,y)$ coordinates of important points of the image. This idea is simple, adding a bunch of output units to output the $X,Y$ coordinates of landmarks. 
+For example, in facial recognition where it is used to identify key points on a face. Key points in the face could be such as coordinates of left/right corner of the eyes. So the model using landmark detection generates output with the key points coordinates(landmarks). Note that the identity of the landmark must be consistent across the images($l_{x1}$ left corner of left eye should be consistent across the images).
 ### Sliding Window Detection
-#### Convolutional Implementing of Sliding Window
-### Bounding Box Predictions
+The sliding window approach in object detection involves gradually moving a predefined window across the entire surface of the image to identify all the objects in it. At each position of the window, the algorithm examines the given region of the image and normally uses a classifier or a detection model to look out for objects. This method is involving such that regardless of the positions of the objects in the image, different parts will be analyzed, and the objects will be detected. The purpose of the sliding window approach is to create potential candidates of objects that could be later discriminated more accurately.  
+For example, when detecting a car from the image, choose window size and put the window size region of the picture into the convolutional network and convolutional network makes predcition for that small region to detect whether there is a car or not. Then move the window region and put that shifted small image region into the convolutional network and run predction. You keep going this process until you slit the window across the every region of the image. Next, you repeat this process with larger window and even larger window and so on.  
+During this process you hope that somewhere in the image that there will be a window where object is included so that convolutional network can detect the object from this input region.  
+The disadvantage is computational cost, because cropping all different regions in the image and running each of them independently through convolutional network. The solution to this problem is that implementing sliding windows object detector convolutionally.
+
+#### Turning Fully Connected Layers into Convolutional Network
+![alt text](images/blog31_turning_fc_into_conv.png)
+The first network shows the general model with FC layers. The second network shows that you can implement FC layer convolutionally using filters.  
+For example, from the (5,5,16) layer, you convolve with (400,5,5,16) filters(in other word four hundred (5,5,16) filters), to make (1,1,400) output layer. So you can see that FC layer with 400 nodes can be viewed as (1,1,400) volume. Mathmatically both layers are identical, because each of the value in the layer has a filter of (5,5,16) and so each of the value is some arbitrary linear function of (5,5,16) activations of previous layer.  
+Next, you convolve this layer with (400,1,1,400) filter to get another (1,1,400) output layer which matches for the next FC layer of the first network. Lastly, convolve with (4,1,1,400) filter and apply softmax activation to get (1,1,4) output layer which matches for the output layer of the first model.
+
+#### Convolutional Implementing of Sliding Windows
+![alt text](images/blog31_convolutional_implement_of_sliding_windows.png)
+Armed with the knowledge from "Turning Fully Connected Layers into Convolutional Network" section, you can understand the first model in the picture, using (14,14,3) size image as an input and running convolutional network to generate output whose (1,1,4) volume of $1$ or $0$ for detected objects (car, pedestrian, motorcycle, background).  
+Now Suppose you have (16,16,3) size image as second model. In original sliding windows algorithm, you input blue region from the image into the convolutional network run once to generate a classification result $0$ or $1$. Then slide right to next green region and input the green region to network and rerun to generate classification result. Keep doing same process to orange and purple region to get 4 labels from the whole image. You can see that the computation is highly duplicated.  
+Instead, what convolutional implementation of sliding windows does, you pass the entire image through the process of convolve with filter, maxpool and convolutional implementing of FC layer as the first network to get output (2,2,4) volume to share the computation across $4$ convolutional network from original sliding windows algorithm. It turns out that the blue subset of the output gives you the result of the running the convolutional network with the blue region of the image as input. The same result goes to green, yellow and purple region too. Besides this is true for not only to the output layer, but also to all the intermediate layers.  
+So what convolutional implementation does is instead of running $4$ propagation for $4$ subsets of the image independently, it combines all $4$ into $1$ computation and shares a lot of computation. 
+
+![alt text](images/blog31_convolutional_implement_of_sliding_windows2.png)
+Let's recap with this car image example. Originally, what sliding windows algorithm does is cropping out the window size regions and run convolutional network to generate classification result and move to next region until reach the end of the image and hopefully certain window region recognizes the car.  
+But instead of doing it sequentially, with convolutional implementation of sliding windows, you make prediction at the same time to detect the position of the car by passing the entire image through big convolutional network.  
+One weakness of this algorithm is that the position of the bounding box is not going to be very accurate.
+
+### Intersection over Union(IoU)
 ### Non-Max Suppression
-#### Intersection over Union(IoU)
 ### YOLO Algorithm
+#### Bounding Box Predictions
+Bounding box predictions is a technique used in object detection tasks to predict the coordinates of a bounding box that tightly encloses an object of interest within an image. You can see the problem of inaccurate bounding box from "Convolutional Implementing of Sliding Windows" section above.  
+
+![alt text](images/blog31_yolo1.png)
+YOLO Algorithm determines the attributes of these bounding boxes using the following format, where $Y$ is the final vector representation for each bounding box. 
+
+$$y = [pc, bx, by, bh, bw, c1, c2,c3]$$
+
+- $pc$ corresponds to the conditional probability that the cell contains an object of class $i$, conditional on the cell containing at least one object. It is only $0,1$ because YOLO assigns the object to the grid cell that containing the mid point($bx,by$).
+
+- $bx, by$ are the $(x,y)$ coordinates of the center of the bounding box with respect to the enveloping grid cell. Must be between $0 \sim 1$.
+
+- $bh, bw$ correspond to the height and the width of the bounding box with respect to the enveloping grid cell. Could be greater than $1$.
+
+- $c1,c2,c3$ correspond to the three classes, car, pedestrian, motorcycle. We can have as many classes as your use case requires.
+
+So when you have (3,3) grid cell as above picture and you have $y$ vector with $8$ dimensions, the total volume of the output will be (3,3,8). To get more detail about $bx,by,bh,bw$, see below picture.
+![alt text](images/blog31_yolo2.png)
+
+When you have multiple objects in one grid cell, use much finer grid such as (19,19) instead of (3,3) as the first picture above.
+
 #### Anchor boxes
-#### Detail of YOLO Algorithm
 ### Region Proposals
 
