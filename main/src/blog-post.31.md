@@ -355,17 +355,48 @@ But instead of doing it sequentially, with convolutional implementation of slidi
 One weakness of this algorithm is that the position of the bounding box is not going to be very accurate.
 
 ### Intersection over Union(IoU)
+Most of the time, a single object in an image can have multiple grid box candidates for prediction, even though not all are relevant. The goal of the IOU (a value between $0 \sim 1$) is to discard such grid boxes to only keep those that are relevant.  
+$$
+\text{IOU} \;=\; \frac{\text{Intersection Area}}{\text{Union Area}}
+$$
+1. First, user defines its IOU selection threshold, which can be, for instance, 0.5. 
+2. Secondly, computes the IOU of each grid cell, which is the Intersection area divided by the Union Area. 
+3. Finally, it ignores the prediction of the grid cells having an IOU $\leq$ threshold and considers those with an IOU $\geq$ threshold. 
+
+![alt text](images/blog31_iou.png)
+Above shows an illustration of applying the grid selection process. We can observe that the object originally had two grid candidates, and only “Grid 2” was selected at the end. 
+
+More generally, IoU is a measure of the overlap between two bounding boxes.
+
 ### Non-Max Suppression
+Setting a threshold for the IOU is not always enough because an object can have multiple boxes with IOU beyond the threshold, and leaving all those boxes might include noise. Non-Max Suppression makes sure that your algorithm detects each object only once and prevent multiple detection of the same object.
+
+Each output prediction of the grid is as below when detecting single object.
+$$y = [pc, bx, by, bh, bw]$$
+You can understand this output vector for every grid cell, you output bounding box($bx,by,bh,bw$), together with a probability of that bounding box being a good one($pc$).
+
+1. First, discard all boxes with low probability(e.g., $pc \leq 0.6$), while $pc$ stands for the chance that there is an object. 
+2. While there are any remaining boxes:
+  - Pick the box with the largest $pc$ and output that as a prediction.
+  - Discard any remaining box with $IoU \geq 0.5$ with the box output
+in the previous step.
+
+When detecting multiple objects, carrying out non-max suppresion for each of the output class.
+
 ### YOLO Algorithm
 #### Bounding Box Predictions
 Bounding box predictions is a technique used in object detection tasks to predict the coordinates of a bounding box that tightly encloses an object of interest within an image. You can see the problem of inaccurate bounding box from "Convolutional Implementing of Sliding Windows" section above.  
 
 ![alt text](images/blog31_yolo1.png)
-YOLO Algorithm determines the attributes of these bounding boxes using the following format, where $Y$ is the final vector representation for each bounding box. 
+YOLO Algorithm determines the attributes of these bounding boxes using the following format, where $y$ is the final vector representation for each bounding box from each grid. In other words, each grid predicts bounding boxes and their confidence scores. 
+
+The bounding box is defined by five parameters: x, y, w, h, and confidence. Here, x and y define the position of the bounding box center relative to the grid, w and h define the width and height of the bounding box relative to the entire image, and confidence measures the presence of an object in the grid and the accuracy of the bounding box prediction.
 
 $$y = [pc, bx, by, bh, bw, c1, c2,c3]$$
 
-- $pc$ corresponds to the conditional probability that the cell contains an object of class $i$, conditional on the cell containing at least one object. It is only $0,1$ because YOLO assigns the object to the grid cell that containing the mid point($bx,by$).
+- $pc$ is confidence measures the presence of an object in the grid and the accuracy of the bounding box prediction. In other words, the probability that object is actually contained inside the rectangle defined by $bx,by,bh,bw$.
+
+It is only $0,1$ because YOLO assigns the object to the grid cell that containing the mid point($bx,by$).
 
 - $bx, by$ are the $(x,y)$ coordinates of the center of the bounding box with respect to the enveloping grid cell. Must be between $0 \sim 1$.
 
@@ -379,5 +410,35 @@ So when you have (3,3) grid cell as above picture and you have $y$ vector with $
 When you have multiple objects in one grid cell, use much finer grid such as (19,19) instead of (3,3) as the first picture above.
 
 #### Anchor boxes
+The idea of anchor boxes is to make a grid cell to detect multiple objects. These anchor boxes are pre-defined bounding boxes with specific sizes, aspect ratios, and positions that are used as reference templates during object detection. These anchor boxes are placed at various positions across an image, often in a grid-like pattern, to capture objects of different scales and shapes.  
+Previously, each object in training image is assigned to grid
+cell that contains that object’s midpoint.  
+With anchor boxes, each object in training image is assigned to grid cell that contains object’s midpoint and anchor box for the grid cell with highest IoU. Also output layer has repetitive structure for each anchor box.
+
+![alt text](images/blog31_anchor_boxes.png)
+For this example, the mid points of the pedestrian and car are in the same grid cell. However, since pedestrian object has higher IOU with long shaped anchor box1, this pedestrian object get assigned to (grid8, ancho box1) pair. Similarly, the car object has higher IOU with wide shaped anchor box 2, the car object get assinged to (grid8,anchor box2) pair.
+
+#### Bounding boxes vs Anchor boxes
+- Bounding boxes represent the actual regions in an image that enclose objects of interest.
+- Anchor boxes are reference bounding boxes used to predict object locations and shapes during object detection.
+
+#### Pros and Cons og Anchor boxes
+- Pros: Anchor boxes algorithm allows the learning algorithm to specialize better. For example, some output units are specialized in car and other units are specialized in pedestrians.. and so on.
+- Cons: Anchor boxes algorithm doesn't handle well in the cases such as when there are 2 anchor boxes and 3 objects in the same grid, or when there are multiple objects in the same grid associatied with same anchor box. You need to implement default way of tie breaking method.
+
+#### Choosing Anchor boxes
+- Choose by hands.
+- Use K-means algorithm to group together the types of obejct shape you tend to get.
+
+#### Outputting the non-max supressed outputs in YOLO
+Suppose you use (3,3) grid with 2 anchor boxes, then you will have 2 predicted bounding
+boxes for each cell when making prediction in YOLO.
+
+![alt text](images/blog31_output_nms_in_yolo.png)
+Then you run,
+1. Get rid of low probability predictions.
+2. For each class (pedestrian, car, motorcycle) use non-max suppression to generate final
+predictions.
+
 ### Region Proposals
 
