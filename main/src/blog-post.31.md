@@ -442,3 +442,18 @@ predictions.
 
 ### Region Proposals
 
+## Face Recognition
+### Face verification vs Face recognition
+### One-Shot Learning
+### Siamese Network
+### Triplet Loss
+### Binary Classification on Face Verification
+
+## Neural Style Transfer
+### Visualizing what a deep network is learning
+### Cost Function of Neural Style Transfer
+#### Content cost function
+#### Style cost function
+
+## Convolutional Networks in 1D and 3D
+
