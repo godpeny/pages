@@ -444,7 +444,21 @@ predictions.
 
 ## Face Recognition
 ### Face verification vs Face recognition
+- Verification
+  - Input image, name/ID
+  - Output whether the input image is that of the claimed person
+- Recognition
+  - Has a database of K persons
+  - Get an input image
+  - Output ID if the image is any of the K persons (or
+“not recognized”)
 ### One-Shot Learning
+Learning from one example to recognize the person again.
+#### Similarity Function
+$$d(\text{img1,img2}) = \text{degree of difference between images}$$  
+ - $d(\text{img1,img2}) < \tau$: same person
+ - $d(\text{img1,img2}) > \tau$: different person  
+ 
 ### Siamese Network
 ### Triplet Loss
 ### Binary Classification on Face Verification
