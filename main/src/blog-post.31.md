@@ -460,6 +460,15 @@ $$d(\text{img1,img2}) = \text{degree of difference between images}$$
  - $d(\text{img1,img2}) > \tau$: different person  
  
 ### Siamese Network
+Siamese Neural Networks (SNNs) are a specialized type of neural network designed to compare two inputs and determine their similarity. Unlike traditional neural networks, which process a single input to produce an output, SNNs take two inputs and pass them through identical subnetworks.
+
+The common learning goal is to minimize a distance metric for similar objects and maximize for distinct ones.
+$$
+{\displaystyle {\begin{aligned}{\begin{cases}\min \ \|\operatorname {f} \left(x^{(i)}\right)-\operatorname {f} \left(x^{(j)}\right)\|\,,i=j\\\max \ \|\operatorname {f} \left(x^{(i)}\right)-\operatorname {f} \left(x^{(j)}\right)\|\,,i\neq j\end{cases}}\end{aligned}}}
+$$
+Where ${\displaystyle i,j}$ are indexes into a set of vectors ${\displaystyle \operatorname {f} (\cdot )}$ function implemented by the twin network. Simply speaking, the paarameters of SNNs define an encoding ${\displaystyle \operatorname {f} (\cdot )}$ and learn parameters so that above condition meet.  
+
+Learning in twin networks can be done with triplet loss or contrastive loss. For learning by triplet loss a baseline vector (anchor image) is compared against a positive vector (truthy image) and a negative vector (falsy image). The negative vector will force learning in the network, while the positive vector will act like a regularizer. 
 ### Triplet Loss
 ### Binary Classification on Face Verification
 
