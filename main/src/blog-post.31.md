@@ -470,6 +470,21 @@ Where ${\displaystyle i,j}$ are indexes into a set of vectors ${\displaystyle \o
 
 Learning in twin networks can be done with triplet loss or contrastive loss. For learning by triplet loss a baseline vector (anchor image) is compared against a positive vector (truthy image) and a negative vector (falsy image). The negative vector will force learning in the network, while the positive vector will act like a regularizer. 
 ### Triplet Loss
+Triplet loss is a machine learning loss function widely used in one-shot learning, a setting where models are trained to generalize effectively from limited examples.  It designed to assist training models to learn an embedding (mapping to a feature space) where similar data points are closer together and dissimilar ones are farther apart, enabling robust discrimination across varied conditions. In the context of face detection, data points correspond to images.  
+The loss function is defined using triplets of training points of the form (A,P,N) In each triplet, A (called an "anchor point") denotes a reference point of a particular identity, P (called a "positive point") denotes another point of the same identity in point A, and N (called a "negative point") denotes a point of an identity different from the identity in point A and P.  
+
+The goal of training here is to ensure that, after learning, the following condition (called the "triplet constraint") is satisfied by all triplets ${\displaystyle (A^{(i)},P^{(i)},N^{(i)})}$ in the training data set:
+$$
+{\displaystyle \Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}+\alpha <\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}}
+$$
+Where {\displaystyle \alpha } is a hyperparameter called the margin, and its value must be set manually. In the FaceNet system, its value was set as $0.2$.
+Thus, the full form of the function to be minimized is the following:
+$${\displaystyle L=\sum _{i=1}^{m}\max {\Big (}\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}-\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}+\alpha ,0{\Big )}}$$
+
+One thing to note is that When choosing the triplets (A,P,N) during training, if A,P,N are chosen randomly below condition is easily satisfied, When A=P same person and N is different person.
+$$\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2} \leq \Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}$$  
+Choose triplets that’re “hard” to train on.
+
 ### Binary Classification on Face Verification
 
 ## Neural Style Transfer
