@@ -510,10 +510,58 @@ $$
 One computational trick is that you pre-compute the database images into embeddings so that you don't need to compute in real-time situation. So when a person comes in, you only compute the encoding of the new person and compare with the pre-computed encodings to make prediction. Note that this trick can be applied to not only binary classification, but also to triplet loss.
 
 ## Neural Style Transfer
+![alt text](images/blog31_neural_style_transfer.png)
+Neural style transfer (NST) refers to a class of software algorithms that manipulate digital images, or videos, in order to adopt the appearance or visual style of another image. NST algorithms are characterized by their use of deep neural networks for the sake of image transformation. Common uses for NST are the creation of artificial artwork from photographs, for example by transferring the appearance of famous paintings to user-supplied photographs. This method has been used by artists and designers around the globe to develop new artwork based on existent style(s).
 ### Visualizing what a deep network is learning
+Pick a unit in layer $k$ and find the image patches that maximize the unit’s activation. In the shallow layers, you get the simple features such as edges or particular shade of colors. In the deeper layers, you get the larger image patches and more complex features.
+
 ### Cost Function of Neural Style Transfer
+$$
+J(G) \;=\; \alpha\,J_{\text{content}}(C,G) \;+\; \beta\,J_{\text{style}}(S,G)
+$$
+To find the generated image $G$, 
+1. Initiate Image $G$ randomly
+2. Use gradient descent to minimize $J(G)$.  
+$ G \;:=\; G \;-\; \eta\,\frac{\partial}{\partial G}J(G)$
+
 #### Content cost function
+$$
+J_{\text{content}}(C,G)
+   \;=\;
+   \tfrac12 \,
+   \left\lVert
+      a^{[l]}(C) - a^{[l]}(G)
+   \right\rVert_{2}^{2},
+$$
+When $a^{[l]}(C)$ and $a^{[l]}(G)$ be the activation of layer $l$ of the Convolutional network of the each images($C,G$), if they are similar, both images have similar content.
+
 #### Style cost function
+When $a^{[\ell]}_{\,i,j,k}$ is activation at $(i,j,k)$ where $i$ is height, $w$ is width and $k$ is number of channel. 
+$$
+G^{[\ell]}_{kk'}(S) \;=\; \sum_{i=1}^{n_H^{[\ell]}} \;\sum_{j=1}^{n_W^{[\ell]}} a^{[\ell]}_{\,i j k}(S)\; a^{[\ell]}_{\,i j k'}(S) \\[6pt]
+G^{[\ell]}_{kk'}(G) \;=\; \sum_{i=1}^{n_H^{[\ell]}} \;\sum_{j=1}^{n_W^{[\ell]}} a^{[\ell]}_{\,i j k}(S)\; a^{[\ell]}_{\,i j k'}(S)
+$$
+What style matrix $G$ does is that summing over the different position of the image over the height and width, multiplying the activations of the channel $k$ and $k'$. In other words, look at different positions across the channels of activations. For example, one number in first channel and the other in the second channel and see across all $n_H$, $n_W$ how correlated these two numbers.  
+$G^{[\ell]}_{kk'}$ will be large if the both of activations are large together and otherwise $G^{[\ell]}_{kk'}$ will be small.
+$$
+J_{\text{style}}^{[\ell]}(S,G) \;=\; \frac{1}{\bigl(2\,n_H^{[\ell]} n_W^{[\ell]} n_C^{[\ell]}\bigr)^{2}} \bigl\lVert
+G^{[\ell]}(S) - G^{[\ell]}(G) \bigr\rVert_{F}^{2}\;=\; \\[3pt]
+\frac{1}{\bigl(2\,n_H^{[\ell]} n_W^{[\ell]} n_C^{[\ell]}\bigr)^{2}} \sum_{k}\sum_{k'} \bigl(C^{[\ell]}_{kk'}(S) - C^{[\ell]}_{kk'}(G) \bigr)^{2}
+$$
+So you can now define the style cost function as above, the difference between two style matrix of ground image and style image.  
+Overall style cost function is defined as below.
+$$
+J_{\text{style}}(S,G) \;=\; \sum_{\ell}\, \lambda^{[\ell]}\; J_{\text{style}}^{[\ell]}(S,G)\;,
+$$
+Note that $\lambda$ allows to use different layers in neural network earlier layer to capture simple, low-level features like  edges and later layer for high level features. So take both low and high level features into account.
+
+##### Intuition about style of an image
+![alt text](images/blog31_intuition_about_style_of_images.png)
+If you are using layer $l$'s activation to measure “style",define style as correlation between activations across channels.  
+What is correlation and how correlation of pairs of numbers capture the style? Note that correlation indicates which of these components tend to occur or not occur together in part of the image. So degree of correlation is how often these features, such as vertical texture or orange tinge or other things as well occur and don't occur together in different part of the image.  
+Therfore, we use degree of correlation between channels as a measure of the style.
 
 ## Convolutional Networks in 1D and 3D
+![alt text](images/blog31_1d_convolution.png)
+![alt text](images/blog31_3d_convolution.png)
 
