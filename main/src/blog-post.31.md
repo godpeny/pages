@@ -460,7 +460,8 @@ $$d(\text{img1,img2}) = \text{degree of difference between images}$$
  - $d(\text{img1,img2}) > \tau$: different person  
  
 ### Siamese Network
-Siamese Neural Networks (SNNs) are a specialized type of neural network designed to compare two inputs and determine their similarity. Unlike traditional neural networks, which process a single input to produce an output, SNNs take two inputs and pass them through identical subnetworks.
+![alt text](images/blog31_siamese_network.png)
+Siamese Neural Networks (SNNs) are a specialized type of neural network designed to compare two inputs and determine their similarity. Unlike traditional neural networks, which process a single input to produce an output, SNNs take two inputs and pass them through identical subnetworks. It uses the same weights while working in two different input vectors to compute comparable output vectors.
 
 The common learning goal is to minimize a distance metric for similar objects and maximize for distinct ones.
 $$
@@ -477,15 +478,36 @@ The goal of training here is to ensure that, after learning, the following condi
 $$
 {\displaystyle \Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}+\alpha <\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}}
 $$
-Where {\displaystyle \alpha } is a hyperparameter called the margin, and its value must be set manually. In the FaceNet system, its value was set as $0.2$.
+Where ${\displaystyle \alpha }$ is a hyperparameter called the margin, and its value must be set manually. In the FaceNet system, its value was set as $0.2$. This margin has two purpose. One is to prevent each distance function to beconme 0. The other is to make the learning algorithm work extra hard to push right hand side up and push down the left hand side.
 Thus, the full form of the function to be minimized is the following:
 $${\displaystyle L=\sum _{i=1}^{m}\max {\Big (}\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}-\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}+\alpha ,0{\Big )}}$$
 
-One thing to note is that When choosing the triplets (A,P,N) during training, if A,P,N are chosen randomly below condition is easily satisfied, When A=P same person and N is different person.
-$$\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2} \leq \Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}$$  
-Choose triplets that’re “hard” to train on.
+#### Choosing the Triplet (A,P,N)
+When choosing the triplets (A,P,N) during training, if A,P,N are chosen randomly below condition is easily satisfied, When A=P same person and N is different person.
+$$
+{\displaystyle \Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}+\alpha < \Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}}
+$$
+Choose triplets that’re “hard” to train on. In particular choose (A,P) whose the value of distance function is very close to that of (A,N). 
+$$
+{\displaystyle \Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2} \approx \Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}}
+$$ 
+It makes the learning algorithm work extra hard to push right hand side up and push down the left hand side to have a margin between them.
 
 ### Binary Classification on Face Verification
+![alt text](images/blog31_binary_classification_in_face_verification.png)
+
+Binary classification can be another way to learn parameters other than triplet loss using siamese network in face recognition problem. Using the two output vectors from the siamese network as inputs to logistic regression unit to make prediction. So the output $\hat{y}$ will be either $0$ if both persons are different and $1$ if they are same person.  
+Computing $\hat{y}$ can be done as below.
+$$
+\hat{y}\;=\;
+\sigma\!\Bigl(\sum_{k=1}^{128}w_k\,\bigl\lvert f\!\bigl(x^{(i)}\bigr)_k \;-\; f\!\bigl(x^{(j)}\bigr)_k \bigr\rvert \;+\; b \Bigr)
+$$
+Note that there is an other variation on $\bigl\lvert f\!\bigl(x^{(i)}\bigr)_k \;-\; f\!\bigl(x^{(j)}\bigr)_k \bigr\rvert $ this part on the formular, which is called chi-squred similarity.
+$$
+\chi^{2} = \sum_{k=1}^{128} \frac{\bigl(f\!\bigl(x^{(i)}\bigr)_k
+\;-\; f\!\bigl(x^{(j)}\bigr)_k \bigr)^{2}} {f\!\bigl(x^{(i)}\bigr)_k \;+\; f\!\bigl(x^{(j)}\bigr)_k}
+$$
+One computational trick is that you pre-compute the database images into embeddings so that you don't need to compute in real-time situation. So when a person comes in, you only compute the encoding of the new person and compare with the pre-computed encodings to make prediction. Note that this trick can be applied to not only binary classification, but also to triplet loss.
 
 ## Neural Style Transfer
 ### Visualizing what a deep network is learning
