@@ -351,8 +351,15 @@ $$
 where w is the weight vector, x is the input vector, and b is the bias term. The parameter $\frac{b}{\|\mathbf{w}\|}$ determines the offset of the hyperplane from the origin along the normal vector $w$.
 ![alt text](images/blog12_linear_svm.png)
 
-#### Hard magin:
-#### Soft margin: 
+#### Margin
+The margin signifies the distance between the decision boundary and the closest data points from each class, also known as the suppor vecdtors.
+##### Hard margin
+![alt text](images/blog12_hard_margin_svm.png)
+In a hard margin SVM, the objective is to identify a hyperplane that completely separates data points belonging to different classes, ensuring a clear demarcation with the utmost margin width possible. This margin is the distance between the hyperplane and the nearest data point, also known as the support vectors.
+
+##### Soft margin
+![alt text](images/blog12_soft_margin_svm.png)
+Soft Margin SVM introduces flexibility by allowing some margin violations (misclassifications) to handle cases where the data is not perfectly separable. It Introduces a penalty term for misclassifications, allowing for a trade-off between a wider margin and a few misclassifications.
 
 ### Nonlinear SVMs
 
