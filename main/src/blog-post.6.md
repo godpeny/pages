@@ -143,8 +143,39 @@ $\mathbf{J}(f)$ shows the jacobian of function $f$ from vector-valued function o
 
 
 ## Differential vs Derivative vs Gradient
-https://www.geeksforgeeks.org/difference-between-differential-and-derivative/
-https://math.stackexchange.com/questions/289923/what-are-the-differences-between-differential-and-gradient
+### Differential
+The term "differential" refers to an infinitesimal change in a function or variable. It represents a small or incremental change in a quantity or function. 
+### Derivative
+It measures how a function's output value changes when the input variable changes. The derivative provides information about the slope or gradient of a function at a particular point or over an interval.  
+Derivative or first order derivative or differential is a scalar and defined for a univariate function $f(x)$.
+$$
+f(x)=x^{5}\qquad
+\frac{df(x)}{dx}=5x^{4}
+$$
+### Partial Derivative
+Partial derivatives are used when the function has two or more variables. Partial derivative is taken with respect to(w.r.t) one variable, while other variables are considered as constants.
+$$
+f(x,y,z)=2x+3y+4z \\[6pt]
+\frac{\partial f(x,y,z)}{\partial x}=2,\qquad
+\frac{\partial f(x,y,z)}{\partial y}=3,\qquad
+\frac{\partial f(x,y,z)}{\partial z}=4
+$$
+### Gradient
+Gradient is a generalization term for Derivative and is defined for multivariate functions. For univariate functions, the gradient and derivative refer to the same entity. It is given by a vector of partial differential of the function w.r.t. each variable.  
+Gradient yields a vector whose components are partial derivatives of the function with respect to its variables.
+$$
+\nabla_{\theta} f
+=
+\begin{bmatrix}
+\displaystyle\frac{\partial f(\theta)}{\partial x}\\[4pt]
+\displaystyle\frac{\partial f(\theta)}{\partial y}\\[4pt]
+\displaystyle\frac{\partial f(\theta)}{\partial z}
+\end{bmatrix}
+=
+\begin{bmatrix}
+2\\[2pt] 3\\[2pt] 4
+\end{bmatrix}
+$$
 
 ## Epsilon in Calculus
 - Epsilon is a small positive number, often used in numerical computation to avoid division by zero or taking the logarithm of zero.
