@@ -481,6 +481,7 @@ $$
 Where ${\displaystyle \alpha }$ is a hyperparameter called the margin, and its value must be set manually. In the FaceNet system, its value was set as $0.2$. This margin has two purpose. One is to prevent each distance function to beconme 0. The other is to make the learning algorithm work extra hard to push right hand side up and push down the left hand side.
 Thus, the full form of the function to be minimized is the following:
 $${\displaystyle L=\sum _{i=1}^{m}\max {\Big (}\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}-\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}+\alpha ,0{\Big )}}$$
+Note that it is the hinge function(i.e., $\max(0, ⋅)$) which is applied to each term before summing, not after summation.
 
 #### Choosing the Triplet (A,P,N)
 When choosing the triplets (A,P,N) during training, if A,P,N are chosen randomly below condition is easily satisfied, When A=P same person and N is different person.
