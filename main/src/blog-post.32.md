@@ -49,7 +49,40 @@ So the class activation map is simply a weighted linear sum of the presence of t
 
 ## Visualizaing Neural Networks from the inside
 ### Class Model Visualization
+Class Model Visualization is a technique for visualising the class models, learnt by the image classification convolutional neural network. Given a learnt classification neural network and a class of interest, the visualisation method consists in(구성하다) numerically generating an image, which is representative of the class in terms of the convolutional neural network class scoring model.  
+
+The procedure is related to the ConvNet training procedure, where the back-propagation is used to optimise the layer weights. The difference is that in our case the optimisation is performed with respect to the input image($I$), while the weights are fixed to those found during the training stage. Also initialize the optimisation with the zero image (the ConvNet was trained on the zero-centred image data), and then added the training set mean image to the result.  
+
+$$
+L = s_{\text{dog}}(x) - \lambda \left\| I \right\|_2^2 \\[6pt]
+I = I + \alpha \frac{\partial L}{\partial I}
+$$
+Above is the loss function and the gradient ascent method using the loss function. As mentioned before, keep the weights fixed and use gradient ascent on the input image to maximize this loss. (Remind that gradient ascent method is used to maximize the loss)  
+In other word, you repeat this process below.
+1. Forward propagate image $I$
+2. Compute the objective $L$
+3. Backpropagate to get $\frac{\partial L}{\partial I}$
+4. Update $I$’s pixels with gradient ascent.
+
+From the above expression, $\lambda$ is regularization parameter. The reason for regularization is that we don't want to have extreme value at pixel because it doesn't help. So all the values are around each other and then rescale to $0 \sim 255$ values. Since the gradient ascent doesn't constrain the input to be $0 \sim 255$, it could be $\infty$, while numbers are stored between $0 \sim 255$.
+
+Also note that the original paper used the (unnormalised) class scores $S_c$, rather than the class posteriors returned by the soft-max layer, $P_c = \frac{\exp(S_c)}{\Sigma_{c} \exp(S_c)}$. Just like the section "Saliency Maps" with the same reason that the maximization of the class
+posterior can be achieved by minimising the scores of other classes.    
+The authors also experimented with optimising the posterior $P_c$, but the results were not visually prominent, thus confirming their intuition.
+
 ### Dataset Search
+Dataset Search is literally a way to search what examples in the dataset lead to a strongly activated feature map given a filter. You can find out what the activation units in the middle of the network is thinking.
+
+![alt text](images/blog32_dataset_search.png) 
+For example, let's see above example. You select a certain layer whose shape is (5,5,256). In other words, there are 256 filters applied to this layer and therefore 256 (5,5) features maps are generated. Now, you choose one feature among them and see what examples in the dataset lead to a strongly activate that one feature map.  
+From the image above, feature map upper case shows the images of the shirts and this indicates that the filter detects the shirts and the feature map activated the most to the image of the shirts. Similarly, the feature map lower case shows the images of the edges and this indicates that this filter detects the edges and the feature map activated the most to the image of the edges.
+
+One question is how can we crop the input image from the activation and why is it cropped?
+![alt text](images/blog32_dataset_search2.png) 
+Intuition is that when you pick one activation unit as above, that activation unit doesn't see the entire image but only subpart of the image. So from the activation unit and map it back through the previous layers using the strides and filter size applied, you can get the sub part of the image that activation is seeing. Thus, the other parts of the image have no influence on that particular activation unit.  
+Now let's think when you add more convolutional layers. Since you will apply more filters, naturally, one activation will cover the more part of the image. So the deeper the activation, the more it sees from the image.
+
+
 ### Deconvolution
 ### Interpreting NNs using Deconvolution
 
