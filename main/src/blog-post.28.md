@@ -843,6 +843,5 @@ For These kind of tasks, policy search algorithm is appropriate.
 On the contrary, if your model needs multiple steps of reasoning to solve the problem, such as chess, go, value function approximation is more promising.
 
 
-
-
-
+## Deep Reinforcement Learning (deep RL)
+https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
