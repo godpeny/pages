@@ -83,7 +83,11 @@ Intuition is that when you pick one activation unit as above, that activation un
 Now let's think when you add more convolutional layers. Since you will apply more filters, naturally, one activation will cover the more part of the image. So the deeper the activation, the more it sees from the image.
 
 
-### Deconvolution
+### Deconvolution Network
+Deconvolutional Network is a set of reversed operations of a hidden layer of a convolutional neural network. In other words, Deconvolutional Networks are convolutional neural networks (CNN) that work in a reversed process. Therefore, it has three types of layers which are the reversed max-pooling layer (unpooling layer), the reversed rectification layer(ReLU) and the reversed convolutional layer (deconvolutional layer).  
+Deconvolution increases volume height and width to maintain the output size of the image same as original image.
+
+
 ### Interpreting NNs using Deconvolution
 
 ### Deep Dream
