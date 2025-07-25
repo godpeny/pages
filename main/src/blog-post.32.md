@@ -83,11 +83,45 @@ Intuition is that when you pick one activation unit as above, that activation un
 Now let's think when you add more convolutional layers. Since you will apply more filters, naturally, one activation will cover the more part of the image. So the deeper the activation, the more it sees from the image.
 
 
-### Deconvolution Network
-Deconvolutional Network is a set of reversed operations of a hidden layer of a convolutional neural network. In other words, Deconvolutional Networks are convolutional neural networks (CNN) that work in a reversed process. Therefore, it has three types of layers which are the reversed max-pooling layer (unpooling layer), the reversed rectification layer(ReLU) and the reversed convolutional layer (deconvolutional layer).  
-Deconvolution increases volume height and width to maintain the output size of the image same as original image.
+### Deconvolution Network and its Application
+Deconvolutional Network is a set of reversed operations of a hidden layer of a convolutional neural network. In other words, Deconvolutional Networks are convolutional neural networks (CNN) that work in a reversed process. Therefore, it has three types of layers which are the reversed max-pooling layer (unpooling layer), the reversed rectification layer(ReLU) and the reversed convolutional layer (deconvolutional layer). 
 
+Deconvolution is also called transposed convolution, because it used transposed weight matrix that is used in convoultion. The need for transposed convolutions generally arises from the desire to use a transformation going in the opposite direction of a normal convolution. In other words, from something that has the shape of the output of some convolution to something that has the shape of its input while maintaining a connectivity pattern that
+is compatible with said convolution.
 
-### Interpreting NNs using Deconvolution
+![alt text](images/blog32_deconvolution.png) 
+One good intuition to understand convolution and deconvolution is that convolution can be framed as mathmatical operation between matrix and vector and deconvolution is convolution with little adjustment, such as flipping weights, dividing the strides and insertion of zeros.
+
+#### Deconvolutional Layer
+Check below 4 examples and understand how deconvolution can retain original input shape of the encoding.
+##### Deconvolution with no padding and no stride ($p=0, s=1$)
+![alt text](images/blog32_deconvolution_no_pad_no_stride.png) 
+
+##### Deconvolution with padding and no stride ($p \neq 0, s=1$)
+![alt text](images/blog32_deconvolution_pad_no_stride.png) 
+
+##### Deconvolution with no padding and stride ($p=0, s \neq 1$)
+![alt text](images/blog32_deconvolution_no_pad_stride.png)
+
+##### Deconvolution with padding and stride ($p \neq 0, s \neq 1$)
+![alt text](images/blog32_deconvolution_pad_stride.png) 
+
+Also note that Deconvolution allows to upsample an encoding into an image. Below exmple shows how $(4,4)$ input can be upsampled into $(6,6)$ output using deconvolution technique.
+
+##### Deconvolution for Upsampling
+![alt text](images/blog32_deconvolution_upsample.png) 
+Note that each box of the output is the result of the convolution of the input with the filter. Simply speaking, the color of the box of the output is the sum of number of the same color of the input overlapped with the filter(convolution). For example, the most left upper blue box of the output is $\Sigma (255 + 134 + 123 + 94)$.
+
+#### UnPool(Max Pool) Layer
+![alt text](images/blog32_unpool.png)
+Since maxpooling forgets all the numbers except for the maximum, we use cache the values. With switches(cache) you can have the exact backpropagation. For example, from the red region of the input, the other numbers ($0,1,-1$) have no impact in the loss function at the end (which means, the numbers ($0,1,-1$) Didn't pass through forward propagation).
+
+#### UnReLU Layer
+![alt text](images/blog32_unrelu.png)
+Same as unpooling, When ReLU backward, we can use switch(cache) to remember which of the values in the pooing layer that had an impact on the loss. So as you can see from the above example, set 0 according to the switch and pass the rest. You pass the rest because gradient of ReLU is $1$, so just pass the gradient from the latter layer.
+
+But in deconvolution, ReLU backward is not used but ReLU DeconvNet will be used instead. Relu DeconvNet is just you apply ReLU to output to reconstruct the input. This is hack which has been found from trial and error and not scientifically viable. The intuition behind this technique is that,
+ - We are interested in which pixels of the input positively affected the activation units.
+ - Also during backpropagation, we want to have minimum influence from forward propagation.
 
 ### Deep Dream
