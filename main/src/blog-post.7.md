@@ -13,3 +13,7 @@
 ### Sampling Novel Sequences
 ## Vanishing Gradients with RNNs
 
+## Gated Reccurent Unit (GRU)
+## Long Short Term Memory Unit (LSTM)
+## Bidirectional RNN
+## Deep RNN
