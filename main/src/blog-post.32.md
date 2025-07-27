@@ -124,4 +124,20 @@ But in deconvolution, ReLU backward is not used but ReLU DeconvNet will be used 
  - We are interested in which pixels of the input positively affected the activation units.
  - Also during backpropagation, we want to have minimum influence from forward propagation.
 
-### Deep Dream
+## Deep Dream
+DeepDream is a computer vision program created by Google engineer Alexander Mordvintsev that uses a convolutional neural network to find and enhance patterns in images via algorithmic pareidolia (the tendency for perception to impose a meaningful interpretation on a vague stimulus, usually visual, so that one detects an object, pattern, or meaning where there is none.)
+
+Basically, Deep Dream algorithm ses what the network is activating for and increase even this activation. Below is how dreaming process works. 
+1. Forward propagate image until dreaming layer
+2. Set gradients of dreaming layer to be equal to its activations
+3. Backpropagate gradients to input image
+4. Update Pixels of the image
+5. Repeat
+
+The reason for setting gradient of layer equal to its activations is to increase activation. Stronger the activation, the stronger it's going to become later on and so on.  
+
+![alt text](images/blog32_deep_dream.png)
+When network thought that was like tower a little bit,
+you will increase the network’s confidence in the fact
+that there’s a tower by changing the image and the tower comes out.
+
