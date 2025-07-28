@@ -45,10 +45,56 @@ This is because, Unlike feedforward neural networks, which process inputs indepe
 ### Architecture of RNN
 ![alt text](images/blog7_rnn_arch.png)
 RNNs share similarities in input and output structures with other deep learning architectures but differ significantly in how information flows from input to output. Unlike traditional deep neural networks where each dense layer has distinct weight matrices. RNNs use shared weights across time steps, allowing them to remember information over sequences. So from the image above, weights $U,W,V$ are all same paramters shared across all time steps.  
-At each time step, RNNs process units($h$) with a fixed activation function. These units have an internal hidden state that acts as memory that retains information from previous time steps. This memory allows the network to store past knowledge and adapt based on new inputs. So when making prediction for $y^{<k>}$ in RNN, it gets information from not only $x^{<k>}$ but also information from $x^{<1>} \sim x^{<k-1>}$.
+At each time step, RNNs process units($h$) with a fixed activation function. These units have an internal hidden state that acts as memory that retains information from previous time steps. This memory allows the network to store past knowledge and adapt based on new inputs. So when making prediction for $y^{<k>}$ in RNN, it gets information from not only $x^{<k>}$ but also information from previous time steps $x^{<1>} \sim x^{<k-1>}$.
 
-### Forward propagaion of RNN
-### Back propagation of RNN (Backpropagation Through Time, BPTT)
+## Forward propagaion of RNN
+![alt text](images/blog7_rnn_forward_propagation.png)
+From the above picture describing the forward propagation of RNN, let's see how the forward propagation works in first layer of RNN. Note that instead of using parameters notation $W,V,U$, we use notation like $W_{aa}$ for parameters to make it more clear.
+$$
+a^{\langle 0 \rangle} = \vec{0} (\text{zero vector}) \\[5pt]
+a^{\langle 1 \rangle} = g_1(W_{aa} a^{\langle 0 \rangle} + W_{ax} x^{\langle 1 \rangle} + b_a) \quad (g_1 = \text{tanh or ReLU}) \\[5pt]
+\hat{y}^{\langle 1 \rangle} = g_2(W_{ya} a^{\langle 1 \rangle} + b_y)
+\quad (g_2 = \text{sigmoid, activation depends on type of output}) 
+$$
+More generally, 
+$$
+a^{\langle t \rangle} = g(W_{aa} a^{\langle t-1 \rangle} + W_{ax} x^{\langle t \rangle} + b_a) \\[5pt]
+\hat{y}^{\langle t \rangle} = g(W_{ya} a^{\langle t \rangle} + b_y)
+$$
+Note that a set of weights(parameters) uses for each time steps are shared. First, parameter $W_{ax}$ goverens the connection between $x$ and $a$ (hidden layer) on every time step, secondly, the horizontal activation connection is governend by $W_{aa}$ on every time step. Lastly, $W_{ya}$ goverens the connection between output and hidden layer on every time step.  
+The notation convention behind is that for $W_{ax}$, the second index $x$ indicates that $W_{ax}$ will be multipied by some $x$ quantity and the first index $a$ indicates that $W_{ax}$ is used to compute output $a$ quantity. 
+$$a \leftarrow W_{ax} x^{\langle 1 \rangle}$$
+
+We can simplified the below RNN notation that first introduced above. 
+![alt text](images/blog7_rnn_forward_propagation_simplified.png)
+Suppose $a \in \mathbb{R}^{100}$ and $x \in \mathbb{R}^{10000}$, therefore $W_{aa} \in \mathbb{R}^{(100 \times 100)}$ and $W_{ax} \in \mathbb{R}^{(100 \times 10000)}$.
+$$
+a^{\langle t \rangle} = g(W_{aa} a^{\langle t-1 \rangle} + W_{ax} x^{\langle t \rangle} + b_a) \\
+= g \left( W_a \begin{bmatrix} a^{\langle t-1 \rangle}, x^{\langle t \rangle} \end{bmatrix} + b_a \right)
+$$
+Let's understand the the simplified notation of $a^{\langle t \rangle}$ above. First, by putting two matrices $W_{aa}$ and $W_{ax}$ side by side horizontally. 
+$$W_a = \left[ W_{aa} \, \big| \, W_{ax} \right] \in \mathbb{R}^{(100 \times 10100)}$$ 
+Secondly, similarly, take two vector $a$ and $x$ and stack together.
+$$
+\left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right]
+= \left[\begin{array}{c} a^{\langle t-1 \rangle} \\ - \\ x^{\langle t \rangle}\end{array} \right] \in \mathbb{R}^{(10100)}
+$$
+To sum up, we can interprete as below.
+$$
+W_a \begin{bmatrix} a^{\langle t-1 \rangle}, x^{\langle t \rangle} \end{bmatrix} = \left[ W_{aa} \, \big| \, W_{ax} \right] \times \left[\begin{array}{c} a^{\langle t-1 \rangle} \\ - \\ x^{\langle t \rangle}\end{array} \right]
+$$ 
+
+
+## Back propagation of RNN (Backpropagation Through Time, BPTT)
+![alt text](images/blog7_rnn_backward_propagation.png)
+
+The loss function for each time step can be calculated as below, using cross-entropy loss.
+$$
+\mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle}) = - y^{(t)} \log \hat{y}^{\langle t \rangle} - (1 - y^{(t)}) \log (1 - \hat{y}^{\langle t \rangle}) \\[5pt]
+\mathcal{L}(\hat{y}, y) = \sum_{t=1}^{T_y} \mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle})
+$$
+Just like backpropagation of standard neural network, take the derivatives with respect to all the parameters using gradient descent algorithm to the opposite direcions to all the forward propagation.  
+One thing to note in the backpropagation is that the calculation from right to left, going backward in time steps. This special backprogation is called Backpropagation Through Time, BPTT.
 
 ## Types of RNNs
 
