@@ -97,6 +97,19 @@ Just like backpropagation of standard neural network, take the derivatives with 
 One thing to note in the backpropagation is that the calculation from right to left, going backward in time steps. This special backprogation is called Backpropagation Through Time, BPTT.
 
 ## Types of RNNs
+![alt text](images/blog7_types_of_rnn.png)
+1. One-to-One RNN
+This is the simplest type of neural network architecture where there is a single input and a single output. It is used for straightforward classification tasks such as binary classification where no sequential data is involved. (standard NN and no need to be RNN)
+
+2. One-to-Many RNN
+In a One-to-Many RNN the network processes a single input to produce multiple outputs over time. This is useful in tasks where one input triggers a sequence of predictions (outputs). For example music generation.
+
+3. Many-to-One RNN
+The Many-to-One RNN receives a sequence of inputs and generates a single output. This type is useful when the overall context of the input sequence is needed to make one prediction. In sentiment analysis the model receives a sequence of words (like a sentence) and produces a single output like positive, negative or neutral.
+
+4. Many-to-Many RNN
+The Many-to-Many RNN type processes a sequence of inputs and generates a sequence of outputs. In language translation task a sequence of words in one language is given as input and a corresponding sequence in another language is generated as output.
+
 
 ## Language Model
 ### Sampling Novel Sequences
