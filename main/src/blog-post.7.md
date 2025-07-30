@@ -110,9 +110,33 @@ The Many-to-One RNN receives a sequence of inputs and generates a single output.
 4. Many-to-Many RNN
 The Many-to-Many RNN type processes a sequence of inputs and generates a sequence of outputs. In language translation task a sequence of words in one language is given as input and a corresponding sequence in another language is generated as output.
 
-
 ## Language Model
+A language model is a model of the human brain's ability to produce natural language. Language models are useful for a variety of tasks, including speech recognition, machine translation, natural language generation and so on. Given sentence, language model tells you what is the probability of a sentence of that particular sentence. In other words, The chance that the next sentence you read somewhere out there in the world will be a particular sentence.  
+For example, a speech recognition system picks the sentence is using language modeling by calculating the probability the candidate sentences.
+$$
+\begin{aligned}
+P(\text{The apple and pair salad}) &= 3.2 \times 10^{-13} \\
+P(\text{The apple and pear salad}) &= 5.7 \times 10^{-10} \\
+\end{aligned}
+$$
+With these probabilities, the second sentence is more likely to be the sentence.
+$$
+\begin{aligned}
+P(\text{sentence}) &= P(y^{\langle 1 \rangle}, y^{\langle 2 \rangle}, \ldots, y^{\langle T_y \rangle})
+\end{aligned}
+$$
+More specifically, what a language model does is that it estimates the particular probability of the sequence of words($y^{<T_k>}$).
+
+### Language Model with LLM(Large Language Model)
+Large language models (LLMs), currently their most advanced form, are predominantly based on transformers trained on larger datasets (frequently using texts scraped from the public internet). They have superseded recurrent neural network-based models, which had previously superseded the purely statistical models, such as the word n-gram language model.
+
+A large language model (LLM) is a language model trained with self-supervised machine learning on a vast amount of text, designed for natural language processing tasks, especially language generation. The largest and most capable LLMs are generative pretrained transformers (GPTs), which are largely used in generative chatbots such as ChatGPT, Gemini or Claude.
+
+### Language Model with RNN
+But we will focus on Language Model using RNN in this page.
+
 ### Sampling Novel Sequences
+
 ## Vanishing Gradients with RNNs
 
 ## Gated Reccurent Unit (GRU)
