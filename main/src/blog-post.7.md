@@ -135,6 +135,59 @@ A large language model (LLM) is a language model trained with self-supervised ma
 ### Language Model with RNN
 But we will focus on Language Model using RNN in this page.
 
+#### Tokenization and Vectorization
+To build a RNN model for NLP, you need to tokenize the input sentences from large training set corpus.  
+Tokenization means that forming a vocabulary and map each of the words from the input sentences to one-hot vectors on indices in the vocabulary. It involves dividing a string or text into a list of smaller units known as tokens. Note that token is words or sub-words in the context, so a word is a token in a sentence.  
+Vectorization is to define a good numerical measure to characterize these texts.
+
+See below exmaple that applying tokenization and vectorization to input sentenc.
+```
+Texts: 'The mouse ran up the clock' and 'The mouse ran down'
+
+Tokenization:
+['the', 'mouse', 'ran', 'up', 'clock']
+['the', 'mouse', 'ran', 'down']
+
+Vectorization:
+Index assigned for every token: {'the': 7, 'mouse': 2, 'ran': 4, 'up': 10,
+  'clock': 0, 'the mouse': 9, 'mouse ran': 3, 'ran up': 6, 'up the': 11, 'the
+clock': 8, 'down': 1, 'ran down': 5}
+
+One-hot encoding: 
+'The mouse ran up the clock' = [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]
+```
+When you formed a vocabulary form top 10,000 common words and if there is a word that not in your vocabulary, you can use <UNK> unknown token to replace that word. Also you can add extra token <EOS> that stands for end of the sentence.
+
+##### Types of Tokenization
+https://www.geeksforgeeks.org/nlp/nlp-how-tokenizing-text-sentence-words-works/
+
+#### Build RNN in NLP
+![alt text](images/blog7_build_rnn_for_nlp.png)
+Let's say there's an input sentence "Cats average 15 hours of sleep a day. <EOS>" So there is 9 words = 9 tokens, including <EOS>.
+At time 0, you compute activation $a^{<1>}$, as a function of an input $x^{<1>}$, which is just zero vector. What activation $a^{<1>}$ does is to make softmax prediction to figure out what is the probability of the first word $\hat{y}^{<1>}$.  
+So in this step, softmax is trying to predict what is the chance of the first word is "a"($P("a")$) and the chance of first word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$.  
+Then RNN forward to the next step and job of activation $a^{<1>}$ is to predict what is the second word, but now you give activation $a^{<1>}$ correct first word $y^{<1>}$, which is "cats". Note that you can see that $x^{<2>} = y^{<1>}$. The output of second step is again predicted by softmax, what is the chance of the word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$, given what had come previously($P(___| "cats")$). Then you go to next step and do the same task, but to predict what is the third word given the previous two words, ("cats, averages"). So $x^{<3>} = y^{<2>}$ and the output is the probability of any words in the vocabulary given the previous two words ($P(___| "cats averages")$). You repeat until time step $9$, hopefully predict that there's high chance of "<EOS>".   
+So each step of RNN, you look at the sets of preceeding words and predict the distribution of the next word. So RNN learns one word at a time from left to right.  
+Next is to train this network using loss function.
+$$
+\begin{aligned}
+\mathcal{L}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle}) &= - \sum_i y_i^{\langle t \rangle} \log \hat{y}_i^{\langle t \rangle} \\
+\mathcal{L} &= \sum_t \mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle})
+\end{aligned}
+$$
+At a certain time $t$, $y^{<t>}$ is the true word and $\hat{y}^{<t>}$ is the softmax prediction word, apply softmax loss function (cross-entropy loss function). The overall loss is the sum over all time steps of the loss associated with the individual predictions($y_i$). 
+
+If you train this RNN with large data sets, what RNN will be able to do is, given any initial set of words, such as "cat average 15 hours of", it can predict what is the chance of the next word.
+Also when there is a sentence with three words ($y^{<1>}$, $y^{<2>}$, $y^{<3>}$), the chance of this entire sentence will be, multiply of three probabilities. 
+$$
+\begin{aligned}
+P(y^{\langle 1 \rangle}, y^{\langle 2 \rangle}, y^{\langle 3 \rangle}) 
+&= P(y^{\langle 1 \rangle}) \, P(y^{\langle 2 \rangle} \mid y^{\langle 1 \rangle}) \, P(y^{\langle 3 \rangle} \mid y^{\langle 1 \rangle}, y^{\langle 2 \rangle})
+\end{aligned}
+$$
+
+Then build a RNN to model the chance of these different sequences.
+
 ### Sampling Novel Sequences
 
 ## Vanishing Gradients with RNNs
