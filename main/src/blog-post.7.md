@@ -166,7 +166,7 @@ https://www.geeksforgeeks.org/nlp/nlp-how-tokenizing-text-sentence-words-works/
 Let's say there's an input sentence "Cats average 15 hours of sleep a day. <EOS>" So there is 9 words = 9 tokens, including <EOS>.
 At time 0, you compute activation $a^{<1>}$, as a function of an input $x^{<1>}$, which is just zero vector. What activation $a^{<1>}$ does is to make softmax prediction to figure out what is the probability of the first word $\hat{y}^{<1>}$.  
 So in this step, softmax is trying to predict what is the chance of the first word is "a"($P("a")$) and the chance of first word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$.  
-Then RNN forward to the next step and job of activation $a^{<1>}$ is to predict what is the second word, but now you give activation $a^{<1>}$ correct first word $y^{<1>}$, which is "cats". Note that you can see that $x^{<2>} = y^{<1>}$. The output of second step is again predicted by softmax, what is the chance of the word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$, given what had come previously($P(___| "cats")$). Then you go to next step and do the same task, but to predict what is the third word given the previous two words, ("cats, averages"). So $x^{<3>} = y^{<2>}$ and the output is the probability of any words in the vocabulary given the previous two words ($P(___| "cats averages")$). You repeat until time step $9$, hopefully predict that there's high chance of "<EOS>".   
+Then RNN forward to the next step and job of activation $a^{<1>}$ is to predict what is the second word, but now you give activation $a^{<1>}$ correct first word $y^{<1>}$, which is "cats". Note that you can see that $x^{<2>} = y^{<1>}$. The output of second step is again predicted by softmax, what is the chance of the word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$, given what had come previously($P(-| "cats")$). Then you go to next step and do the same task, but to predict what is the third word given the previous two words, ("cats, averages"). So $x^{<3>} = y^{<2>}$ and the output is the probability of any words in the vocabulary given the previous two words ($P(-| "cats averages")$). You repeat until time step $9$, hopefully predict that there's high chance of "<EOS>".   
 So each step of RNN, you look at the sets of preceeding words and predict the distribution of the next word. So RNN learns one word at a time from left to right.  
 Next is to train this network using loss function.
 $$
@@ -186,11 +186,32 @@ P(y^{\langle 1 \rangle}, y^{\langle 2 \rangle}, y^{\langle 3 \rangle})
 \end{aligned}
 $$
 
-Then build a RNN to model the chance of these different sequences.
+#### Sampling Novel Sequences
+![alt text](images/blog7_sampling_novel_sequences.png)
+Using RNN Language model, you can generate a randomly chosen sentence. The network is trained using the structure at the top, which is the sequence model we learned. But when sample to generate novel sequences, what you do is slightly differnet.  
+From the first time step, you will have the output vector of softmax probability over possible words same as general sequence model. This output is a vector that gives you what is the chance of the first word is "a"($P("a")$) and the chance of first word is "aaron" ($P("aaron")$) ... $P("cats")$ ... all the way to $P("<EOS>")$.  Then the difference is that you take this vector and randomly sample according to the softmax distribution so that you can get the first word. (from above pictrue "the")  
+Next step, unlike the general sequence model that use true $y^{<t>}$ as input, use the sampled word from previous time step $\hat{y}^{<t>}$ as an input to the time step. Since the input is "the" from the picture the output is the chance of whatever the second word is given the first word is "the", $P( - | "the" )$. Then again you sample a word from the softmax distribution output vector and use it to the input to next time step. Keep going until reach the last time step. You can tell the sequence ended when the <EOS> token is generated or just by limiting the time step.
 
-### Sampling Novel Sequences
+
+### Character-Level Language Model
+You can build a language model not only word-level but character-level too. In character-level RNN, the vocabulary is just alphabets(with digits, punctuation and so on). In character-level RNNs, the behavior is the same as word-level RNN. 
+During training, we still use the true character $y^{<t-1>}$ as input to time step $t$ until the last time step.
+
+Both models use use the same RNN architecture (or LSTM/GRU). They use teacher forcing during training — meaning they feed the true token (word or character) from the previous timestep as input to the next timestep. During inference (sampling), they use the predicted token $\hat{y}^{<t>}$ as the next input.
+
+Good thing about character-level model is that you don't have to worry about UNK token. But disadvantage is that when longer sequences, it is not as good as word-level language model at capturing long-range dependencies between the early parts of the sentence and the later parts of sentence. There are more tokens than word-level model in the sentence. For example, if the sentence is composed of 10 or 20 words, but the number of characters will be much more. Also character-level model is computationally more expensive than word-level model.
 
 ## Vanishing Gradients with RNNs
+Think of a case when language have very long term dependency as below. This is the case that the word from very early can affect what needs to come much later in the sentence.
+```
+The cat, which ~~~~~, was full.
+The cat, which ~~~~~, were full.
+```
+Basic RNN is not very good at capturing this kind of very long-term dependencies. This is because of the vaninshing gradient problem from very deep neural network.
+Putting simply, the gradient from output layer would have a hard time propagating back to affect the weights of the earlier layers. This problem occurs in RNN network too. So in practice it is difficult for the RNN network to memorize the earlier context of the sentence(plural noun or single noun) to use in the later sequence.  
+So because of vanishing gradient problem, basic RNN has many local influences (output is mainly influenced by close input values). Difficult for error to backpropagate all the way to the beginning of the sequence and therfore to modify how the neural network is doing the computations earlier in the sequence.
+
+One thing to note is that there could be also exploding gradient problem. But it turns out that exploding gradient problem is much easier to deal with because the parameters jus blow up and cause numerical overflow(NaN(Not a Number)) in computation. One solution to exploding gradient problem is applying gradient clipping, which is when loooking at the gradient and if it is bigger that some threshold, rescale it so that it is not too big. So it is clipped to some maximum value. But vanishing gradient problem much harder to solve.
 
 ## Gated Reccurent Unit (GRU)
 ## Long Short Term Memory Unit (LSTM)
