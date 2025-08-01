@@ -179,6 +179,9 @@ In Bayesian statistics, Bayes' rule prescribes how to update the prior with new 
 A type of conditional probability that results from updating the prior probability with information summarized by the likelihood via an application of Bayes' rule.  
 In the context of Bayesian statistics, it is a conditional distribution over the unobserved random variables, conditioned on the observed random variables. e.g., $p(\theta \mid x,y)$
 
+### Error 
+Errors refer to the discrepancies between the predicted output of a neural network model and the actual or desired output. These errors are used to compute the loss or cost function, which measures how well the model is performing on a given task. The goal of training a deep learning model is to minimize these errors or the associated loss function.
+
 ### Training error(Empirical error) vs Generalization error
 Training error is measured on training data - the data used to construct the model.  
 Generalization error is the error expected on new cases, and is usually estimated by measuring the error on a test data set, which is not used during model construction.
