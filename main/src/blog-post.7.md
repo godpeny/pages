@@ -214,6 +214,103 @@ So because of vanishing gradient problem, basic RNN has many local influences (o
 One thing to note is that there could be also exploding gradient problem. But it turns out that exploding gradient problem is much easier to deal with because the parameters jus blow up and cause numerical overflow(NaN(Not a Number)) in computation. One solution to exploding gradient problem is applying gradient clipping, which is when loooking at the gradient and if it is bigger that some threshold, rescale it so that it is not too big. So it is clipped to some maximum value. But vanishing gradient problem much harder to solve.
 
 ## Gated Reccurent Unit (GRU)
+Gated Reccurent Unit is modification of hidden layer in RNN to work better at capturing long-range connections and help out with the vanishing gradient problem.  
+The core idea behind GRUs is to use gating mechanisms to selectively update the hidden state at each time step allowing them to remember important information while discarding irrelevant details. GRUs aim to simplify the LSTM architecture by merging some of its components and focusing on just two main gates: the update gate and the reset gate.
+
+### Simplified GRU
+Remind you that from previous RNN, $c^{<t>}$ is memory cell which provides memory to remember the previous context. In GRU memory cell is same as output activation, $a^{<t>}$.
+$$
+a^{\langle t \rangle} = g(W_{aa} a^{\langle t-1 \rangle} + W_{ax} x^{\langle t \rangle} + b_a) = g \left( W_a \begin{bmatrix} a^{\langle t-1 \rangle}, x^{\langle t \rangle} \end{bmatrix} + b_a \right)
+$$
+Below is the architecture of simplified version of GRU.
+$$
+\begin{aligned}
+\tilde{c}^{\langle t \rangle} &= \phi \left( W_c \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_c \right) \\
+\Gamma_u &= \sigma \left( W_u \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_u \right) \\
+c^{\langle t \rangle} &= \Gamma_u\odot \tilde{c}^{\langle t \rangle} + \left(1 - \Gamma_u \right) \odot c^{\langle t-1 \rangle} \\
+\end{aligned} \\[5pt]
+
+x_{t}: \text{input vector of GRU} \\
+c_{t}: \text{output vector from GRU, memory cell} \\
+{\hat {c}}_{t}: \text{candidate activation vector of GRU} \\
+\Gamma_u: \text{update vector} \\
+W_c, W_u, b_c, b_u: \text{parameter matrices and vector} \\
+{\displaystyle \odot }: \text{element-wise producet} \\ 
+\sigma: \text{sigmoid function} \\
+\phi: \text{hyperbolic tangent}
+$$
+
+- $\Gamma_u$ - Update gate
+  - The update gate controls how much of the new information $x^{<t>}$ should be used to update the activation unit.
+  - Since it uses sigmoid function, for the most possible range of input range, the output of sigmoid function is either very very close to $0$ or $1$. So for intuition, you can think of $\Gamma_u^{\langle t \rangle}$ to be either $0$ or $1$.
+- ${\hat {c}}^{<t>}$ - Candidate activation unit
+  - This is the potential new activation unit calculated based on the current input and the previous activation unit.
+- $c^{<t>}$ - Activation unit
+  - The final activation unit is a weighted average of the previous activation unit $c^{<t-1>}$ and the candidate hidden state ${\hat {c}}^{<t>}$ based on the update gate $\Gamma_u^{\langle t \rangle}$. 
+  - If the update gate $\Gamma_u^{\langle t \rangle}$ is close to $1$, activation value is equal to candidate activation value and this incates updating the bit. If the update gate is close to $0$, it means don't updating and hang on to the old value.
+
+
+### Full GRU
+$$
+\begin{aligned}
+\tilde{c}^{\langle t \rangle} &= \phi\left( W_c \left[ \Gamma_r * c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_c \right) \\
+\Gamma_u &= \sigma \left( W_u \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_u \right) \\
+\Gamma_r &= \sigma \left( W_r \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_r \right) \\
+c^{\langle t \rangle} &= \Gamma_u * \tilde{c}^{\langle t \rangle} + (1 - \Gamma_u) * c^{\langle t-1 \rangle}
+\end{aligned} \\[5pt]
+
+x_{t}: \text{input vector of GRU} \\
+c_{t}: \text{output vector from GRU, memory cell} \\
+{\hat {c}}_{t}: \text{candidate activation vector of GRU} \\
+\Gamma_u: \text{update vector} \\
+\Gamma_r: \text{reset vector}
+W_c, W_u, b_c, b_u: \text{parameter matrices and vector} \\
+{\displaystyle \odot }: \text{element-wise producet} \\ 
+\sigma: \text{sigmoid function} \\
+\phi: \text{hyperbolic tangent}
+$$
+The full GRU is simplified GRU with 'reset gate' $\Gamma_r^{\langle t \rangle}$. The reset gate is also applied to candidate activation unit $\tilde{c}^{\langle t \rangle}$. The reset gate determines how much of the previous activation unit $c^{<t>}$ should be forgotten.
+
 ## Long Short Term Memory Unit (LSTM)
-## Bidirectional RNN
+The other way to deal with the very long range connection is LSTM, which is even powerful than GRU.
+LSTMs can capture long-term dependencies in sequential data making them ideal for tasks like language translation, speech recognition and time series forecasting. 
+$$
+\begin{aligned}
+\tilde{c}^{\langle t \rangle} &= \phi \left( W_c \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_c \right) \\
+\Gamma_u &= \sigma \left( W_u \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_u \right) \\
+\Gamma_f &= \sigma \left( W_f \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_f \right) \\
+\Gamma_o &= \sigma \left( W_o \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_o \right) \\
+c^{\langle t \rangle} &= \Gamma_u * \tilde{c}^{\langle t \rangle} + \Gamma_f * c^{\langle t-1 \rangle} \\
+a^{\langle t \rangle} &= \Gamma_o * c^{\langle t \rangle}
+\end{aligned}
+$$
+
+LSTM architectures involves the memory cell which is controlled by three gates:
+ - Input gate($\Gamma_u$): Controls what information is added to the memory cell (activation unit).
+ - Forget gate($\Gamma_f$): Determines what information is removed from the memory cell.
+ - Output gate($\Gamma_o$): Controls what information is output from the memory cell.
+
+This architecture allows LSTM networks to selectively retain or discard information as it flows through the network which allows them to learn long-term dependencies. The network has a hidden state which is like its short-term memory. This memory is updated using the current input, the previous hidden state and the current state of the memory cell.
+
+One technical deatil is that since LSTM uses elementwise operations between gates and memory cell, $k$-th element of $c^{\langle t \rangle}$ only affects the $k$-th element of the corresponding gates, $\Gamma_u, \Gamma_f, \Gamma_o$. So not every element of $k$-dimensional $c^{\langle t \rangle}$ can affect all elements of the gates.
+
+### GRU vs LSTM
+- GRU
+  - Simplified version of complicated LSTM.
+  - Simple and easy to build a much bigger model.
+  - Computationally runs faster and scalable to build bigger models.
+- LSTM
+  - More powerful.
+  - More flexible. (3 gates)
+  - Historically proven.
+
+## Bidirectional RNN (BRNN)
+Bidirectional recurrent neural networks (BRNN) connect two hidden layers of opposite directions to the same output. With this form of generative deep learning, the output layer can get information from past (backwards) and future (forward) states simultaneously.
+![alt text](images/blog7_deep_rnn.png)
+
+As you can see from the picture, forward propagation partially from left to right and partially from right to left. The disadvantage is that you need entire sequence of the data before making prediction. So when speech recognition, you have to wait to finish speech to process speech recognition. (Need more complex bidirectional RNN for real time speech recognition)
+
 ## Deep RNN
+For learning very complex functions, it is useful to stack multiple RNN layers to build deeper version of RNN network.
+![alt text](images/blog7_bidirectional_rnn.png)
+As from the picture, you can build network combined with RNN and FCNN. It shows 3 layers of RNN followed by FCNN.
