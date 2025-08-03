@@ -159,8 +159,56 @@ One-hot encoding:
 When you formed a vocabulary form top 10,000 common words and if there is a word that not in your vocabulary, you can use <UNK> unknown token to replace that word. Also you can add extra token <EOS> that stands for end of the sentence.
 
 ##### Types of Tokenization
-https://www.geeksforgeeks.org/nlp/nlp-how-tokenizing-text-sentence-words-works/
+###### Word Tokenization
+Word tokenization is the most commonly used method where text is divided into individual words. It works well for languages with clear word boundaries, like English. For example "Machine learning is fascinating" becomes,
 
+```md
+# Input before tokenization
+["Machine Learning is fascinating"]
+
+# Output when tokenized by word
+["Machine", "learning", "is", "fascinating"]
+```
+###### Character Tokenization
+In Character Tokenization, the textual data is split and converted to a sequence of individual characters. This is beneficial for tasks that require a detailed analysis, such as spelling correction or for tasks with unclear boundaries. It can also be useful for modelling character-level language. For example,
+
+```md
+# Input before tokenization
+["You are helpful"]
+
+# Output when tokenized by characters
+["Y", "o", "u", " ", "a", "r", "e", " ", "h", "e", "l", "p", "f", "u", "l"]
+```
+
+###### Sub-word Tokenization
+This strikes a balance between word and character tokenization by breaking down text into units that are larger than a single character but smaller than a full word. This is useful when dealing with morphologically rich languages or rare words. For example,
+```md
+["Time", "table"] 
+["Rain", "coat"] 
+["Grace", "fully"] 
+["Run", "way"] 
+```
+
+Sub-word tokenization helps to handle out-of-vocabulary words in NLP tasks and for languages that form words by combining smaller units.
+
+###### Sentence Tokenization
+Sentence tokenization is also a common technique used to make a division of paragraphs or large set of sentences into separated sentences as tokens. This is useful for tasks requiring individual sentence analysis or processing. For example,
+```md
+# Input before tokenization
+["Artificial Intelligence is an emerging technology. Machine learning is fascinating. Computer Vision handles images. "]
+
+# Output when tokenized by sentences
+["Artificial Intelligence is an emerging technology.", "Machine learning is fascinating.", "Computer Vision handles images."]
+```
+
+######  N-gram Tokenization
+N-gram tokenization splits words into fixed-sized chunks (size = $n$) of data. For example,
+```md
+# Input before tokenization
+["Machine learning is powerful"]
+# Output when tokenized by bigrams ($n=2$)
+[('Machine', 'learning'), ('learning', 'is'), ('is', 'powerful')]
+```
 #### Build RNN in NLP
 ![alt text](images/blog7_build_rnn_for_nlp.png)
 Let's say there's an input sentence "Cats average 15 hours of sleep a day. <EOS>" So there is 9 words = 9 tokens, including <EOS>.
@@ -228,6 +276,7 @@ $$
 \tilde{c}^{\langle t \rangle} &= \phi \left( W_c \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_c \right) \\
 \Gamma_u &= \sigma \left( W_u \left[ c^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_u \right) \\
 c^{\langle t \rangle} &= \Gamma_u\odot \tilde{c}^{\langle t \rangle} + \left(1 - \Gamma_u \right) \odot c^{\langle t-1 \rangle} \\
+\hat{y}^{\langle t \rangle} &= \mathcal{S}(W_{yc} c^{\langle t \rangle} + b_y) \\
 \end{aligned} \\[5pt]
 
 x_{t}: \text{input vector of GRU} \\
@@ -238,6 +287,7 @@ W_c, W_u, b_c, b_u: \text{parameter matrices and vector} \\
 {\displaystyle \odot }: \text{element-wise producet} \\ 
 \sigma: \text{sigmoid function} \\
 \phi: \text{hyperbolic tangent}
+\mathcal{S}: \text{softmax}
 $$
 
 - $\Gamma_u$ - Update gate
@@ -281,7 +331,8 @@ $$
 \Gamma_f &= \sigma \left( W_f \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_f \right) \\
 \Gamma_o &= \sigma \left( W_o \left[ a^{\langle t-1 \rangle},\ x^{\langle t \rangle} \right] + b_o \right) \\
 c^{\langle t \rangle} &= \Gamma_u * \tilde{c}^{\langle t \rangle} + \Gamma_f * c^{\langle t-1 \rangle} \\
-a^{\langle t \rangle} &= \Gamma_o * c^{\langle t \rangle}
+a^{\langle t \rangle} &= \Gamma_o * c^{\langle t \rangle} \\
+\hat{y}^{\langle t \rangle} &= \mathcal{S}(W_{ya} a^{\langle t \rangle} + b_y)
 \end{aligned}
 $$
 
@@ -293,6 +344,8 @@ LSTM architectures involves the memory cell which is controlled by three gates:
 This architecture allows LSTM networks to selectively retain or discard information as it flows through the network which allows them to learn long-term dependencies. The network has a hidden state which is like its short-term memory. This memory is updated using the current input, the previous hidden state and the current state of the memory cell.
 
 One technical deatil is that since LSTM uses elementwise operations between gates and memory cell, $k$-th element of $c^{\langle t \rangle}$ only affects the $k$-th element of the corresponding gates, $\Gamma_u, \Gamma_f, \Gamma_o$. So not every element of $k$-dimensional $c^{\langle t \rangle}$ can affect all elements of the gates.
+
+Note that while GRU memory cell is same as output activation, $a^{<t>} = c^{<t>}$, LSTM has seperated activation output and memory cell.
 
 ### GRU vs LSTM
 - GRU
