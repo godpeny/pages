@@ -90,7 +90,7 @@ W_a \begin{bmatrix} a^{\langle t-1 \rangle}, x^{\langle t \rangle} \end{bmatrix}
 $$ 
 
 
-## Back propagation of RNN (Backpropagation Through Time, BPTT)
+## Backward propagation of RNN (Backpropagation Through Time, BPTT)
 ![alt text](images/blog7_rnn_backward_propagation.png)
 
 $$
@@ -406,6 +406,9 @@ This architecture allows LSTM networks to selectively retain or discard informat
 One technical deatil is that since LSTM uses elementwise operations between gates and memory cell, $k$-th element of $c^{\langle t \rangle}$ only affects the $k$-th element of the corresponding gates, $\Gamma_u, \Gamma_f, \Gamma_o$. So not every element of $k$-dimensional $c^{\langle t \rangle}$ can affect all elements of the gates.
 
 Note that while GRU memory cell is same as output activation, $a^{<t>} = c^{<t>}$, LSTM has seperated activation output and memory cell.
+
+### Forward Propagation of LSTM
+### Backward Propagation of LSTM
 
 ### GRU vs LSTM
 - GRU
