@@ -61,6 +61,11 @@ $$
 a^{\langle t \rangle} = g(W_{aa} a^{\langle t-1 \rangle} + W_{ax} x^{\langle t \rangle} + b_a) \\[5pt]
 \hat{y}^{\langle t \rangle} = g(W_{ya} a^{\langle t \rangle} + b_y)
 $$
+1. Compute the hidden state with tanh activation: $a^{\langle t \rangle} = \tanh(W_{aa} a^{\langle t-1 \rangle} + W_{ax} x^{\langle t \rangle} + b_a)$.
+2. Using your new hidden state $a^{\langle t \rangle}$, compute the prediction $\hat{y}^{\langle t \rangle} = g(W_{ya} a^{\langle t \rangle} + b_y)$. $g$ is softmax function.
+3. Store $(a^{\langle t \rangle}, a^{\langle t-1 \rangle}, x^{\langle t \rangle}, parameters)$ in cache.
+4. Return $a^{\langle t \rangle}$ , $y^{\langle t \rangle}$ and cache. (cache will be used in backpropagtaion)
+
 Note that a set of weights(parameters) uses for each time steps are shared. First, parameter $W_{ax}$ goverens the connection between $x$ and $a$ (hidden layer) on every time step, secondly, the horizontal activation connection is governend by $W_{aa}$ on every time step. Lastly, $W_{ya}$ goverens the connection between output and hidden layer on every time step.  
 The notation convention behind is that for $W_{ax}$, the second index $x$ indicates that $W_{ax}$ will be multipied by some $x$ quantity and the first index $a$ indicates that $W_{ax}$ is used to compute output $a$ quantity. 
 $$a \leftarrow W_{ax} x^{\langle 1 \rangle}$$
@@ -88,13 +93,68 @@ $$
 ## Back propagation of RNN (Backpropagation Through Time, BPTT)
 ![alt text](images/blog7_rnn_backward_propagation.png)
 
-The loss function for each time step can be calculated as below, using cross-entropy loss.
 $$
-\mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle}) = - y^{(t)} \log \hat{y}^{\langle t \rangle} - (1 - y^{(t)}) \log (1 - \hat{y}^{\langle t \rangle}) \\[5pt]
+\begin{align}
+\displaystyle a^{\langle t \rangle} &= \tanh(W_{ax} x^{\langle t \rangle} + W_{aa} a^{\langle t-1 \rangle} + b_{a})\tag{-} \\[8pt]
+\displaystyle \frac{\partial \tanh(x)} {\partial x} &= 1 - \tanh^2(x) \tag{-} \\[8pt]
+\displaystyle {dtanh} &= da_{next} * ( 1 - \tanh^2(W_{ax}x^{\langle t \rangle}+W_{aa} a^{\langle t-1 \rangle} + b_{a})) \tag{0} \\[8pt]
+\displaystyle  {dW_{ax}} &= dtanh \cdot x^{\langle t \rangle T}\tag{1} \\[8pt]
+\displaystyle dW_{aa} &= dtanh \cdot a^{\langle t-1 \rangle T}\tag{2} \\[8pt]
+\displaystyle db_a& = \sum_{batch}dtanh\tag{3} \\[8pt]
+\displaystyle dx^{\langle t \rangle} &= { W_{ax}}^T \cdot dtanh\tag{4} \\[8pt]
+\displaystyle da_{prev} &= { W_{aa}}^T \cdot dtanh\tag{5}
+\end{align}
+$$
+
+Note that $da_{next}$ is $\frac{\partial{J}}{\partial a^{\langle t \rangle}}$ and it includes loss from previous stages(horizontal loss) and loss from current stage output logic(vertical loss). So you need to understand the calculation not only from top to bottom in the same time step, but also from right to left(horizontal loss), going backward in time steps. This special backprogation is called Backpropagation Through Time, BPTT.  
+
+The loss function for each time step can be calculated as below, using cross-entropy loss.(it can be other loss function of course)
+$$
+\ell_{t} = \mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle}) = - y^{(t)} \log \hat{y}^{\langle t \rangle} - (1 - y^{(t)}) \log (1 - \hat{y}^{\langle t \rangle}) \\[5pt]
 \mathcal{L}(\hat{y}, y) = \sum_{t=1}^{T_y} \mathcal{L}^{\langle t \rangle}(\hat{y}^{\langle t \rangle}, y^{\langle t \rangle})
 $$
-Just like backpropagation of standard neural network, take the derivatives with respect to all the parameters using gradient descent algorithm to the opposite direcions to all the forward propagation.  
-One thing to note in the backpropagation is that the calculation from right to left, going backward in time steps. This special backprogation is called Backpropagation Through Time, BPTT.
+Just like backpropagation of standard neural network, take the derivatives with respect to all the parameters using gradient descent algorithm to the opposite direcions to all the forward propagation. 
+
+### Vertical and Horizontal Loss in RNN
+![alt text](images/blog7_rnn_bptt.png)
+Let's say that $S_t$ represents the hidden state (memory) at time $t$, $X_t$ iss the input at time $t$ and $Y_t$ is the output at time $t$. $W_s, W_x, W_y$ are weight matrices for hidden states, inputs and outputs, respectively.
+Each time step($t = 1 \sim 3$), both vertical and horizontal loss can be calcualated as below. 
+
+<b>Time Step 3</b>
+$$
+\displaystyle
+da_{next} = \frac{\partial \mathcal{L}}{\partial s_{3}}
+= \underbrace{%
+\color{#268bd2}{\frac{\partial \ell_{3}}{\partial s_{3}}}%
+}_{\text{only vertical}}
+$$
+<b>Time Step 2</b>
+$$
+\displaystyle
+da_{next} = \frac{\partial \mathcal{L}}{\partial s_2}
+=
+\underbrace{\color{#268bd2}{\frac{\partial \ell_2}{\partial s_2}}}_{\text{vertical}}
+\;+\;
+\underbrace{\frac{\partial \ell_{3}}{\partial s_3}\,\frac{\partial \mathcal{s_3}}{\partial s_2}}_{\text{horizontal via }s_3}
+$$
+
+<b>Time Step 1</b>
+$$
+da_{next} = \displaystyle
+\frac{\partial \mathcal{L}}{\partial s_{1}}
+=
+\underbrace{%
+\color{#268bd2}{\frac{\partial \ell_{1}}{\partial s_{1}}}%
+}_{\text{vertical}}
+\;+\;
+\underbrace{%
+\frac{\partial \ell_{2}}{\partial s_{2}}\;\frac{\partial \mathcal{s_2}}{\partial s_1}
+}_{\text{horizontal via } s_{2}}
+\;+\;
+\underbrace{%
+\frac{\partial \ell_{3}}{\partial s_{3}}\frac{\partial \mathcal{s_3}}{\partial s_2} \frac{\partial \mathcal{s_2}}{\partial s_1}
+}_{\text{horizontal via } s_{3}}
+$$
 
 ## Types of RNNs
 ![alt text](images/blog7_types_of_rnn.png)
