@@ -197,3 +197,37 @@ Covariate shift is a specific type of dataset shift often encountered in machine
 In machine learning, logit is the vector of raw (non-normalized) predictions that a classification model generates, which is ordinarily then passed to a normalization function.  
 If the model is solving a multi-class classification problem, logits typically become an input to the softmax function. The softmax function then generates a vector of (normalized) probabilities with one value for each possible class.
 
+### Model vs Embedding
+<b> Model </b>
+- Everything needed to re-create a Keras / TF model:
+- Layer graph / architecture
+- All trainable weights (including any embedding layer)
+- (Optionally) optimizer state, loss, metrics
+- .h5, .keras, sometimes .pb
+```
+model_shakespeare_kiank_350_epoch.h5
+└── architecture JSON
+└── layer weights  (Embedding, LSTM, Dense …)
+└── optimizer state (Adam, SGD … if present)
+```
+```python
+from keras.models import load_model
+model = load_model("model_shakespeare.h5", compile=False)
+model.compile(optimizer="adam", loss="categorical_crossentropy")
+```
+
+<b> Embedding </b>
+- Only a lookup table that maps tokens → vectors (e.g. GloVe, word2vec, fastText). No layer definitions, no other weights
+- .txt, .vec, .bin, sometimes .npy, .pkl
+```
+the        0.418 0.249 …  (100 floats)
+to         0.680 0.540 …
+```
+```python
+embedding_matrix = np.loadtxt("glove.6B.100d.txt", skiprows=1)
+embedding_layer = keras.layers.Embedding(
+       input_dim=vocab_size,
+       output_dim=100,
+       weights=[embedding_matrix],
+       trainable=False)
+```
