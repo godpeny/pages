@@ -231,3 +231,34 @@ embedding_layer = keras.layers.Embedding(
        weights=[embedding_matrix],
        trainable=False)
 ```
+
+### Tips for reading papers
+Compile list of paper (including blogs and medium posts) and skipping around the list.
+Steady learning, Not short burst.
+
+<b> Reading 1 Paper</b>
+1. Title, Abstract, Figures
+2. Intro, Conclusition and skim rest (skip related works)
+3. Read but skip the math
+4. Whole things but skip parts that don't make sense.
+
+<b> To have good understanding of paper </b>
+Make sure you can have answer to questions below.
+- What did authors try to accomplish?
+- What were the key elements of the approach?
+- What can you use yourself?
+- What other references do you want to follow?
+
+<b> Sources of papers </b>
+- Twitter
+- Reddit - ML Subreddit
+- NIPS/ICMC/ICLR
+
+<b> Math and Code </b>
+- Try to rederive the math or code from the scratch.
+
+<b> Machine Learning Engineer </b>
+![alt text](images/blog0_machine_learning_engineer.png)
+
+- Have broad understanding of many different topics in AI Machine Learning. While also have very deep understanding in at least one area. 
+- To deepen the understanding, work on project, open-source contribution, research or job.
