@@ -845,3 +845,5 @@ On the contrary, if your model needs multiple steps of reasoning to solve the pr
 
 ## Deep Reinforcement Learning (deep RL)
 https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
+
+### Deep Q-Net
