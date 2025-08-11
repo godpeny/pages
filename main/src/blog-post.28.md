@@ -847,3 +847,7 @@ On the contrary, if your model needs multiple steps of reasoning to solve the pr
 https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
 
 ### Deep Q-Net
+
+#### Target Network
+#### Why Two propagation in one loop?
+https://medium.com/data-science/reinforcement-learning-explained-visually-part-5-deep-q-networks-step-by-step-5a5317197f4b
