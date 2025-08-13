@@ -38,7 +38,7 @@ Another example, in chess, when the program lost the game at move 50 due to the 
 ## Markov Decision Processes(MDP)
 ### Relevance to Reinforcement Learning
 MDP is a mathematical framework used to describe an environment in decision making scenarios where outcomes are partly random and partly under the control of a decision-maker(dynamic programing).  
-MDP provides a formalism for modeling decision making in situations where outcomes are uncertain, making them essential for Reinforcement Learning.
+MDP provides a formalism for modeling decision making in situations where outcomes are uncertain, making them essential for Reinforcement Learning. In other words, Reinforcement learning utilizes the MDP framework to model the interaction between a learning agent and its environment. In this framework, the interaction is characterized by states, actions, and rewards.
 
 ### Component of MDP
 An MDP is defined by a tuple $(S, A, \{ P_{sa} \}, \gamma, R)$ where:
@@ -842,11 +842,34 @@ For These kind of tasks, policy search algorithm is appropriate.
 
 On the contrary, if your model needs multiple steps of reasoning to solve the problem, such as chess, go, value function approximation is more promising.
 
+## Relationship between Markov-Decision Process, Reinforcement Learning and Q-Learning
+Reinforcement learning is a method of machine learning and optimal control that has, as main objective, finding an approximately optimal policy for MDPs where transition probabilities and rewards are unknown. So Reinforcement learning can solve Markov-Decision processes without explicit specification of the transition probabilities.(Note that transition probabilities are needed to perform policy iteration)  
+
+MDP is a sequential decision process with states, actions, state transition probability, reward function and discount.  
+
+Q-learning is a reinforcement learning algorithm that trains an agent to assign values to its possible actions based on its current state. Q-learning solves an MDP without knowing/learning a model of $P$ and $R$. It interacts with the environment, uses sampled rewards $r$, and learns an action-value function $Q(s,a)$ stored in a Q-table. The table holds estimated action values (expected discounted returns) and these values are learned during training.
+
+In short, MDP is the mathematical framework; RL learns to solve MDPs from data; Q-learning is a specific model-free RL algorithm that learns optimal action-value function $Q^{*}$ directly from sampled transitions.
+
+## Model-Free Algorithm
+In reinforcement learning (RL), a model-free algorithm is an algorithm which does not estimate the transition probability distribution (and the reward function) associated with the Markov decision process (MDP). In RL, MDP represents the problem to be solved. The transition probability distribution and the reward function are often collectively called the "model" of the environment (or MDP), hence the name "model-free". A model-free RL algorithm can be thought of as an "explicit" trial-and-error algorithm. Q-learning is an example of model-free algorithm.
+
+## Q-Learning
+![alt text](images/blog28_q_learning.png)
+A Q-learning table mapping states to actions, initially filled with zeros and updated iteratively through training. Simply speaking q-table is a matrix of entries representing “how good is it to take action $a$ in state $s$”.
+$$
+Q^*(s,a) \;=\; r \;+\; \gamma \,\underbrace{\max_{a'} Q^*(s',a')}_{\text{max over actions } a'} \\[5pt]
+\pi(s) \;=\; \arg\max_{a} \, Q^*(s,a)
+$$
+The core of q-learning algorithm is a Bellman equation as a simple value iteration update. In other words, Q-learning is a Bellman equation satisfied by the optimal Q-table. $\pi$ is a policy which is fa unction telling us what’s the best strategy to adopt. An episode of the algorithm ends when state ${\displaystyle s'}$ is a final or terminal state.
+
+The downside of Q-learning is that when state and actions space are too big, this method has huge memory cost. So we use Deep Q-Learning.
 
 ## Deep Reinforcement Learning (deep RL)
 https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
 
 ### Deep Q-Net(DQN)
+The main idea of Deep Q-Learning is to find a Q-function to replace the Q-table to avoid downside of Q-learning.
 
 #### Target Network
 #### Why Two propagation in one loop?
