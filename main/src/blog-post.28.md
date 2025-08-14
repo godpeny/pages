@@ -869,7 +869,41 @@ The downside of Q-learning is that when state and actions space are too big, thi
 https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
 
 ### Deep Q-Net(DQN)
-The main idea of Deep Q-Learning is to find a Q-function to replace the Q-table to avoid downside of Q-learning.
+![alt text](images/blog28_deep_q_learning.png)
+
+The main idea of Deep Q-Learning is to find a Q-function to replace the Q-table to avoid downside of Q-learning. The Q-function is neural network that works as a function approximator which approximates the Q-values.  
+So input of the Q-function is a state and output is the distribution of scores for all the actions. We have to select the maximum score action from the output.
+
+#### Training Q-Function
+In order to train this network, we need to compute the loss and back-propagate. But unlike the classic supervised learning, there are no labels. Note that since q-scores(output of the network) doesn't have to be in range $0 \sim 1$, it is regression problem.
+
+We can use L-2 loss function to Q-function.
+$$
+L \;=\; \bigl( y \;-\; Q(s,a) \bigr)^2
+$$
+Note that optimal q($Q^*$) should follow bellman's equation shown below.
+$$
+Q^*(s,a) \;=\; r \;+\; \gamma \max_{a'} Q^*(s',a')
+$$
+The question is what is $y$? $y$ should be the optimal Q and optimal Q follows Bellman's equation. For example, think of case when $Q(s,\leftarrow) \;>\; Q(s,\rightarrow)$.
+$$
+y \;=\; r_{\leftarrow} \;+\; \gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big) 
+$$
+- $r_{\leftarrow}$: The immediate reward for taking action "going left" in current state $s$.
+- $\gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$: The discounted maximum future reward when you are in state $s^{\text{next}}_{\leftarrow}$.   
+
+In this case, after initializing network randomly, forward propagate current state in the network and the q-score for left is better than q-score for the right.
+
+$y$ is a proxy to a good label. It is the best guess of what would be the best Q-function we have is label. Therefore the label is moving, not static. We hope if we use this proxy as a label, we learn the difference between where we are now and the proxy. Then compute the loss between the label and the Q-function we have right now. Backpropagate and the Q-function is closer to the label (best guess); then we can update the proxy using the better Q-function and get closer to optimality. Train again, update the proxy, get closer to optimality, and so on. Doing iteratively until converges, than it will be very close to Bellman's equation. 
+
+Now we have $y$. Note that since q-function is neural network it has parameter $W$ to train. We hav eto put $y$ and q-function to loss function and backward propagate as below.
+$$
+L = \bigl( y - Q(s,\leftarrow))^2 = \bigl((r_{\leftarrow} \;+\; \gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big))  - Q(s,\leftarrow))^2, \\
+W \leftarrow W -\alpha \,\frac{\partial L}{\partial W} 
+$$
+But the problem is that from the derivative of the loss function w.r.t $W$, both $y$ and q-function terms in the loss function will have non-zero value because they both have $W$ in $Q$.  
+So in order to handle this, we consider $Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$ in the $y$ is fixed for many iteration until q-function is close to $y$. When the gradient will be small, then update the $y$ and fix again and so on. So there are technically two networks in parallel. One that is fixed and one that is not fixed.
+
 
 #### Target Network
 #### Why Two propagation in one loop?
