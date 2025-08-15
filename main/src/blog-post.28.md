@@ -6,11 +6,17 @@ The environment is typically stated in the form of a Markov Decision Process (MD
 
 ## Preliminaries
 
+### Episodes
+Note that episode a sequence of interactions between an agent and its environment, starting from an initial state and ending at a terminal state.
+
+### Catastrophic Forgetting
+Note that Catastrophic interference, lso known as catastrophic forgetting, is the tendency of an artificial neural network to abruptly and drastically forget previously learned information upon learning new information
+
 ## Finite-State Machine (FSM)
 FSM is a mathematical model of computation. It is an abstract machine that can be in exactly one of a finite number of states at any given time. The FSM can change from one state to another in response to some inputs; the change from one state to another is called a transition.  
 An FSM is defined by a list of its states, its initial state, and the inputs that trigger each transition. A state is a description of the status of a system that is waiting to execute a transition. A transition is a set of actions to be executed when a condition is fulfilled or when an event is received. 
 
-## Bellman Equation
+### Bellman Equation
 The Bellman Equation is a recursive formula used in decision-making and reinforcement learning. It shows how the value of being in a certain state depends on the rewards received and the value of future states.   
 The Bellman Equation breaks down a complex problem into smaller steps, making it easier to solve. The equation helps find the best way to make decisions when outcomes depend on a series of actions.
 $$
@@ -23,7 +29,7 @@ $$
  - $\max_{a}$: The optimal action that maximizes the expected value of future rewards.
 
 
-### Bellman Equation vs Dynamic Programming
+#### Bellman Equation vs Dynamic Programming
  - Dynamic Programming: A method to solve optimization problems using subproblem decomposition and memoization.
  - Bellman Equation: A recursive equation that expresses the value of a state based on the values of successor states.
 
@@ -872,7 +878,7 @@ https://huggingface.co/learn/deep-rl-course/en/unit0/introduction
 ![alt text](images/blog28_deep_q_learning.png)
 
 The main idea of Deep Q-Learning is to find a Q-function to replace the Q-table to avoid downside of Q-learning. The Q-function is neural network that works as a function approximator which approximates the Q-values.  
-So input of the Q-function is a state and output is the distribution of scores for all the actions. We have to select the maximum score action from the output.
+So input of the Q-function is a state and output is the distribution of scores for all the actions. Simply speaking, Q-function predicts Q-value. We have to select the maximum score action from the output.
 
 #### Training Q-Function
 In order to train this network, we need to compute the loss and back-propagate. But unlike the classic supervised learning, there are no labels. Note that since q-scores(output of the network) doesn't have to be in range $0 \sim 1$, it is regression problem.
@@ -892,7 +898,7 @@ $$
 - $r_{\leftarrow}$: The immediate reward for taking action "going left" in current state $s$.
 - $\gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$: The discounted maximum future reward when you are in state $s^{\text{next}}_{\leftarrow}$.   
 
-In this case, after initializing network randomly, forward propagate current state in the network and the q-score for left is better than q-score for the right.
+In this case, after initializing network randomly, forward propagate current state($s$) in the network and the q-score for left is better than q-score for the right. Then takes the next state($s^{\text{next}}_{\leftarrow}$) and predicts the best Q-value out of all actions that can be taken from that state($s^{\text{next}}_{\leftarrow}$).
 
 $y$ is a proxy to a good label. It is the best guess of what would be the best Q-function we have is label. Therefore the label is moving, not static. We hope if we use this proxy as a label, we learn the difference between where we are now and the proxy. Then compute the loss between the label and the Q-function we have right now. Backpropagate and the Q-function is closer to the label (best guess); then we can update the proxy using the better Q-function and get closer to optimality. Train again, update the proxy, get closer to optimality, and so on. Doing iteratively until converges, than it will be very close to Bellman's equation. 
 
@@ -902,15 +908,81 @@ L = \bigl( y - Q(s,\leftarrow))^2 = \bigl((r_{\leftarrow} \;+\; \gamma \max_{a'}
 W \leftarrow W -\alpha \,\frac{\partial L}{\partial W} 
 $$
 But the problem is that from the derivative of the loss function w.r.t $W$, both $y$ and q-function terms in the loss function will have non-zero value because they both have $W$ in $Q$.  
-So in order to handle this, we consider $Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$ in the $y$ is fixed for many iteration until q-function is close to $y$. When the gradient will be small, then update the $y$ and fix again and so on. So there are technically two networks in parallel. One that is fixed and one that is not fixed.
+So in order to handle this, we consider $Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$ in the $y$ is fixed for many iteration until q-function is close to $y$. When the gradient will be small, then update the $y$ and fix again and so on. So there are technically two networks in parallel. One that is fixed and one that is not fixed. Let's see below architecture of Deep Q Learning training flow to see details.
 
+![alt text](images/blog28_training_deep_q_learning.png)
+From above picture, since "Experience Replay" will be explained in later secion, let's just see how forward propagation and backward propagation works.  
 
-#### Target Network
-#### Why Two propagation in one loop?
-https://medium.com/data-science/reinforcement-learning-explained-visually-part-5-deep-q-networks-step-by-step-5a5317197f4b
+As you can see the DQN architecture has two neural nets, the Q network and the Target networks, which is identical to the Q network. So the Q network takes the current state and action from each data sample and predicts the Q value for that particular action. This is the ‘Predicted Q Value’.  
+While The Target network takes the next state from each data sample and predicts the best Q value out of all actions that can be taken from that state. This is the ‘Target Q Value’. This is what " $Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$ in the $y$ is fixed" actually means, using different network.
 
+$$
+\text{Predicted Q Value: } Q(s,\leftarrow) \\[5pt]
+\text{Target Q Value: } \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big) \\[5pt]
+y = \text{(Immediate reward)} + \text{(Target Q Value)} =  r_{\leftarrow} \;+\; \gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big) \\[5pt]
+L = (y - \text{(Predicted Q Value)})^2 = \bigl( y - Q(s,\leftarrow))^2 = \bigl((r_{\leftarrow} \;+\; \gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big))  - Q(s,\leftarrow))^2
+$$
+
+##### Why use Target Network?
+As mentioned before, the derivative of the loss function w.r.t $W$, both $y$ and q-function terms in the loss function will have non-zero value because they both have $W$ in $Q$. 
+$$
+L = \bigl( y - Q(s,\leftarrow))^2 = \bigl((r_{\leftarrow} \;+\; \gamma \max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big))  - Q(s,\leftarrow))^2, \\
+W \leftarrow W -\alpha \,\frac{\partial L}{\partial W} 
+$$
+So during backward propagation to update Q Network it also changes the direction of our predicted Target Q values. So $y$ do not remain steady but can fluctuate after each update. Therefore, at every step of training, both our Q-values and the target values($y$) shift. We’re getting closer to our target, but the target is also moving. It’s like chasing a moving target! This can lead to significant oscillation in training.
+
+##### Why Two propagations in one loop?
+One forward propagation in Q network with current state $s$ to get ‘Predicted Q Value’,  $Q(s,\leftarrow)$.  
+And the other forward propagation in target q network with next state $s^{\text{next}}$ to get 'Target Q Value', $\max_{a'} Q\!\big(s^{\text{next}}_{\leftarrow}, a'\big)$
+
+##### DQN Implementation Recap so far
+- Initialize your Q-network parameters
+- Loop over episodes:
+  - Start from initial state `s`
+  - Loop over time-steps:
+    - Forward propagate `s` in the Q-network
+    - Execute action `a` (the action with the maximum `Q(s, a)` from the network)
+    - Observe reward `r` and next state `s'`
+    - Compute targets `y` by forward propagating state `s'` in the Target Q Network, then compute the loss
+    - Update parameters with gradient descent
 
 #### DQN Training Challenges
+##### Preprocessing
+To preprocess the input is an essential step since we want to reduce the complexity of our state to reduce the computation time needed for training. For example, when building an agent to play atari game "Space Invader", input was a stack of 4 frames to handle the problem of temporal limitation. It allows us to capture and exploit spatial relationships in images. Then reduce the state space to 84x84 and grayscale it. We can do this since the colors in Atari environments don’t add important information. Also crop a part of the screen in some games if it does not contain important information.
+
+To sum up,
+- Convert to grayscale.
+- Reduce dimensions (h,w)
+- History (4 frames)
+
 ##### Keep track of terminal step
+You should keep track of the terminal step during training because you have to end the loop at the end.
+
 ##### Experience Replay
+It is concept to perform actions and store the observed experience tuples in a replay memory.
+The reason for using Experience Replay is to make more efficient use of the experiences during the training. Usually,in reinforcement learning, the agent interacts with the environment, gets experiences (state, action, reward, and next state), learns from them (updates the neural network), and discards them. 
+The experience replay helps by using the experiences of the training more efficiently. It is a replay buffer that saves experience samples that we can reuse during the training. This prevents the network from only learning about what it has done immediately before. Experience replay also has other benefits. By randomly sampling the experiences, we remove correlation in the observation sequences and avoid action values from oscillating or diverging catastrophically.
+
 ##### Epsilon Greedy action choice (Exploration / Exploitation trade off)
+Epsilon-Greedy is a simple method to balance exploration and exploitation by choosing between exploration and exploitation randomly. Check "Epsilon-Greedy Algorithm in RL(MDP)" Section.
+
+##### DQN Implementation Re-Recap with Preprocessing and Training Challenges
+Re-Recap with (1)Preprocessing, (2)Detect terminal state, (3)Experience replay and (4)Epsilon greedy action applied.
+
+- Initialize your Q-network parameters
+- Initialize replay memory **D**
+- Loop over episodes:
+  - Start from initial state φ(s)
+  - Create a boolean to detect terminal states: `terminal = False`
+  - Loop over time-steps:
+    - With probability ε, take a **random** action `a`
+    - Otherwise:
+      - Forward propagate φ(s) in the Q-network
+      - Execute action `a = argmax_a Q(φ(s), a)`
+    - Observe reward `r` and next state `s'`
+    - Use `s'` to create **φ(s')**
+    - **Add experience** `(φ(s), a, r, φ(s'))` to replay memory **D**
+    - **Sample** a random mini-batch of transitions from **D**
+    - **Check** if `s'` is a terminal state  
+      (compute targets `y` by forward propagating φ(s') in the Q-network, then compute loss)
+    - **Update** parameters with gradient descent
