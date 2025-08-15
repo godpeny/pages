@@ -1,8 +1,25 @@
-# Word2Vec & GloVE
+# Natural Language Processing (NLP)
+## Preliminaries
+### Cosine Similarity
 
-## Word Embeddings
+## Word Representation
+### One-Hot vector
+### Word Embeddings
 
-## Word2Vec
-### Input Vector vs Output Vector
+## Named Entity Recognition
+## Transfer Learning with Word Embedding
+## Analogy Reasoning
+## Embedding Matrix
+## Learning Word Embeddings
 
-# GloVE
+###  Word2Vec
+### Skip-gram
+#### Gradient of Skip-gram
+## Negative Sampling
+### Gradient of Negative Sampling
+### C-Bow
+### GloVE
+
+## Sentiment Classification
+## Debiasing Word Embeddings
+
