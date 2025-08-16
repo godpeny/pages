@@ -207,7 +207,6 @@ The architecture of C-Bow algorithm is similar to the feed forward NNLM, but wit
 ### Skip-gram
 #### Basics
 ![alt text](images/blog3_skip_gram_1.png)  
-
 The Skip-gram architecture is similar to CBOW, but instead of predicting the current word based on the context, it tries to maximize classification of a word based on another word in the same sentence. So use each current word as an input to a log-linear classifier with continuous projection layer, and predict words within a certain range before and after the current word.  
 It is known that increasing the range improves quality of the resulting word vectors, but it also increases the computational complexity. Since the more distant words are usually less related to the current word than those close to it, we give less weight to the distant words by sampling less from those words in our training examples.
 
@@ -310,6 +309,87 @@ $f(w)$ is unigram that observed frequency of a particular word in the vocabulary
 ##### Gradient of Negative Sampling
 
 ## GloVE
-## Sentiment Classification
-## Debiasing Word Embeddings
+### Basics
+GloVe is a model for distributed word representation. The model is an unsupervised learning algorithm for obtaining vector representations of words. This is achieved by learning vectors geometric closeness in the learned vector space correlates with closeness in meaning.  
+The idea of GloVe is to construct, for each word's vectors such that the relative positions of the vectors capture part of the statistical regularities of the word. The statistical regularity is defined as the co-occurrence probabilities. <b> Words that resemble each other in meaning should also resemble each other in co-occurrence probabilities.</b>
 
+### GloVE Model
+Let the matrix of word-word co-occurrence counts be denoted by
+$X$, whose entries $X_{ij}$ indcidates the number of times
+word $j$ occurs in the context of word $i$.
+$$
+\text{minimize: } J \;=\; \sum_{i,j=1}^{V} f\!\left(X_{ij}\right)\,\Big( \mathbf{w}_i^{\top}\,\tilde{\mathbf{w}}_j \;+\; b_i \;+\; \tilde{b}_j \;-\; \log X_{ij} \Big)^{2}, \\
+\text{If } X_{ij} \neq 0
+$$
+When there are two word vectors ($w, \tilde{w}$), they are equivalent and differ only as a result of their random
+initializations;the two sets of vectors should perform equivalently. The reason for setting two word vector is that there is evidence that for certain types of neural networks,
+training multiple instances of the network and then combining the results can help reduce overfitting and noise and generally improve results. So author uses the sum $w + \tilde{w}$ as real word vectors. While 'b' is bias.  
+$f$ is weighting function to address the problem from weighting all co-occurrences equally, even those that happen rarely or never. Such rare cooccurrences are noisy and carry less information than the more frequent ones.
+$$
+f(x)=\left\{{\begin{array}{cc}\left(x/x_{\max }\right)^{\alpha }&{\text{ if }}x<x_{\max }\\1&{\text{ otherwise }}\end{array}}\right.
+$$
+
+$x_{\max },\alpha$ are hyperparameters. In the original paper, the authors found that $x_{\max }=100,\alpha =3/4$ seem to work well in practice.
+
+## Featurization view of word embedding
+![alt text](images/blog3_featurization_view_of_word_embedding.png)  
+It is very difficult to look at individual components of embedding matrix and assign a human understandable interpretation. For example,$e_{\text{I}}$ could be combination of gender, royal, age, food, case, size and all the other features.
+
+$$
+\mathbf{w}_i^{\top}\,\tilde{\mathbf{w}}_j = \left( A\,\mathbf{w}_i \right)^{\top}\!\left( A^{-\top}\,\tilde{\mathbf{w}}_j\right) = ( \mathbf{w}_i^{\top} A^{\top})(A {\mathbf{w}}_j)
+$$ 
+Above is simple proof that with an algorithm like this, you can’t guarantee that the axes used to represent the features will be well aligned with what might be easily human-interpretable axes.
+Because any invertible $A$ yields the same model score for every pair of words, the coordinate axes of the learned space are arbitrary. So you can “mix” a clean axis like “gender” with “royalty” by applying a shear $A$, and the training objective won’t notice the predictions are identical.
+To help your understanding, see below example.
+$$
+\mathbf{w}_{\text{man}}=[1,0],\qquad
+\mathbf{w}_{\text{woman}}=[-1,0],\qquad
+\mathbf{w}_{\text{king}}=[1,1],\qquad
+\mathbf{w}_{\text{queen}}=[-1,1] \\[5pt]
+
+\mathbf{w}_{\text{man}}^{\top}\tilde{\mathbf{w}}_{\text{king}}
+= [1,0]\!\cdot\![1,1]=1,\qquad
+\mathbf{w}_{\text{woman}}^{\top}\tilde{\mathbf{w}}_{\text{queen}}
+= [-1,0]\!\cdot\![-1,1]=1,\qquad
+\mathbf{w}_{\text{man}}^{\top}\tilde{\mathbf{w}}_{\text{woman}}
+= [1,0]\!\cdot\![-1,0]=-1 \\[5pt]
+$$
+If matrix $A$ is applied,
+$$
+\textbf{Inputs:}\qquad
+\mathbf{w}'_{\text{man}}=A[1,0]=[1,0],\quad
+\mathbf{w}'_{\text{woman}}=A[-1,0]=[-1,0],\quad
+\mathbf{w}'_{\text{king}}=A[1,1]=[3,1],\quad
+\mathbf{w}'_{\text{queen}}=A[-1,1]=[1,1] \\[5pt]
+
+\textbf{Outputs (using }A^{-\top}\textbf{):}\qquad
+\tilde{\mathbf{w}}'_{\text{king}}=A^{-\top}[1,1]=[1,-1],\quad
+\tilde{\mathbf{w}}'_{\text{queen}}=A^{-\top}[-1,1]=[-1,3],\quad
+\tilde{\mathbf{w}}'_{\text{woman}}=A^{-\top}[-1,0]=[-1,2] \\[5pt]
+
+\mathbf{w}'_{\text{man}}{}^{\top}\tilde{\mathbf{w}}'_{\text{king}}
+= [1,0]\!\cdot\![1,-1]=1\;(\text{same}), \\[3pt]
+\mathbf{w}'_{\text{woman}}{}^{\top}\tilde{\mathbf{w}}'_{\text{queen}}
+= [-1,0]\!\cdot\![-1,3]=1\;(\text{same}), \\[3pt]
+\mathbf{w}'_{\text{man}}{}^{\top}\tilde{\mathbf{w}}'_{\text{woman}}
+= [1,0]\!\cdot\![-1,2]=-1\;(\text{same}).
+$$
+You can see that $\mathbf{w}_{\text{king}}$ moved from $[1,1]$ to $[3,1]$ and so on. But the model scores are unchanged.
+
+## Sentiment Classification
+Sentiment analysis is the use of natural language processing to systematically identify, extract, quantify, and study affective states and subjective information.  
+One simple type of classfication model just averaging the word embedding of the context and feeding into neural network and predict the output using softmax classifier.  
+But the problem is that it ignores the words' order, and it could lower the accuracy of the prediction. Other method is using RNN so that you can take word sequence into account.
+
+## Debiasing Word Embeddings
+Word embeddings can reflect gender, ethnicity, age, sexual
+orientation, and other biases of the text used to train the
+model. Such as,
+- < Man:Computer Programmer > as < Woman:Homemaker >
+- < Father:Doctor > as < Mother:Nurse >
+
+1. Identify bias direction. The bias direction can be achieved by averaging the difference between gender related word embedding such as [($e_{\text{man}} - e_{\text{woman}}$),$e_{\text{male}} - e_{\text{female}}$)] Then direction orthogonal to bias direction will be unbiased direction.
+2. Neutralize: For every word that is not definitional(gender-neutral), project to unbiased direction to get rid of bias.
+3. Equalize pairs. Make words like 'grandmother', 'grandfather' have exactly the same distance from the words that should be gender-neutral (babysitter, doctor, … and so on).
+
+One thing to note is that the author trained classifier to figure out what words are definitional or not.
