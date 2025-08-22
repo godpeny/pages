@@ -16,7 +16,65 @@ $$
 $$
 
 ### Hierarchical Softmax
-https://leimao.github.io/article/Hierarchical-Softmax/
+The hierarchical softmax uses a binary tree representation of the output layer with the $W$ words as its leaves and, for each node, explicitly represents the relative probabilities of its child nodes. These define a random walk that assigns probabilities to words.  
+The hierarchical softmax defines $p(w_O \mid w_I) $ as follows.
+$$
+p(w_O \mid w_I) = \prod_{j=1}^{L(w)-1} \sigma \Big( \big[ [ n(w,j+1) = ch(n(w,j)) ] \big] \cdot {v'}_{n(w,j)}^{\top} v_{w_I} \Big)
+$$
+- $n(w,j)$: the $j$-th node along the path from root to word $w$.
+- $L(w)$: path length from root to $w$.
+- $ch(n)$: an arbitrary fixed child of $n$.
+- $\big[[x] \big]$ : indicator, +1 if true, -1 otherwise.
+- $v_{w_I}$: vector representation of the input word.
+- ${v'}$: vector representation of an internal node in the tree.
+- $\sigma(x) = \frac{1} {1+e^{-x}}$: sigmoid function.
+- $\sum_{k=1}^{W} p(w_k \mid w_I) = 1$: for a given input word $w_I$, the probabilities of all possible output words, fron $w_1 \sim w_W$ must add up to 1.
+
+Using above definition, you can also find that,
+$$
+n(w,1) = \text{root}, \\
+n(w, L(w)) = w, \\
+$$
+Also note that $ch(n)$ means that for each internal node $n$, you make a once-and-for-all choice. Either its left child is $ch(n)$ or its right child is $ch(n)$. So what indicaor function does is that,
+- $\sigma \!\left( [+1] \cdot {v'}_{n}^{\top} v_{w_I} \right)$: probability of left child.
+- $\sigma \!\left( [-1] \cdot {v'}_{n}^{\top} v_{w_I} \right)$: means probability of right child.
+
+Why using this? It is a "trick" that makes hierarchical softmax work with just a single sigmoid per decision instead of two by using the property of sigmoid.
+$$
+\sigma(-x) = 1 - \sigma(x)
+$$
+So it is a just trick that makes you don’t need to write two separate formulas (one using $\sigma(-x)$ instead of $1 - \sigma(x)$).
+
+Now let's see an example to clarify the understanding.
+```
+         root
+        /    \
+      n1      n2
+     /  \    /  \
+   w1   w2  w3   w4
+```
+- From root:
+  - Prob(go $n1$ = left) = $\sigma(x)$
+  - Prob(go $n2$ = right) = $\sigma(-x)$
+- From $n1$:
+  - Prob($w1$) = $\sigma(x_1)$
+  - Prob($w2$) = $\sigma(-x_1)$
+- From $n2$:
+  - Prob($w3$) = $\sigma(x_2)$
+  - Prob($w4$) =  $\sigma(-x_2)$  
+ 
+$$
+p(w_1) + p(w_2) = \sigma(x)\big(\sigma(x_1) + \sigma(-x_1)\big) = \sigma(x)\cdot 1 = \sigma(x) \\[5pt]
+p(w_3) + p(w_4) = \sigma(-x)\big(\sigma(x_2) + \sigma(-x_2)\big) = \sigma(-x)\cdot 1 = \sigma(-x) \\[5pt] 
+p(w_1) + p(w_2) + p(w_3) + p(w_4) = \sigma(x) + \sigma(-x) = 1
+$$
+Don't confuse and remember that root node is not input word. Input word is not shown on the tree because it is already given. ($p(w_O \mid w_I)$)  
+
+Now, let's assume that you are looking for the probability of $w3$, $p(w_3|w_I)$. Using the original formula, you compute as below.
+$$
+p(w_3 \mid w_I) = \prod_{j=1}^{2} \sigma \!\left( \big[ [\, n(w,j+1) = ch(n(w,j)) \,] \big] \cdot {v'}_{n(w,j)}^{\top} v_{w_I} \right)\\[5pt] 
+= \sigma\!\left(-{v'}_{\text{root}}^{\top} v_{w_I}\right) \cdot \sigma\!\left({v'}_{n_2}^{\top} v_{w_I}\right)
+$$
 
 ### Unigram
 Unigram distribution is just a probability distribution over individual words (tokens) in a vocabulary, ignoring any context.  
