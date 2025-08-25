@@ -693,3 +693,81 @@ https://research.swtch.com/gomm
 
 
 
+### Go Plugin
+Go “plugin” is a separately compiled binary (a shared object, .so) that your Go program can load at runtime to get functions/variables.
+
+- Built with: ``go build -buildmode=plugin -o myplugin.so ./path``
+- File type: a shared library (.so) containing Go code.
+- Loaded with: the plugin standard package (plugin.Open, Lookup).
+- Use-case: add/replace features without rebuilding the main binary (extensible “drivers,” user-provided logic, etc.).
+
+```go
+// plugins/greeter/greeter.go
+package main
+
+import "fmt"
+
+func Greet(name string) string { return fmt.Sprintf("hi %s", name) }
+```
+```bash
+go build -buildmode=plugin -o greeter.so ./plugins/greeter
+```
+
+```go
+// main.go
+package main
+
+import (
+	"fmt"
+	"plugin"
+)
+
+func main() {
+	p, err := plugin.Open("greeter.so")
+	if err != nil { panic(err) }
+
+	sym, err := p.Lookup("Greet")
+	if err != nil { panic(err) }
+
+	greet := sym.(func(string) string) // type assert
+	fmt.Println(greet("world"))
+}
+```
+
+#### Hashcorp Go-Plugin
+A library that lets your Go program load plugins as separate OS processes and talk to them over RPC/gRPC (usually over the plugin’s stdio). The host launches the plugin binary, performs a handshake, and then calls methods through an interface as if it were local—behind the scenes it’s RPC.
+
+Used by tools like Terraform, Vault, Nomad (historically &/or in parts) to let third-party plugins evolve independently and not crash the host.
+
+https://github.com/hashicorp/go-plugin/blob/main/docs/extensive-go-plugin-tutorial.md
+
+```go
+// Host (force gRPC)
+client := plugin.NewClient(&plugin.ClientConfig{
+  AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
+  // ... HandshakeConfig, Plugins map, Cmd: exec.Command("./my-plugin")
+})
+rpcClient, _ := client.Client() // spawns the child process and connects
+```
+
+```go
+// Plugin binary (serve over gRPC)
+plugin.Serve(&plugin.ServeConfig{
+  HandshakeConfig: hs,
+  Plugins: map[string]plugin.Plugin{
+    "thing": &MyGRPCPlugin{Impl: myImpl},
+  },
+  GRPCServer: plugin.DefaultGRPCServer, // enable gRPC transport
+})
+```
+
+#### Go Plugin vs Hashcorp Go-Plugin
+With HashiCorp go-plugin the host app spawns the plugin as a separate OS process and talks to it over RPC (net/rpc or gRPC) via stdio. Because it’s a different process:
+
+- Memory/GC isolation: separate address space; a bug in the plugin can’t scribble over the host’s memory.
+- Crash isolation: a panic/segfault/leak in the plugin only kills that process; the host stays up (you can restart the plugin).
+- Scheduling/resource isolation: you can cap the plugin’s CPU/RAM (cgroups/rlimits), and it has its own file descriptors, threads, etc.
+- Privilege isolation: you can run it as a different user, in a container/chroot, with seccomp/AppArmor, separate namespaces, etc.
+- Version/dep decoupling: host and plugin don’t have to share an in-process ABI like the stdlib plugin package does; they just need a compatible RPC protocol.
+
+Contrast with the Go stdlib plugin: that loads a ``.so`` in-process. It’s fast, but no isolation—one panic can take down the host, and plugins must be built with the exact same Go/toolchain settings.
