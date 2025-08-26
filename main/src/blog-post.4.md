@@ -79,9 +79,40 @@ $$
 $$
 
 ## Sequence to Sequence Model
+The Sequence-to-Sequence (Seq2Seq) model is a type of neural network architecture widely used in machine learning particularly in tasks that involve translating one sequence of data into another. It takes an input sequence, processes it and generates an output sequence. The Seq2Seq model has made significant contributions to areas such as natural language processing (NLP), machine translation and speech recognition.
+![alt text](images/blog4_seq2seq.png)  
+
+It uses RNN Encoder-Decoer architecture for general sequence learning which is mapping the input sequence to a fixed-sized vector using one RNN, and then to map the vector to the target sequence with another RNN. While it would be difficult to train the RNNs due to the resulting long term dependencies, the LSTM’s ability to successfully learn on data with long range temporal dependencies makes it a natural choice for this application due to the considerable time lag between the inputs and their corresponding outputs.  
+
+Note that The goal of the LSTM is to estimate the conditional probability $p(y_1, \cdots, y_{T′} |x_1, \cdots , x_T)$ where $(x_1, \cdots , x_T )$ is an input sequence and $y_1, \cdots, y_{T′}$ is its corresponding output sequence whose length $T′$ may differ from $T$.The LSTM computes this conditional probability by first obtaining the fixed dimensional representation $v$ of the input sequence $(x_1, \cdots , x_T )$ given by the last hidden state of the LSTM, and then computing the probability of $y_1, \cdots, y_{T′}$ with a standard LSTM-LM(Language Model) formulation whose initial hidden state is set to the representation $v$ of $x_1, \cdots , x_T$: 
+$$
+p(y_1, \ldots, y_{T'} \mid x_1, \ldots, x_T) 
+= \prod_{t=1}^{T'} p(y_t \mid v, y_1, \ldots, y_{t-1})
+$$
+In this equation, each $p(y_t \mid \mathbf{v}, y_1, \ldots, y_{t-1})$ distribution is represented with a softmax over all the words in the vocabulary.
+
+<b> Objective Function </b>  
+$$
+\frac{1}{|\mathcal{S}|} \sum_{(T,S)\in \mathcal{S}} \log p(T \mid S)
+$$
+Note that objective function is same as that of RNN encoder-decoder (So it is same as that of RNN), where log probability of a correct translation $T$ given the source sentence $S$, while $\mathcal{S}$ is the trianing set.  
+Once training is complete, produce translations by finding the most likely translation according to the LSTM,
+$$
+\hat{T} = \arg\max_T \, p(T \mid S)
+$$
+
+<b> Details of Seq2Seq Model </b>
+1. Using Beam search: the translation using a simple left-to-right beam search decoder which
+maintains a small number $B$ of partial hypotheses, where a partial hypothesis is a prefix of some translation.
+2. Deep LSTMs: since found that deep LSTMs significantly outperformed shallow LSTMs, so we chose an LSTMwith four layers. 
+3. Reverse order of input sequence: by reversing the words in the source sentence, the first few words in the source language are now very close to the first few words in the target language. So the backpropagation has an easier time “establishing communication” between
+the source sentence and the target sentence, which in turn results in substantially improved overall performance. For example, mapping the sentence $a, b, c$ to the sentence $\alpha, \beta, \gamma$, the LSTM is asked to map  $c,b,a$ to  $\alpha, \beta, \gamma$
+where $\alpha, \beta, \gamma$ is the translation of $a, b, c$. This way, $a$ is in close proximity to $\alpha$, $b$ is fairly close to $\beta$ and so on.
+
 ### Picking the most likely sentence
 ### Why not Greedy search?
 ## Beam Search
 ## Bleu Score
 
+## Image Captioning
 ## Attention
