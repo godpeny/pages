@@ -110,7 +110,28 @@ the source sentence and the target sentence, which in turn results in substantia
 where $\alpha, \beta, \gamma$ is the translation of $a, b, c$. This way, $a$ is in close proximity to $\alpha$, $b$ is fairly close to $\beta$ and so on.
 
 ### Picking the most likely sentence
+Note that you're not trying to sample at random from the distribution $p$, instead, you want to find output sentence $y$ that maximizes the conditional probability $p$.
+$$
+\argmax_{y^{\langle 1 \rangle}, \ldots, y^{\langle T_y \rangle}} 
+P\!\big(y^{\langle 1 \rangle}, \ldots, y^{\langle T_y \rangle} \mid x \big)
+$$
+Where $y^{\langle 1 \rangle}, \ldots, y^{\langle T_y \rangle} $ is output sentence sequence and $x$ is input sentence. For example, given the input French sentence, the model tells you what is the probability of different corresponding English translations.
+```
+Jane visite l’Afrique en septembre. (input sentence: French)
+
+(output sentence: English)
+→ Jane is visiting Africa in September.
+→ Jane is going to be visiting Africa in September.
+→ In September, Jane will visit Africa.
+→ Her African friend welcomed Jane in September.
+```
 ### Why not Greedy search?
+Since you want to pick sequence of words that maximizes the joint probability. It turns out that picking up the best first word, best second word and so on; that approach doesn’t really work. It is not optimal to pick one best word at a time. 
+ 
+Also the total number of combination of words in output sequence is exponentially large. For example, when you have $10,000$ vocabularies and try to make $10$ words long sentence, $P\!\big(y^{\langle 1 \rangle}, \ldots, y^{\langle 10 \rangle} \mid x \big)$ is $10,000^{10}$.  
+
+Since the number is too large, the common approach is to use approximate search algorithm, which will try to pick the sentence that maximizes the conditional probability, such as Beam Search.
+
 ## Beam Search
 ## Bleu Score
 
