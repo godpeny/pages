@@ -133,7 +133,78 @@ Also the total number of combination of words in output sequence is exponentiall
 Since the number is too large, the common approach is to use approximate search algorithm, which will try to pick the sentence that maximizes the conditional probability, such as Beam Search.
 
 ## Beam Search
+Beam search is a heuristic search algorithm that explores a graph by expanding the most promising node in a limited set. Beam search is a modification of best-first search that reduces its memory requirements. It is a greedy algorithm since only a predetermined number($B$) of best partial solutions are kept as candidates. For example, in sequence to sequence model, decoder outputs the softmax output over all possibilities and keep the top $B$ picks in the memory in the initial step. In the second step, for each of $B$ choices, consider what should be the second word using the probability of first and second word.
+$$
+P(y^{\langle 1 \rangle}, y^{\langle 2 \rangle} \mid x) 
+= P(y^{\langle 1 \rangle} \mid x) \; P(y^{\langle 2 \rangle} \mid x, y^{\langle 1 \rangle})
+$$
+Suppose $B=3$ and the number of vocabulary is $10,000$, then evaluate all $3 \times 10,000$ options according to the probability of first and second word, and pick top $B$.  
+To generalize, at every step, instantiate $B$ copies of the network to evaluate the partial sentence fragments.
+
+Unlike exact search algorithms like BFS (Breadth First Search) or DFS (Depth First Search), Beam Search runs faster but is not guaranteed to find exact maximum for $\arg\max_{y} p(y|x)$. If use larger $B$, better result, but slower. While use smaller $B$, worse result but faster.
+
+### Refinement of Beam Search
+<b> Original </b>
+$$
+\arg\max_{y} \prod_{t=1}^{T_y} P\!\big(y^{\langle t \rangle} \mid x, y^{\langle 1 \rangle}, \ldots, y^{\langle t-1 \rangle}\big)
+$$
+<b> Log Sum </b>  
+Because multiplying tiny numbers result in numeric underflow, use sum of log.
+$$
+\arg\max_{y} \sum_{t=1}^{T_y} \log P\!\big(y^{\langle t \rangle} \mid x, y^{\langle 1 \rangle}, \ldots, y^{\langle t-1 \rangle}\big)
+$$
+<b> Log Sum + Normlization </b>  
+Beam search might tend to prefer very short translations (outputs) because the probability for short sentence is determined by the fewer numbers which are less than $1$.
+$$
+\arg\max_{y} \frac{1}{T_y^{\alpha}} \sum_{t=1}^{T_y} \log P\!\big(y^{\langle t \rangle} \mid x, y^{\langle 1 \rangle}, \ldots, y^{\langle t-1 \rangle}\big)
+$$
+So normalize it with the number of the words then the product or sum of log will just be not as small. Note that $\alpha$ for softer normlization. When $\alpha=1$, complete normliazation, while $\alpha=0$ zero normlaization. By setting $0 < \alpha < 1$, setting normalization level somewhere between.
+ 
 ## Bleu Score
+BLEU (bilingual evaluation understudy) is an algorithm for evaluating the quality of text which has been machine-translated from one natural language to another. Quality is considered to be the correspondence between a machine's output and that of a human.  
+The central idea behind BLEU is that <b>"the closer a machine translation is to a professional human translation, the better it is"</b>.  
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Candidate} & \text{the} & \text{the} & \text{the} & \text{the} & \text{the} & \text{the} & \text{the} \\
+\hline
+\textbf{Reference 1} & \text{the} & \text{cat} & \text{is} & \text{on} & \text{the} & \text{mat} & \\
+\hline
+\textbf{Reference 2} & \text{there} & \text{is} & \text{a} & \text{cat} & \text{on} & \text{the} & \text{mat} \\
+\hline
+\end{array}
+$$
+Let's see an above example to understand the algorithm of Bleu Score.
+Of the seven words in the candidate translation, all of them appear in the reference translations. Thus the candidate text is given a unigram precision of,
+${\displaystyle P={\frac {m}{w_{t}}}={\frac {7}{7}}=1}$, 
+where $m$ is number of words from the candidate that are found in the reference, and $~w_{t}$ is the total number of words in the candidate. This is a perfect score, despite the fact that the candidate translation above retains little of the content of either of the references.
+
+The modification that BLEU makes is fairly straightforward. For each word in the candidate translation, the algorithm takes its maximum total count in the single reference sentence, $~m_{max}$, in any of the reference translations. In the example above, the word "the" appears twice in reference 1, and once in reference 2. Thus $~m_{max}=2$.
+
+For the candidate translation, the count $m_{w}$ of each word is clipped to a maximum of $m_{max}$ for that word. In this case, "the" has $~m_{w}=7$ and $~m_{max}=2$ thus $ ~m_{w}=2$. These clipped counts $~m_{w}$ are then summed over all distinct words in the candidate. This sum is then divided by the total number of unigrams in the candidate translation. In the above example, the modified unigram precision score would be $P={\frac {2}{7}}$.  
+You can apply same logic to $n$-gram using the $n$ sets of words appearing next to each other.  
+You can generalize as below.
+$$
+P_1 = \frac{\sum_{\text{unigrams} \in \hat{y}} \text{Count}_{\text{clip}}(\text{unigram})}
+           {\sum_{\text{unigrams} \in \hat{y}} \text{Count}(\text{unigram})}\\[5pt]
+P_n = \frac{\sum_{\text{n-grams} \in \hat{y}} \text{Count}_{\text{clip}}(\text{n-gram})}
+           {\sum_{\text{n-grams} \in \hat{y}} \text{Count}(\text{n-gram})}
+$$
+Where $~m_{max}$ is count clip and $m$ is count is $w_t$.
+
+The final version of Bleu score is below.
+$$
+BP \cdot \exp\!\left( \frac{1}{k} \sum_{n=1}^{k} P_n \right)
+$$
+Wher $P_n$ is  Bleu score on $n$-grams only and BP is,
+$$
+BP =
+\begin{cases}
+1 & \text{if } \text{model\_output\_length} > \text{reference\_output\_length} \\
+\exp\!\left( 1 - \frac{\text{model\_output\_length}}{\text{reference\_output\_length}} \right) & \text{otherwise}
+\end{cases}
+$$
+The Blue score unduly gives a high score for candidate strings that are containing all the $n$-grams of reference strings, but for as few times as possible. Simply speaking, short output translation is likely to get good precision. So brevity penalty is applied to punish candidate strings that are too short.
 
 ## Image Captioning
 ## Attention
