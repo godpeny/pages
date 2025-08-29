@@ -207,4 +207,8 @@ $$
 The Blue score unduly gives a high score for candidate strings that are containing all the $n$-grams of reference strings, but for as few times as possible. Simply speaking, short output translation is likely to get good precision. So brevity penalty is applied to punish candidate strings that are too short.
 
 ## Image Captioning
+
 ## Attention
+### Background
+### Basics
+### Model Architecture
