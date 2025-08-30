@@ -320,4 +320,7 @@ t_i = \Big[ \max \{ \tilde{t}_{i,2j-1}, \tilde{t}_{i,2j} \} \Big]_{j=1,\ldots,l}
 $$
 Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
 
+## Speach Recognition
+## Trigger word detection
+
 ## Image Captioning
