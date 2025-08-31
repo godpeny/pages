@@ -321,6 +321,17 @@ $$
 Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
 
 ## Speach Recognition
+Instead of using phonemes(basic unit of sound = 음소), just directly mapping {input: audio clip} - {output: transcript} and use deep learning algorithm.
+
+### Connectionist Temporal Classification (CTC)
+CTC is an algorithm employed for training deep neural networks in tasks like speech recognition and handwriting recognition, as well as other sequential problems where there is no explicit information about alignment between the input and output. Simply speaking, in speech reocgnition, the number of input timestep can be much bigger than the number of output timestep.  
+<b>The basic rule is to collapse repeated characters not separated by “blank”.</b> So if the neural network is generating output same duration as input, CTC cost allows the network to insert blanks and repeated characters to represent small dimension output.
+
 ## Trigger word detection
+<img src="images/blog4_trigger_word_detection.png" alt="Model architecture" width="400"/>  
+
+Using RNN, take the audio clip and make spectogram like above picture and generate audio clip feature $(x_1, x_2, \cdots, x_t)$ and pass through RNN. Next is to define the target label $y$. When there is certain trigger word point in the spectogram, you set the target label in the training set to be zeros for every points before that triggered point. Then set the target label of one right after that triggered point. If there is trigger word point later on, you do the same thing as well.  
+
+One disadvantage is that there is imbalance on training set, so we have a lot more zeros than ones. One hack solution to this problem is that, instead of making single one at the triggered point, make multiple ones for fixed period of time before reverting back to zero. This will slightly even out the ratio of ones to zeros.
 
 ## Image Captioning
