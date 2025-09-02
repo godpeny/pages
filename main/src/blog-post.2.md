@@ -118,3 +118,9 @@ $$
 
 https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
+
+## Entropy vs Cross-Entropy vs Cross-Entropy Loss
+
+## Information Gain
+### Information Gain Ratio
+### Relative Information Gain
