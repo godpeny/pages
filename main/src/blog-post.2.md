@@ -120,6 +120,30 @@ https://hyunw.kim/blog/2017/10/27/KL_divergence.html
 https://en.wikipedia.org/wiki/Cross-entropy
 
 ## Entropy vs Cross-Entropy vs Cross-Entropy Loss
+<b> Entropy </b>
+Entropy is a measure of uncertainty or information content in a probability distribution.
+(The uncertainty in the true distribution)
+$$
+H(p) = - \sum_{x} p(x) \log p(x)
+$$
+When random variable $X$ follows distribution $p(x)$.
+
+<b> Cross-Entropy </b>
+Cross-entropy measures how well one probability distribution $q(x)$ approximates another distribution $p(x)$.
+(mismatch between true distribution $p$ and predicted distribution $q$)
+$$
+H(p, q) = - \sum_{x} p(x) \log q(x)
+$$
+When $p(x)$ is the true distribution (e.g., actual labels in classification). $q(x)$ is the estimated distribution (e.g., model’s predicted probabilities).
+
+<b> Cross-Entropy Loss </b>
+In machine learning, we use cross-entropy as a loss function for classification.
+(the practical implementation of cross-entropy in ML, usually with one-hot)
+$$
+L = - \sum_{c=1}^{C} y_{i,c} \log q_{i,c} \\[5pt]
+L = - \log q_{i,\text{true}}
+$$
+The second one is reduced form (when $y_{i,c}=1$ only for the true class).
 
 ## Information Gain
 ### Information Gain Ratio
