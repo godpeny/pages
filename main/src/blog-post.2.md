@@ -8,13 +8,10 @@ Entropy allows quantification of measure of information in a single random varia
 Another useful concept is mutual information defined on two random variables, 
 which describes the measure of information in common between those variables, which can be used to describe their correlation. 
 
-The choice of logarithmic base in the following formulas determines the unit of information entropy that is used.  
-A common unit of information is the bit(or shannon), based on the binary logarithm($\log_{2}$). 
-https://en.wikipedia.org/wiki/Cross-entropy
-Note that an expression of the form $p\log p$ is considered by convention to be equal to zero whenever $p = 0$.  
-This is justified because ${\displaystyle \lim _{p\rightarrow 0+}p\log p=0}$ or any logarithmic base.
+The choice of logarithmic base in the following formulas determines the unit of information entropy that is used. A common unit of information is the bit(or shannon), based on the binary logarithm($\log_{2}$). 
+Note that an expression of the form $p\log p$ is considered by convention to be equal to zero whenever $p = 0$. This is justified because ${\displaystyle \lim _{p\rightarrow 0+}p\log p=0}$ or any logarithmic base.
 
-## Information Content(Self-Information, Shannon information)
+## Information Content(= Self-Information = Shannon information)
 It is a basic quantity derived from the probability of a particular event occurring from a random variable. It can be interpreted as quantifying the level of "surprise" of a particular outcome.   
 As it is such a basic quantity, it also appears in several other settings, such as "the length of a message needed to transmit the event" given an optimal source coding of the random variable.
 
@@ -146,5 +143,46 @@ $$
 The second one is reduced form (when $y_{i,c}=1$ only for the true class).
 
 ## Information Gain
+Remind that, the KL divergence is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
+Mathematically, it is defined as
+$$
+{\displaystyle D_{\text{KL}}(P\parallel Q)=\sum _{x\in {\mathcal {X}}}P(x)\ \log \left({\frac {\ P(x)\ }{Q(x)}}\right).}
+$$
+
+In broader contexts, information gain can be used as a synonym for either Kullback–Leibler divergence or mutual information, but in the narrow meaning, information gain refers to the conditional expected value of the Kullback–Leibler divergence of the univariate probability distribution of one variable from the conditional distribution of this variable given the other one.  
+The information gain of a random variable $X$ obtained from an observation of a random variable $A$ taking value $a$ is defined as below.
+$$
+{\displaystyle {\mathit {IG}}(X,a)=D_{\text{KL}}{\bigl (}P_{X\mid a}\parallel P_{X}{\bigr )}}
+$$
+In other words, IG is the KL divergence of $\displaystyle P_{X}(x)$ (the prior distribution for $X$) from $\displaystyle P_{X\mid a}(x)$ (the posterior distribution for $X$ given $A=a$).
+
+The expected value of the information gain is the mutual information ($I(X;A)$).
+$$
+\displaystyle \operatorname {E} _{A}[{\mathit {IG}}(X,A)]=I(X;A)
+$$
+It can be interpreted as the reduction in the entropy of $X$ achieved by learning the state of the random variable $A$.
+
+<b>Information Gain </b>  
+Information gained from one observation. (specific value of $A$)  
+“How much information did I gain about $X$ from this specific answer of $A=a$?"
+
+<b> Expected Information Gain </b>  
+The average information you expect to gain by knowing $A$.  
+"On average, how informative is $A$ about $X$?"
+
+### Expected Information Gain
+The expected information gain is the reduction in information entropy Η from a prior state to a state that takes some information as given:
+$$
+\displaystyle IG(T,a)=\mathrm {H} {(T)}-\mathrm {H} {(T|a)} \\[5pt]
+$$
+Where $\mathrm {H}(T)$ is entropy as a measure of uncertainty of a random variable $T$ and
+$\displaystyle \mathrm {H} {(T|a)}$ is the conditional entropy of $T$ given the value of attribute $a$.  
+By learning (or assuming) $a$ about $T$, our uncertainty about $T$ is reduced (= $IG(T,a)$ is positive), unless of course, $T$ is independent of $a$, in which case $\mathrm {H} (T|a)=\mathrm {H} (T)$ meaning $IG(T,a)=0$.
+
+### Usage of Information Gain
+IG is used in decision trees to quantify the effectiveness of a feature in splitting the dataset into classes. <b>It calculates the reduction in entropy (uncertainty) of the target variable (class labels) when a particular feature is known.</b>  
+In simpler terms, Information Gain helps us understand how much a particular feature contributes to making accurate predictions in a decision tree. <b>Features with higher Information Gain are considered more informative and are preferred for splitting the dataset, as they lead to nodes with more homogenous classes.</b>
+
+
 ### Information Gain Ratio
 ### Relative Information Gain
