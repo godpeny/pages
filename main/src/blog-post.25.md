@@ -25,7 +25,7 @@ Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a co
 https://en.wikipedia.org/wiki/Log_sum_inequality
 
 #### Kullback–Leibler Divergence (KL-Divergence)
-The Kullback–Leibler (KL) is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
+The Kullback–Leibler (KL) divergence is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
 Mathematically, it is defined as
 $$
 {\displaystyle D_{\text{KL}}(P\parallel Q)=\sum _{x\in {\mathcal {X}}}P(x)\ \log \left({\frac {\ P(x)\ }{Q(x)}}\right).}
