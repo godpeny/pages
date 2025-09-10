@@ -232,6 +232,22 @@ embedding_layer = keras.layers.Embedding(
        trainable=False)
 ```
 
+### Markov Chain
+A Markov chain is a way to describe a system that moves between different situations called "states", where the chain assumes the probability of being in a particular state at the next step depends solely on the current state.  
+
+For example, let'x consider two-state Markov chain below.
+<img src="images/blog0_markov_chain.png" alt="Markov Chain" width="200"/>   
+
+If in state A:
+- Stays in A: probability 0.6
+- Moves to E: probability 0.4  
+
+If in state E:
+- Moves to A: probability 0.7
+- Stays in E: probability 0.3
+
+Also note that a Markov chain can be illustrated as a directed graph, where nodes represent the states (A, E), arrows indicate possible transitions and the numbers on arrows show transition probabilities.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
