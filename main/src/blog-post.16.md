@@ -116,7 +116,11 @@ t_i = \Big[ \max \{ \tilde{t}_{i,2j-1}, \tilde{t}_{i,2j} \} \Big]_{j=1,\ldots,l}
 $$
 Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
 
-## Self-Attention
+## Self-Attention (Intra-attention)
+Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.
+
+### Memory Network
+
 ## Multi-Head Attention
 ## Positional Encoding
 ## Transformer Network
