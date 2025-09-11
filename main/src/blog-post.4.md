@@ -286,7 +286,7 @@ Next, the context vector $c_i$ depends on a sequence of annotations $(h_1, \cdot
 
 $\alpha$ is a weight. So $\alpha_{ij}$ be a probability that the target word $y_i$ is aligned to, or translated from, a source word $x_j$. Then, the $i$-th context vector $c_i$ is the expected annotation over all the annotations with probabilities $\alpha_{ij}$.
 
-$e_{ij}$ is an alignment model which scores how well the inputs around position $j$ and the output at position $i$ match. The score is based on the RNN hidden state $s_{i-1}$ (just before emitting $y_i$) and the $j$-th annotation $h_j$.
+$e_{ij}$ is an alignment model which scores how well the inputs around position $j$ and the output at position $i$ match. The score is based on the RNN hidden state $s_{i-1}$ (just before emitting $y_i$) and the $j$-th annotation $h_j$. It provides an intuitive way to inspect the (soft-)alignment between the words in a generated translation and those in a source sentence.
 
 So, The probability $\alpha_{ij}$, or its associated energy $e_{ij}$, reflects the importance of the annotation $h_j$ with respect to the previous hidden state $s_{i-1}$ in deciding the next state $s_i$ and generating $y_i$. Intuitively, this implements a mechanism of attention in the decoder. The decoder decides parts of the source sentence to pay attention to. By letting the decoder have an attention mechanism, we relieve the
 encoder from the burden of having to encode all information in the source sentence into a fixed length vector.

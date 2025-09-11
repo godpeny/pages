@@ -62,7 +62,7 @@ h_i =
 \end{bmatrix}
 $$
 
-#### Decoder (+ Allignment Model)
+#### Decoder (+ Alignment Model)
 The decoder is trained to predict the next word $y_{t^{'}}$ given the context vector $c$ and all the previously predicted words $\{y_1, \cdots, y_{t^{'}-1}\}$. The difference between previous model is that the probability is conditioned on a distinct context vector $c_i$ for each target word $y_i$, instead of using a single fixed-length vector of whole input sentence.
 $$
 p(y_i \mid y_1, \ldots, y_{i-1}, \mathbf{x}) 
@@ -82,7 +82,7 @@ Next, the context vector $c_i$ depends on a sequence of annotations $(h_1, \cdot
 
 $\alpha$ is a weight. So $\alpha_{ij}$ be a probability that the target word $y_i$ is aligned to, or translated from, a source word $x_j$. Then, the $i$-th context vector $c_i$ is the expected annotation over all the annotations with probabilities $\alpha_{ij}$.
 
-$e_{ij}$ is an alignment model which scores how well the inputs around position $j$ and the output at position $i$ match. The score is based on the RNN hidden state $s_{i-1}$ (just before emitting $y_i$) and the $j$-th annotation $h_j$.
+$e_{ij}$ is an alignment model which scores how well the inputs around position $j$ and the output at position $i$ match. The score is based on the RNN hidden state $s_{i-1}$ (just before emitting $y_i$) and the $j$-th annotation $h_j$. It provides an intuitive way to inspect the (soft-)alignment between the words in a generated translation and those in a source sentence.
 
 So, The probability $\alpha_{ij}$, or its associated energy $e_{ij}$, reflects the importance of the annotation $h_j$ with respect to the previous hidden state $s_{i-1}$ in deciding the next state $s_i$ and generating $y_i$. Intuitively, this implements a mechanism of attention in the decoder. The decoder decides parts of the source sentence to pay attention to. By letting the decoder have an attention mechanism, we relieve the
 encoder from the burden of having to encode all information in the source sentence into a fixed length vector.
@@ -118,6 +118,20 @@ Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times 
 
 ## Self-Attention (Intra-attention)
 Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.
+
+## Attention vs Self-Attention
+<b>Attention</b>  
+Across different sequences (e.g.,encoder–decoder). So the encoder hidden states from the source sentence is one sequence(Keys/Values) and the decoder state while generating is another sequence(Query).
+
+<b>Self-Attention</b>  
+In self-attention (e.g. Transformer encoder), queries, keys, and values all come from the same sequence.
+
+In summary, 
+- (general) Attention
+  - cross-sequence (decoder ↔ encoder).
+- Self-attention
+  - within-sequence (tokens ↔ tokens in the same sentence).
+
 
 ### Memory Network
 
