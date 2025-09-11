@@ -232,8 +232,11 @@ embedding_layer = keras.layers.Embedding(
        trainable=False)
 ```
 
-### Markov Chain
-A Markov chain is a way to describe a system that moves between different situations called "states", where the chain assumes the probability of being in a particular state at the next step depends solely on the current state.  
+### Markov Model
+Markov model is a stochastic model used to model pseudo-randomly changing systems. It is assumed that future states depend only on the current state, not on the events that occurred before it. The simplest Markov model is the Markov chain. 
+
+#### Markov Chain
+A Markov chain is a way to describe a system that moves between different situations called "states", where the chain assumes the probability of being in a particular state at the next step depends solely on the current state. 
 
 For example, let'x consider two-state Markov chain below.
 <img src="images/blog0_markov_chain.png" alt="Markov Chain" width="200"/>   
