@@ -117,7 +117,12 @@ $$
 Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
 
 ## Self-Attention (Intra-attention)
-Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.
+Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. 
+
+The Self-Attention model maintains two sets of vectors stored in a hidden state tape used to interact with the environment (e.g., computing attention), and a memory tape used to represent what is actually stored in memory. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors.  
+
+Our solution is to modify the standard LSTM structure by replacing the memory cell with a memory network.
+This design enables the LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates.which means update its states using information from the whole history, not just the last hidden state.
 
 ## Attention vs Self-Attention
 <b>Attention</b>  
