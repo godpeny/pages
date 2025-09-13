@@ -115,6 +115,24 @@ A rotation may not be enough to reach the current placement, in which case it ma
 Angular Orientation($\displaystyle {\vec {\omega }}$) is a pseudovector representation of how the angular position or orientation of an object changes with time.  
 For example, how quickly an object rotates (spins or revolves) around an axis of rotation and how fast the axis itself changes direction.
 
+### Piece-Wise Function
+In mathematics, a piecewise function (also called a hybrid function, or a function defined by cases) is a function whose domain is partitioned into several intervals ("subdomains") on which the function may be defined differently. As an example, consider the piecewise definition of the absolute value function,
+$$
+\displaystyle |x|={\begin{cases}-x,&{\text{if }}x<0\\+x,&{\text{if }}x\geq 0.\end{cases}}
+$$
+(Piece-Wise: with respect to a number of discrete intervals, sets, or pieces)
+
+See also below two examples.
+<img src="images/blog0_piece-wise_function.png" alt="Markov Chain" width="400"/>   
+The left piece-wise linear function is defined as below.
+$$
+{\displaystyle f(x)=\left\{{\begin{array}{lll}-3-x&{\text{if}}&x\leq -3\\x+3&{\text{if}}&-3\leq x\leq 0\\3-2x&{\text{if}}&0\leq x\leq 3\\0.5x-4.5&{\text{if}}&3\leq x\\\end{array}}\right.}
+$$
+The right function is defined as below.
+$$
+{\displaystyle f(x)=\min(1,x^{2})} 
+$$
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
