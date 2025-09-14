@@ -12,119 +12,65 @@ As you can see from the above spicture, unlike RNN based seq2seq models, attrans
 Also note that there are two key ideas in transformers, which are <b> Self-Attention </b> and 
 <b> Multi-Head Attention </b>.
 
-## End-to-End Memory
-
-## Architecture
-<img src="images/blog16_transformers_architecture.png" alt="Transformer Intuition" width="400"/>  
-
-## Attention(recap)
-### Model Architecture
+## Preliminary
+### Attention(recap)
 The attention model's architecture consists of a bidirectional RNN as an encoder and a decoder that emulates searching through a source sentence during decoding a translation.
 <img src="images/blog4_attention_architecture.png" alt="Model architecture" width="200"/>  
 
 Above image shows the new model trying to generate the $t$-th target
 word $y_t$ given a source sentence $(x_1, x_2, \cdots, x_T)$.
 
-#### Encoder
-An encoder is the proposed scheme, we would like the annotation  $(h_1, \cdots, h_{T_x})$
-of each word to summarize not only the preceding words, but also the following words. Hence,
-we propose to use a bidirectional RNN (BiRNN).  
-An annotation for each word $x_j$ by concatenating the forward hidden state
-$\vec{h}_j$ and the backward one $ \overleftarrow{h}_j$. 
-$$
-h_j = \begin{bmatrix} \overrightarrow{h}_j^{\top} \; ; \; \overleftarrow{h}_j^{\top} \end{bmatrix}^{\top}
-$$
-In this way, the annotation $h_j$ contains the summaries of both the preceding words and the following words.
+### Long Short Term Memory Networks (LSTMN)
+The LSTMN model is network that to modified the standard LSTM structure by replacing the memory cell with a memory network. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors. This design enables the <b>LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates</b>, which means update its states using information from the whole history, not just the last hidden state. In other words, a key idea behind the LSTMN is to <b>use attention for inducing relations between tokens</b>. 
 
-##### Deepen Explanation on Encoder
-The forward states of the bidirectional recurrent neural network (BiRNN) are computed,
+#### Detail of LSTMN
+Let $x_t$ denote the current input, $C_{t-1} = (c_1, \cdots, c_{t-1})$ denotes
+the memory tape, and $H_{t-1} = (h_1, \cdots, h_{t-1})$ is the hidden tape. At time step $t$, <b>the model computes the relation between $x_t$ and $x_1, \cdots, x_{t-1}$
+through $H_{t-1}$ with an attention layer</b> as follows.
 $$
-\overrightarrow{h}_i =
-\begin{cases}
-(1 - \overrightarrow{z}_i) \circ \overrightarrow{h}_{i-1} + \overrightarrow{z}_i \circ \overrightarrow{\tilde{h}}_i, & \text{if } i > 0 \\
-0, & \text{if } i = 0
-\end{cases}
+a_i^t = v^\top \tanh \big( W_h h_i + W_x x_t + W_{\tilde{h}} \tilde{h}_{t-1} \big), \\[5pt]
+s_i^t = \operatorname{softmax}(a_i^t), \\[5pt]
+\tilde{h}_t = \sum_{i=1}^{t-1} s_i^t \, h_i, 
+\quad 
+\tilde{c}_t = \sum_{i=1}^{t-1} s_i^t \, c_i
 $$
-Where,
+Where for the previous hidden tape and memory tape denoted by $\tilde{c}_t$ and $\tilde{h}_t$, respectively as above. And when $\sigma$ is sigmoid function, the rest is very similar to original LSTM. 
 $$
-\overrightarrow{\tilde{h}}_i = \tanh \left( \overrightarrow{W} \, \overline{E} x_i + \overrightarrow{U} \left[ \overrightarrow{r}_i \circ \overrightarrow{h}_{i-1} \right] \right) \\[5pt]
-\overrightarrow{z}_i = \sigma \left( \overrightarrow{W}_z \, \overline{E} x_i + \overrightarrow{U}_z \, \overrightarrow{h}_{i-1} \right) \\[5pt]
-\overrightarrow{r}_i = \sigma \left( \overrightarrow{W}_r \, \overline{E} x_i + \overrightarrow{U}_r \, \overrightarrow{h}_{i-1} \right)
-$$
-$\overline{E} \in \mathbb{R}^{m \times K_x}$ is the word embedding matrix and $\overrightarrow{W}, \; \overrightarrow{W}_z, \; \overrightarrow{W}_r \in \mathbb{R}^{n \times m}, \overrightarrow{U}, \; \overrightarrow{U}_z, \; \overrightarrow{U}_r \in \mathbb{R}^{n \times n}$ are weight matrices. $m,n$ are the word embedding dimensionality and the number of hidden units, respectively. $\sigma$ is a logistic sigmoid function.
-
-The backward states are computed similarly. So we concatenate the forward and backward states to to obtain the annotations $(h_1, h_2, \cdots, h_{Tx} )$, where, 
-$$
-h_i = 
-\begin{bmatrix}
-\overrightarrow{h}_i \\
-\overleftarrow{h}_i
-\end{bmatrix}
+i_t = \sigma \!\left( W_i [\tilde{h}_t, x_t] \right), \quad
+f_t = \sigma \!\left( W_f [\tilde{h}_t, x_t] \right), \quad
+o_t = \sigma \!\left( W_o [\tilde{h}_t, x_t] \right), \quad
+\hat{c}_t = \tanh \!\left( W_c [\tilde{h}_t, x_t] \right), \\[5pt]
+c_t = f_t \odot \tilde{c}_t + i_t \odot \hat{c}_t, \\[5pt]
+h_t = o_t \odot \tanh(c_t)
 $$
 
-#### Decoder (+ Alignment Model)
-The decoder is trained to predict the next word $y_{t^{'}}$ given the context vector $c$ and all the previously predicted words $\{y_1, \cdots, y_{t^{'}-1}\}$. The difference between previous model is that the probability is conditioned on a distinct context vector $c_i$ for each target word $y_i$, instead of using a single fixed-length vector of whole input sentence.
+So in summary, instead of just keeping the last cell vector $c_{t-1}$ as LSTM, the LSTMN stores a memory tape for every past token as follows,
 $$
-p(y_i \mid y_1, \ldots, y_{i-1}, \mathbf{x}) 
-= g(y_{i-1}, s_i, c_i), \\[5pt]
-s_i = f(s_{i-1}, y_{i-1}, c_i)
+C_{t-1} = (c_1, c_2, \dots, c_{t-1}), 
+\quad 
+H_{t-1} = (h_1, h_2, \dots, h_{t-1})
 $$
-The $p$ represents the conditional probability over the translation $y$ and $s_i$ is an RNN hidden state for time $i$. See the moddel architecture image for better understanding.
+And apply self-attention to compute a weighted summary.
+$$
+\tilde{h}_t, \tilde{c}_t 
+= \sum_{i=1}^{t-1} s_i^t \cdot (h_i, c_i)
+$$
+As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses $\tilde{h}_t, \tilde{c}_t$ which come from all past states.
 
-$$
-c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j, \quad
-\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T_x} \exp(e_{ik})}, \quad
-e_{ij} = a(s_{i-1}, h_j)
-$$
-(annotations $h$ is explained in previous "Encoder" part.)  
+### LSTM vs LSTMN
+- LSTM: keeps one memory vector $c_t$, updated recursively.(Markovian only depends on previous state $c_{t-1}$.)
+- LSTMN: keeps a growing memory tape (all past hidden + cell states). At each step, it uses attention to select from that memory.(Non-Markovian, because $h_t$ depends on all previous $c_{t-1}, h_{t-1}$ states, not just the last one.)
 
-Next, the context vector $c_i$ depends on a sequence of annotations $(h_1, \cdots, h_{T_x})$ to which an encoder maps the input sentence. Each annotation $h_i$ contains information about the whole input sequence with a strong focus on the parts surrounding the $i$-th word of the input sequence. So taking a weighted sum of all the annotations can be interpreted as computing an expected annotation, where the expectation is over possible alignments.
+### Memory Network
+### End-to-End Memory
 
-$\alpha$ is a weight. So $\alpha_{ij}$ be a probability that the target word $y_i$ is aligned to, or translated from, a source word $x_j$. Then, the $i$-th context vector $c_i$ is the expected annotation over all the annotations with probabilities $\alpha_{ij}$.
-
-$e_{ij}$ is an alignment model which scores how well the inputs around position $j$ and the output at position $i$ match. The score is based on the RNN hidden state $s_{i-1}$ (just before emitting $y_i$) and the $j$-th annotation $h_j$. It provides an intuitive way to inspect the (soft-)alignment between the words in a generated translation and those in a source sentence.
-
-So, The probability $\alpha_{ij}$, or its associated energy $e_{ij}$, reflects the importance of the annotation $h_j$ with respect to the previous hidden state $s_{i-1}$ in deciding the next state $s_i$ and generating $y_i$. Intuitively, this implements a mechanism of attention in the decoder. The decoder decides parts of the source sentence to pay attention to. By letting the decoder have an attention mechanism, we relieve the
-encoder from the burden of having to encode all information in the source sentence into a fixed length vector.
-
-##### Deepen Explanation on Decoder
-Let's see how the hidden state $s_i$ of the decoder described above was actually implemented.
-$$
-s_i = f(s_{i-1}, y_{i-1}, c_i) = (1 - z_i) \circ s_{i-1} + z_i \circ \tilde{s}_i,
-$$
-Where,
-$$
-\tilde{s}_i = \tanh \big( W E y_{i-1} + U \,[ r_i \circ s_{i-1}] + C c_i \big), \\[5pt]
-z_i = \sigma \big( W_z E y_{i-1} + U_z s_{i-1} + C_z c_i \big), \\[5pt]
-r_i = \sigma \big( W_r E y_{i-1} + U_r s_{i-1} + C_r c_i \big)
-$$
-Where $W, W_z, W_r \in \mathbb{R}^{n \times m}, \quad U, U_z, U_r \in \mathbb{R}^{n \times n}, C, C_z, C_r \in \mathbb{R}^{n \times 2n}$ are weights and $E$ is word embedding matrix for target language. Also $m, n$ are the word embedding dimensionality and the number of hidden units, respectively.
-
-Next, let's see how the context vector $c_i$ is actually implemented. More precisely, how the allignment model is.
-$$
-c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j, \\[5pt]
-\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T_x} \exp(e_{ik})}, \\[5pt]
-e_{ij} = a(s_{i-1}, h_j) =  v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right),
-$$
-Where $h_j$ is the $j$-th annotation in the source sentence. $v_a^{\top} \in \mathbb{R}^{n'}, W_a \in \mathbb{R}^{n' \times n}, U_a \in \mathbb{R}^{n' \times 2n}$.
-Lastly, let's see the probability of a target word $y_i$ we described before.
-$$
-p(y_i \mid s_{i-1}, y_{i-1}, c_i) \;\propto\; \exp \!\big( y_i^\top W_o t_i \big) \\[5pt] 
-\rightarrow p(y_i \mid s_{i-1}, y_{i-1}, c_i) = g(y_{i-1}, s_i, c_i) = \frac{\exp\!\big(y_i^\top W_o t_i\big)} {\sum_{k=1}^{T_y} \exp\!\big(y_k^\top W_o t_i\big)}, \\[5pt]
-t_i = \Big[ \max \{ \tilde{t}_{i,2j-1}, \tilde{t}_{i,2j} \} \Big]_{j=1,\ldots,l}^{\top}, \quad
-\tilde{t}_i = U_o s_{i-1} + V_o E y_{i-1} + C_o c_i.
-$$
-Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
+## Architecture
+<img src="images/blog16_transformers_architecture.png" alt="Transformer Intuition" width="300"/>  
 
 ## Self-Attention (Intra-attention)
-Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. 
+Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Check LSTMN for further understanding of self-attention alogirhtm, it is one of early implementation form of self-attention (based on RNN). 
 
-The Self-Attention model maintains two sets of vectors stored in a hidden state tape used to interact with the environment (e.g., computing attention), and a memory tape used to represent what is actually stored in memory. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors.  
-
-Our solution is to modify the standard LSTM structure by replacing the memory cell with a memory network.
-This design enables the LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates.which means update its states using information from the whole history, not just the last hidden state.
-
-## Attention vs Self-Attention
+### Attention vs Self-Attention
 <b>Attention</b>  
 Across different sequences (e.g.,encoder–decoder). So the encoder hidden states from the source sentence is one sequence(Keys/Values) and the decoder state while generating is another sequence(Query).
 
@@ -136,9 +82,6 @@ In summary,
   - cross-sequence (decoder ↔ encoder).
 - Self-attention
   - within-sequence (tokens ↔ tokens in the same sentence).
-
-
-### Memory Network
 
 ## Multi-Head Attention
 ## Positional Encoding
