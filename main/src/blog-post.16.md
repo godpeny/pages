@@ -13,12 +13,18 @@ Also note that there are two key ideas in transformers, which are <b> Self-Atten
 <b> Multi-Head Attention </b>.
 
 ## Preliminary
-### Attention(recap)
+### Addictive Attention and Dot Product Attention
+https://www.ibm.com/think/topics/attention-mechanism
+
+#### Addictive Attention
 The attention model's architecture consists of a bidirectional RNN as an encoder and a decoder that emulates searching through a source sentence during decoding a translation.
 <img src="images/blog4_attention_architecture.png" alt="Model architecture" width="200"/>  
 
 Above image shows the new model trying to generate the $t$-th target
 word $y_t$ given a source sentence $(x_1, x_2, \cdots, x_T)$.
+
+#### Dot Product Attention
+
 
 ### Long Short Term Memory Networks (LSTMN)
 The LSTMN model is network that to modified the standard LSTM structure by replacing the memory cell with a memory network. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors. This design enables the <b>LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates</b>, which means update its states using information from the whole history, not just the last hidden state. In other words, a key idea behind the LSTMN is to <b>use attention for inducing relations between tokens</b>. 
@@ -66,6 +72,8 @@ As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses 
 
 ## Architecture
 <img src="images/blog16_transformers_architecture.png" alt="Transformer Intuition" width="300"/>  
+
+The transformer architecture consists of stacked self-attention and point-wise, fully-connected layers for both the encoder and decoder.
 
 ## Self-Attention (Intra-attention)
 Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Check LSTMN for further understanding of self-attention alogirhtm, it is one of early implementation form of self-attention (based on RNN). 
