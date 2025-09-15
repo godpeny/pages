@@ -269,6 +269,14 @@ If in state E:
 
 Also note that a Markov chain can be illustrated as a directed graph, where nodes represent the states (A, E), arrows indicate possible transitions and the numbers on arrows show transition probabilities.
 
+### Auto-Regressive Model
+Autoregressive modeling is a machine learning technique most commonly used for time series analysis and forecasting that uses one or more values from previous time steps in a time series to create a regression.  
+The Auto-Regressive(AR) Model is defined as follws.
+$$
+{\displaystyle X_{t}=\sum _{i=1}^{p}\varphi _{i}X_{t-i}+\varepsilon _{t}}
+$$
+where $\varphi _{1},\ldots ,\varphi _{p}$ are the parameters of the model, and $\varepsilon _{t}$ is white noise.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
