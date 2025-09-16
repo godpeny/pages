@@ -67,6 +67,9 @@ $$
 $$
 It is equal to the expected information content of measurement of $X$.
 
+## Perplexity (WIP)
+Perplexity is a measure of uncertainty in the value of a sample from a discrete probability distribution. The larger the perplexity, the less likely it is that an observer can guess the value which will be drawn from the distribution.
+
 ## Cross Entropy
 The cross-entropy between two probability distributions $p$ and $q$, over the same underlying set of events, measures the average number of bits needed to identify an event drawn from the set when the coding scheme used for the set is optimized for an estimated probability distribution $q$, rather than the true distribution $p$.
 
