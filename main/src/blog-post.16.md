@@ -24,7 +24,7 @@ Above image shows the new model trying to generate the $t$-th target
 word $y_t$ given a source sentence $(x_1, x_2, \cdots, x_T)$.
 
 #### Dot Product Attention
-
+https://arxiv.org/pdf/1508.04025
 
 ### Long Short Term Memory Networks (LSTMN)
 The LSTMN model is network that to modified the standard LSTM structure by replacing the memory cell with a memory network. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors. This design enables the <b>LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates</b>, which means update its states using information from the whole history, not just the last hidden state. In other words, a key idea behind the LSTMN is to <b>use attention for inducing relations between tokens</b>. 
@@ -92,5 +92,8 @@ In summary,
   - within-sequence (tokens ↔ tokens in the same sentence).
 
 ## Multi-Head Attention
+## Weight Tying Embedding
+https://arxiv.org/pdf/1608.05859
+
 ## Positional Encoding
 ## Transformer Network
