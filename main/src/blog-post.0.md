@@ -277,6 +277,18 @@ $$
 $$
 where $\varphi _{1},\ldots ,\varphi _{p}$ are the parameters of the model, and $\varepsilon _{t}$ is white noise.
 
+### Model Collapse
+Model collapse is a phenomenon where machine learning models gradually degrade due to errors coming from uncurated(선별되지 않은) training on the outputs of another model, such as prior versions of itself.  
+
+<b> Symptoms of Model Collapse </b>
+- In early model collapse, the model begins losing information about the tails of the distribution – mostly affecting minority data. Later work highlighted that early model collapse is hard to notice, since overall performance may appear to improve, while the model loses performance on minority data.
+- In late model collapse, the model loses a significant proportion of its performance, confusing concepts and losing most of its variance.
+
+<b> Reasons for Model Collapse </b>
+- Functional approximation errors
+- Sampling errors
+- Learning errors
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
