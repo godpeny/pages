@@ -289,6 +289,16 @@ Model collapse is a phenomenon where machine learning models gradually degrade d
 - Sampling errors
 - Learning errors
 
+### Embedding Collapse
+- Complete Collapse: the representation vectors shrink to a single point in the embedding space (i.e. constant features), meaning that the model creates the same embedding for each input.
+- Dimensional Collapse: a less severe, but harder-to-detect collapse pattern where the representation vectors end up occupying a small subspace instead of the full embedding space, i.e. the collapse is along certain dimensions.
+
+Collapsed embeddings tend to occupy a small subspace of the whole embedding space. Generally speaking, this concentration of information in a few dimensions weakens the distinguishability of representations for downstream tasks. It also reduces the model’s generalization ability, as collapse creates a bottleneck preventing learning of complex patterns. This often translates to poor performance on long-tail items. Lastly, when embeddings collapse to a lower dimensional space, they tend to cluster towards a few popular items, leading to popularity bias. 
+
+### Vector Quantization
+https://en.wikipedia.org/wiki/Vector_quantization
+code book?
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
