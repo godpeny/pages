@@ -13,6 +13,49 @@ Also note that there are two key ideas in transformers, which are <b> Self-Atten
 <b> Multi-Head Attention </b>.
 
 ## Preliminary
+### Self-Attention (Intra-attention)
+Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Check LSTMN for further understanding of self-attention alogirhtm, it is one of early implementation form of self-attention (based on RNN). 
+
+In self-attention, because queries, keys, and values all originate from the same input sequence $X$, we get each (Q,K,V) matrices from embedding multiplied by the weight matrices.
+$$
+Q = K = V = X, \\[5pt]
+\text{head}_i = \text{Attention}(Q W_i^Q, \; K W_i^K, \; V W_i^V)
+= \text{Attention}(X W_i^Q, \; X W_i^K, \; X W_i^V)
+$$
+
+<img src="images/blog16_transformers_self_attention.png" alt="Transformer Intuition" width="400"/>    
+
+Above image shows that original vector embeddings for the tokens of an input sentence are multiplied by $Q$, $K$ and $V$ weight matrices to yield their respective $Q$, $K$ and $V$ vectors.
+
+#### Query, Key and Value (Q,K,V) concept of Attention
+One implementation of self-attention was from “Attention is All You Need” paper. The paper articulated its attention mechanism by using the terminology of a relational database: queries, keys and values. 
+- Query: The query vector represents the information a given token is seeking.
+- Key: The key vectors represent the information that each token contains. Alignment between query and key is used to compute attention weights.
+- Value: The value vector applies the attention-weighted information from the key vectors. 
+  - Contributions from keys that are strongly aligned with a query are weighted more heavily.
+  - Contributions from keys that are not relevant to a query will be weighted closer to zero.
+
+##### Key and Value
+<b> Before Transformers(Bahdanau, Luong attention)</b>  
+The encoder hidden states served both as keys and values. So key = value = encoder hidden state.
+
+<b> Transformers </b>
+- key: used only to compute attention scores (acts like an “index” or address).
+- value: contains the content that actually gets combined and passed forward.
+
+#### Attention vs Self-Attention
+<b>Attention</b>  
+Across different sequences (e.g.,encoder–decoder). So the encoder hidden states from the source sentence is one sequence(Keys/Values) and the decoder state while generating is another sequence(Query).
+
+<b>Self-Attention</b>  
+In self-attention (e.g. Transformer encoder), queries, keys, and values all come from the same sequence.
+
+In summary, 
+- (general) Attention
+  - cross-sequence (decoder ↔ encoder).
+- Self-attention
+  - within-sequence (tokens ↔ tokens in the same sentence).
+
 ### Addictive Attention and Dot Product Attention
 https://www.ibm.com/think/topics/attention-mechanism
 
@@ -75,49 +118,7 @@ As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses 
 
 The transformer architecture consists of stacked self-attention and point-wise, fully-connected layers for both the encoder and decoder.
 
-## Self-Attention (Intra-attention)
-Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Check LSTMN for further understanding of self-attention alogirhtm, it is one of early implementation form of self-attention (based on RNN). 
-
-In self-attention, because queries, keys, and values all originate from the same input sequence $X$, we get each (Q,K,V) matrices from embedding multiplied by the weight matrices.
-$$
-Q = K = V = X, \\[5pt]
-\text{head}_i = \text{Attention}(Q W_i^Q, \; K W_i^K, \; V W_i^V)
-= \text{Attention}(X W_i^Q, \; X W_i^K, \; X W_i^V)
-$$
-
-<img src="images/blog16_transformer_self_attention.png" alt="Transformer Intuition" width="400"/>    
-
-Above image shows that original vector embeddings for the tokens of an input sentence are multiplied by $Q$, $K$ and $V$ weight matrices to yield their respective $Q$, $K$ and $V$ vectors.
-
-### Query, Key and Value (Q,K,V)
-Another implementation of self-attention was from “Attention is All You Need” paper. The paper articulated its attention mechanism by using the terminology of a relational database: queries, keys and values. 
-- Query: The query vector represents the information a given token is seeking.
-- Key: The key vectors represent the information that each token contains. Alignment between query and key is used to compute attention weights.
-- Value: The value vector applies the attention-weighted information from the key vectors. 
-  - Contributions from keys that are strongly aligned with a query are weighted more heavily.
-  - Contributions from keys that are not relevant to a query will be weighted closer to zero.
-
-#### Key and Value
-<b> Before Transformers(Bahdanau, Luong attention)</b>
-The encoder hidden states served both as keys and values. So key = value = encoder hidden state.
-
-<b> Transformers </b>
-- key: used only to compute attention scores (acts like an “index” or address).
-- value: contains the content that actually gets combined and passed forward.
-
-### Attention vs Self-Attention
-<b>Attention</b>  
-Across different sequences (e.g.,encoder–decoder). So the encoder hidden states from the source sentence is one sequence(Keys/Values) and the decoder state while generating is another sequence(Query).
-
-<b>Self-Attention</b>  
-In self-attention (e.g. Transformer encoder), queries, keys, and values all come from the same sequence.
-
-In summary, 
-- (general) Attention
-  - cross-sequence (decoder ↔ encoder).
-- Self-attention
-  - within-sequence (tokens ↔ tokens in the same sentence).
-
+## Scale Dot Product Self Attention
 ## Multi-Head Attention
 ## Weight Tying Embedding
 https://arxiv.org/pdf/1608.05859
