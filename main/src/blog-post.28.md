@@ -10,7 +10,7 @@ The environment is typically stated in the form of a Markov Decision Process (MD
 Note that episode a sequence of interactions between an agent and its environment, starting from an initial state and ending at a terminal state.
 
 ### Catastrophic Forgetting
-Note that Catastrophic interference, lso known as catastrophic forgetting, is the tendency of an artificial neural network to abruptly and drastically forget previously learned information upon learning new information
+Note that Catastrophic interference, also known as catastrophic forgetting, is the tendency of an artificial neural network to abruptly and drastically forget previously learned information upon learning new information.
 
 ## Finite-State Machine (FSM)
 FSM is a mathematical model of computation. It is an abstract machine that can be in exactly one of a finite number of states at any given time. The FSM can change from one state to another in response to some inputs; the change from one state to another is called a transition.  
