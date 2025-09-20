@@ -60,11 +60,14 @@ In summary,
 https://www.ibm.com/think/topics/attention-mechanism
 
 #### Addictive Attention
-The attention model's architecture consists of a bidirectional RNN as an encoder and a decoder that emulates searching through a source sentence during decoding a translation.
 <img src="images/blog4_attention_architecture.png" alt="Model architecture" width="200"/>  
 
-Above image shows the new model trying to generate the $t$-th target
-word $y_t$ given a source sentence $(x_1, x_2, \cdots, x_T)$.
+Above image shows the Badhanau’s attention mechanism, which is one of addictive attention model implementing. It is trying to generate the $t$-th target word $y_t$ given a source sentence $(x_1, x_2, \cdots, x_T)$. In this context, applying $(Q,K,V)$ terminology, the decoder hidden state at each timestep of the translated sentence($s_t$) is the equivalent of a query vector(Q) and the encoder hidden state at each step in the source sentence($h_t$) is the equivalent of a key vector (and also value vector). (K,V)  
+Alignment scores are then determined by a simple feedforward neural network, the attention layer, jointly trained with the rest of the model. This attention layer comprises up to three subsets of learnable model weights: query weights for the hidden decoder states ($W_q$), key weights for hidden encoder states ($W_k$) and value weights to scale the final output ($W_v$).
+
+##### Details of Addictive Attention
+Let's see how additive attention works with the formula from Badhanau’s attention mechanism. (also why it is 'addictive' attention)  
+1.  The query vector (multiplied by $W_q$) is added to a key vector (multiplied by $W_k$). 
 
 #### Dot Product Attention
 https://arxiv.org/pdf/1508.04025

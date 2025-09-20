@@ -296,13 +296,21 @@ Let's see how the hidden state $s_i$ of the decoder described above was actually
 $$
 s_i = f(s_{i-1}, y_{i-1}, c_i) = (1 - z_i) \circ s_{i-1} + z_i \circ \tilde{s}_i,
 $$
-Where,
+Where $\circ$ is an element-wise multiplication. The proposed updated state $\tilde{s}_i $,  output of the update gates $z_i$ and output of the reset gates $r_i$ can be calculated as follows.
 $$
 \tilde{s}_i = \tanh \big( W E y_{i-1} + U \,[ r_i \circ s_{i-1}] + C c_i \big), \\[5pt]
 z_i = \sigma \big( W_z E y_{i-1} + U_z s_{i-1} + C_z c_i \big), \\[5pt]
 r_i = \sigma \big( W_r E y_{i-1} + U_r s_{i-1} + C_r c_i \big)
 $$
-Where $W, W_z, W_r \in \mathbb{R}^{n \times m}, \quad U, U_z, U_r \in \mathbb{R}^{n \times n}, C, C_z, C_r \in \mathbb{R}^{n \times 2n}$ are weights and $E$ is word embedding matrix for target language. Also $m, n$ are the word embedding dimensionality and the number of hidden units, respectively.
+- $E y$ and $y$: $y$ is a word which is represented as 1-of-K vector. $E y$ is embedding of a word $y$.
+- $z$: allows each hidden unit to maintain its previous activation.  
+- $r$: controls how much and what information from the previous state should be reset.
+- $c$: context vector. (explain later)
+- $W, W_z, W_r \in \mathbb{R}^{n \times m}$: weight matrices for word embedding $E y$.
+- $U, U_z, U_r \in \mathbb{R}^{n \times n}$: weight matrices for hidden state of decoder $s$.
+- $C, C_z, C_r \in \mathbb{R}^{n \times 2n}$: weght matrices for context vector $c$.
+- $m$: word embedding dimensionality.
+- $n$: the number of hidden units.
 
 Next, let's see how the context vector $c_i$ is actually implemented. More precisely, how the allignment model is.
 $$
