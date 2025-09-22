@@ -316,17 +316,22 @@ Next, let's see how the context vector $c_i$ is actually implemented. More preci
 $$
 c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j, \\[5pt]
 \alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T_x} \exp(e_{ik})}, \\[5pt]
-e_{ij} = a(s_{i-1}, h_j) =  v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right),
+e_{ij} = a(s_{i-1}, h_j) =  v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right)
 $$
-Where $h_j$ is the $j$-th annotation in the source sentence. $v_a^{\top} \in \mathbb{R}^{n'}, W_a \in \mathbb{R}^{n' \times n}, U_a \in \mathbb{R}^{n' \times 2n}$.
-Lastly, let's see the probability of a target word $y_i$ we described before.
+- $h$: annotation in the source sentence. In other words, hidden state of encoder. So, $h_j$ is the $j$-th annotation of the encoder.
+- $W_a \in \mathbb{R}^{n' \times n}$: weight matrix for hidden state of decoder $s$ for alignment model.
+- $U_a \in \mathbb{R}^{n' \times 2n}$: weight matrix for hidden state of encoder $h$ for alignment model.
+- $v_a^{\top} \in \mathbb{R}^{n'}$: weight matrix for $\tanh$ function of sum of $(W_a s_{i-1} + U_a h_j)$ in alignment model.
+
+Lastly, let's see the probability of a target word $y_i$ we described before. 
 $$
 p(y_i \mid s_{i-1}, y_{i-1}, c_i) \;\propto\; \exp \!\big( y_i^\top W_o t_i \big) \\[5pt] 
 \rightarrow p(y_i \mid s_{i-1}, y_{i-1}, c_i) = g(y_{i-1}, s_i, c_i) = \frac{\exp\!\big(y_i^\top W_o t_i\big)} {\sum_{k=1}^{T_y} \exp\!\big(y_k^\top W_o t_i\big)}, \\[5pt]
 t_i = \Big[ \max \{ \tilde{t}_{i,2j-1}, \tilde{t}_{i,2j} \} \Big]_{j=1,\ldots,l}^{\top}, \quad
 \tilde{t}_i = U_o s_{i-1} + V_o E y_{i-1} + C_o c_i.
 $$
-Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices. Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair.
+Where, $W_o \in \mathbb{R}^{K_y \times l}, \quad  U_o \in \mathbb{R}^{2l \times n}, \quad  V_o \in \mathbb{R}^{2l \times m}, \quad C_o \in \mathbb{R}^{2l \times 2n}$ are weight matrices.  
+Note that first double the dimension with $\tilde{t}_i \in \mathbb{R}^{2l}$, then reduce it back to $\ell$ via maxout pooling, which picks the stronger (max) activation from each pair. It is maxout pooling layer used to improves the expressive power of the network.
 
 ## Speach Recognition
 Instead of using phonemes(basic unit of sound = 음소), just directly mapping {input: audio clip} - {output: transcript} and use deep learning algorithm.

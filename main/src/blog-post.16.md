@@ -67,7 +67,24 @@ Alignment scores are then determined by a simple feedforward neural network, the
 
 ##### Details of Addictive Attention
 Let's see how additive attention works with the formula from Badhanau’s attention mechanism. (also why it is 'addictive' attention)  
-1.  The query vector (multiplied by $W_q$) is added to a key vector (multiplied by $W_k$). 
+$$
+e_{ij} = a(s_{i-1}, h_j) =  v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right), \\[5pt]
+\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{T_x} \exp(e_{ik})}, \\[5pt]
+c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j, \quad
+$$
+- $h$: the hidden state of encoder. It is key vector (also value vector).
+- $s$: the hidden state of deocder. It is query vector.
+- $W_a$: query weight ($= W_q$).
+- $U_a$: key weight ($= W_k$).
+- $v_a$: value weight ($=w_v$). 
+- $e = a$: alignment model.
+- $\alpha$: weight. So $\alpha_{ij}$ be a probability that the target word $y_i$ is aligned to, or translated from, a source word $x_j$.
+
+Above equation is how alignment model of Badhanau’s attention mechanism. 
+1. The query vector (multiplied by $W_q$) is <b>added</b> to a key vector (multiplied by $W_k$). 
+2. The resulting number is input to a $\tanh$ activation function, then the output of the function is multiplied by the value weights $W_v$.
+3. The output of $ v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right)$ yields the alignment score between the query vector and that key vector.
+4. The alignment score is then input to a softmax function, which yields an attention weight for that key vector, $h$.
 
 #### Dot Product Attention
 https://arxiv.org/pdf/1508.04025
