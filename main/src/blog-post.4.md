@@ -348,3 +348,6 @@ Using RNN, take the audio clip and make spectogram like above picture and genera
 One disadvantage is that there is imbalance on training set, so we have a lot more zeros than ones. One hack solution to this problem is that, instead of making single one at the triggered point, make multiple ones for fixed period of time before reverting back to zero. This will slightly even out the ratio of ones to zeros.
 
 ## Image Captioning
+https://arxiv.org/abs/1502.03044
+https://arxiv.org/abs/1412.2306
+https://arxiv.org/abs/1412.6632
