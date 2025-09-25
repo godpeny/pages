@@ -14,6 +14,7 @@ $$
 Where $ \|\mathbf {x} -\mathbf {x'} \|^{2}$ may be recognized as the squared Euclidean distance between the two feature vectors and $\sigma$ is a free parameter. 
 
 ## Stein’s Identity and Kernelized Stein Discrepancy
+https://arxiv.org/pdf/1608.04471
 
 ## Cold Start
 Cold start is a potential problem in automated data modelling. It concerns the issue that the system cannot draw any inferences for users or items about which it has not yet gathered sufficient information.
