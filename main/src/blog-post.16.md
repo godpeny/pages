@@ -87,7 +87,64 @@ Above equation is how alignment model of Badhanau’s attention mechanism.
 4. The alignment score is then input to a softmax function, which yields an attention weight for that key vector, $h$.
 
 #### Dot Product Attention
-https://arxiv.org/pdf/1508.04025
+<img src="images/blog16_dot_product_attention.png" alt="Model architecture" width="250"/>  
+<img src="images/blog16_dot_product_attention2.png" alt="Model architecture" width="250"/>    
+
+Dot product attention has a new alignment score function that used multiplication instead of addition. It also skips $\tanh$ function and calculate the similarity between hidden state vectors by using their dot product. The left one is global dot product attention and the right one is local dot product attention mechanism. Let's check the terminology used in the picture.
+- $\tilde{\boldsymbol{h}}_t $: attention vector that fed through the softmax layer to produce the predictive distribution. It is the final hidden state that contains all the information to predict the next word.  
+(현재 타겟 단어 예측을 위해 사용되는 '어텐션이 적용된' 새로운 히든 스테이트)
+- $\mathbf{h}_t$: the current targeting hidden state.  
+(디코더 LSTM의 현재시간 $t$ 때 상위 레이어 히든 스테이트. 이전까지의 타겟 단어 정보와 디코더의 내부 상태를 담고 있다.)
+- $\bar{\mathbf{h}}_s$: each source hidden states.
+- $\mathbf{c_t}$: the source-side context vector. (소스 문장의 정보를 요약)
+- $\mathbf{a}_t$: a variable-length alignment vector(also called weight vector), whose size equals the number of time steps on the source side. 
+
+Luong attention suggest various alignment functions, but we will lookt at just the 'dot' function.
+$$
+\mathrm{score}(\mathbf{h}_t, \bar{\mathbf{h}}_s) =
+\begin{cases}
+    \mathbf{h}_t^\top \bar{\mathbf{h}}_s \qquad \text{(dot)} \\
+    \mathbf{h}_t^\top \mathbf{W}_a \bar{\mathbf{h}}_s \qquad \text{(general)} \\
+    \mathbf{v}_a^\top \tanh \left( \mathbf{W}_a \left[ \mathbf{h}_t; \bar{\mathbf{h}}_s \right] \right) \qquad \text{(concat)}
+\end{cases}
+$$
+
+This alignment(score) function is used to make wegiht vector $\mathbf{a}_t$ as follows.
+$$
+\mathbf{a}_t(s) = \operatorname{align}(\mathbf{h}_t, \bar{\mathbf{h}}_s)
+= \frac{\exp(\text{score}(\mathbf{h}_t, \bar{\mathbf{h}}_s))}{\sum_{s'} \exp(\text{score}(\mathbf{h}_t, \bar{\mathbf{h}}_{s'}))}
+$$
+Then, a global context vector $\mathbf{c_t}$ is computed as the weighted average, according to $\mathbf{a}_t(s)$, over all the source states.
+$$
+\mathbf{c_t} = \sum^{N} \mathbf{a}_t(s) \, \bar{\mathbf{h}}_s
+$$
+Finally, using context vector and targetting hidden state, make the attention vector and fed through the softmax layer to produce the predictive distribution.
+$$
+\tilde{\boldsymbol{h}}_t = \tanh(\mathbf{W}_c[\boldsymbol{c}_t; \boldsymbol{h}_t]) \\[5pt]
+p(y_t | y_{<t}, x) = \operatorname{softmax}(\mathbf{W}_s \tilde{h}_t)
+$$
+
+Applying (Q,K,V) terminology, 
+1. Q vector is $\mathbf{h}_t$ and K vector is $\bar{\mathbf{h}}_s$. 
+2. They are aligned and the similarity between hidden state vectors is calculated by using their dot product($\mathbf{h}_t^\top \bar{\mathbf{h}}_s $). That is, <b>if a query and key are similar in meaning to one another, multiplying them will yield a large value. If they are not well aligned, their dot product will be small or negative, and the subsequent softmax function will result in a small attention weight.</b>
+3. In practice, multiplication is much faster and more computationally efficient for neural networks than additive operations, as it can implemented in fewer steps by using matrix multiplication.
+
+##### Local Dot Proudct Attention
+Local attention is little modified as it  selectively focuses on a small window of context. First generates an aligned position $p_t$ for each target word at time $t$. The context vector $c_t$ is then derived as a weighted average over the set of source hidden states within the window
+$[pt−D, pt+D]$ where $D$ is empirically selected. So the local alignment vector $\mathbf{a}_t$ is now fixed-dimensional, $\in \mathbb{R}^{2D+1}$.
+
+There are two variants of the mechanism in original Luong paper.  
+
+<b> local-m </b>  
+Set $pt = t$ assuming that source and target sequences are roughly monotonically aligned. It is the same as the global model except that the
+vector at is fixed-length and shorter.
+
+<b> local-p </b>
+It is similar to the local-m model except that dynamically compute $p_t$ and use a truncated Gaussian distribution to modify the original alignment weights align as shown below.
+$$
+p_t = S \cdot \operatorname{sigmoid}(v_p^\top \tanh(\mathbf{W_p h_t})), \\[5pt]
+\mathbf{a}_t(s) = \operatorname{align}(\mathbf{h}_t, \bar{\mathbf{h}}_s) \exp \left( - \frac{(s - p_t)^2}{2\sigma^2} \right)
+$$
 
 ### Long Short Term Memory Networks (LSTMN)
 The LSTMN model is network that to modified the standard LSTM structure by replacing the memory cell with a memory network. For comparison, LSTMs maintain a hidden vector and a memory vector; memory networks have a set of key vectors and a set of value vectors. This design enables the <b>LSTM to reason about relations between tokens with a neural attention layer and then perform non-Markov state updates</b>, which means update its states using information from the whole history, not just the last hidden state. In other words, a key idea behind the LSTMN is to <b>use attention for inducing relations between tokens</b>. 
