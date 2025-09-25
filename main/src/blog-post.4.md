@@ -273,7 +273,8 @@ p(y_i \mid y_1, \ldots, y_{i-1}, \mathbf{x})
 = g(y_{i-1}, s_i, c_i), \\[5pt]
 s_i = f(s_{i-1}, y_{i-1}, c_i)
 $$
-The $p$ represents the conditional probability over the translation $y$ and $s_i$ is an RNN hidden state for time $i$. See the moddel architecture image for better understanding.
+The $p$ represents the conditional probability over the translation $y$ and $s_i$ is an RNN hidden state for time $i$. And $g$ is a nonlinear, potentially multi-layered, function that outputs the probability of $y_t$.  
+See the moddel architecture image for better understanding.
 
 $$
 c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j, \quad

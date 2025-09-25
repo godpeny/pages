@@ -81,10 +81,17 @@ $$
 - $\alpha$: weight. So $\alpha_{ij}$ be a probability that the target word $y_i$ is aligned to, or translated from, a source word $x_j$.
 
 Above equation is how alignment model of Badhanau’s attention mechanism. 
-1. The query vector (multiplied by $W_q$) is <b>added</b> to a key vector (multiplied by $W_k$). 
+1. The query vector (multiplied by $W_q$) is <b>added</b> to a key vector (multiplied by $W_k$).  
+<b>If they are aligned, adding them together will yield a large value. If they’re irrelevant to one another, adding them together will yield a small value or negative value.</b>
 2. The resulting number is input to a $\tanh$ activation function, then the output of the function is multiplied by the value weights $W_v$.
 3. The output of $ v_a^{\top} \tanh \left( W_a s_{i-1} + U_a h_j \right)$ yields the alignment score between the query vector and that key vector.
 4. The alignment score is then input to a softmax function, which yields an attention weight for that key vector, $h$.
+
+
+Then, the context vector from alignment model is used to implement the hidden state $s_i$ of the decoder
+$$
+s_i = f(s_{i-1}, y_{i-1}, c_i) = (1 - z_i) \circ s_{i-1} + z_i \circ \tilde{s}_i,
+$$
 
 #### Dot Product Attention
 <img src="images/blog16_dot_product_attention.png" alt="Model architecture" width="250"/>  
@@ -128,6 +135,8 @@ Applying (Q,K,V) terminology,
 1. Q vector is $\mathbf{h}_t$ and K vector is $\bar{\mathbf{h}}_s$. 
 2. They are aligned and the similarity between hidden state vectors is calculated by using their dot product($\mathbf{h}_t^\top \bar{\mathbf{h}}_s $). That is, <b>if a query and key are similar in meaning to one another, multiplying them will yield a large value. If they are not well aligned, their dot product will be small or negative, and the subsequent softmax function will result in a small attention weight.</b>
 3. In practice, multiplication is much faster and more computationally efficient for neural networks than additive operations, as it can implemented in fewer steps by using matrix multiplication.
+
+Similar to addictive attention model, the context from alignment model is used to implement the hidden state of the decoder $\mathbf{h}_t$. 
 
 ##### Local Dot Proudct Attention
 Local attention is little modified as it  selectively focuses on a small window of context. First generates an aligned position $p_t$ for each target word at time $t$. The context vector $c_t$ is then derived as a weighted average over the set of source hidden states within the window
