@@ -1,5 +1,6 @@
 # Advertisement Recommendation (ADRec)
 ## Sequential Recommendation
+semantic ID?
 ## Click-Through Rate(CTR) Prediction Model
 ## Follow The Regularized Leader (FTRL)
 https://optimization.cbe.cornell.edu/index.php?title=FTRL_algorithm
