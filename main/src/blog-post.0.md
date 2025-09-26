@@ -309,7 +309,9 @@ Collapsed embeddings tend to occupy a small subspace of the whole embedding spac
 
 ### Vector Quantization
 https://en.wikipedia.org/wiki/Vector_quantization
-code book?
+### Downstream Task
+Downstream task is the task that you actually want to solve.  
+You first learn representations of the data, then you can transfer these learned representations to solve a task that you actually want to solve, and you can do this by fine-tuning the neural network that contains the learned representations on a labeled.
 
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
