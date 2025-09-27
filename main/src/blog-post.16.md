@@ -204,8 +204,18 @@ As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses 
 
 The transformer architecture consists of stacked self-attention and point-wise, fully-connected layers for both the encoder and decoder.
 
-## Scale Dot Product Self Attention
-## Multi-Head Attention
+## Attention of Transformers
+<img src="images/blog16_transformers_attentions.png" alt="Model architecture" width="600"/>  
+The queries come from the previous decoder layer and the memory keys and values come from the output of the encoder.
+
+### Scale Dot Product Self Attention
+Compute the dot products of the query with all keys, divide each by dimension of key,${\sqrt{d_k}}$ and apply a softmax function to obtain the weights on the values.
+In practice, we compute the attention function on a set of queries
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+$$
+### Multi-Head Attention
+
 ## Weight Tying Embedding
 https://arxiv.org/pdf/1608.05859
 
