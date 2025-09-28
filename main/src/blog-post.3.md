@@ -239,6 +239,22 @@ NNLM과 Word2Vec의 차이를 비교해봅시다. 우선 예측하는 대상이 
 첫번째로, Word2Vec은 우선 NNLM에 존재하던 활성화 함수가 있는 은닉층을 제거하였습니다. 이에 따라 투사층 다음에 바로 출력층으로 연결되는 구조입니다.
 두번째는 은닉층을 제거한 것뿐만 아니라 추가적으로 사용되는 기법들을 사용하였습니다. 대표적인 기법으로 계층적 소프트맥스(hierarchical softmax)와 네거티브 샘플링(negative sampling)이 있습니다.
 
+### Input Embeddings and Output Embeddings
+For both models, each word has two embeddings and the purpose of both models are trainig these embeddings. 즉, CBOW 는 주변 단어로 중심 단어를 더 정확히 맞추기 위해 계속해서 이 $W$와 $W'$를 학습해가는 구조 이고, Skip-Gram은 반대로, 중심 단으로 주변 단어를 더 정확히 맞추기 위해 $W$와 $W'$ 를 학습해 가는 구조인 것입니다.  
+
+<b>Skip-Gram</b>  
+- Input embedding: used for the center word.
+- Output embedding: used for the context words that the model predicts.
+
+<b>CBOW</b>
+- Input embeddings: used for the context words (averaged together).
+- Output embedding: used for the center word that the model predicts.
+- But some implementations average the two (input + output) to get slightly better results.
+
+<b> After Training </b>  
+- The training maintains two sets of weights (input & output).
+- But the embeddings people actually use and analyze are the input-layer embeddings. It is because the author did in his other paper "Linguistic Regularities in Continuous Space Word Representations” (Mikolov et al., 2013)".
+
 ### C-Bow
 $$
 e_{\text{I}}=\begin{bmatrix}1\\0\end{bmatrix},\quad
@@ -263,6 +279,7 @@ The architecture of C-Bow algorithm is similar to the feed forward NNLM, but wit
 ![alt text](images/blog3_cbow_3.png)  
 ![alt text](images/blog3_cbow_4.png)  
 
+You can see that there are two embedding matrices, input matrix $W$ and output matrix $W'$.
 
 ### Skip-gram
 #### Basics
