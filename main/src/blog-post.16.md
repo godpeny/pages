@@ -217,7 +217,62 @@ $$
 ### Multi-Head Attention
 
 ## Weight Tying Embedding
-https://arxiv.org/pdf/1608.05859
+Weight Tying is setting input embedding matrix($U$) and output embedding matrix($V$) as same matrix($S$) instead of having separate matrices.
+$$
+U = V = S
+$$
+하나의 매트릭스 S를 두고, 이 S를 Input Embedding과 Output Embedding 두 가지 용도로 모두 사용. 기존에 분리된 U와 V 매트릭스를 더해서 새로운 S를 만드는 것이 아님.  
+
+<b> NNLM </b>   
+Let's first see how the typical untied NNLM works.  
+
+When timestep $t$, with current input word sequence
+$i_{1:t} = [i_1, ..., i_t]$ and current target output word
+$o_t$, the negative loss function of NNLM can be represented as follows. 
+$$
+\mathcal{L}_t = - \log p_t(o_t \mid i_{1:t}), 
+\quad \text{where} \quad 
+p_t(o_t \mid i_{1:t}) = 
+\frac{\exp\!\left(V_{o_t}^\top h^{(t)}_2\right)}
+{\sum_{x=1}^C \exp\!\left(V_x^\top h^{(t)}_2\right)} 
+$$
+$U_k$ is the $k$-th row of input embedding and $V_k$ is the $k$-th row of output embedding which corresponds to word $k$. Note that input matrix is indirectly represented as $h^t_2$($h^t_2 = f(U^Tc)$ or something...)  and and $h^t_2$ is the vector of activations of the topmost LSTM layer’s output at time $t$.  
+
+The update for row $k$ of the input embedding and output embeddings are shown below.
+$$
+\frac{\partial \mathcal{L}_t}{\partial U_k} = \begin{cases}
+    \left(\sum_{x=1}^{C} p_t(x|i_{1:t}) \cdot V_x^\top - V_{o_t}^\top\right) \frac{\partial h_2^{(t)}}{\partial U_{i_t}} & k = i_t \\
+    0 & k \neq i_t
+\end{cases} \\[10pt]
+\frac{\partial \mathcal{L}_t}{\partial V_k} = \begin{cases}
+(p_t(o_t|i_{1:t}) - 1)h_2^{(t)} & k = o_t \\
+p_t(k|i_{1:t}) \cdot h_2^{(t)} & k \neq o_t
+\end{cases}
+$$
+Note that $i_t$ is the input word embedding at current time $t$ and $k$ is the other word embedding(현재 시점 t에서 입력 단어 i_t가 아닌 다른 단어 k 에 대한 임베딩 S_k의 업데이트를 의미).  
+Therefore, in the untied model, at every timestep, the only row that is updated in the input embedding is the row $U_{i_t}$ representing the current input word($k = i_t$). This means that vectors representing rare words are updated only a small number of times.
+The output embedding updates every row at each timestep.  
+
+When setting $U = V = S$ and implementing tied NNLM,
+- $k \neq i_t$
+  - similar to the update of row $k$ in the untied NNLM’s output embedding (the only difference being that U and V are both replaced by a single matrix S). 
+  - there is no update from the input embedding.
+- $k = i_t$
+  - $k = o_t$
+    - for simplicity, we assume that at each timestep $t$, $i_t \neq o_t$. So $k$ can't be $o_t$.
+  - $k \neq o_t$
+    - $p_t(k|i_{1:t}) = p_t(i_t|i_{1:t})$ - expected to be close to zero, since words seldom appear twice in a row.
+
+So in the tied NNLM, every row of S is updated during each iteration, and for all rows except one($k=i_t$), this update is similar to the update of
+the output embedding of the untied model. In other words, there is a greater degree of similarity of the tied embedding to the untied model’s output embedding than to its input embedding.
+
+<b> Word2Vec </b>  
+In word2vec, the update rules are similar, just that $h^t_2$ is replaced by the identity function. In this case weight tying is not appropriate, because if $p_t(i_t|i_{1:t})$ is close to zero, then so is the norm(길이)
+of the embedding of it.  
+Word2vec에서는 입력 임베딩이 LSTM과 같은 복잡한 비선형 변환을 거치지 않고 직접 출력 임베딩과의 상호작용에 사용되기 때문에 매우 낮은(0에 가까운 $p_t(i_t|i_{1:t})$) 단어들의 임베딩이 제대로 학습되지 않거나, 그 중요도가 지나치게 낮아질 수 있다는 점을 지적.  
+(임베딩의 Norm이 0에 가깝다는 것: 임베딩 벡터 자체가 모든 성분이 0에 가까워서 의미적 특징을 거의 표현하지 못한다. )
+
+On the other hand, since the LSTM layers cause a decoupling of the input and output embedddings, this argument does not hold for NNLM.
 
 ## Positional Encoding
 ## Transformer Network
