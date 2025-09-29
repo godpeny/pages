@@ -240,7 +240,14 @@ NNLM과 Word2Vec의 차이를 비교해봅시다. 우선 예측하는 대상이 
 두번째는 은닉층을 제거한 것뿐만 아니라 추가적으로 사용되는 기법들을 사용하였습니다. 대표적인 기법으로 계층적 소프트맥스(hierarchical softmax)와 네거티브 샘플링(negative sampling)이 있습니다.
 
 ### Input Embeddings and Output Embeddings
-For both models, each word has two embeddings and the purpose of both models are trainig these embeddings. 즉, CBOW 는 주변 단어로 중심 단어를 더 정확히 맞추기 위해 계속해서 이 $W$와 $W'$를 학습해가는 구조 이고, Skip-Gram은 반대로, 중심 단으로 주변 단어를 더 정확히 맞추기 위해 $W$와 $W'$ 를 학습해 가는 구조인 것입니다.  
+Both model assumed that the words and the contexts come from distinct
+vocabularies, so that, for example, the vector associated with the word 'dog' will be different from the vector associated with the context 'dog'. In other words, there will be separate two embedding matrix for words.  
+
+One motivation for making this assumption is following example when you consider the case where both the word 'dog' and the context 'dog' share the same vector $v$. Words('dog') hardly appear in the contexts of themselves, and so the model should assign a low probability to
+$p(\text{dog}|\text{dog})$, which entails assigning a low value to $||v||= v \cdot v$ which is impossible.  
+Simply speaking, $||v||$ should have very small (or maybe negative) value because the word appears in the context of the same words. However since it is dot product of same vector, it can't be very small or negative.
+
+Therefore, for both models, each word has two embeddings and the purpose of both models are trainig these embeddings. 즉, CBOW 는 주변 단어로 중심 단어를 더 정확히 맞추기 위해 계속해서 이 $W$와 $W'$를 학습해가는 구조 이고, Skip-Gram은 반대로, 중심 단으로 주변 단어를 더 정확히 맞추기 위해 $W$와 $W'$ 를 학습해 가는 구조인 것입니다.  
 
 <b>Skip-Gram</b>  
 - Input embedding: used for the center word.
