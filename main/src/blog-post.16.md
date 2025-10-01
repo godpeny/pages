@@ -199,24 +199,7 @@ As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses 
 ### Memory Network
 ### End-to-End Memory
 
-## Architecture
-<img src="images/blog16_transformers_architecture.png" alt="Transformer Intuition" width="300"/>  
-
-The transformer architecture consists of stacked self-attention and point-wise, fully-connected layers for both the encoder and decoder.
-
-## Attention of Transformers
-<img src="images/blog16_transformers_attentions.png" alt="Model architecture" width="600"/>  
-The queries come from the previous decoder layer and the memory keys and values come from the output of the encoder.
-
-### Scale Dot Product Self Attention
-Compute the dot products of the query with all keys, divide each by dimension of key,${\sqrt{d_k}}$ and apply a softmax function to obtain the weights on the values.
-In practice, we compute the attention function on a set of queries
-$$
-\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
-$$
-### Multi-Head Attention
-
-## Weight Tying Embedding
+### Weight Tying Embedding
 Weight Tying is setting input embedding matrix($U$) and output embedding matrix($V$) as same matrix($S$) instead of having separate matrices.
 $$
 U = V = S
@@ -273,6 +256,53 @@ Word2vec에서는 입력 임베딩이 LSTM과 같은 복잡한 비선형 변환�
 (임베딩의 Norm이 0에 가깝다는 것: 임베딩 벡터 자체가 모든 성분이 0에 가까워서 의미적 특징을 거의 표현하지 못한다. )
 
 On the other hand, since the LSTM layers cause a decoupling of the input and output embedddings, this argument does not hold for NNLM.
+
+## Architecture
+<img src="images/blog16_transformers_architecture.png" alt="Transformer Intuition" width="300"/>  
+
+The transformer architecture consists of stacked self-attention and point-wise, fully-connected layers for both the encoder and decoder.
+
+## Attention of Transformers
+<img src="images/blog16_transformers_attentions.png" alt="Model architecture" width="600"/>  
+The queries come from the previous decoder layer and the memory keys and values come from the output of the encoder.
+
+The Transformer uses multi-head attention in three different ways.
+1. In "encoder-decoder attention" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the
+typical encoder-decoder attention mechanisms in sequence-to-sequence models. (Normal Attention)
+2. The encoder contains self-attention layers. In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the encoder.
+3. Similarly, self-attention layers in the decoder allow each position in the decoder to attend to all positions in the decoder up to and including that position.  
+But We need to prevent leftward information flow in the decoder to preserve the auto-regressive property. We implement this inside of scaled dot-product attention by masking out (setting to $-\infty$). Simplly speaking, since self-attention see all the way in bidirections (left and right) block the layer not to see the right one. so it can "predict" not "cheat"
+$$(QK^{\top})_{ij} =
+\begin{cases}
+\frac{q_i \cdot k_j}{\sqrt{d_k}}, & j \leq i \\
+-\infty, & j > i
+\end{cases}
+$$
+
+### Scale Dot Product Self Attention
+Compute the dot products of the query with all keys, divide each by dimension of key,${\sqrt{d_k}}$ and apply a softmax function to obtain the weights on the values.
+In practice, we compute the attention function on a set of queries
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+$$
+
+### Multi-Head Attention
+Instead of performing a single attention function with keys, values and queries, linearly project the queries, keys and values $h$ times with different, learned linear projections to $d_k$, $d_k$ and $d_v$ dimensions, respectively. 
+On each of these projected versions of (Q,K,/V), perform the attention function in parallel, yielding $d_v$-dimensional output values.  
+
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W^O \\[5pt]
+\text{where } \text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V) \\[5pt]
+W_i^Q \in \mathbb{R}^{d_{\text{model}} \times d_k}, \quad
+W_i^K \in \mathbb{R}^{d_{\text{model}} \times d_k}, \quad
+W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_v}, \quad
+W^O \in \mathbb{R}^{h d_v \times d_{\text{model}}}
+$$
+
+Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
+
+## Embedding of Transformer
+Implementing weight tying by sharing the same weight matrix between the two embedding layers and the pre-softmax linear transformation. So the same weight matrix is used in three different places.
 
 ## Positional Encoding
 ## Transformer Network
