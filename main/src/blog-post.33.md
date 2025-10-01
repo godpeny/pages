@@ -24,3 +24,21 @@ https://arxiv.org/pdf/1608.04471
 ## Cold Start
 Cold start is a potential problem in automated data modelling. It concerns the issue that the system cannot draw any inferences for users or items about which it has not yet gathered sufficient information.
 
+
+## Models
+https://medium.com/@lonslonz/추천-모델-개발-2-딥러닝-모델-29dbf704715
+## Wide and Deep Model
+https://arxiv.org/pdf/1606.07792
+
+## Deep and Cross Model
+https://arxiv.org/abs/1708.05123
+
+## Two Tower Model
+https://storage.googleapis.com/gweb-research2023-media/pubtools/5716.pdf
+https://storage.googleapis.com/gweb-research2023-media/pubtools/6090.pdf
+
+## Deep Learning Recommendation Mode(DLRM)
+https://arxiv.org/pdf/1906.00091
+
+## Tabular Data Modeling Using Contextual Embeddings(TabTransformer)
+https://arxiv.org/pdf/2012.06678
