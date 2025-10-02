@@ -1,4 +1,34 @@
 # Advertisement Recommendation (ADRec)
+## CPA, CPC, CPM, CPP, CPR, CTR, TRP, Reach and Frequency
+<b>CPA(Cost per Action) </b>  
+CPA는 회원가입, sALES, 홈페이지 방문 등 Action 당 단가를 말한다.  
+가장 대표적으로 일컬어지는 것이 회원 가입당 단가, 배너를 클릭해서 광고주 홈페이지에서 회원가입을 할 경우, 배너를 통해 회원가입까지 간 사람들을 1명 당 단가를 책정해서 광고집행금액을 결정하는 방식을 CPA라고 한다.
+
+<b>CPC(Cost per Click)</b>  
+CPC는 광고 클릭당 광고비, 광고 1 클릭을 얻기위해 소요되는 광고 비용을 말한다.
+동일한 CPM으로 광고를 집행하였더라도, CTR(클릴율)이 높으면, CPC는 떨어지므로 더 효율적인
+광고를 집행하였다고 할 수 있다.
+
+<b>CPM (Cost per Mile)(노출 1,000회에 대한 단가)</b>   
+CPM은 노출수에 따라 광고비를 내는 정액제 방식으로 CPM은 1000회의 광고 노출에 드는 광고비를 말한다.
+CPM이 5000이라면 1회의 노출에 드는 광고비는 5원이라고 할 수 있음. Mile은 로마술자에서 1,000을 나타냄
+
+<b> Reach and Frequency </b>  
+Reach의 뜻은 '도달'로서 광고계에서는 풀이하면 '광고나 마케팅 메시지가 이용자에게 알려지거나 전달되는 넓이'를 말한다. 그래서 나같은 경우에는 이 용어를 이해하려고 할 때 '이용자'에 초점을 맞췄다. 그리고 도달률은 전체 이용자 수 대비 메시지가 전달되는 정도를 백분율로 나타낸 것이다.  
+Frequency는'빈도'라는 뜻을 가진 영어단어로써, '한 이용자에게 같은 광고나 마케팅 메시지가 보이는 횟수'를 말한다. 즉 '1인당 광고 노출 수'를 의미한다. Frequency에서 주의할 점은 모든 이용자에게 보이는 횟수가 아닌 '한 이용자'라는 점이고 또 '같은' 광고나 마케팅 메시지에 초점을 맞췄다는 것이다.  
+
+<b> TRP (Taget Rationg Point) </b>  
+'일반적으로 매체 효과를 평가할 때 사용하는 지수인 GRP를 타겟 대상으로 적용시킨 것'이다. 그래서 공식이 GRP와 많이 닮아 있다. TRP = Tagret Reach X Frequency. 
+
+<b>CPP (Cost per TRP)</b>  
+TRP 1포인트를 올리는데 들어간 비용.  
+
+<b>CPR (Cost per Reach) </b>
+CPR은 Reach 1%를 올리는데 들어간 비용을 말한다.  
+
+<b>CTR Click-Through Rate</b>  
+CTR은 일반적으로 말하는 '클릭율'로서 광고 노출 대비 광고를 클릭한 비율을 백분율로 환산한 수치를 말한다. CTR=100*(Click Impressions)
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
