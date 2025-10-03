@@ -301,8 +301,30 @@ $$
 
 Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
 
+<img src="images/blog16_multi_head_attention.png" alt="Transformer Intuition" width="400"/>  
+
+
 ## Embedding of Transformer
-Implementing weight tying by sharing the same weight matrix between the two embedding layers and the pre-softmax linear transformation. So the same weight matrix is used in three different places.
+Implementing weight tying by sharing the same weight matrix between the two embedding layers(input and output embeddings) and the pre-softmax linear transformation. So the same weight matrix is used in three different places.
 
 ## Positional Encoding
+Since the model has no recurrence and convolution, in order for the model to make use of the order of the sequence, must inject some information about the relative or absolute position of the
+tokens in the sequence. 
+$$
+PE(pos, 2i) = \sin\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right),
+\quad
+PE(pos, 2i+1) = \cos\!\left(\frac{pos}{10000^{2i/d_{\text{model}}}}\right)
+$$
+- the reason for using $\sin, \cos$ function is to represent the positional information of the word. Since both functions give a continuous, smooth way to encode position.
+- the reason dimension of model matters is that because you need to fill the dimension of positional encoding vector (which is same size as model) and make each positional encoding vector unique.
+
+For example, when $\text{d}_{\text{model}} = 4$, if the sequence is [the, cat, sat, ...],  
+(Note that length of that vector (number of components) is called the model dimension $\text{d}_{\text{model}} = 4$)
+$$
+\text{"the" (position 0)} = PE(0) = [0, \; 1, \; 0, \; 1] \\[5pt]
+\text{"cat" (position 1)} = PE(1) \approx [0.8415, \; 0.5403, \; 0.01, \; 0.99995] \\[5pt]
+\text{"sat" (position 2)} = PE(2) \approx [0.9093, \; -0.4161, \; 0.02, \; 0.9998]
+$$
+These position vectors are then added to the word embeddings of "the", "cat", "sat", etc., So that the Transformer can distinguish not only which word it’s seeing, but also where in the sentence it appears.
+
 ## Transformer Network
