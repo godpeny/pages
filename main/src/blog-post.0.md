@@ -144,6 +144,16 @@ Hot storage is for data you need fast or access frequently. Cold storage is typi
 To achieve the necessary rapid data access, hot storage is often housed in hybrid or tiered storage environments. The hotter the service, the more it embraces cutting-edge technologies, including the latest drives, fastest transport protocols, and geographical proximity to clients or multiple regions. However, the resource-intensive nature of hot storage warrants a premium, and leading cloud data storage providers like Microsoft’s Azure Hot Blobs and AWS S3 reflect this reality.  
 Cold cloud storage systems prioritize durability and cost-effectiveness over real-time data manipulation capabilities. Services like Amazon Glacier and Google Coldline take this approach, offering slower retrieval and response times than their hot storage counterparts. Lower performing and less expensive storage environments, both on-premises and in the cloud, commonly host cold data. 
 
+### Throttling
+Throttling is a process that is used to control the usage of APIs by consumers during a given period. You can define throttling at the application level and API level. Throttling limit is considered as cumulative at API level. 
+
+<b> Hard Throttling </b>  
+Hard throttling enforces strict limits. Once a client reaches its quota, any additional requests are immediately rejected.
+
+<b> Soft Throttling </b>  
+Soft throttling provides a more generous approach. Instead of outright rejecting requests, soft throttling may:
+- Allow a certain percentage of excess requests to pass through.
+- Queue excess requests for processing once traffic subsides.
 
 ## A.I Related Terminology
 ### Supervised Learning
