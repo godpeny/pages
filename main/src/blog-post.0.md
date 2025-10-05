@@ -325,6 +325,10 @@ code book?, code embedding?
 Downstream task is the task that you actually want to solve.  
 You first learn representations of the data, then you can transfer these learned representations to solve a task that you actually want to solve, and you can do this by fine-tuning the neural network that contains the learned representations on a labeled.
 
+### Membership Inference Attacks (MIAs in Machine Learning)
+Membership inference attacks occur when an attacker manipulates the model’s training data in order to cause it to behave in a way that exposes sensitive information.
+https://arxiv.org/pdf/1610.05820
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
