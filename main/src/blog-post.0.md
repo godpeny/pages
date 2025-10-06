@@ -327,6 +327,17 @@ You first learn representations of the data, then you can transfer these learned
 
 ### Membership Inference Attacks (MIAs in Machine Learning)
 Membership inference attacks occur when an attacker manipulates the model’s training data in order to cause it to behave in a way that exposes sensitive information.
+
+<b>User-level MIA</b>  
+- 공격 단위: 사용자 전체
+- 질문: “이 사용자가 학습에 포함됐나?”
+- 정보 노출 위험: 사용자가 존재했다는 사실  
+
+<b>Interaction-level MIA</b>  
+- 공격 단위: 사용자–아이템 쌍
+- 질문: “이 사용자의 특정 행동이 학습에 포함됐나?”
+- 정보 노출 위험: 특정 행동(구매, 클릭 등)이 존재했다는 사실
+
 https://arxiv.org/pdf/1610.05820
 
 ### Tips for reading papers
