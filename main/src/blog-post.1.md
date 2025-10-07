@@ -97,6 +97,13 @@ For example, Let's consider below data set $X$(left) and simple neural network w
 If each hidden layer $h_1, h_2, h_3$ use step function, these three neurons can be treated as three independent linear classifiers.   
 Therefore the three decision boundaries form a triangle that classifies the outside data into class 1, and the inside ones into class 0.
 
+### Multi-Layer Perceptron (MLP)
+이름은 “perceptron”이지만, 현대 MLP는 step function을 쓰지 않는다.
+대신 non-linear activation function(예: sigmoid, tanh, ReLU 등)을 사용, 즉, 다층 fully-connected 신경망(FCNN) 을 의미함.
+
+역사적으로 초기에 “Perceptron”이라는 이름이 인공 뉴런 구조 전체를 지칭했으나 나중에 backpropagation과 non-linear activation이 도입되면서
+다층 구조로 확장된 버전을 “Multi-Layer Perceptron(MLP)”이라고 부르게 되었음. 하지만 미분 불가능해서 back propagation이 불가능한 “step function”은 이미 사라지고, 실제로는 “Fully Connected Neural Network (FCNN)”과 거의 동일한 의미로 사용된다.
+
 ### Non-linearity of Neural Network
 As soon as you stack activations like ReLU, tanh, GELU, etc., in neural network, the loss function is no longer “single-bowl” convex. Plateaus, ridges, saddle points, and many minima appear.
 Therefore, this nonlinearity of a neural network causes most interesting loss functions to become non-convex.
