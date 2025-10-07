@@ -340,6 +340,20 @@ Membership inference attacks occur when an attacker manipulates the model’s tr
 
 https://arxiv.org/pdf/1610.05820
 
+### Shadow Model vs Surrogate Model
+둘 다 공격자가 target 모델(공격 대상 모델) 을 흉내내기 위해 사용하는 replicated or mimicked model.  
+
+<b> Shadow Model </b>  
+공격자가 target 모델과 동일한 구조·하이퍼파라미터 를 가정하거나 알고 있다고 전제하고, 자신이 가진 별도의 데이터(shadow dataset) 로 target 모델을 “흉내내어” 학습한 모델.  
+
+<b> Surrogate Model </b>  
+Surrogate model is an interpretable model that is trained to approximate the predictions of a black box model.  
+공격자가 target 모델의 내부 구조나 학습 데이터에 접근할 수 없을 때, 단지 black-box 쿼리(입력 → 출력) 만으로 target의 행동(behavior) 을 모방하도록 학습한 모델.
+
+### Knowledge Distillation
+A machine learning technique that aims to transfer the learnings of a large pre-trained model, the “teacher model,” to a smaller “student model.” It’s used in deep learning as a form of model compression and knowledge transfer, particularly for massive deep neural networks.  
+https://arxiv.org/pdf/1503.02531
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
