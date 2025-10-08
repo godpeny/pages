@@ -317,7 +317,17 @@ Model collapse is a phenomenon where machine learning models gradually degrade d
 
 Collapsed embeddings tend to occupy a small subspace of the whole embedding space. Generally speaking, this concentration of information in a few dimensions weakens the distinguishability of representations for downstream tasks. It also reduces the model’s generalization ability, as collapse creates a bottleneck preventing learning of complex patterns. This often translates to poor performance on long-tail items. Lastly, when embeddings collapse to a lower dimensional space, they tend to cluster towards a few popular items, leading to popularity bias. 
 
-### Vector Quantization
+### Quantizations
+<b> Quantization in Machine Signal Processing</b>  
+Quantization is a technique to reduce the computational and memory costs of running inference by representing the weights and activations with low-precision data types like 8-bit integer (int8) instead of the usual 32-bit floating point (float32).
+
+<b> Quantization in Machine Learning</b>  
+Quantization is the process of constraining an input from a continuous or otherwise large set of values (such as the real numbers) to a discrete set (such as the integers). 
+(연속된 변화량을 유한개의 레벨로 구분하고, 각 레벨에 대해 특정 값을 부여하는 것)  
+
+### Vector Quantizations
+Mapping continuous latent representations into discrete embeddings. It works by dividing a large set of points (vectors) into groups having approximately the same number of points closest to them. Each group is represented by its centroid point, as in k-means and some other clustering algorithms. In simpler terms, vector quantization chooses a set of points to represent a larger set of points.
+
 https://en.wikipedia.org/wiki/Vector_quantization
 code book?, code embedding?
 
