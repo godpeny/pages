@@ -225,3 +225,6 @@ m = x.shape[0]
 idx = np.random.permutation(m)  # randomly permute indices from 0 to m-1
 samples = np.array(np.array_split(x[idx], K))
 ```
+## Other Python Operators
+- ``**``: 	Exponentiation.
+- ``//``:	Floor division.
