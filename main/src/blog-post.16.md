@@ -40,8 +40,10 @@ One implementation of self-attention was from “Attention is All You Need” pa
 The encoder hidden states served both as keys and values. So key = value = encoder hidden state.
 
 <b> Transformers </b>
-- key: used only to compute attention scores (acts like an “index” or address).
+- key: used only to compute attention scores.
 - value: contains the content that actually gets combined and passed forward.
+
+In implementation, key and value use differemt matrices.
 
 #### Attention vs Self-Attention
 <b>Attention</b>  
