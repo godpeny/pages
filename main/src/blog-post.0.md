@@ -397,6 +397,9 @@ MMR Score = λ × relevance - (1 - λ) × max_similarity_to_selected
 
 Reference: https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_LTMIR_1998.pdf
 
+### Model Agnostic Method
+Model-Agnostic 방법은 모델의 구조나 알고리즘에 상관없이 모든 머신러닝 모델에 적용할 수 있는 접근법을 말합니다. 이때 "Agnostic"이라는 용어는 특정 모델에 의존하지 않는다는 의미로 사용됩니다. 해당 방법은 모델을 블랙박스처럼 취급하며, '입력과 출력'에만 초점을 맞춰 예측을 해석합니다. 이러한 보편성 덕분에 Model-Agnostic 방법은 단순한 선형 모델에서부터 복잡한 신경망에 이르기까지 모든 모델에서 사용할 수 있습니다.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
