@@ -54,6 +54,11 @@ https://arxiv.org/pdf/1608.04471
 ## Cold Start
 Cold start is a potential problem in automated data modelling. It concerns the issue that the system cannot draw any inferences for users or items about which it has not yet gathered sufficient information.
 
+## Calibration in Recommendation
+A classification algorithm is called calibrated if the predicted proportions of the various classes agree with the
+actual proportions of data points in the available data. Analogously(Similarly), the goal of calibrated recommendations is to reflect the various interests of a user in the recommended list, and with their appropriate proportions.  
+
+Reference - https://dl.acm.org/doi/pdf/10.1145/3240323.3240372
 
 ## Models
 https://medium.com/@lonslonz/추천-모델-개발-2-딥러닝-모델-29dbf704715
