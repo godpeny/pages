@@ -364,6 +364,39 @@ Surrogate model is an interpretable model that is trained to approximate the pre
 A machine learning technique that aims to transfer the learnings of a large pre-trained model, the “teacher model,” to a smaller “student model.” It’s used in deep learning as a form of model compression and knowledge transfer, particularly for massive deep neural networks.  
 https://arxiv.org/pdf/1503.02531
 
+### Multi-Armed Bandit vs Contextual Bandit
+In the multi-armed bandit problem, decisions are made without context. Every action’s outcome depends only on prior attempts. 
+
+In a contextual bandit, the model considers the context of the current scenario, making its decisions more relevant to individual users or situations.  
+
+Think of it this way: if a multi-armed bandit is like a static online ad shown to every user regardless of their preferences, a contextual bandit is like a dynamic online ad that changes based on the user’s browsing history, location, or even the time of day.
+
+#### Multi-Armed Bandit Problem
+It is a problem in which a decision maker iteratively selects one of multiple fixed choices (i.e., arms or actions) when the properties of each choice are only partially known at the time of allocation, and may become better understood as time passes
+
+### Maximum Marginal Relevance
+최대 한계 관련성(Maximum Marginal Relevance, MMR) 검색 방식은 유사성과 다양성의 균형을 맞추어 검색 결과의 품질을 향상시키는 알고리즘입니다. 이 방식은 검색 쿼리에 대한 문서들의 관련성을 최대화하는 동시에, 검색된 문서들 사이의 중복성을 최소화하여, 사용자에게 다양하고 풍부한 정보를 제공하는 것을 목표.
+$$
+\operatorname*{Arg\,max}_{D_i \in R \setminus S}
+\left[
+\lambda \, \text{Sim}_1(D_i, Q) 
+- (1 - \lambda) \, \max_{D_j \in S} \text{Sim}_2(D_i, D_j)
+\right]
+$$
+- $R$: The ranked list of documents retrieved by an IR system.
+- $S$: The subset of documents in R already selected.
+- $R/S$: The set of as yet unselected documents in R.
+- $\text{Sim}_1(D_i, Q)$: 문서(d)와 쿼리(Q) 사이의 유사성을 나타냅니다.
+- $\text{Sim}_2(D_i, D_j)$: 문서(d)와 이미 선택된 문서 집합(D') 중 가장 유사한 문서와의 유사성을 나타냅니다.
+- $\lambda$: 유사성과 다양성의 상대적 중요도를 조절하는 매개변수.
+
+To simplyfy, it can be considered as following.
+```
+MMR Score = λ × relevance - (1 - λ) × max_similarity_to_selected
+```
+
+Reference: https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_LTMIR_1998.pdf
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
