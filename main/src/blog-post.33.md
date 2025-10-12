@@ -29,6 +29,14 @@ CPR은 Reach 1%를 올리는데 들어간 비용을 말한다.
 <b>CTR Click-Through Rate</b>  
 CTR은 일반적으로 말하는 '클릭율'로서 광고 노출 대비 광고를 클릭한 비율을 백분율로 환산한 수치를 말한다. CTR=100*(Click Impressions)
 
+## Bayesian Personalized Ranking (BPR)
+Bayesian Personalized Ranking is a machine learning algorithm specifically designed for enhancing the recommendation process. It operates under a pairwise ranking framework where the goal is not just to predict the items a user might like but to rank them in the order of potential interest. Unlike traditional methods that might predict absolute ratings, BPR focuses on getting the order of recommendations right.
+
+BPR works by maximizing the posterior probability of a user preferring a known positive item over a randomly chosen negative item.
+
+Reference - https://www.geeksforgeeks.org/machine-learning/recommender-system-using-bayesian-personalized-ranking/  
+https://arxiv.org/pdf/1205.2618
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
