@@ -655,6 +655,19 @@ J(w,b)
 \Bigr].
 $$
 
+##### Joint Training
+Joint Training (also called joint learning or co-training) is an advanced machine learning technique where multiple models learn together on a shared dataset.  
+In joint training, two or more models collaborate, sharing insights at each training step to enhance predictive accuracy. Sum loss functions of each model and in backpropagate, hope it will train both networks.  
+For example, in chatbot, one network might learn the intent of input sequence, and other network can learn the meaning of the slot of the input.
+```
+x = <p> <p> show me the Tuesday 12/05 flights from Paris to Kuala Lumpur <p> <p>
+y = O O O O O B-DAY I-DAY O O B-DEP O B-ARR I-ARR O O
+
+x = <p> <p> Hi! I want to enroll in CS106A for Winter 2019 to learn coding. <p> <p>
+y = O O OO O O O O O B-COD O B-QUA B-YEAR O O O O O O
+```
+
+
 ### Gradient Descent of Logistic Regression
 We want to find $w, b$ that minimize $J(w, b)$.
 $$
