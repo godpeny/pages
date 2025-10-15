@@ -477,3 +477,20 @@ model. Such as,
 3. Equalize pairs. Make words like 'grandmother', 'grandfather' have exactly the same distance from the words that should be gender-neutral (babysitter, doctor, … and so on).
 
 One thing to note is that the author trained classifier to figure out what words are definitional or not.
+
+## Slot
+Slots are 'variables' in user's phrases: they represent variable pieces of information you expect to occur in the user's input. 
+
+For example,
+```
+“I want to fly from Boston at 8:38 am and arrive in Denver at 11:10 in the morning”
+```
+We can infer that the user <b>intends</b> to book a flight. Also, we can select what <b>slots</b> are important in this scenario:
+- From city: Boston
+- To city: Denver
+- Departure Time: 8:38 am
+- Arrive time: 11:10 morning
+
+### Slot Filling
+Slot filling consists of identifying meaningful slots in a text. This task is commonly applied together with intent detection that aims to identify the intent in a given sentence.
+
