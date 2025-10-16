@@ -494,3 +494,5 @@ We can infer that the user <b>intends</b> to book a flight. Also, we can select 
 ### Slot Filling
 Slot filling consists of identifying meaningful slots in a text. This task is commonly applied together with intent detection that aims to identify the intent in a given sentence.
 
+## Chatbot
+### Data Generation
