@@ -199,7 +199,9 @@ As the result, instead of only relying on $(h_{t-1}, c_{t-1})$, the update uses 
 - LSTMN: keeps a growing memory tape (all past hidden + cell states). At each step, it uses attention to select from that memory.(Non-Markovian, because $h_t$ depends on all previous $c_{t-1}, h_{t-1}$ states, not just the last one.)
 
 ### Memory Network
+https://arxiv.org/abs/1410.3916
 ### End-to-End Memory
+https://arxiv.org/pdf/1503.08895
 
 ### Weight Tying Embedding
 Weight Tying is setting input embedding matrix($U$) and output embedding matrix($V$) as same matrix($S$) instead of having separate matrices.
