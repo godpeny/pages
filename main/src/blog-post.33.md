@@ -37,6 +37,15 @@ BPR works by maximizing the posterior probability of a user preferring a known p
 Reference - https://www.geeksforgeeks.org/machine-learning/recommender-system-using-bayesian-personalized-ranking/  
 https://arxiv.org/pdf/1205.2618
 
+## Approximate Nearest Neighbor (ANN) Search
+https://medium.com/data-science/comprehensive-guide-to-approximate-nearest-neighbors-algorithms-8b94f057d6b6
+
+https://dytis.tistory.com/108
+
+
+## SPLADE Model
+https://arxiv.org/pdf/2107.05720
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
