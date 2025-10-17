@@ -496,3 +496,6 @@ Slot filling consists of identifying meaningful slots in a text. This task is co
 
 ## Chatbot
 ### Data Generation
+### Handling Context
+### Vocal Assistant
+
