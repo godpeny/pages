@@ -233,6 +233,15 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
 - It used max pooling.
 - It used local response normalization(which is turned out to be effectless), and dropout regularization with drop probability 0.5.
 
+##### Local Response Normalization
+"비슷한 위치에 있는 여러 커널들(필터들)의 활성화 값들"을 묶어서 정규화하는 방식.
+$$
+b_{x,y}^{i} = a_{x,y}^{i} / \left( k + \alpha \sum_{j=\max\left(0, i - \frac{n}{2}\right)}^{\min\left(N-1, i + \frac{n}{2}\right)} \left(a_{x,y}^{j}\right)^2 \right)^{\beta}
+$$
+- 여기서 $a_i^{x,y}$​는 ReLU를 거친 뉴런 출력,
+- $b_i^{x,y}$​는 정규화 후 출력,
+- $N$은 커널 수, $k, n, \alpha, \beta$는 하이퍼파라미터입니다
+- 여기서 합은 동일한 공간 위치에서 nnnn개의 "인접한" 커널 맵에 대해 실행.
 
 #### VGG-16
 ![alt text](images/blog31_vgg16-1.png)
