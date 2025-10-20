@@ -32,6 +32,27 @@ e.g., Sobel filter.
 
 In edge detection, instead of using existing filters, you can make the filter to learn the numbers to get good edge detector. This can be done by treating those numbers as prameters and using backpropagation.
 
+### Filter(Kernel), Feature Map and Channel
+<b> Kernel (Filter) </b>  
+A kernel (or filter) is a small 3D block of learnable weights used to extract a pattern from the input volume.  
+<b> Feature Map </b>  
+A feature map (or activation map) is the 2D output produced by applying one kernel across the input.  
+<b> Channel </b>  
+A channel is just the depth index of a feature map tensor.
+
+For example, Seeing below example,  
+<img src="images/blog31_convolution_over_volume_2.png" alt="Filter(Kernel), Feature Map and Channel" width="600"/>  
+
+| Term                 | Symbolic shape | Meaning                               |
+| -------------------- | -------------- | ------------------------------------- |
+| Input volume         | (6, 6, 3)      | 3 input channels                      |
+| One kernel           | (3, 3, 3)      | 3D filter spanning all input channels |
+| # of kernels         | 2              | each produces one output feature map  |
+| One feature map      | (4, 4)         | result from one kernel                |
+| Feature map volume   | (4, 4, 2)      | all feature maps stacked together     |
+| # of output channels | 2              | equal to # of kernels                 |
+
+
 ### Convolution
 Mathmatically convolution is an operation on two functions $f$ and $g$ that produces a third function $f*g$ as the integral of the product of the two functions after one is reflected about the y-axis and shifted.  
 In ML, convolution is an application of a sliding window function to a matrix of pixels representing an image.
@@ -61,6 +82,8 @@ $$
 ## Convolutional Network
 ### Convolution over volume
 ![alt text](images/blog31_convolution_over_volume_1.png)
+<img src="images/blog31_convolution_over_volume_1.png" alt="Convolution over volume" width="600"/>  
+
 You can stack multiple 2-D pixel matrix(height * width) to represent 3-D tensor(height * width * #channel). One thing to note is to match the number of channel of image and filters. So how do you convolve this pixel tensor with the 3D filter? Similar to 2-D convolution, take each numbers of the filter and multiply them with the corresponding numbers from the each channel of the tensor.  
 To put it simply using above image example, take the each $9$ numbers from the $3$ channels and multiply it with the corresponding $27$ numbers that gets covered by first left yellow cube show on the image. Then add up all those numbers and this gives you this first number in the output, and then to compute the next output you take this cube and slide it over by one, and again, due to 27 multiplications, add up the 27 numbers, that gives you this next output and so on.
 
@@ -69,7 +92,8 @@ From the above image, you have to match the number of channel to $3$. When perfo
 Unlike RGB images, grayscale images are singled channeled and can be described as a $w \times h$ matrix, in which every pixel represents information about the intensity of light.
 
 ### Multiple Filters
-![alt text](images/blog31_convolution_over_volume_2.png)
+<img src="images/blog31_convolution_over_volume_2.png" alt="Filter(Kernel), Feature Map and Channel" width="600"/>  
+
 When we want to detect not just single feature from the tensor, but multiple features, we can use multiple filters. (e.g., detect vertical, horizontal, 45 degree edges and so on)
 The output is the stack of the result of each convolution of filter. From the above image example, since it is using two filters to detect vertical and horizontal edges, the number of output is also two and you combine these two result.
 $$
@@ -219,6 +243,7 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
    - Softmax Function of 1000 output.
 
 ##### Overall
+
 [(CONV → RN → MP) * 2] → (CONV3 → MP) → [(FC → DO)*2] → Linear → Softmax
  - CONV = convolutional layer (with ReLU activation)
  - RN = local response normalization
@@ -228,6 +253,8 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
  - DO = dropout
 
 ##### Note on AlexNet
+<img src="images/blog31_alexnet_overall.png" alt="Alexnet Overall" width="600"/>  
+
 - AlexNet is similar to Lenet-5 but much bigger size.
 - Apply ReLu function to the every output of convolutional layer to add non-linearity.
 - It used max pooling.
@@ -242,6 +269,17 @@ $$
 - $b_i^{x,y}$​는 정규화 후 출력,
 - $N$은 커널 수, $k, n, \alpha, \beta$는 하이퍼파라미터입니다
 - 여기서 합은 동일한 공간 위치에서 nnnn개의 "인접한" 커널 맵에 대해 실행.
+
+##### GPU Partitioning
+Because AlexNet used two GPUs, Krizhevsky et al. split the kernels and feature maps evenly across GPUs to fit memory and bandwidth limits. (See image on "Note on AlexNEt" Section)
+
+| Layer | #kernels | Kernel size | Input channels | Output size (channels) | Split (GPU1 + GPU2)            |
+| ----- | -------- | ----------- | -------------- | ---------------------- | ------------------------------ |
+| Conv1 | 96       | (11×11×3)   | 3              | 96                     | 48 + 48                        |
+| Conv2 | 256      | (5×5×48)    | 48 per GPU     | 256                    | 128 + 128                      |
+| Conv3 | 384      | (3×3×256)   | 256 (all GPUs) | 384                    | **Fully connected (no split)** |
+| Conv4 | 384      | (3×3×192)   | 192 per GPU    | 384                    | 192 + 192                      |
+| Conv5 | 256      | (3×3×192)   | 192 per GPU    | 256                    | 128 + 128                      |
 
 #### VGG-16
 ![alt text](images/blog31_vgg16-1.png)
