@@ -259,6 +259,17 @@ https://robotchinwag.com/posts/linear-layer-deriving-the-gradient-for-the-backwa
 - Apply ReLu function to the every output of convolutional layer to add non-linearity.
 - It used max pooling.
 - It used local response normalization(which is turned out to be effectless), and dropout regularization with drop probability 0.5.
+- During learning, it use stochastic gradient descent with momentum and weight decay.
+
+##### Data Augmentation in AlexNet
+A common method to reduce overfitting on image data is to artificially enlarge the dataset.
+- Extracting random $224 \times 224$ patches (and their horizontal reflections) from the
+$256 \times 256$ images and training our network on these extracted patches. This increases the size of our
+training set by a factor of 2048, though the resulting training examples are, of course, highly interdependent.  
+$256 - 224 = 32, (32 +1) \times (32 + 1) = 1089, 1089 \times 2 = 2178 (\text{ almost }2048)$
+- Altering the intensities of the RGB channels in training images by performing PCA on the set of RGB pixel values throughout the training sets. To each training image, we add multiples of the found principal components with magnitudes proportional to the corresponding eigenvalues times a random variable drawn from
+a Gaussian with mean zero and standard deviation $0.1$.
+  - Adding $\mathbf{p}_1, \mathbf{p}_2, \mathbf{p}_3][\alpha_1 \lambda_1, \alpha_2 \lambda_2, \alpha_3 \lambda_3]^T$ to RGB image pixel $\mathbf{I}_{xy} = [\ \mathbf{I}_{xy}^{R}, \mathbf{I}_{xy}^{G}, \mathbf{I}_{xy}^{B}]$. ㅉhere $\mathbf{p}_i$ and $\lambda_i$ are ith eigenvector and eigenvalue of the $3 \times 3$ covariance matrix of RGB pixel values.
 
 ##### Local Response Normalization
 "비슷한 위치에 있는 여러 커널들(필터들)의 활성화 값들"을 묶어서 정규화하는 방식.
