@@ -77,21 +77,39 @@ semantic ID?
 ## Models
 CTR prediction Models
 https://medium.com/@lonslonz/추천-모델-개발-2-딥러닝-모델-29dbf704715
-## Wide and Deep Model
+### Wide and Deep Model
 https://arxiv.org/pdf/1606.07792
 
-## Deep and Cross Model
+### Deep and Cross Model
 https://arxiv.org/abs/1708.05123
 
-## Two Tower Model
+### Two Tower Model
 https://storage.googleapis.com/gweb-research2023-media/pubtools/5716.pdf
 https://storage.googleapis.com/gweb-research2023-media/pubtools/6090.pdf
 
-## Deep Learning Recommendation Mode(DLRM)
+### Deep Learning Recommendation Mode(DLRM)
 https://arxiv.org/pdf/1906.00091
 
-## Tabular Data Modeling Using Contextual Embeddings(TabTransformer)
+### Tabular Data Modeling Using Contextual Embeddings(TabTransformer)
 https://arxiv.org/pdf/2012.06678
 
 ### SPLADE Model
 https://arxiv.org/pdf/2107.05720
+
+#### Preliminaries
+##### Dense vs Sparse Embedding(Representation)
+https://milvus.io/ai-quick-reference/what-are-dense-and-sparse-embeddings
+
+##### Lasso Regression on shrinking coefficients to zero
+A regression model which uses the L1 Regularization technique is called LASSO (Least Absolute Shrinkage and Selection Operator) regression. It adds the absolute value of magnitude of the coefficient as a penalty term to the loss function(L). This penalty can shrink some coefficients to zero which helps in selecting only the important features and ignoring the less important ones.
+https://www.geeksforgeeks.org/machine-learning/regularization-in-machine-learning/
+
+##### Log-Saturation
+log 함수의 고유한 그래프 모양 때문에 입력 인자(arguments)의 크기가 아무리 넓게 분포되어 있더라도, log 함수를 거치면 그 상대적인 차이가 줄어들고 값들이 특정 범위 안에서 압축되어 서로 더 "비슷해지는" 경향을 보이는 것을 의미합니다.
+
+##### Term Weighting
+Term weighting is a procedure that takes place during the text indexing process in order to assess the value of each term to the document. Term weighting is the assignment of numerical values to terms that represent their importance in a document in order to improve retrieval effectiveness.
+
+##### Expansion (용어 확장)
+정의: 원본 텍스트(문서 또는 쿼리)에는 직접 나타나지 않지만, 텍스트의 의미와 밀접하게 관련된 다른 단어들을 해당 텍스트의 표현에 추가하는 과정입니다.
+목표: 전통적인 BoW 모델이 겪는 "어휘 불일치(lexical mismatch)" 문제를 해결하여, 쿼리와 문서가 동일한 단어를 사용하지 않더라도 의미상으로 관련성이 있다면 검색될 수 있도록 합니다.
