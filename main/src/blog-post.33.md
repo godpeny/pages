@@ -100,9 +100,84 @@ https://arxiv.org/pdf/2107.05720
 ##### Dense vs Sparse Embedding(Representation)
 https://milvus.io/ai-quick-reference/what-are-dense-and-sparse-embeddings
 
-##### Lasso Regression on shrinking coefficients to zero
-A regression model which uses the L1 Regularization technique is called LASSO (Least Absolute Shrinkage and Selection Operator) regression. It adds the absolute value of magnitude of the coefficient as a penalty term to the loss function(L). This penalty can shrink some coefficients to zero which helps in selecting only the important features and ignoring the less important ones.
-https://www.geeksforgeeks.org/machine-learning/regularization-in-machine-learning/
+##### L1 Regularization on shrinking coefficients to zero
+It adds the absolute value of magnitude of the coefficient as a penalty term to the loss function(L). This penalty can shrink some coefficients to zero which helps in selecting only the important features and ignoring the less important ones.  
+
+<b> How the L1 norm enforces sparsity in models </b>
+<img src="images/blog33_l1_l2_norm.png" alt="L1, L2_norm" width="400"/>   
+For L1, the gradient is either $1$ or $-1$, except for when $w_i=0$
+. That means that L1-regularization will move any weight towards 0 with the same step size, regardless the weight's value.  
+In contrast, in L2-regularization, gradient is linearly decreasing towards $0$ as the weight goes towards 0. Therefore, L2-regularization will also move any weight towards 0, but it will take smaller and smaller steps as a weight approaches 0.  
+
+For example, check below example.  
+<img src="images/blog33_l1_l2_norm_gradients.png" alt="L1, L2_norm Gradient" width="400"/>   
+In L1-Regularization(left), start with a model with $w_1 = 5$ and using learning rate $\eta = 0.5$. You can see how gradient descent using L1-regularization makes $10$ updates until reaching a model with $w_1=0$.
+$$ w_1 := w_1 - \eta \cdot \frac{dL_1(w)}{dw} = w_1 - \tfrac{1}{2} \cdot 1 $$  
+In constrast, with L2-regularization where $\eta=0.5$, the gradient is $w_1$, causing every step to be only halfway towards 0.
+$$ w_1 := w_1 - \eta \cdot \frac{dL_2(w)}{dw} = w_1 - \tfrac{1}{2} \cdot w_1 $$
+Therefore, the model never reaches a weight of 0, regardless of how many steps we take.
+
+<b> Combining original loss and penalty term(L1 norm) </b>  
+Since the regularization is just a penalty term, the next possible question is combined with loss function, there is also weight inside loss function, so how come these two combined can force weight to exact zero? Let's consider below loss function.
+$$
+J(w) = \underbrace{\mathcal{L}_{\text{data}}(w)}_{\text{fit term}} + \underbrace{\lambda \|w\|_1}_{\text{regularizer}}
+$$
+At the best weight $w^*$, the slope (or gradient) of the total loss 
+$J(w)$ should be zero, because if the slope isn’t zero, the optimizer would still move left or right. It can be formally represented as,
+$$
+0 \in \frac{\partial \mathcal{L}_{\text{data}}(w_i)}{\partial w_i} + \lambda \, \frac{\partial |w_i|}{\partial w_i}
+$$
+For all $w_i$.
+Simply it can be derived as <b>$0$ is in the set of all possible values of slope of the total loss $J(w)$</b>.  
+
+Also note that,
+$$
+\frac{\partial |w_i|}{\partial w_i} =
+\begin{cases}
++1, & w_i > 0, \\[6pt]
+-1, & w_i < 0, \\[6pt]
+[-1, +1], & w_i = 0
+\end{cases}
+$$
+
+Now, let's consider the case where $w_i =0$,
+$$
+0 \in \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} + \lambda \, [-1, +1]
+$$
+Since original eqaution holds for all $w_i$.  
+- $\frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i}$: the data loss term. a constant number that tells you how much the data would like to increase or decrease this weight.
+- $\lambda \, [-1, +1]$: at $0$, the L1 part can take any value between $-\lambda$ and $\lambda$.
+
+So, since data loss term is constant number and L1 part is range, there exists some $s_i \in [−1,+1]$ from L1 term such that,
+$$
+\frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} + \lambda s_i = 0
+$$
+Simply speaking, <b>we can find a value between −1 and +1 from L1 regularization part that perfectly cancels out the slope of the data loss</b>.  
+$$
+s_i = -\frac{1}{\lambda} \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i}
+$$
+Now, $w_i=0$ is a valid solution only if this $s_i$ is a valid subgradient, which means $s_i \in [−1,+1]$.
+$$
+-1 \le -\frac{1}{\lambda} \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} \le +1, \\[5pt]
+| \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} | \le \lambda
+$$
+
+So If $| \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} | \le \lambda$, $w_i = 0$, since original assumption was correct($w_i = w_i^* = 0$). In contrast, if $| \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} | \ge \lambda$, assumption was wrong and $w_i \neq 0$. 
+
+Let's interpret this result. 
+- $| \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} | \le \lambda$: If the gradient of the data loss with respect to $w_i$ is smaller in magnitude than $\lambda$, the L1 penalty term($\lambda$) can cance the data loss term and $w_i=0$ satisfies the optimality condition.
+- $| \frac{\partial \mathcal{L}_{\text{data}}(0)}{\partial w_i} | \le \lambda$: The data term is “too strong” and no $s_i$ can make the sum $0$.
+
+<b> Why not L2? </b>  
+$$
+J(w) = \mathcal{L}_{\text{data}}(w) + \lambda \|w\|_2^2 = \mathcal{L}_{\text{data}}(w) + \lambda \sum_i w_i^2 \\[5pt]
+J(w_i) = \mathcal{L}_{\text{data}}(w_i) + \lambda w_i^2 \\[5pt]
+\frac{\partial J}{\partial w_i} = \frac{\partial \mathcal{L}_{\text{data}}}{\partial w_i} + 2\lambda w_i = 0 \\[5pt]
+w_i = -\frac{1}{2\lambda} \frac{\partial \mathcal{L}_{\text{data}}}{\partial w_i}
+$$
+You can see that the optimal weight, $w_i$ is proportional to the data gradient. So to make optimal weight zero, the data term has to be exact zero which is rare.  
+Another intuition is that, since $w_i$ is inside the gradient $2 \lambda w_i$, as weight shrinks, also gradient shrinks, so it slows down and never actually reaches zero.
+
 
 ##### Log-Saturation
 log 함수의 고유한 그래프 모양 때문에 입력 인자(arguments)의 크기가 아무리 넓게 분포되어 있더라도, log 함수를 거치면 그 상대적인 차이가 줄어들고 값들이 특정 범위 안에서 압축되어 서로 더 "비슷해지는" 경향을 보이는 것을 의미합니다.
