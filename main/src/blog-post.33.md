@@ -56,8 +56,30 @@ actual proportions of data points in the available data. Analogously(Similarly),
 Reference - https://dl.acm.org/doi/pdf/10.1145/3240323.3240372
 
 ### Follow The Regularized Leader (FTRL)
-https://optimization.cbe.cornell.edu/index.php?title=FTRL_algorithm
-https://keras.io/2/api/optimizers/ftrl/
+The FTRL (Follow the Regularized Leader) family of learning algorithms is a core set of learning methods used in online learning. As a type of FTL (Follow the Leader) algorithm, they select a weight function at each timestep that minimizes the loss of all previously observed data. To reduce computational complexity, implementations of the FTRL algorithm generally utilize a linearized loss function, while a regularizer ensures solution stability by limiting changes to the weight vector.  
+
+$$
+{\displaystyle w_{t+1}=\arg \min \left(f(w)\right)}, \quad {\displaystyle f(w)=l_{1:t}(w)+R(w)}
+$$
+Where ${\displaystyle l_{1:t}(w)}$ represents the cumulative loss of all previous observations, and ${\displaystyle R(w)}$ is a regularization term. Solving this objective, however, is extremely computationally expensive, as the loss must be expanded and recomputed for all past data points whenever new data is introduced. 
+
+To address this, most implementations of the algorithm approximate the loss using a linearized loss function, leveraging the gradient of the original loss to reduce computational complexity. That is applying first-order Taylor Series.
+
+$$
+l_i(w) \approx l_i(w_t) + \nabla l_i(w_t) \cdot (w - w_t)
+$$
+
+Unlike other machine learning algorithms that iteratively step along this gradient upon each update step, FTRL minimizes an optimization problem upon each update step, where instead the regularization places a limit on the step size.
+
+$$
+w_{t+1} = \arg\min_w \left( \sum_{i=1}^t l_i(w) + R(w) \right)
+$$
+Don't confuse that FTRL is not like keeping a separate weight for each loss, rather, FTRL finds one weight vector that balances all past losses together.  
+
+So put it simply, FTRL’s idea can be represented as follow.  
+"Let’s find the single best weight vector $w$ that would have minimized the total loss so far.”
+
+reference: https://optimization.cbe.cornell.edu/index.php?title=FTRL_algorithm
 
 ### Radial Basis Function (RBF) kernel
 RBF kernel is a popular kernel function used in various kernelized learning algorithms. In particular, it is commonly used in support vector machine classification. Since the value of the RBF kernel decreases with distance and ranges between zero (in the infinite-distance limit) and one (when $x = x'$), it has a ready interpretation as a similarity measure.  
