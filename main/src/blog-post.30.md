@@ -335,4 +335,9 @@ while the cons are,
  - May need large amount of data.
  - Excludes potentially useful hand-designed components.
 
+## SHapley Additive exPlanations (SHAP)
+https://arxiv.org/pdf/1705.07874
+https://forest62590.tistory.com/29
 
+## ROC AOC
+https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
