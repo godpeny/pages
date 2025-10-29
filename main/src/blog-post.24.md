@@ -132,7 +132,7 @@ $$
 $$
 
 ## Decision Tree
-## Ensmeble
+## Ensemble
 Ensemble means ‘a collection of things’ and in Machine Learning terminology, Ensemble learning refers to the approach of combining multiple ML models to produce a more accurate and robust prediction compared to any individual model.  
 The idea is to train a diverse set of weak models on the same modelling task, such that the outputs of each weak learner have poor predictive ability (i.e., high bias), and among all weak learners, the outcome and error values exhibit high variance.  
 The set of weak models — which would not produce satisfactory predictive results individually — are combined or averaged to produce a single, high performing, accurate, and low-variance model to fit the task as required.  
@@ -232,6 +232,12 @@ As you can see, the weightings for each example begin out even, with misclassi�
 The final aggregate classifier is a summation of all the weak learners, weighted by the negative log-odds of the weighted error.  
 
 Also, each new weak learner is no longer independent of the previous models in the sequence, meaning that increasing $M$ leads to an increase in the risk of overfitting.
+
+#### XGboost
+https://en.wikipedia.org/wiki/XGBoost
+
+#### Gradient Boosting Machine (GBM)
+https://en.wikipedia.org/wiki/Gradient_boosting
 
 #### Generalized Additive Model
 Many classification and regression models can be written as a linear combination of some simpler models (as below), 
