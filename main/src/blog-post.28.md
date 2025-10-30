@@ -986,3 +986,79 @@ Re-Recap with (1)Preprocessing, (2)Detect terminal state, (3)Experience replay a
     - **Check** if `s'` is a terminal state  
       (compute targets `y` by forward propagating φ(s') in the Q-network, then compute loss)
     - **Update** parameters with gradient descent
+
+## Reward Sparsity 
+강화 학습 에이전트가 환경과 상호작용하면서 보상을 받는 빈도가 매우 낮을 때 발생하는 문제입니다.
+즉, 에이전트가 수많은 행동을 시도하지만, 보상(긍정적 또는 부정적 피드백)은 아주 가끔, 주로 작업이 성공적으로 완료되거나 완전히 실패했을 때만 주어지는 상황입니다.
+이러한 환경에서는 에이전트가 어떤 행동이 좋은 결과를 가져오고 어떤 행동이 나쁜 결과를 가져오는지 학습하기가 매우 어렵습니다. 특정 행동이 보상에 어떻게 기여했는지 파악하기 어렵기 때문에 'credit assignment problem(신용 할당 문제)'이 발생하며, 이는 학습 효율성을 크게 저해하고 수렴을 늦춥니다.
+예를 들어, LLM이 복잡한 추론 과정을 거쳐야 하는 질문에 대해 정답을 맞히거나 틀렸을 때만 보상을 받는다면, 그 과정 속의 수많은 중간 추론 단계들은 어떤 보상도 받지 못해 모델이 올바른 추론 경로를 학습하기 어렵습니다.
+
+## Proximal Policy Optimization Algorithms (PPO)
+Like all policy gradient methods, PPO is used for training an RL agent whose actions are determined by a differentiable policy function by gradient ascent.
+
+Intuitively, a policy gradient method takes small policy update steps, so the agent can reach higher and higher rewards in expectation. Policy gradient methods may be unstable: A step size that is too big may direct the policy in a suboptimal direction, thus having little possibility of recovery; a step size that is too small lowers the overall efficiency.
+
+To solve the instability, PPO implements a clip function that constrains the policy update of an agent from being too large, so that larger step sizes may be used without negatively affecting the gradient ascent process.
+
+The PPO loss function can be defined as following.
+$$
+\mathcal{J}_{\text{PPO}}(\theta)
+= \mathbb{E}\!\left[
+\frac{1}{|o|} \sum_{t=1}^{|o|}
+\min\!\Big(
+r_t(\theta) A_t,\,
+\text{clip}\big(r_t(\theta), 1 - \varepsilon, 1 + \varepsilon\big) A_t
+\Big)
+\right], \quad
+r_t(\theta) = \frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})}
+$$
+- $\pi_\theta, \pi_{\theta_{\text{old}}}$: the current and old policy models.
+- $\pi_\theta(o_t \mid q, o_{<t})$: The probability (under the model parameters $\theta$) of generating token $o_t$, given the input prompt $q$ and all previously generated tokens $o_{<t}$.
+- $q,o$:questions and outputs sampled from the question dataset and the old policy, $\pi_{\theta_{\text{old}}}$ respectively. 
+- $\varepsilon$: a clipping-related hyper-parameter introduced in PPO for stabilizing training. 
+- $A_t$: the advantage, which is computed by applying Generalized Advantage Estimation(GAE).
+- clip
+  - $r_t(\theta) > 1 + \varepsilon$: the new model gives too high probability to the same action → clip it.
+  - $r_t(\theta) < 1 + \varepsilon$: it gives too low probability → also clip it.
+
+You can see that PPO prevents large destructive updates, keeping the new policy “close” to the old one using clip method. That’s what stabilizes PPO training compared to vanilla policy gradient.
+
+The reward model with KL-penalty is defined as following.
+$$
+r_t = r_\phi(q, o_{\le t}) - \beta \log \frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\text{ref}}(o_t \mid q, o_{<t})}
+$$
+- $r_\phi$: learned reward model that gives a scalar score $r_\phi$ telling the model how human-preferred its output $o$ is for a given input $q$. It is leared separately, so it’s fixed during PPO.
+- $\pi_{\text{ref}}$: it penalizes the current policy if it drifts too far from the original supervised model. It is also not trainable.  
+
+So the first term $r_\phi(q, o_{\le t})$ encourages better answers, while the second term (KL-penalty = KL-divergence) discourages large changes from the original model.
+
+Now, the advantage is computed from a sequence of $r_t$ values via Generalized Advantage Estimation (GAE).
+$$
+A_t = \sum_{k=0}^{\infty} (\gamma \lambda)^k
+\big( r_{t+k} + \gamma V_\psi(o_{t+k+1}) - V_\psi(o_{t+k}) \big), \quad 
+V_\psi(o_t) \approx \mathbb{E}[R_t \mid o_t]
+$$
+where $R_t$ is the expected future cumulative reward starting from token $o_t$.
+Since $V_\psi(o_t)$ is a value model, it gives a baseline estimate of how good that situation already was.
+
+Altogether, <b>reward → advantage → PPO optimization</b>. Check below image to clarify the understanding.
+<img src="images/blog28_ppo_grpo.png" alt="ppo and grpo architecture" width="600"/>  
+
+## Group Relative Policy Optimization (GRPO)
+GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
+in PPO, and instead uses the average reward of multiple sampled outputs, produced in response to the same question, as the baseline.  
+More specifically, for each question 𝑞, GRPO samples a group of outputs $\{o_1, o_2, \cdots, o_G\}$ from the old policy $\pi_{\theta_{\text{old}}}$ and then optimizes the policy model by maximizing the following objective.
+$$
+\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{q \sim P(Q), \{o_i\}_{i=1}^{G} \sim \pi_{\theta_{\text{old}}}(O|q)} \left[ \frac{1}{G} \sum_{i=1}^{G} \frac{1}{|o_i|} \sum_{t=1}^{|o_i|} \left\{ \min \left[ \frac{\pi_{\theta}(o_{i,t}|q, o_{i,<t})}{\pi_{\theta_{\text{old}}}(o_{i,t}|q, o_{i,<t})} \hat{A}_{i,t}, \text{clip}\left(\frac{\pi_{\theta}(o_{i,t}|q, o_{i,<t})}{\pi_{\theta_{\text{old}}}(o_{i,t}|q, o_{i,<t})}, 1-\varepsilon, 1+\varepsilon\right) \hat{A}_{i,t} \right] \right\} - \beta \mathbb{D}_{\text{KL}} \left[ \pi_{\theta} \| \pi_{\text{ref}} \right] \right]
+$$
+Also note that it uses modified KL-diverge term unlike PPO.
+$$
+\mathbb{D}_{KL} [\pi_\theta || \pi_{ref}] = \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - \log \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - 1
+$$
+
+How to calculate advantage term, $\hat{A}_{i,t}$? For each question $q$, a group of outputs $\{o_1, o_2, \cdots, o_G\}$ are sampled from the old policy model $\pi_{\theta_{\text{old}}}$. A reward model is then used to score the outputs, yielding $G$ rewards $r = \{r_1, r_2, \cdots, r_G \}$ correspondingly. Then set the advantages $\hat{A}_{i,t}$ of all tokens in
+the output as the normalized reward as following.
+$$
+\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \mathrm{mean}(\mathbf{r})}{\mathrm{std}(\mathbf{r})}
+$$
+Again, like PPO, optimize the policy by maximizing the objective function using advantages.
