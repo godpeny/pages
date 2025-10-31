@@ -158,6 +158,14 @@ Soft throttling provides a more generous approach. Instead of outright rejecting
 ### Envy-Freeness
 Envy-freeness is a criterion for fair division. When resources are allocated among people with equal rights, each person should receive a share that is, in their eyes, at least as good as the share received by any other agent. In other words, no person should feel envy.
 
+### Oversampling and Undersampling
+#### Oversampling
+Oversampling make a dataset more balanced when one group has a lot fewer examples than the other. The way it works is by making more copies of the examples from the smaller group. This helps the dataset represent both groups more equally.
+
+#### Undersampling
+On the other hand, undersampling works by deleting some of the examples from the bigger group until it’s almost the same in size to the smaller group. In the end, the dataset is smaller, sure, but both groups will have a more similar number of examples.
+
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
