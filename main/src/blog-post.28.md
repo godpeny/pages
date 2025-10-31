@@ -1062,3 +1062,6 @@ $$
 \hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \mathrm{mean}(\mathbf{r})}{\mathrm{std}(\mathbf{r})}
 $$
 Again, like PPO, optimize the policy by maximizing the objective function using advantages.
+
+## Trajectory in RL
+A "trajectory" is the sequence of what has happened (in terms of state, action, reward) over a set of contiguous timestamps, from a single episode, or a single part of a continuous problem.
