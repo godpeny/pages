@@ -1044,6 +1044,14 @@ Since $V_\psi(o_t)$ is a value model, it gives a baseline estimate of how good t
 Altogether, <b>reward → advantage → PPO optimization</b>. Check below image to clarify the understanding.
 <img src="images/blog28_ppo_grpo.png" alt="ppo and grpo architecture" width="600"/>  
 
+| Model               | Symbol                                   | Trainable?               | Input                                   | Output                                   | Role / Purpose                                                                    | How it’s Used                                                                   |
+| ------------------- | ---------------------------------------- | ------------------------ | --------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Policy Model**    | $\pi_\theta(o_t \mid q, o_{<t})$      | ✅ **Yes**                | Prompt (q), previous tokens ($o_{<t}$)    | Probability of next token ($o_t$)          | The model being trained — learns to generate better, more human-aligned responses | Updated via PPO objective using **advantage** ($A_t$)                             |
+| **Value Model**     | $V_\psi(o_t)$                          | ✅ **Yes**                | Current context ($o_t$) (or ($q, o_{<t})$)  | Predicted value (expected future reward) | Acts as a **critic**, estimating expected return from the current state           | Used in **GAE** and to reduce variance in advantage estimates                   |
+| **Reward Model**    | $r_\phi(q, o_{\le t})$                 | ✅ **Yes** *(pretrained)* | Prompt (q) and model output ($o_{\le t}$) | Scalar reward score                      | Trained from human preference data to evaluate “quality” of model outputs         | Provides reward signal ($r_t)$ during PPO training                                |
+| **Reference Model** | $\pi_{\text{ref}}(o_t \mid q, o_{<t})$ | ❌ **No (frozen)**        | Same as policy model                    | Probability of next token                | Acts as a **baseline policy** — keeps new model close to original SFT model       | Used in **KL penalty** term ( $-\beta \log \frac{\pi_\theta}{\pi_{\text{ref}}}$ ) |
+
+
 ## Group Relative Policy Optimization (GRPO)
 GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
 in PPO, and instead uses the average reward of multiple sampled outputs, produced in response to the same question, as the baseline.  
