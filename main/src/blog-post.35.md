@@ -7,3 +7,7 @@ For example,
 <img src="images/blog35_contrasive_learning.png" alt="Contrasive Learning" width="400"/>   
 
 As shown in the example above, two images belonging to the same class lie close to each other in the embedding space (“d+”), and those belonging to different classes lie at a greater distance from each other (“d-”). Thus, a contrastive learning model (denotes by “theta” in the example above) tries to minimize the distance “d+” and maximize the distance .
+
+## Reference
+https://arxiv.org/pdf/2002.05709
+https://www.v7labs.com/blog/contrastive-learning-guide
