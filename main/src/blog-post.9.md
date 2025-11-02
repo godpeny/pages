@@ -9,7 +9,7 @@ The discriminative model tries to tell the difference between handwritten 0's an
 In contrast, the generative model tries to produce convincing 1's and 0's by generating digits that fall close to their real counterparts in the data space. It has to model the distribution throughout the data space.
 
 ### Generative Learning Models (GLA)
- - Generative model is a model of the conditional probability of the observable $X$, given a target $y$, symbolically, $P(Y \mid X=x)$
+ - Generative model is a model of the conditional probability of the observable $X$, given a target $y$, symbolically, $P(X \mid Y=y)$
  - Generative model is a statistical model of the joint probability distribution $P(X, Y)$ on a given observable variable $X$ and target variable $Y$. A generative model can be used to "generate" random instances (outcomes) of an observation $x$.
  - Generative model includes the distribution of the data itself, and tells you how likely a given example is. e.g., models that predict the next word in a sequence are typically generative models (usually much simpler than GANs) because they can assign a probability to a sequence of words.
  - For example, Naive Bayes classifier, GAN and Gaussian Discriminant Analysis(GDA).   
