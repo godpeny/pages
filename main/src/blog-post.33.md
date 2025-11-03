@@ -231,3 +231,10 @@ Term weighting is a procedure that takes place during the text indexing process 
 ##### Expansion (용어 확장)
 정의: 원본 텍스트(문서 또는 쿼리)에는 직접 나타나지 않지만, 텍스트의 의미와 밀접하게 관련된 다른 단어들을 해당 텍스트의 표현에 추가하는 과정입니다.
 목표: 전통적인 BoW 모델이 겪는 "어휘 불일치(lexical mismatch)" 문제를 해결하여, 쿼리와 문서가 동일한 단어를 사용하지 않더라도 의미상으로 관련성이 있다면 검색될 수 있도록 합니다. 즉, Bag-of-Words(BOW) 모델은 쿼리에 있는 단어가 문서에 없으면 아무리 의미적으로 관련성이 높아도 해당 문서를 찾지 못하는 '단어 불일치' 문제에 취약합니다. Expansion은 쿼리나 문서에 직접적으로 나타나지 않더라도 의미적으로 관련된 단어들을 추가하거나 기존 단어의 중요도를 재조정함으로써 이 문제를 해결하고자 합니다. SPLADE와 같은 모델에서는 입력된 쿼리 또는 문서의 토큰(단어)들을 기반으로 전체 단어장(vocabulary) 내의 모든 단어에 대한 중요도(weight)를 예측합니다. 즉, 원본 텍스트에 없던 단어라도 문맥상 관련성이 높다고 판단되면 해당 단어에 0이 아닌 가중치를 부여하여 벡터 표현에 포함시킵니다.
+
+
+### Self-Attentive Sequential Recommendation (SASRec)
+https://arxiv.org/pdf/1808.09781
+
+### Duo Rec
+https://arxiv.org/pdf/2110.05730
