@@ -238,3 +238,9 @@ https://arxiv.org/pdf/1808.09781
 
 ### Duo Rec
 https://arxiv.org/pdf/2110.05730
+
+## Matrix Factorization in Recommender Systems
+https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
+
+## Factorized Personalized MC(Markov Chains) Model
+https://cseweb.ucsd.edu/classes/fa17/cse291-b/reading/p811.pdf
