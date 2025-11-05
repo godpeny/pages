@@ -369,6 +369,68 @@ Matrix C (A @ B):
  [[47 36]
   [83 64]]] // a_2 @ b_2
 ```
+
+### Adjacency Matrix
+In graph theory and computer science, an adjacency matrix is a square matrix used to represent a finite graph. The elements of the matrix indicate whether pairs of vertices are adjacent or not within the graph.
+
+$$
+W_{ij} =
+\begin{cases}
+1, & \text{노드 } i \rightarrow j \text{ 로 간선이 있을 때} \\
+0, & \text{없을 때}
+\end{cases}
+$$
+즉, 인접행렬(Adjacency Matrix) $W$의 $(i,j)$ 원소는
+“한 번의 이동(step)으로 $i$에서 $j$로 갈 수 있는가?”를 나타냅니다.  
+같은 방식으로, $i$에서 $j$까지 $n$개의 간선을 거쳐 도달할 수 있는 모든 경로의 가중치 합은, 
+$$
+(W^n)_{ij} = \sum_{k_1, \dots, k_{n-1}}
+W_{i k_1} W_{k_1 k_2} \cdots W_{k_{n-1} j}
+$$
+이 때, $W^n$ 원소는 $n$-step 모든 경로의 가중치 합 이 됩니다.  
+
+예를 들어, 아래 인접행렬 $W$는 2-step 일 때 $1 \rightarrow 2 \rightarrow 3$ 경로 하나만 가능하다는 걸 보여줍니다. 하지만 세 번 이상 가는 경로는 없으므로 사이클이 없는 DAG 임을 알 수 있습니다. 
+$$
+W =
+\begin{bmatrix}
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+0 & 0 & 0
+\end{bmatrix} \\[5pt]
+
+W^2 =
+\begin{bmatrix}
+0 & 0 & 1 \\
+0 & 0 & 0 \\
+0 & 0 & 0
+\end{bmatrix} \\[5pt]
+
+W^3 = 0
+$$
+반면, 아래 행렬은 $1 \rightarrow 2$ 로,$2 \rightarrow 1$로 $2$-step 사이클 존재 하므로, $W^{2} = I$ 가 됩니다. 따라서 $W^{k}$ 는 결코 $0$이 되지 않고 순환 구조를 가집니다.
+
+$$
+W =
+\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix} \\[5pt]
+
+W^2 =
+\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix}
+$$
+
+하지만 이론적으로 “인접행렬을 계속 제곱하면 사이클을 찾을 수 있다” 는 건 맞지만, 실제 계산에서는 “그 방법이 너무 비효율적이고 수치적으로 불안정하기 때문”에 그래프 이론에서는 다른 알고리즘을 사용합니다.
+| 알고리즘                 | 아이디어                            | 시간복잡도     | 특징              |
+| -------------------- | ------------------------------- | --------- | --------------- |
+| **DFS 기반 사이클 탐지**    | 방문한 노드 재방문 시 사이클 판정             | O(V+E)    | 가장 직관적, 코드 간단   |
+| **Topological sort** | DAG은 위상정렬 가능, 실패하면 사이클          | O(V+E)    | DAG 판정용         |
+| **Tarjan’s SCC**     | Strongly Connected Component 분해 | O(V+E)    | 방향 그래프용, 가장 일반적 |
+| **Union-Find**       | 연결성 추적 (무방향 그래프용)               | O(E α(V)) | 빠르고 간단          |
+
 ## Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line.  
 (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
@@ -383,7 +445,7 @@ x = \sum_{i=1}^{m} \alpha_i x^{(i)}
 $$
 For some $\alpha_i$’s so that $\sum_{i=1}^{m} \alpha_i x^{(i)} = 1$
 
-### Matrix Representation as row/column vector
+## Matrix Representation as row/column vector
 
 
 ## Bounded/Unbounded
