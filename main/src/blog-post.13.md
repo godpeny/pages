@@ -262,3 +262,75 @@ $x^*, \lambda^*, \nu^*$ satisfies KKT conditions.
 - https://ratsgo.github.io/convex%20optimization/2018/01/25/duality/
 - https://ratsgo.github.io/convex%20optimization/2018/01/26/KKT/
 - https://lee-jaejoon.github.io/optimization-lagrange-kkt/
+
+## Related Theorories
+### Penalty Method
+In mathematical optimization, penalty methods are a certain class of algorithms for solving constrained optimization problems. A penalty method replaces a constrained optimization problem by a series of unconstrained problems whose solutions ideally converge to the solution of the original constrained problem. 
+
+### Augmented Lagrangian Method
+Augmented Lagrangian methods are a certain class of algorithms for solving constrained optimization problems. They have similarities to penalty methods in that they replace a constrained optimization problem by a series of unconstrained problems and add a penalty term to the objective, but the augmented Lagrangian method adds yet another term designed to mimic a Lagrange multiplier.
+
+### Penalty Method vs Lagransian Method vs Augmented Lagrangian Method
+
+| Method                                | Core idea                                                                              | Mathematical form                                   | Conceptual description                                                                      |
+| :------------------------------------ | :------------------------------------------------------------------------------------- | :-------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| **Penalty Method**                    | Add a **fixed penalty term** to discourage constraint violations.                      | $f(x) + \dfrac{\rho}{2} \mid\mid g(x)\mid\mid^{2} $                  | Constraints are *softly enforced* — larger ( $\rho$ ) ⇒ stronger penalty.                     |
+| **Lagrangian Method**                 | Add a **variable penalty** (Lagrange multiplier) that adapts to constraint violations. | $( f(x) + \lambda^T g(x) )$                           | Constraint enforcement is *learned* via adaptive weights ( $\lambda$ ).                       |
+| **Augmented Lagrangian Method (ALM)** | Combine both: Lagrange multipliers + quadratic penalty term.                           | $f(x) + \lambda^T g(x) + \dfrac{\rho}{2} \mid \mid g(x) \mid \mid^{2}$ | Uses **λ** for adaptive enforcement and **ρ** for numerical stability & faster feasibility. |
+
+### NOTEARS (Non-combinational Combinational Optimization via Trace Exponential and Augmented lagRangian for Structure learning)
+관측된 데이터로부터 DAG(Directed Acyclic Graph) 형태의 인과 구조를 자동으로 학습하는 알고리즘을 말합니다. NOTEARS의 핵심 아이디어는,비순환성(Acyclicity)을 수치적으로 표현해, 딥러닝에서 사용하는 Gradient Descent 방식으로 인과 구조(Structural Equation Model) 의 adjacency matrix $W$ 를 학습할 수 있도록 만든 것입니ek. 쉽게 말하면,  
+<b>“그래프가 DAG이려면 사이클(cycle) 이 없어야 하는데,
+이 ‘사이클 없음’ 조건을 수학적으로 연속적인 형태(미분가능한)로 바꿔서 gradient descent로 풀자.”</b>  
+
+<img src="images/blog13_notears.png" alt="Markov Chain" width="600"/>   
+
+$$
+\min_W \; L(W) 
+\quad \text{s.t.} \quad h(W) = 0 \\[5pt]
+h(W) = \operatorname{tr}\!\left(e^{W \circ W}\right) - d = 0
+$$
+- $L(W)$: 손실 함수
+- $h(W)$: 제약 조건(사이클이 없음)
+- $\epsilon$: 허용 오차 (DAG 제약이 얼마나 만족되면 끝낼지)
+- $c$: 진행률 (0~1 사이, 제약 완화 속도)
+- $w$: 지막에 작은 값들을 0으로 만드는 임계치 (threshold)
+
+NOTEARS는 Augmented Lagrangian Method (ALM) 를 사용합니다. 아래 손실함수를 반복적으로 최소화하면서 $W$(primal variable)과 $\alpha$ (dual variable, 즉 라그랑주 승수)를 번갈아 업데이트합니다. (그림의 (a), (b))
+$$
+L^{\rho}(W, \alpha) 
+= L(W) + \alpha \, h(W) + \frac{\rho}{2} h(W)^2
+$$
+
+그리고 (c)에서 보듯이, DAG 제약 위반이 충분히 작아지면 (즉, 거의 DAG이면) 반복 종료하고 $\tilde{W}_{ECP} = W_{t+1}$로 둡니다. 그리고 3번에서 $|\tilde{W}_{ECP}| > w$ 로 절대값이 임계값($w$)보다 작은 간선 가중치는 0으로 만든 후 element 곱을 하여 임계값보다 작은 간선은 0으로 만듭니다. 
+
+여기서 주목해야 할 것은 $h(W)$ 인데, 제약조건을 매끄러운 함수 $h(W)$ 로 바꿔서 gradient descent로 풀 수 있게 되는 것이 핵심입니다. 즉, 인과 그래프 $W$를 구조학습을 미분 가능한 형태로 풀 수 있게 됩니다.
+
+먼저, $W^{k}_{ij}​$ 는 노드 $i$에서 $j$까지 길이 $k$인 경로의 수 또는 가중치를 뜻하므로, 아래 $\exp(W)$는 “모든 길이의 경로를 합친 것” 이 됩니다.
+각 항은 길이 1, 2, 3, … 인 경로들의 기여도를 모두 담고 있죠.
+$$
+\exp(W) = I + W + \frac{1}{2!}W^2 + \frac{1}{3!}W^3 + \cdots
+$$
+
+그리고 trace는 노드 $i$에서 시작해서 $i$로 다시 돌아오는 (길이 $k$) 닫힌 경로(closed path) 들의 가중치 합을 뜻합니다. 
+$$
+\operatorname{tr}(W^k) = \sum_i (W^k)_{ii}
+$$
+- 사이클이 있으면 어떤 $k$에 대하여 $W^k_{ii} > 0$
+- 사이클이 없으면 모든 $k \geq 1$ 에 대하여 $W^k_{ii} > 0$
+
+다시 원래 $h(W)$를 보면,
+$$
+h(W) = \operatorname{tr}\!\left(e^{W \circ W}\right) - d = 0
+$$
+1. $W \circ W$: (원소별 제곱)은 간선 가중치의 부호를 없애고, “연결이 있으면 양수”로 만들어줌.
+2. $e^{W \circ W} = I + W^{1} + \frac{1}{2!}W^{2} + \frac{1}{3!}$
+3. $\operatorname{tr}\!\left(e^{W \circ W}\right) $ : 모든 닫힌 경로(시작점과 끝점이 같은 경로)의 기여도가 전부 더해짐.
+
+따라서, 아래의 두 조건부 명제가 성립합니다.
+- $h(W) > 0$: 싸이클 존재 하는 그래프
+- $h(W) = 0$: DAG
+
+<b>NOTEARS는 그래프 매트릭스를 아다마르 제곱한 거에 ALM을 적용해 만든 제약함수 $h(W)$를 이용해서 W를 학습시켜서 최종적으로 $h(W) < \epsilon$ 이 되는 시점까지 학습을 해서 그래프 매트릭스 $W$가 cycle이 없도록 한다. </b>   
+
+하나 더, 여기서 $h(W)$가 아주 작다는 건 사이클이 존재하더라도, 그 가중치가 거의 0이다. (즉, 사이클의 영향력이 무시 가능한 수준 = 거의 DAG처럼 동작한다.) 그래서 마지막 (3)에서 가중치가 아주 작은 간선들은 ($|\tilde{W}_{ECP}| < \epsilon $) 강제로 0으로 만들어서 DAG로 만들어버립니다.
