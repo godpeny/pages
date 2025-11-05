@@ -165,6 +165,9 @@ Oversampling make a dataset more balanced when one group has a lot fewer example
 #### Undersampling
 On the other hand, undersampling works by deleting some of the examples from the bigger group until it’s almost the same in size to the smaller group. In the end, the dataset is smaller, sure, but both groups will have a more similar number of examples.
 
+### Structural Causal Model (SCM)
+In metaphysics and statistics, SCM is a conceptual model that represents the causal mechanisms of a system. Causal models often employ formal causal notation, such as structural equation modeling or causal directed acyclic graphs (DAGs), to describe relationships among variables and to guide inference.
+
 
 ## A.I Related Terminology
 ### Supervised Learning
