@@ -120,7 +120,7 @@ https://arxiv.org/pdf/1906.00091
 https://arxiv.org/pdf/2012.06678
 
 ### SPLADE Model
-https://arxiv.org/pdf/2107.05720
+check "images/blog33_splade.pdf"  
 
 #### Preliminaries
 ##### Neural Information Retrieval
