@@ -503,3 +503,5 @@ https://www.isca-archive.org/interspeech_2016/chen16m_interspeech.pdf
 https://arxiv.org/pdf/1512.02595
 https://arxiv.org/abs/1609.03499
 
+## BERT
+https://arxiv.org/pdf/1810.04805
