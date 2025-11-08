@@ -1,5 +1,49 @@
 # Natural Language Processing (NLP)
 ## Preliminaries
+### Denotational Semantics
+An approach of formalizing the meanings of programming languages by constructing mathematical objects (called denotations) that describe the meanings of expressions from the languages. 
+```
+signifier (symbol) ⟺ signified (idea or thing)
+```
+For example, WordNet, a thesaurus(dictionary of synonyms) containing lists of synonym sets and hypernyms. 
+```
+noun: good
+noun: good, goodness
+noun: good, goodness
+noun: commodity, trade_good, good
+adj: good
+adj (sat): full, good
+adj: good
+adj (sat): estimable, good, honorable, respectable
+adj (sat): beneficial, good
+adj (sat): good
+adj (sat): good, just, upright
+…
+adverb: well, good
+adverb: thoroughly, soundly, good
+```
+These are synonym sets containing “good”
+```
+[Synset('procyonid.n.01'),
+Synset('carnivore.n.01'),
+Synset('placental.n.01'),
+Synset('mammal.n.01'),
+Synset('vertebrate.n.01'),
+Synset('chordate.n.01'),
+Synset('animal.n.01'),
+Synset('organism.n.01'),
+Synset('living_thing.n.01'),
+Synset('whole.n.02'),
+Synset('object.n.01'),
+Synset('physical_entity.n.01'),
+Synset('entity.n.01')]
+```
+These are hypernyms of “panda”.
+
+### Distributional Semantics
+A word’s meaning is given by the words that frequently appear close-by. It is one of the most successful ideas of modern statistical NLP.  
+When a word w appears in a text, its context is the set of words that appear nearby within a fixed-size window (Skip-Gram). Simply speaing We use the many contexts of w to build up a representation of w.
+
 ### Cosine Similarity
 ![alt text](images/blog3_cosine_sim.png)  
 
