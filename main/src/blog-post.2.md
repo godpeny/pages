@@ -99,6 +99,12 @@ $$
 $$
 Where $P$ and $Q$ be probability density functions of $p$ and $q$.
 
+### Maximum Likeliihood Estimation, KL Divergence and Cross Entropy
+https://medium.com/intro-to-artificial-intelligence/the-link-between-maximum-likelihood-estimation-mle-and-cross-entropy-599cc1414753
+
+https://medium.com/@mrthinger/kl-divergence-vs-cross-entropy-exploring-the-differences-and-use-cases-3f3dee58c452
+
+
 ### Cross Entropy Loss vs Negative Log Likelihood
 Cross entropy is negative log likelihood.  
 It is because minimizing cross entropy is same as maximizing  log likelihood.
