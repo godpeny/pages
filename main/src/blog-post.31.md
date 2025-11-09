@@ -79,6 +79,9 @@ $$
 \left\lfloor \frac{n + 2p - f}{s} + 1 \right\rfloor
 $$
 
+### K-nearest neighbors algorithm
+In the classification phase, $k$ is a user-defined constant, and an unlabeled vector is classified by assigning the label which is most frequent among the $k$ training samples nearest to that query point. A commonly used distance metric for continuous variables is Euclidean distance.
+
 ## Convolutional Network
 ### Convolution over volume
 ![alt text](images/blog31_convolution_over_volume_1.png)
