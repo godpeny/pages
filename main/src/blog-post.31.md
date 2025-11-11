@@ -82,6 +82,15 @@ $$
 ### K-nearest neighbors algorithm
 In the classification phase, $k$ is a user-defined constant, and an unlabeled vector is classified by assigning the label which is most frequent among the $k$ training samples nearest to that query point. A commonly used distance metric for continuous variables is Euclidean distance.
 
+### Spatial Pooling
+Spatial pooling is a technique used in convolutional neural networks to reduce the spatial dimensions (width and height) of feature maps while retaining important information. It works by applying a fixed operation, such as taking the maximum or average value, over small regions of the input(maxpool, avgpool, minpool). 
+For example, max pooling uses a sliding window (e.g., 2x2 pixels) to extract the highest value from each region, effectively downsampling the feature map by a factor equal to the window size. This reduces computational complexity and helps the network focus on broader patterns rather than precise pixel locations. A common setup is applying a 2x2 pooling window with a stride of 2, turning a 4x4 grid into a 2x2 output, halving the resolution in each dimension.
+
+### Receptive Field
+In Convolutional Neural Networks (CNNs) used in computer vision, the receptive field refers to the region of the input image that a particular neuron in a convolutional layer is “looking at” or taking into account when making its predictions or feature extractions. 
+<img src="images/blog31_receptive_field.png" alt="Markov Chain" width="300"/>   
+(CNN 에서 출력 레이어의 뉴런 하나에 영향을 미치는 입력 뉴런들의 공간크기를 의미)
+
 ## Convolutional Network
 ### Convolution over volume
 ![alt text](images/blog31_convolution_over_volume_1.png)
