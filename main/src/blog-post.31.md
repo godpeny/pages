@@ -304,7 +304,7 @@ Because AlexNet used two GPUs, Krizhevsky et al. split the kernels and feature m
 | Conv4 | 384      | (3×3×192)   | 192 per GPU    | 384                    | 192 + 192                      |
 | Conv5 | 256      | (3×3×192)   | 192 per GPU    | 256                    | 128 + 128                      |
 
-#### VGG-16
+#### VGG-16(19)
 ![alt text](images/blog31_vgg16-1.png)
 ![alt text](images/blog31_vgg16-2.png)
 
@@ -312,7 +312,15 @@ Because AlexNet used two GPUs, Krizhevsky et al. split the kernels and feature m
 - Convolution: (3 * 3) filters with stride=1, same convolution
 - Max Pooling: (2 * 2) filters with stride=2
 
-##### Notes on VGG-16
+The key idea of VGG is to focus on the aspect of depth of the network, therefore, increase the depth of the network by using filters with a very small receptive field: $3 \times 3$ (which is the smallest size to capture the notion of left/right, up/down, center).  
+The small filter helps the network to have deeper depth without increasing the number of the parameters sharply. For example, assuming that both the input and the output of a
+three-layer stack of $3 \times 3$ convolution stack has $C$ channels, the stack is parametrised by $3 (3^2 C^2) = 27C^2$ weights; at the same time, a single $7 \times 7$ conv. layer would require $72 C^2 = 49 C^2$ parameters, i.e. $81%$ more.  
+Another benefit is to increase the non-linearity of the decision function, which makes the decision function more discriminative.  
+
+### Configuration of VGG
+<img src="images/blog31_vgg_conf.png" alt="Markov Chain" width="400"/>   
+
+##### Notes on VGG-16(19)
 - All hidden layers are equipped with the rectification (ReLU) non-linearity. 
 - It is also noted that none of the networks (except for one) contain Local Response Normalisation (LRN), such normalization does not improve the performance on the ILSVRC dataset, but leads to increased memory consumption and computation time.
 
