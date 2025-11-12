@@ -92,6 +92,13 @@ In Convolutional Neural Networks (CNNs) used in computer vision, the receptive f
 (CNN 에서 출력 레이어의 뉴런 하나에 영향을 미치는 입력 뉴런들의 공간크기를 의미)
 
 ## Convolutional Network
+### References
+- https://arxiv.org/pdf/1311.2901
+- https://arxiv.org/pdf/1312.6229
+- https://arxiv.org/pdf/1406.2199
+- https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf (alexnet)
+- https://arxiv.org/pdf/1409.1556 (vgg)
+
 ### Convolution over volume
 ![alt text](images/blog31_convolution_over_volume_1.png)
 <img src="images/blog31_convolution_over_volume_1.png" alt="Convolution over volume" width="600"/>  
