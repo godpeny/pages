@@ -239,8 +239,38 @@ https://arxiv.org/pdf/1808.09781
 ### Duo Rec
 https://arxiv.org/pdf/2110.05730
 
-## Matrix Factorization in Recommender Systems
-https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
-
 ## Factorized Personalized MC(Markov Chains) Model
 https://cseweb.ucsd.edu/classes/fa17/cse291-b/reading/p811.pdf
+
+## Recommendation System Basic
+A recommendation system helps users find compelling content in a large corpus. For example, the Google Play Store provides millions of apps, while YouTube provides billions of videos.  
+
+<b> Homepage Recommendations </b>  
+Homepage recommendations are personalized to a user based on their known interests. Every user sees different recommendations.
+
+<b> Related item Recommendations </b>  
+Related items are recommendations similar to a particular item. In the Google Play apps example, users looking at a page for a math app may also see a panel of related apps, such as other math or science apps.
+
+### Architecture
+
+One common architecture for recommendation systems consists of the following three components.
+<img src="images/blog33_recsys_arch.svg" alt="Recommendation System Architecture" width="400"/>   
+
+<b> 1. Candidate Generation</b>  
+In this first stage, the system starts from a potentially huge corpus and generates a much smaller subset of candidates.
+The model needs to evaluate queries quickly given the enormous size of the corpus. A given model may provide multiple candidate generators, each nominating a different subset of candidates.  
+
+<b> 2. Scoring</b>  
+Next, another model scores and ranks the candidates in order to select the set of items to display to the user. Since this model evaluates a relatively small subset of items, the system can use a more precise model relying on additional queries.
+
+<b> 3. Re-Ranking </b>  
+Finally, the system must take into account additional constraints for the final ranking. For example, the system removes items that the user explicitly disliked or boosts the score of fresher content. Re-ranking can also help ensure diversity, freshness, and fairness.  
+
+### Candidate Generation
+#### Content-based Filtering
+#### Collaborative Filtering
+##### Matrix Factorization in Recommender Systems
+
+### References
+- https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
+- https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
