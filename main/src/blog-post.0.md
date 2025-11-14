@@ -222,8 +222,79 @@ For example, if we make a lot of predictions with a perfectly calibrated binary 
 Similarly, if we only consider the examples for which our model predicted a 10% probability of the positive class, the ground truth will turn out to indeed be positive in one-tenth of the cases.  
 A well-calibrated model produces predictions that are closely aligned with the actual outcomes on aggregate.
 
-#### Calibration vs Accuracy
-Accuracy measures the percentage of correct predictions made by the model, while calibration measures the alignment between the predicted probabilities and the actual likelihood of the predicted events.
+Calibration cannot be evaluated with a single prediction.
+You need many predictions to see whether actual accuracy matches predicted confidence.
+
+#### Binning
+Binning is a data pre-processing technique used to reduce the effects of minor observation errors. The original data values which fall into a given small interval, a bin, are replaced by a value representative of that interval, often a central value (mean or median).  
+
+<b> Uniform Binning </b>  
+Splitting the interval into $n$ bins of equal width. It is great if you would like to equally assess the calibration throughout the entire interval, but it does not take into account that there might be some bins in which no or few samples will fall, making these bins statistically less significant than those in which plenty of data is contained.
+
+<b> Quantile Binning </b>  
+Generating $n$ bins by splitting the entire samples into $n$ quantiles. It guarantees that all the bins that you create are of similar size.  
+
+#### Accuracy vs Confidence vs Calibration 
+- Accuracy measures the percentage of correct predictions made by the model. 
+  - "How many predictions were correct"
+- Confidence is the model’s average predicted probability. (in the bin)
+  - "How strongly the model believed its predictions" 
+- Calibration measures the alignment between the predicted probabilities and the actual likelihood of the predicted events. In other words, calibration is the comparison of measurement values delivered by a device under test(model) with those of a calibration standard of known accuracy.
+  - "Whether accuracy = confidence" 
+
+#### Expected Calibration Error (ECE) vs Maximum Calibration Error(MCE)
+$$
+\mathrm{ECE} = \sum_{i=0}^{M} \frac{|B_i|}{N} \left| \,\overline{y}(B_i) - \overline{p}(B_i)\, \right|
+$$
+- $\overline{y}(B_i)$: the fraction of true positives inside the bin.
+- $\overline{p}(B_i)$: mean predicted scores inside the bin.
+- $|B_i|$: the number of samples inside the bin.
+- $n$: the number of total samples.
+- $M$: the number of bins.
+
+ECE is the weighted average of the distance of the calibration curve of your model to the diagonal.
+
+$$
+\mathrm{MCE} = \max_{i \in (1,\ldots,M)} \left|\, \overline{y}(B_i) - \overline{p}(B_i)\, \right|
+$$
+MCE is the maximum distance between the calibration curve of the model and the diagonal.
+
+#### Scoring Rules
+ECE and MCE cannot be used as a metric to be minimised in the training process of a classifier. This is because it could cause the model to output trivial, useless scores, such as giving a score of 0.5 to each of the samples on a balanced data set. 
+
+Thus, in order to train a model it is more useful to consider proper scoring rules, which are calculated at the sample level rather than by binning the scores. The advantage of score rules is that their value depends both on how well the model is calibrated and how good it is at distinguishing classes, so obtaining low values for a proper scoring rule means that a model is good at discriminating and is also well-calibrated.  
+
+Unfortunately, due to this very same nature, proper scoring rules might not be sufficient to evaluate if a model is calibrated, so the best thing to do is to combine them with ECE and MCE.
+##### Brier Score
+$$
+{\displaystyle BS={\frac {1}{N}}\sum \limits _{t=1}^{N}(f_{t}-o_{t})^{2}\,\!}
+$$
+- $f_{t}$ is the probability that was forecast at instance $t$
+- $o_{t}$ is the actual outcome of the event at instance $t$
+Check the differences between ECE.  
+
+| Metric    | Compares                                  | Meaning                   |
+| --------- | ----------------------------------------- | ------------------------- |
+| **ECE**   | probability vs probability (bin accuracy) | Calibration only          |
+| **Brier** | probability vs actual label (0/1)         | Calibration + Discrimination |
+
+##### Log-loss
+$$
+\mathrm{LL} = -\, y \log(\hat{p}) \;-\; (1 - y)\,\log(1 - \hat{p})
+$$
+
+##### Example of Using Score Rules
+| Prediction | True y | Brier Score         | Log-Loss             | ECE Meaning                          |
+| ---------- | ------ | ------------------- | -------------------- | ------------------------------------ |
+| **0.9**    | 1      | **0.01 (great)**    | **0.105 (great)**    | Good calibration if many 1s          |
+| **0.9**    | 0      | **0.81 (very bad)** | **2.302 (very bad)** | Overconfident & wrong                |
+| **0.5**    | 1      | **0.25 (medium bad)**       | **0.693 (medium bad)**       | Good calibration if balanced dataset |
+| **0.5**    | 0      | **0.25 (medium bad)**       | **0.693 (medium bad)**       | Good calibration if balanced dataset |
+
+#### Calibration Methods
+##### Platt Scaling
+##### Isotonic Regression
+##### Beta calibration
 
 ### Prior Probability & Posterior Probability
 #### Prior Probability
