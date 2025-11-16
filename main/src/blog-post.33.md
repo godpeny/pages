@@ -267,6 +267,50 @@ Next, another model scores and ranks the candidates in order to select the set o
 Finally, the system must take into account additional constraints for the final ranking. For example, the system removes items that the user explicitly disliked or boosts the score of fresher content. Re-ranking can also help ensure diversity, freshness, and fairness.  
 
 ### Candidate Generation
+Candidate generation is the first stage of recommendation. Given a query, the system generates a set of relevant candidates.
+| **Type**                    | **Definition**                                                                         | **Example**                                                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Content-based filtering** | Uses similarity between items to recommend items similar to what the user likes.       | If user A watches two cute cat videos, the system recommends other cute animal videos.                                                              |
+| **Collaborative filtering** | Uses similarities between users *and* items simultaneously to provide recommendations. | If user A is similar to user B, and user B likes video 1, the system recommends video 1 to user A(even if user A has not seen any similar videos). |
+
+#### Embedding Space
+In candidate generation, map each item and each query (or context) to an embedding vector in a common embedding space. 
+$$
+E = \mathbb{R}^{d}
+$$
+The embedding space is low-dimensional($d$ is  much smaller than the size of the corpus), and captures some latent structure of the item or query set.  
+Similar items, such as YouTube videos that are usually watched by the same user, end up close together in the embedding space. The notion of "closeness" is defined by a similarity measure.
+
+#### Similarity Measures
+A similarity measure is a function that takes a pair of embeddings and returns a scalar measuring their similarity.
+$$
+s : E \times E \rightarrow \mathbb{R}
+$$
+When given a query embedding $q \in E$,  the system looks for item embeddings $x \in E$ that are close to $q$ that is, embeddings with high similarity, $s(q,x)$.  
+
+To determine the degree of similarity, most recommendation systems rely on one or more of the following.
+- cosine: cosine of the angle between the two vectors, $cos(q,x)$.
+- dot product: $ s(q, x) = \langle q, x \rangle = \sum_{i = 1}^d q_i x_i = \|x\| \|q\| \cos(q, x)$. Note that dot product is equivalent to the cosine of the angle multiplied by the product of l2 norms.
+- Euclidean distance: just Euclidean lengths (l2 norm). A smaller distance means higher similarity.
+
+Consider the example in the figure following.
+<img src="images/blog33_similarity_measures.svg" alt="Markov Chain" width="300"/>   
+- cosine: C>A>B
+- Euclidean distance: B>C>A
+- dot product: A>B>C
+
+Compared to the cosine, the dot product similarity is sensitive to the norm of the embedding. That is, the larger the norm of an embedding, the higher the similarity and the more likely the item is to be recommended.  
+
+Items that appear very frequently in the training set (for example, popular YouTube videos) tend to have embeddings with large norms. Popular items tend to get updated more often. This is because since these items are liked by many users, most updates pull the embedding in similar directions.
+This accumulated effect increases the vector’s norm, so popular item embeddings tend to have large norms.
+
+Therefore, If capturing popularity information is desirable, then you should prefer dot product. However, if you're not careful, the popular items may end up dominating the recommendations. In practice, you can use other variants of similarity measures that put less emphasis on the norm of the item.
+$$
+s(q, x) = \|q\|^\alpha \|x\|^\alpha \cos(q, x), \quad \text{for some } \alpha \in (0, 1).
+$$
+
+On the other hand, items that appear very rarely may not be updated frequently during training. Consequently, if they are initialized with a large norm, the system may recommend rare items over more relevant items. To avoid this problem, be careful about embedding initialization, and use appropriate regularization.
+
 #### Content-based Filtering
 #### Collaborative Filtering
 ##### Matrix Factorization in Recommender Systems
