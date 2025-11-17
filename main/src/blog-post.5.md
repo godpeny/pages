@@ -66,6 +66,35 @@ In statistics, interval estimation is the use of sample data to estimate an inte
 
 ## Bayesian vs Frequentist
 
+### Bayesian Linear Regression
+Bayesian regression employs prior belief about the data to "learn" more about it and gives better uncertainty estimates. It also takes into account the data's uncertainty and leverages prior knowledge to provide more precise estimates of the data.
+
+The aim of Bayesian Linear Regression is not to find the single “best” value of the model parameters, but rather to determine the posterior distribution for the model parameters.  
+
+The Bayes’theorem describes how prior knowledge is updated with new data.
+$$
+P(\beta \mid y,X) = \frac{P(y \mid \beta, X)\, P(\beta)}{P(y \mid X)} \rightarrow \\[5pt] \text{Posterior} = \frac{\text{Likelihood} * \text{Prior}}{\text{Evidence}}
+$$
+
+- $X$: input
+- $y$: output
+- $\beta$: parameter (weight)
+
+<b> Posterior ($P(\beta \mid y,X)$)</b>  
+Updated beliefs about the parameters after incorporating observed data, derived using Bayes’ theorem. It is a distribution of possible model parameters based on the data and the prior.
+
+<b> Prior ($P(\beta)$)</b>  
+Prior knowledge about the parameters before observing data.
+
+<b> Likelihood ($P(y \mid \beta, X)$)</b>  
+Likelihood function represents the probability of the observed data given certain parameter values.
+$$
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+$$
+
+<b> Evidence ($P(y \mid X$))</b>
+It is probability of observed data under the entire model. It's job is to normalize the posterior so it integrates to $1$.
+
 ## Normalized vs Unnormalized Probability
  - Unnormalized probability: A positive score $\tilde{P}(y)$ that is proportional to the true probability but does not necessarily sum to 1 over all possible outcomes.
  - Normalized probability: A set of numbers that do sum to 1, obtained by dividing each un-normalised score by the normalisation constant (also called the partition function or evidence)
@@ -454,3 +483,12 @@ $$
 $$
 Suppose we have a statistical model, parameterized by $\theta$, giving rise to a probability distribution for observed data $P_{\theta }(x)=P(x\mid \theta )$, and a statistic ${\hat {\theta }}$ which serves as an estimator of $\theta$ based on any observed data $x$.  
 That is, we assume that our data follows some unknown distribution $P(x\mid \theta )$ (where $\theta$ is a fixed, unknown constant that is part of this distribution), and then we construct some estimator ${\hat {\theta }}$ that maps observed data to values that we hope are close to $\theta$. 
+
+## Thompson Sampling
+Thompson Sampling is an algorithm for choosing the actions that address the exploration-exploitation dilemma in the multi-armed bandit problem.  
+
+In practice, the rule is implemented by sampling. In each round, parameters are sampled from the posterior distribution and an action is chosen that maximizes the expected reward given the sampled parameters, the action, and the current context. Conceptually, this means that the player instantiates their beliefs randomly in each round according to the posterior distribution, and then acts optimally according to them.
+
+So Thompson Sampling does not choose the best (greedy) action and rather it chooses actions based on a sample from the posterior distribution. Just sampling from uncertainty leads to natural exploration.
+- If the algorithm is uncertain, the posterior is wide, so samples vary a lot -> exploration.
+- If the algorithm is confident, the posterior collapses, samples all point to same optimal action -> exploitation.
