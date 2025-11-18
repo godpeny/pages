@@ -67,8 +67,20 @@ $$
 $$
 It is equal to the expected information content of measurement of $X$.
 
-## Perplexity (WIP)
+## Perplexity
 Perplexity is a measure of uncertainty in the value of a sample from a discrete probability distribution. The larger the perplexity, the less likely it is that an observer can guess the value which will be drawn from the distribution.
+
+The perplexity PP of a discrete probability distribution p is a concept widely used in information theory, machine learning, and statistical modeling.
+$$
+{\displaystyle {\mathit {PP}}(p)=\prod _{x}p(x)^{-p(x)}=b^{-\sum _{x}p(x)\log _{b}p(x)}}
+$$
+Where $x$ ranges over the events, where $0^{−0}$ is defined to be $1$, and where the value of $b$ does not affect the result. $b$ can be chosen to be $2, 10, e$, or any other positive value other than $1$.
+
+The logarithm $\log PP(p$ is the entropy of the distribution. It is expressed in bits if the base of the logarithm is $2$, and it is expressed in nats if the natural logarithm is used.
+
+Perplexity of a random variable $X$ may be defined as the perplexity of the distribution over its possible values $x$. It can be thought of as a measure of uncertainty or "surprise" related to the outcomes.
+
+For example, the perplexity of a fair coin toss is $2$, and that of a fair die roll is $6$. Generally, for a probability distribution with exactly $N$ outcomes each having a probability of exactly $\frac{1}{N}$, the perplexity is simply $N$.
 
 ## Cross Entropy
 The cross-entropy between two probability distributions $p$ and $q$, over the same underlying set of events, measures the average number of bits needed to identify an event drawn from the set when the coding scheme used for the set is optimized for an estimated probability distribution $q$, rather than the true distribution $p$.
