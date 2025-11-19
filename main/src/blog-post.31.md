@@ -651,6 +651,9 @@ Therfore, we use degree of correlation between channels as a measure of the styl
 ![alt text](images/blog31_1d_convolution.png)
 ![alt text](images/blog31_3d_convolution.png)
 
+## ZFNet (Visualizing and Understanding Convolutional Networks)
+https://arxiv.org/pdf/1311.2901
+
 ## VAE
 https://arxiv.org/pdf/1312.6114
 
