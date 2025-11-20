@@ -63,6 +63,18 @@ In ML, convolution is an application of a sliding window function to a matrix of
 
 Convolution in general, the kernel is flipped both horizontally and vertically before applying. However, in deep learning, for more computationally efficient by skipping the flipping step, the kernel is used as-is without flipping. Plus, just call convolution instead of term cross-correlation
 
+#### Layer, Activation and Feature Map
+<b> Layer </b>  
+딥러닝 네트워크의 한 단계 또는 구성 요소  
+
+<b> Activation </b>  
+특정 레이어에서 연산이 수행된 결과값
+
+<b> Feature Map </b>
+한 레이어의 각 필터(커널)가 생성하는 2D 배열을 feature map이라고 부릅니다. 즉, 이 feature map을 구성하는 각각의 숫자 하나하나가 바로 activation 값입니다.
+
+Layer는 데이터 처리의 '단계' 또는 '장소'이고, activation은 그 Layer에서 데이터가 처리된 '결과'입니다. 하나의 Layer는 여러 개의 feature map을 생성하며, 이 feature map들은 수많은 activation 값들로 이루어져 있습니다. 
+
 ### Padding and Stride
 #### Padding
 During convolution, the size of the output feature map is determined by the size of the input feature map, the size of the kernel, and the stride. If we simply apply the kernel on the input feature map, then the output feature map will be smaller than the input. This can result in the loss of information at the borders of the input feature map. In order to preserve the border information we use padding.
@@ -652,6 +664,32 @@ Therfore, we use degree of correlation between channels as a measure of the styl
 ![alt text](images/blog31_3d_convolution.png)
 
 ## ZFNet (Visualizing and Understanding Convolutional Networks)
+It is a visualization technique that reveals the input stimuli that excite individual feature maps at any layer in the model. 
+<img src="images/blog31_deconv_layer.png" alt="Isotonic Regression" width="500"/>   
+
+<b> standard fully supervised convnet models from (LeCun et al., 1989) and (Krizhevsky et al., 2012)</b>  
+These models map a color 2D input image $x_i$, via a series of layers, to a probability vector $\hat{y}_i$ over the $C$ different classes. Each layer consists of,
+1. convolution of the previous layer output (or, in the case of the 1st layer, the input image) with a set of learned filters.
+2. passing the responses through a rectified linear function, ($relu(x) = max(x, 0)$).
+3. [optionally] max pooling over local neighborhoods.
+4. [optionally] local response normalization: a local contrast operation that normalizes the responses across feature maps.
+
+<b> deconvnet </b>  
+A deconvnet can be thought of as a convnet model that uses the same components (filtering, pooling) but in reverse, so
+instead of mapping pixels to features does the opposite.  
+입력 이미지로 매핑되는 것을 보고 싶은 특정 activation(= feature map의 특정 pixel 위치) 만을 제외하고는 해당 layer의 다른 모든 activation을 0으로 만듭니다
+
+1. set all other activations in the layer to zero and pass the feature maps as input to the attached deconvnet layer.
+2. unpool: the unpooling operation uses these switches to place the reconstructions from the layer above into appropriate locations, preserving the structure of the stimulus. While switches record the location of the local max in each pooling region. (check the image above)
+3. rectify: same ReLU used from convnet. But it uses input as reconstructured signal.
+4. filter:  deconvnet uses transposed versions of the same filters, but applied to the rectified maps, not the output of the layer beneath.
+
+This is then repeated until input pixel space is reached.
+
+- ConvNet: Activation은 입력 이미지를 분석한 결과로서, 어떤 특징이 감지되었는지를 보여줍니다.
+- DeconvNet (이 논문의 목적에서): ConvNet에서 발생한 특정 activation을 입력으로 받아, 그 activation을 유발한 원래 이미지의 시각적 패턴을 재구성합니다.
+
+### Reference
 https://arxiv.org/pdf/1311.2901
 
 ## VAE
