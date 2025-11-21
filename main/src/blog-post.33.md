@@ -239,6 +239,17 @@ https://arxiv.org/pdf/1808.09781
 ### Duo Rec
 https://arxiv.org/pdf/2110.05730
 
+### OneRec
+https://arxiv.org/abs/2502.18965
+### OneRec-v2
+https://arxiv.org/abs/2508.20900
+### Mini OneRec
+https://arxiv.org/abs/2510.24431
+
+### Matryoshka Representation Learning (MRL)
+https://arxiv.org/abs/2205.13147
+
+
 ## Factorized Personalized MC(Markov Chains) Model
 https://cseweb.ucsd.edu/classes/fa17/cse291-b/reading/p811.pdf
 
