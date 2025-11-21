@@ -76,7 +76,7 @@ $$
 $$
 Where $x$ ranges over the events, where $0^{−0}$ is defined to be $1$, and where the value of $b$ does not affect the result. $b$ can be chosen to be $2, 10, e$, or any other positive value other than $1$.
 
-The logarithm $\log PP(p$ is the entropy of the distribution. It is expressed in bits if the base of the logarithm is $2$, and it is expressed in nats if the natural logarithm is used.
+The logarithm $\log PP(p)$ is the entropy of the distribution. It is expressed in bits if the base of the logarithm is $2$, and it is expressed in nats if the natural logarithm is used.
 
 Perplexity of a random variable $X$ may be defined as the perplexity of the distribution over its possible values $x$. It can be thought of as a measure of uncertainty or "surprise" related to the outcomes.
 
