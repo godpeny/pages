@@ -168,6 +168,8 @@ On the other hand, undersampling works by deleting some of the examples from the
 ### Structural Causal Model (SCM)
 In metaphysics and statistics, SCM is a conceptual model that represents the causal mechanisms of a system. Causal models often employ formal causal notation, such as structural equation modeling or causal directed acyclic graphs (DAGs), to describe relationships among variables and to guide inference.
 
+### Diminishing Marginal Return
+The diminishing marginal returns is an economic concept that explains how, beyond a certain point, increasing one input while keeping others constant will lead to progressively smaller gains in output.
 
 ## A.I Related Terminology
 ### Supervised Learning
@@ -584,6 +586,20 @@ Reference: https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_L
 
 ### Model Agnostic Method
 Model-Agnostic 방법은 모델의 구조나 알고리즘에 상관없이 모든 머신러닝 모델에 적용할 수 있는 접근법을 말합니다. 이때 "Agnostic"이라는 용어는 특정 모델에 의존하지 않는다는 의미로 사용됩니다. 해당 방법은 모델을 블랙박스처럼 취급하며, '입력과 출력'에만 초점을 맞춰 예측을 해석합니다. 이러한 보편성 덕분에 Model-Agnostic 방법은 단순한 선형 모델에서부터 복잡한 신경망에 이르기까지 모든 모델에서 사용할 수 있습니다.
+
+### Autoregressive Model
+Autoregressive modeling is a machine learning technique most commonly used for time series analysis and forecasting that uses one or more values from previous time steps in a time series to create a regression.  
+In a multiple linear regression, the output of the regression is a linear combination of multiple input variables. In autoregression models, the output is the future data point expressed as a linear combination of the past $p$ data points. p is the number of lags(intervals =  the delay between an observed data point and its preceding values) included in the equation. 
+
+$$
+x_t = \delta + \phi_1 x_{t-1} + \phi_2 x_{t-2} + \cdots + \phi_p x_{t-p} + \alpha_t, \quad \delta = \left(1 - \sum_{i=1}^{p} \phi_i \right)\mu
+$$
+- $x_{t-k}$: the past series value from $k$$ lag(s) back.
+- $\phi$: the calculated coefficient for that lag.
+- $\alpha_t$: white noise (such as randomness).
+- $\delta$: the constant term that ensures the model has mean $\mu$.
+
+Note that Large language models are also called autoregressive, but they are not a classical autoregressive model in this sense because they are not linear.
 
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
