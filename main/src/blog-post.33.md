@@ -323,9 +323,35 @@ $$
 On the other hand, items that appear very rarely may not be updated frequently during training. Consequently, if they are initialized with a large norm, the system may recommend rare items over more relevant items. To avoid this problem, be careful about embedding initialization, and use appropriate regularization.
 
 #### Content-based Filtering
+Content-based filtering uses item features to recommend other items similar to what the user likes, based on their previous actions or explicit feedback. It uses item features to select and return items relevant to a user’s query. 
+
+In Content-based recommender systems(CBRSs), the model compares a user profile and item profile to predict user-item interaction and recommend items accordingly.
+- item profile: an item’s representation in the system. It consists of an item’s feature set, which can be internal structured characteristics or descriptive metadata.
+- user profile: a representation of user preferences and behavior. It can consist of representations of those items in which a user has previously shown interest. It also consists of user data of their past interactions with the system (for example, user likes, dislikes, ratings, queries, etc.).
+
+So items are converted to vectors using metadata descriptions or internal characteristics as features. For example, say we build item profiles to recommend new novels to users as part of an online bookshop. 
+<img src="images/blog33_content_based_filtering.png" alt="Markov Chain" width="600"/>   
+As you can see, above left table shows profiles for each novel using representative metadata, such as author, genre, etc. A novel’s value for a given category can be represented with Boolean values, where 1 indicates the novel’s presence in that category and 0 indicates its absence. 
+
+The right graph is a visualization of vector space. The closer two novel-vectors are in vector space, the more similar our system considers them to be according to the provided features. "Peter Pan" and "Treasure Island" share the exact same features, appearing at the same vector point $(1,1,0)$. Because of their similarity in this space, if a user has previously purchased "Peter Pan", the system will recommend those novels closest to "Peter Pan"—such as "Treasure Island"—to that user as a potential future purchase. 
+
+CBRSs create a user-based classifier or regression model to recommend items to a specific user. To start, the algorithm takes descriptions and features of those items in which a particular user has previously shown interest—that is the user profile. These items constitute the training dataset used to create a classification or regression model specific to that user. In this model, item attributes are the independent variables, with the dependent variable being user behavior (for example, user ratings, likes, purchases, etc.). The model trained on this past behavior aims to predict future user behavior for possible items and recommend items according to the prediction.
+
+##### Advantages and Disadvantages
+<b> Advantages </b>  
+While content-based filtering struggles with new users, it nevertheless adeptly handles incorporating new items. This is because it recommends items based on internal or metadata characteristics rather than past user interaction. 
+
+Content-based filtering enables greater degree of transparency by providing interpretable features that explain recommendations. For example, a movie recommendation system may explain why a certain movie is recommended, such as genre or actor overlap with previously watched movies.  
+
+<b> Disadvantages </b>  
+Feature limitation. Content-based recommendations are derived exclusively from the features used to describe items. A system’s item features may not be able to capture what a user likes however. In other words, since the feature representation of the items are hand-engineered to some extent, this technique requires a lot of domain knowledge. Therefore, the model can only be as good as the hand-engineered features.
+
+Because content-based filtering only recommends items based on a user’s previously evidenced interests, its recommendations are often similar to items a user liked in the past. So the model has limited ability to expand on the users' existing interests.
+
 #### Collaborative Filtering
 ##### Matrix Factorization in Recommender Systems
 
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
 - https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
+- https://www.ibm.com/think/topics/content-based-filtering
