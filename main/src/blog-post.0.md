@@ -601,6 +601,32 @@ $$
 
 Note that Large language models are also called autoregressive, but they are not a classical autoregressive model in this sense because they are not linear.
 
+### Encoder-Decoder Model vs Decoder-only Model
+The key difference lies in how they process input and generate output. Encoder-decoder models use separate components to first understand the input (encoder) and then produce the output (decoder). Decoder-only models, on the other hand, combine these steps into a single component that generates output directly.
+
+#### Encoder-Decoder Model
+The encoder processes the input (a sentence in French) into a compressed representation (often called a context vector). The decoder then uses this representation to generate the output sequence (the English translation).  
+e.g., BART
+
+#### Decoder-only Model
+Decoder-only models simplify the architecture by removing the encoder. These models generate output autoregressively predicting one token at a time based on previous tokens. They treat the input as part of the output generation process. This approach relies heavily on masked self-attention, which ensures each token only attends to previous tokens in the sequence. 
+
+For instance, when given a prompt like “Translate to French: ‘Hello’,” the model generates the translation token by token without a dedicated encoding phase.  
+e.g., GPT-3 or LLaMA
+
+##### Modern Large Language Models (LLMs)
+Most modern Large Language Models (LLMs) use the decoder-only architecture. These models have grown dramatically in size and capabilities over the past few years, with some of the largest models containing hundreds of billions of parameters.
+
+Modern LLMs are typically trained in two phases:
+
+- Pretraining: The model learns to predict the next token on vast amounts of text data.
+- Instruction tuning: The model is fine-tuned to follow instructions and generate helpful responses.
+
+This approach has led to models that can understand and generate human-like text across a wide range of topics and tasks.
+
+### Actor-Critic Algorithm
+The actor-critic algorithm (AC) is a family of reinforcement learning (RL) algorithms that combine policy-based RL algorithms such as policy gradient methods, and value-based RL algorithms such as value iteration, Q-learning, SARSA, and TD learning.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
