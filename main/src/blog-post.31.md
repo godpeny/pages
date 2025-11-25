@@ -701,4 +701,8 @@ https://arxiv.org/pdf/1711.00937
 ## RQ-VAE
 https://arxiv.org/pdf/2203.01941
 
-## RK-Means
+## RQ-KMeans
+https://arxiv.org/pdf/2411.11739
+
+## Diffusion Model
+https://arxiv.org/pdf/2112.10752
