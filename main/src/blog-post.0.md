@@ -58,6 +58,16 @@ In mathematics, a coefficient is a multiplicative factor involved in some term o
 In mathematics, a variable is a symbol, typically a letter, that holds a place for constants, often numbers. One say colloquially that the variable represents or denotes the object, and that the object is the value of the variable.  
 A variable may represent a unspecified number that remains fixed during the resolution of a problem; in which case, it is often called a parameter. A variable may denote an unknown number that has to be determined
 
+### Set Difference(Set Minus) ("\\")
+$$ A \setminus B $$
+Remove elements of the second set($B$) from the first set.
+For example,
+$$
+u = \{1,2,3,4\}, \quad v = \{2,4\} \\[5pt]
+u \setminus v = \{1,3\}
+$$
+
+
 ### Math Symbols
  - Logical NOT: It negates the condition that follows.
 $$
