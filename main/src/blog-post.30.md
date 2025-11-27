@@ -52,15 +52,51 @@ $$
 
 As you can see from above example, precision and recall are  evaluation metrics. However, two number evaluation metric is somehow confusing when it comes to choosing either of classifier, because you can't tell which one is better in this case. In this case, you might take the mean of two numbers or F1-score, which is helpful to combine into a single number evaluation.
 
-### Precision and Recall
-![alt text](images/blog30_precision_and_recall.png)
+### Confusion Matrix
+<img src="images/blog30_precision_and_recall.png" alt="Precision and Recall" width="200"/>
+<img src="images/blog30_sensitivity_and_specificity.png" alt="Sensitivity and Specificity" width="200"/>    
+
+| **Term**           | **Abbreviation** | **Meaning**                                      | **Example Interpretation**                               |
+| ------------------ | ---------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| **True Positive**  | TP               | Predicted **positive** and actually **positive** | Dog → predicted as Dog                                   |
+| **False Positive** | FP               | Predicted **positive** but actually **negative** | Cat → predicted as Dog (Type I error)                    |
+| **False Negative** | FN               | Predicted **negative** but actually **positive** | Dog → predicted as Cat (missed detection, Type II error) |
+| **True Negative**  | TN               | Predicted **negative** and actually **negative** | Cat → predicted as Cat                                   |
+
+
+
+
+| **Metric**                                 | **Formula**                                                              | **Meaning**                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Precision**                              | ( $\frac{TP}{TP + FP}$ )                                                   | Of all predicted positives, how many were correct?          |
+| **Recall (Sensitivity, TPR)**              | ( $\frac{TP}{TP + FN}$ )                                                   | Of all actual positives, how many were detected?            |
+| **Specificity (TNR)**                      | ( $\frac{TN}{TN + FP}$ )                                                   | Of all actual negatives, how many were correctly rejected?  |
+| **Accuracy**                               | ( $\frac{TP + TN}{TP + TN + FP + FN}$ )                                    | Overall correctness of the classifier.                      |
+| **F1 Score**                               | ( $\frac{2TP}{2TP + FP + FN}$ )                                            | Harmonic mean of precision and recall; balances both.       |
+| **False Positive Rate (FPR)**              | ( $\frac{FP}{FP + TN}$ )                                                   | Probability of falsely labeling a negative as positive.     |
+| **False Negative Rate (FNR)**              | ( $\frac{FN}{TP + FN}$ )                                                   | Probability of missing a positive case.                     |
+| **Negative Predictive Value (NPV)**        | ( $\frac{TN}{TN + FN}$ )                                                   | Of all predicted negatives, how many were correct?          |
 
 Consider a computer program for recognizing dogs (the relevant element) in a digital photograph. Upon processing a picture which contains $10$ cats and $12$ dogs, the program identifies $8$ dogs.  
 Of the $8$ elements identified as dogs, only $5$ actually are dogs (true positives), while the other $3$ are cats (false positives).  
-$7$ dogs were missed (false negatives), and $7$ cats were correctly excluded (true negatives). The program's precision is then $\frac{5}{8}$ (true positives / selected elements) while its recall is $\frac{5}{12}$ (true positives / relevant elements).
+$7$ dogs were missed (false negatives), and $7$ cats were correctly excluded (true negatives). 
 
-### F-Score
+<b> Terms </b>
+- TP: $5$ (dogs correctly detected)
+- FP: $3$ (cats incorrectly flagged as dogs)
+- FN: $7$ (dogs missed)
+- TN: $7$ (cats correctly identified as cats)  
 
+<b> Classification Metrics</b>
+- Precision: TP / (TP + FP) = $\frac{5}{8}$
+- Recall(Sensitivity, TPR): TP / (TP + FN) = $\frac{5}{12}$
+- Accuracy: (TP + TN) / (TP + TN + FP + FN) = $\frac{12}{22}$ = $\frac{6}{11}$
+- FPR: FP / (FP + TN) = $\frac{3}{10}$
+- FNR: FN / (TP + FN) = $\frac{7}{12}$
+- NPV: TN / (TN + FN) = $\frac{7}{14}$ = $\frac{1}{2}$
+- F1-Score: 2TP / (2TP + FP + FN) = $\frac{10}{20}$ = $\frac{1}{2}$
+
+#### F-Score
 $$
 {\displaystyle F_{1}={\frac {2}{\mathrm {recall} ^{-1}+\mathrm {precision} ^{-1}}}=2{\frac {\mathrm {precision} \cdot \mathrm {recall} }{\mathrm {precision} +\mathrm {recall} }}={\frac {2\mathrm {TP} }{2\mathrm {TP} +\mathrm {FP} +\mathrm {FN} }}}
 $$
@@ -340,4 +376,9 @@ https://arxiv.org/pdf/1705.07874
 https://forest62590.tistory.com/29
 
 ## ROC AOC
+
+The ROC curve is a visual representation of model performance across all thresholds. The long version of the name, receiver operating characteristic, is a holdover from WWII radar detection.
+
+The ROC curve is drawn by calculating the true positive rate (TPR) and false positive rate (FPR) at every possible threshold (in practice, at selected intervals), then graphing TPR over FPR. 
+
 https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
