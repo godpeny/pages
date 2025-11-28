@@ -332,3 +332,25 @@ $$
 These position vectors are then added to the word embeddings of "the", "cat", "sat", etc., So that the Transformer can distinguish not only which word it’s seeing, but also where in the sentence it appears.
 
 ## Transformer Network
+
+## Mixture of Experts
+<img src="images/blog16_mixture_of_experts.png" alt="Mixture of Experts" width="500"/>  
+
+MoE consists of two main elements.
+
+<b>Sparse MoE layers </b>  
+Sparse MoE layers are used instead of dense feed-forward network (FFN) layers. MoE layers have a certain number of “experts”, where each expert is a neural network. In practice, the experts are FFNs, but they can also be more complex networks or even a MoE itself, leading to hierarchical MoEs!  
+
+<b> Gate Network (or Router) </b>
+A gate network or router, that determines which tokens are sent to which expert. For example, in the image above, the token “More” is sent to the second expert, and the token "Parameters” is sent to the first network. As we’ll explore later, we can send a token to more than one expert. How to route a token to an expert is one of the big decisions when working with MoEs - the router is composed of learned parameters and is pretrained at the same time as the rest of the network.
+
+A learned gating network (G) decides which experts (E) to send a part of the input.
+$$
+y = \sum_{i=1}^{n} G(x)_i \, E_i(x), \quad G_{\sigma}(x) = \mathrm{Softmax}(x \cdot W_g)
+$$
+
+References
+- https://huggingface.co/blog/moe#tldr
+- https://arxiv.org/pdf/2006.16668
+- https://arxiv.org/pdf/1701.06538
+- https://arxiv.org/pdf/2101.03961
