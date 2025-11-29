@@ -1090,3 +1090,14 @@ $$
 = \sum_{i=1}^{m} \log \prod_{l=1}^{k} \left( \frac{e^{\theta_l^T x^{(i)}}}{\sum_{j=1}^{k} e^{\theta_j^T x^{(i)}}} \right)^{1\{y^{(i)}=l\}}
 $$
 Like logisstic regression, maximum likelihood estimate can be obtained by using method gradient ascent or Newton’s method.
+
+## Softplus
+The softplus function is,
+$$
+f(x)=\ln(1+e^{x})
+$$
+It is a smooth approximation (in fact, an analytic function) to the ramp function, which is known as the rectifier or ReLU (rectified linear unit) in machine learning.  
+
+<img src="images/blog8_softplus.png" alt="Softplus" width="400"/>  
+
+Above shows the plot of the softplus function and the ramp function.
