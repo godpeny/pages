@@ -701,23 +701,6 @@ https://arxiv.org/pdf/1711.00937
 ## RQ-VAE
 https://arxiv.org/pdf/2203.01941
 
-### Hourglass Phenomenon
-<img src="images/blog31_hourglass_phenomenom.png" alt="Hourglass Phenomenom" width="500"/>   
-
-The codebook tokens in the intermediate layers are excessively concentrated, leading to a one-to-many and many-to-one mapping structure. This concentration results in path sparsity, where
-the matching paths for the item constitute a minimal fraction of the total path space and a long-tail distribution of intermediate layer tokens with a majority of SID concentrated in a few head token.
-
-For example, let's consider 3-layered codebook tokens.
-| Layer         | Dominant Force                            | Effect |
-| ------------- | ----------------------------------------- | ------ |
-| Layer 1       | High magnitude + high direction diversity | WIDE   |
-| Middle layers | Magnitude shrinking (dominant)            | NARROW |
-| Final layers  | Directional diversity (dominant)          | WIDE   |
-
- layer 1 is wide because there are many coarse token at the first place. then, the layer 2 is narrow because you subtract the item from the closet token from the layer 1. so there are little variety. But as go deeper in the layer, you subtract over and over then make the embedding small in magnitude but vary in direction.
-
- Reference: https://arxiv.org/pdf/2407.21488
-
 ## RQ-KMeans
 https://arxiv.org/pdf/2411.11739
 

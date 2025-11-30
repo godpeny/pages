@@ -522,12 +522,6 @@ Quantization is a technique to reduce the computational and memory costs of runn
 Quantization is the process of constraining an input from a continuous or otherwise large set of values (such as the real numbers) to a discrete set (such as the integers). 
 (연속된 변화량을 유한개의 레벨로 구분하고, 각 레벨에 대해 특정 값을 부여하는 것)  
 
-### Vector Quantizations
-Mapping continuous latent representations into discrete embeddings. It works by dividing a large set of points (vectors) into groups having approximately the same number of points closest to them. Each group is represented by its centroid point, as in k-means and some other clustering algorithms. In simpler terms, vector quantization chooses a set of points to represent a larger set of points.
-
-https://en.wikipedia.org/wiki/Vector_quantization
-code book?, code embedding?
-
 ### Downstream Task
 Downstream task is the task that you actually want to solve.  
 You first learn representations of the data, then you can transfer these learned representations to solve a task that you actually want to solve, and you can do this by fine-tuning the neural network that contains the learned representations on a labeled.

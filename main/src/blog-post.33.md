@@ -98,7 +98,6 @@ https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
 https://arxiv.org/abs/1904.06690
 
-semantic ID?
 
 ## Models
 CTR prediction Models
