@@ -1006,11 +1006,10 @@ $$
 = \mathbb{E}\!\left[
 \frac{1}{|o|} \sum_{t=1}^{|o|}
 \min\!\Big(
-r_t(\theta) A_t,\,
-\text{clip}\big(r_t(\theta), 1 - \varepsilon, 1 + \varepsilon\big) A_t
+\frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})} A_t,\,
+\text{clip}\big(\frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})}, 1 - \varepsilon, 1 + \varepsilon\big) A_t
 \Big)
-\right], \quad
-r_t(\theta) = \frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})}
+\right]
 $$
 - $\pi_\theta, \pi_{\theta_{\text{old}}}$: the current and old policy models.
 - $\pi_\theta(o_t \mid q, o_{<t})$: The probability (under the model parameters $\theta$) of generating token $o_t$, given the input prompt $q$ and all previously generated tokens $o_{<t}$.
@@ -1018,8 +1017,8 @@ $$
 - $\varepsilon$: a clipping-related hyper-parameter introduced in PPO for stabilizing training. 
 - $A_t$: the advantage, which is computed by applying Generalized Advantage Estimation(GAE).
 - clip
-  - $r_t(\theta) > 1 + \varepsilon$: the new model gives too high probability to the same action → clip it.
-  - $r_t(\theta) < 1 + \varepsilon$: it gives too low probability → also clip it.
+  - $\frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})}> 1 + \varepsilon$: the new model gives too high probability to the same action → clip it.
+  - $\frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\theta_{\text{old}}}(o_t \mid q, o_{<t})} < 1 + \varepsilon$: it gives too low probability → also clip it.
 
 You can see that PPO prevents large destructive updates, keeping the new policy “close” to the old one using clip method. That’s what stabilizes PPO training compared to vanilla policy gradient.
 
