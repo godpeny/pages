@@ -239,8 +239,7 @@ https://arxiv.org/pdf/1808.09781
 https://arxiv.org/pdf/2110.05730
 
 ### OneRec
-https://arxiv.org/abs/2502.18965
-https://arxiv.org/pdf/2506.13695
+check "images/blog33_onerec.pdf"  
 
 ### OneRec-v2
 https://arxiv.org/abs/2508.20900
