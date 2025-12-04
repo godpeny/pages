@@ -375,10 +375,18 @@ while the cons are,
 https://arxiv.org/pdf/1705.07874
 https://forest62590.tistory.com/29
 
-## ROC AOC
-
+## ROC AUC
+<b> ROC(Receiver-operating characteristic curve) </b>  
 The ROC curve is a visual representation of model performance across all thresholds. The long version of the name, receiver operating characteristic, is a holdover from WWII radar detection.
 
 The ROC curve is drawn by calculating the true positive rate (TPR) and false positive rate (FPR) at every possible threshold (in practice, at selected intervals), then graphing TPR over FPR. 
+
+<b> AOC(Area Under the ROC Curve) </b>  
+The AOC represents the probability that the model, if given a randomly chosen positive and negative example, will rank the positive higher than the negative.
+
+<img src="images/blog30_roc_auc.png" alt="ROC and AUC" width="400"/>  
+
+
+The perfect model above, containing a square with sides of length 1, has an area under the curve (AUC) of 1.0. This means there is a 100% probability that the model will correctly rank a randomly chosen positive example higher than a randomly chosen negative example. While the AUC is 0.5, representing a 50% probability of correctly ranking a random positive and negative example. 
 
 https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
