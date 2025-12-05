@@ -349,6 +349,10 @@ Feature limitation. Content-based recommendations are derived exclusively from t
 Because content-based filtering only recommends items based on a user’s previously evidenced interests, its recommendations are often similar to items a user liked in the past. So the model has limited ability to expand on the users' existing interests.
 
 #### Collaborative Filtering
+Collaborative filtering is an information retrieval method that recommends items to users based on how other users with similar preferences and behavior have interacted with that item. It uses similarities between users and items simultaneously to provide recommendations.
+
+In practice, the embeddings can be learned automatically, which is the power of collaborative filtering models. Suppose the embedding vectors for the movies are fixed. Then, the model can learn an embedding vector for the users to best explain their preferences. Consequently, embeddings of users with similar preferences will be close together. Similarly, if the embeddings for the users are fixed, then we can learn movie embeddings to best explain the feedback matrix. As a result, embeddings of movies liked by similar users will be close in the embedding space.
+
 ##### Matrix Factorization in Recommender Systems
 
 ### References
