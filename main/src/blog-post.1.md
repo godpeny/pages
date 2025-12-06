@@ -703,4 +703,9 @@ db^{[1]} = \frac{1}{m} \, \text{np.sum}(dZ^{[1]}, \text{axis} = 1, \text{keepdim
 $$
 
 ## Adversarial Attacks
+<img src="images/blog1_adversarial_attack.png" alt="Adversarial Attack" width="600"/>   
+The adversarial attack is a deceiving technique that is “fooling” machine learning models using a defective input. Adversarial machine learning is aimed to cause a malfunction of an ML model.
+
+- https://arxiv.org/pdf/1412.6572
 ### Generative Adversarial Networks (GANs)
+- https://arxiv.org/pdf/1406.2661
