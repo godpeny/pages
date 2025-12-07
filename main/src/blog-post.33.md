@@ -354,6 +354,29 @@ Collaborative filtering is an information retrieval method that recommends items
 In practice, the embeddings can be learned automatically, which is the power of collaborative filtering models. Suppose the embedding vectors for the movies are fixed. Then, the model can learn an embedding vector for the users to best explain their preferences. Consequently, embeddings of users with similar preferences will be close together. Similarly, if the embeddings for the users are fixed, then we can learn movie embeddings to best explain the feedback matrix. As a result, embeddings of movies liked by similar users will be close in the embedding space.
 
 ##### Matrix Factorization in Recommender Systems
+<img src="images/blog33_matrix_factorization.svg" alt="Matrix Factorization" width="400"/>  
+
+Matrix factorization is a simple embedding model. Given the feedback matrix $A \in \mathbb{R}^{n \times m}$, where $m$ is the number of users and $n$ is the number of items. A user embedding matrix $U \in \mathbb{R}^{m \times d}$, where row $i$ is the embedding for user $i$. An item embedding matrix $V \in \mathbb{R}^{m \times d}$, where row $j$ is the embedding for item $j$. Each embeddings are learned such that the product $UV^{T}$ is a good approximation of the feedback matrix $A$.
+
+###### Choose Objective Function
+One intuitive objective function is the squared distance. To do this, minimize the sum of squared errors over all pairs of observed entries.
+$$
+\min_{U \in \mathbb{R}^{m \times d},\, V \in \mathbb{R}^{n \times d}}
+\sum_{(i,j)\in \text{obs}} (A_{ij} - \langle U_i, V_j \rangle )^2
+$$
+
+Or you can use Weighted Matrix Factorization decomposes the objective into the following two sums.
+- A sum over observed entries.
+- A sum over unobserved entries (treated as zeroes).
+$$
+\min_{U \in \mathbb{R}^{m \times d},\, V \in \mathbb{R}^{n \times d}}
+\sum_{(i,j)\in \text{obs}} w_{i,j}(A_{ij} - \langle U_i, V_j \rangle )^2
+\;+\;
+w_0 \sum_{(i,j)\notin \text{obs}} (\langle U_i, V_j \rangle )^2 .
+$$
+Where $w_{i,j}$ and $w_0$ are hyperparameters that weights the two terms so that the objective is not dominated by one or the other.
+
+Common algorithms to minimize the objective function is Stochastic gradient descent (SGD).
 
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
