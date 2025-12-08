@@ -378,6 +378,50 @@ Where $w_{i,j}$ and $w_0$ are hyperparameters that weights the two terms so that
 
 Common algorithms to minimize the objective function is Stochastic gradient descent (SGD).
 
+
+#### Deep Neural Network Models
+There are some limitations in matrix factorization to learn embeddings.
+
+- The difficulty of using side features (that is, any features beyond the query ID/item ID). As a result, the model can only be queried with a user or item present in the training set.
+- Relevance of recommendations. Popular items tend to be recommended for everyone, especially when using dot product as a similarity measure. It is better to capture specific user interests.
+
+One possible DNN model is softmax, which treats the problem as a multiclass prediction problem. The input is the user query and the output is a probability vector with size equal to the number of items in the corpus, representing the probability to interact with each item.
+
+##### Architecture
+<img src="images/blog33_softmax_model.svg" alt="Softmax Model" width="400"/>   
+
+By adding hidden layers and non-linear activation functions (for example, ReLU), the model can capture more complex relationships in the data. However, increasing the number of parameters also typically makes the model harder to train and more expensive to serve. 
+$$
+\hat p = h(\psi(x) V^T), \quad h(y)_i=\frac{e^{y_i}}{\sum_j e^{y_j}}
+$$
+Where $\psi(x)$ is the output of the last layer, $h(y)$ is softmax function and $V$ is the matrix of weights of the softmax layer. The softmax layer maps a vector of scores(logits) to a probability distribution.
+
+##### Loss Function
+<img src="images/blog33_softmax_model_loss.svg" alt="Softmax Model" width="400"/>   
+The loss function that compares the following.
+
+- $p$: the ground truth, representing the items the user has interacted with.
+- $\hat{p}$: the output of the softmax layer (a probability distribution).
+
+Then use the cross-entropy loss since you are comparing two probability distributions.
+
+##### DNN vs Matrix Factorization
+Both the softmax model and the matrix factorization model, the system learns one embedding vector $V_j$ per item $j$.  
+The query embeddings, however, are different. Instead of learning one embedding $U_i$ per query $i$, the system learns a mapping from the query feature $x$ to an embedding $\psi(x)$. So you can consider DNN model as a generalization of matrix factorization, in which you replace the query side by a nonlinear function.
+
+##### Two-Tower Model
+Instead of learning one embedding per item, can the model learn a nonlinear function that maps item features to an embedding like query feature? Yes. To do so, use a two-tower neural network, which consists of two neural networks.
+
+- One neural network maps query features $x_{query}$ to query embedding, $\psi(x_{\text{query}}) \in \mathbb R^d$.
+- One neural network maps item features $x_{item}$ to item embedding, $\phi(x_{\text{item}}) \in \mathbb R^d$. 
+
+The output of the model can be defined as the dot product $\langle \psi(x_{\text{query}}), \phi(x_{\text{item}}) \rangle$. Note that this is not a softmax model anymore. The new model predicts one value per pair $(x_{\text{query}}, x_{\text{item}})$, instead of a probability vector for each query $x_{\text{query}}$.
+
+##### Folding and Negative Sampling
+During training, if the system only trains on positive pairs, the model may suffer from folding. Folding is phenomenon when the model incorrectly predict a high score for an item from a different group. This happends because the model only know how to place the query/item embeddings of a given color relative to each other. So the embeddings from different colors may end up in the same region of the embedding space by chance.
+
+Negative examples are items labeled "irrelevant" to a given query. Showing the model negative examples during training teaches the model that embeddings of different groups should be pushed away from each other.
+
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
 - https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
