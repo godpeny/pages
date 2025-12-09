@@ -631,6 +631,9 @@ This approach has led to models that can understand and generate human-like text
 ### Actor-Critic Algorithm
 The actor-critic algorithm (AC) is a family of reinforcement learning (RL) algorithms that combine policy-based RL algorithms such as policy gradient methods, and value-based RL algorithms such as value iteration, Q-learning, SARSA, and TD learning.
 
+### Neural Scaling Law
+An empirical scaling law that describes how neural network performance changes as key factors are scaled up or down. These factors typically include the number of parameters, training dataset size and training cost. In ML, it indicates how the performance of deep learning models scale according to parameter count and dataset size.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
