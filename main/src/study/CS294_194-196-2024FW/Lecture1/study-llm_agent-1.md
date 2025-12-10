@@ -106,7 +106,7 @@ Pre-trained LLMs, without further finetuning, has been ready for step-by-step re
 
 LLM의 첫 번째 토큰 후보를 Top-K로 뽑지만 보통 greedy decoding에서는 top-1만 선택해서 나머지는 버린다. 여기서는 top-K 각각을 “첫 토큰”으로 삼아 독립적으로 디코딩을 끝까지 수행한다. 그리고  각각의 K 경로마다 t번째에서 1,2등 토큰의 확률의 잔차를 측정하고 높을 수록 해당 경로의 확신(confidence)이 높다고 판단, 가장 높은 확신을 가진 경로를 고른다.
 $$
-\Delta_{k, \text{answer}} = \frac{1}{|\text{answer}|} \sum_{x_t \in \text{answer}} p(x_t^1 | x_{<t}) - p(x_t^2 | x_{<t}).
+\Delta_{k, \text{answer}} = \frac{1}{|\text{answer}|} \sum_{x_t \in \text{answer}} p(x_t^1 | x_{<t}) - p(x_t^2 | x_{<t})
 $$
 - https://arxiv.org/pdf/2402.10200
 

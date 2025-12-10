@@ -634,6 +634,14 @@ The actor-critic algorithm (AC) is a family of reinforcement learning (RL) algor
 ### Neural Scaling Law
 An empirical scaling law that describes how neural network performance changes as key factors are scaled up or down. These factors typically include the number of parameters, training dataset size and training cost. In ML, it indicates how the performance of deep learning models scale according to parameter count and dataset size.
 
+### Hypernetwork
+<img src="images/blog0_hypernetwork.png" alt="Hyper Network" width="400"/>   
+
+Hypernetworks(or hypernets) are neural networks that generate weights for another neural network, known as the target network. More specifically, hypernetworks are designed to dynamically generate parameters (weights and biases) for a primary network, which then performs the actual task-specific computations. Hypernetworks dynamically produce the weights of the target network based on specific inputs or conditions, rather than having the target network learn its weights directly through standard training. 
+
+The hypernetwork takes inputs such as task identifiers, metadata, or embeddings, and outputs the parameters for the primary network.
+The primary network then uses these dynamically generated parameters to process data (e.g., classify images, generate text).
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
