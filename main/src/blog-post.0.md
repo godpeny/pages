@@ -642,6 +642,17 @@ Hypernetworks(or hypernets) are neural networks that generate weights for anothe
 The hypernetwork takes inputs such as task identifiers, metadata, or embeddings, and outputs the parameters for the primary network.
 The primary network then uses these dynamically generated parameters to process data (e.g., classify images, generate text).
 
+### Online vs Offline Training
+#### Online Training
+Online machine learning is a type of machine learning where data is acquired sequentially and is utilized to update the best predictor for future data at each step.  
+
+With online learning, the learning algorithm’s parameters are updated after learning from each individual training instance.  
+
+Online learning is ideal for machine learning systems that receive data as a continuous flow and need to be able to adapt to rapidly changing conditions. 
+
+#### Offline Training
+Traditional machine learning is performed offline using the batch learning method. In batch learning, data is accumulated over a period of time. The machine learning model is then trained with this accumulated data from time to time in batches. 
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
