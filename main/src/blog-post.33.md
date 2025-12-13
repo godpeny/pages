@@ -422,6 +422,22 @@ During training, if the system only trains on positive pairs, the model may suff
 
 Negative examples are items labeled "irrelevant" to a given query. Showing the model negative examples during training teaches the model that embeddings of different groups should be pushed away from each other.
 
+### Retrieval, Scoring and Re-ranking
+#### Retrieval
+Retrieval is a stage of embedding model where given a user, decide which items to recommend.
+
+- For a matrix factorization model, the query (or user) embedding is known statically, and the system can simply look it up from the user embedding matrix.
+- For a DNN model, the system computes the query embedding at serve time by running the network on the feature vector .
+
+Once you have the query embedding $q$, search for item embeddings $V_j$ that are close to $q$ in the embedding space. This is a nearest neighbor problem. 
+
+##### Large-scale retrieval
+To compute the nearest neighbors in the embedding space, the system can exhaustively score every potential candidate. Exhaustive scoring can be expensive for very large corpora, but you can use either of the following strategies to make it more efficient.
+
+- If the query embedding is known statically, the system can perform exhaustive scoring offline, precomputing and storing a list of the top candidates for each query. 
+- Use approximate nearest neighbors. Google provides an open-source tool on GitHub called ScaNN (Scalable Nearest Neighbors). This tool performs efficient vector similarity search at scale.
+
+
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
 - https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
