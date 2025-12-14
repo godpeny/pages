@@ -437,6 +437,38 @@ To compute the nearest neighbors in the embedding space, the system can exhausti
 - If the query embedding is known statically, the system can perform exhaustive scoring offline, precomputing and storing a list of the top candidates for each query. 
 - Use approximate nearest neighbors. Google provides an open-source tool on GitHub called ScaNN (Scalable Nearest Neighbors). This tool performs efficient vector similarity search at scale.
 
+#### Scoring (Ranking)
+After candidate generation, another model scores and ranks the generated candidates to select the set of items to display. The recommendation system may have multiple candidate generators that use different sources, such as the following.
+
+- Related items from a matrix factorization model.
+- User features that account for personalization.
+- "Local" vs "distant" items; that is, taking geographic information into account.
+- Popular or trending items.
+- A social graph; that is, items liked or recommended by friends.
+
+The system combines these different sources into a common pool of candidates that are then scored by a single model and ranked according to that score. 
+
+##### Why not let the candidate generator score?
+- Some systems rely on multiple candidate generators. The scores of these different generators might not be comparable.
+- With a smaller pool of candidates, the system can afford to use more features and a more complex model that may better capture context.
+
+##### Choosing an objective function for scoring
+<b> Maximize Click Rate </b>  
+If the scoring function optimizes for clicks, the systems may recommend click-bait videos. This scoring function generates clicks but does not make a good user experience. Users' interest may quickly fade.
+
+<b> Maximize Watch Time </b>  
+If the scoring function optimizes for watch time, the system might recommend very long videos, which might lead to a poor user experience. Note that multiple short watches can be just as good as one long watch.
+
+<b> Increase Diversity and Maximize Session Watch Time </b>  
+Recommend shorter videos, but ones that are more likely to keep the user engaged.
+
+##### Positional bias in scoring
+Items that appear lower on the screen are less likely to be clicked than items appearing higher on the screen. However, when scoring videos, the system usually doesn't know where on the screen a link to that video will ultimately appear. Querying the model with all possible positions is too expensive. 
+
+Solutions
+- Create position-independent rankings.
+- Rank all the candidates as if they are in the top position on the screen.
+
 
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
