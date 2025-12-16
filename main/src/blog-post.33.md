@@ -469,6 +469,22 @@ Solutions
 - Create position-independent rankings.
 - Rank all the candidates as if they are in the top position on the screen.
 
+#### Re-Ranking
+In the final stage of a recommendation system, the system can re-rank the candidates to consider additional criteria or constraints. One re-ranking approach is to use filters that remove some candidates.
+
+##### Freshness
+Most recommendation systems aim to incorporate the latest usage information, such as current user history and the newest items. Keeping the model fresh helps the model make good recommendations.
+
+<b> Solution </b>  
+Re-run training as often as possible to learn on the latest training data. We recommend warm-starting the training so that the model does not have to re-learn from scratch. Warm-starting can significantly reduce training time.
+
+##### Diversity
+If the system always recommend items that are "closest" to the query embedding, the candidates tend to be very similar to each other. This lack of diversity can cause a bad or boring user experience. 
+
+<b> Solution </b>
+- Train multiple candidate generators using different sources.
+- Train multiple rankers using different objective functions.
+
 
 ### References
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
