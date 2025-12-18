@@ -855,7 +855,7 @@ $$
 $$  
 $y\theta^Tx$ is called margin.  
 
-#### Loss Function for Binary Classification
+#### Loss Function for Binary Classification (Binary Cross Entropy)
 Choose some loss function so that
 for our training data, makes the margin $y^{(i)}\theta^Tx^{(i)}$
 very large for each training example.  
@@ -974,7 +974,13 @@ https://medium.com/@jsilvawasd/softmax-and-backpropagation-625c0c1f8241
 
 https://medium.com/data-science/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1
 
-### Loss Function of Softmax
+### Loss Function of Softmax (Cross Entropy Loss)
+Cross entropy indicates the distance between what the model believes the output distribution should be, and what the original distribution really is.
+
+$$
+p_i = \frac{e^{a_i}}{\sum_{k=1}^{N} e^{a_k}}, \quad H(\mathbf{y}, \mathbf{p})
+= - \sum_i y_i \log(p_i)
+$$
 
 ### Multinomial Distribution
 The multinomial distribution is a generalization of the binomial distribution.  
