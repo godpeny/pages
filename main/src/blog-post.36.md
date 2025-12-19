@@ -24,6 +24,9 @@ Assume that each item has associated content features that capture useful semant
 For example, general-purpose
 pre-trained text encoders such as Sentence-T5 and BERT can be used to convert an item’s text features to obtain a semantic embedding. The semantic embeddings are then quantized to generate a semantic ID for each item.
 
+### VAE
+https://arxiv.org/pdf/1312.6114
+
 ### VQ-VAE
 https://arxiv.org/pdf/1711.00937
 
@@ -59,3 +62,6 @@ For example, let's consider 3-layered codebook tokens.
 - Encoder+decoder learning: normal neural network backprop
 
 https://arxiv.org/pdf/2203.01941
+
+### RQ-KMeans
+https://arxiv.org/pdf/2411.11739

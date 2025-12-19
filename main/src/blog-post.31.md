@@ -691,18 +691,3 @@ This is then repeated until input pixel space is reached.
 
 ### Reference
 https://arxiv.org/pdf/1311.2901
-
-## VAE
-https://arxiv.org/pdf/1312.6114
-
-## VQ-VAE
-https://arxiv.org/pdf/1711.00937
-
-## RQ-VAE
-https://arxiv.org/pdf/2203.01941
-
-## RQ-KMeans
-https://arxiv.org/pdf/2411.11739
-
-## Diffusion Model
-https://arxiv.org/pdf/2112.10752
