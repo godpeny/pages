@@ -204,8 +204,49 @@ By learning (or assuming) $a$ about $T$, our uncertainty about $T$ is reduced (=
 IG is used in decision trees to quantify the effectiveness of a feature in splitting the dataset into classes. <b>It calculates the reduction in entropy (uncertainty) of the target variable (class labels) when a particular feature is known.</b>  
 In simpler terms, Information Gain helps us understand how much a particular feature contributes to making accurate predictions in a decision tree. <b>Features with higher Information Gain are considered more informative and are preferred for splitting the dataset, as they lead to nodes with more homogenous classes.</b>
 
+### Example of Information Gain
+Information gain is the reduction in entropy produced from partitioning a set with attributes $a$ and finding the optimal candidate that produces the highest value:
+$$
+\displaystyle {\text{IG}}(T,a)=\mathrm {H} {(T)}-\mathrm {H} {(T|a)}
+$$
+where $T$ is a random variable and $\displaystyle \mathrm {H} {(T|a)}$ is the entropy of $T$ given the value of attribute $a$.  
+
+Simply speaking,b the more the Entropy being reduced after splitting (that is, the more the dataset being clear after splitting, or says, the information gained by split), the more the Information Gain.
+
+Check below example for better understanding.
+<img src="images/blog2_information_gain.png" alt="Information Gain" width="400"/>
+
+The Entropy of our initial dataset is following.
+$$
+\begin{aligned}H &= - (0.3 * \log_2 0.3 + 0.7 * \log_2 0.7) &\approx 0.88 \end{aligned}
+$$
+
+After split, changed into following.
+$$
+\begin{aligned}H_{Weather = Sunny} &= - (\frac{25}{35} * \log_2\frac{25}{35} + \frac{10}{35} * \log_2 \frac{10}{35})     &\approx 0.86 \end{aligned} \\[5pt]
+\begin{aligned}H_{Weather = Rainy} &= - (\frac{5}{65} * \log_2\frac{5}{65} + \frac{60}{65} * \log_2 \frac{60}{65})    &\approx 0.39 \end{aligned}
+$$
+Note that the IG of a split equals the original entropy minus the weighted sum of the sub-entropies, with the weights equal to the proportion of data samples being moved to the sub-datasets.
+$$
+IG_{split} = H - (\sum \frac{|D_j|}{|D|} * H_{j})
+$$
+- $D$ is the original dataset/
+-  $D_j$ is the $j$-th sub-dataset after being split.
+- $|D|$ and $|D_j|$ are the numbers of samples belong to the original dataset and the sub-dataset, respectively.
+- $H_{j}$ is the Entropy of the $$j$-th sub-dataset.
+
+Therefore, the Information Gain using can be calculated as below.
+$$
+\begin{aligned}IG_{Weather} &= H - (\sum \frac{|D_j|}{|D|} * H_{j})  \\                          &= H - (\frac{35}{100} H_{Weather = Sunny} + \frac{65}{100} H_{Weather = Rainy}) \\                          &\approx 0.88 - 0.55 \\                          &\approx 0.33\end{aligned}
+$$
+
 
 ### Information Gain Ratio
+The information gain ratio is the ratio between the information gain and the split information value: 
+$$
+{\displaystyle {\text{IGR}}(T,a)={\text{IG}}(T,a)/{\text{SplitInformation}}(T)}
+$$
+
 ### Relative Information Gain
 
 ## Mutual Information
