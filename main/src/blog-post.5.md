@@ -492,3 +492,27 @@ In practice, the rule is implemented by sampling. In each round, parameters are 
 So Thompson Sampling does not choose the best (greedy) action and rather it chooses actions based on a sample from the posterior distribution. Just sampling from uncertainty leads to natural exploration.
 - If the algorithm is uncertain, the posterior is wide, so samples vary a lot -> exploration.
 - If the algorithm is confident, the posterior collapses, samples all point to same optimal action -> exploitation.
+
+## Beta Distribution
+The beta distribution is a family of continuous probability distributions defined on the interval [0, 1] or (0, 1) in terms of two positive parameters, denoted by $\alpha$ and $\beta$, that appear as exponents of the variable and its complement to $1$, respectively, and control the shape of the distribution. 
+
+The beta distribution is a suitable model for the random behavior of percentages and proportions.
+
+### Probability density function
+
+<img src="images/blog5_beta_distribution_pdf.png" alt="Beta Distribution PDF" width="400"/>    
+
+$$
+{\displaystyle {\begin{aligned}f(x;\alpha ,\beta )&=\mathrm {constant} \cdot x^{\alpha -1}(1-x)^{\beta -1}\\[3pt]&={\frac {x^{\alpha -1}(1-x)^{\beta -1}}{\displaystyle \int _{0}^{1}u^{\alpha -1}(1-u)^{\beta -1}\,du}}\\[6pt]&={\frac {\Gamma (\alpha +\beta )}{\Gamma (\alpha )\Gamma (\beta )}}\,x^{\alpha -1}(1-x)^{\beta -1}\\[6pt]&={\frac {1}{\mathrm {B} (\alpha ,\beta )}}x^{\alpha -1}(1-x)^{\beta -1}\end{aligned}}}
+$$
+Where gamma function is, 
+$$
+{\displaystyle \Gamma (z)=\int _{0}^{\infty }t^{z-1}e^{-t}\,dt}
+$$
+
+### Cumulative distribution function
+<img src="images/blog5_beta_distribution_cdf.png" alt="Beta Distribution CDF" width="400"/>    
+
+$$
+{\displaystyle F(x;\alpha ,\beta )={\frac {\mathrm {B} {}(x;\alpha ,\beta )}{\mathrm {B} {}(\alpha ,\beta )}}=I_{x}(\alpha ,\beta )}
+$$
