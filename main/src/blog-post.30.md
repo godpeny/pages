@@ -114,6 +114,12 @@ $$
 
 Generally, when there are $N$ metrics, optimizing $1$ metric and satisfying $N-1$ metrics.
 
+## Hit Ratio(HR)
+Hit Ratio measures whether the ground truth item appears in the top-N recommendations for a given user. 
+$$
+\text{HR@N} = \frac{1}{|U|} \sum_{u \in U} \mathbb{I}(\mathrm{rank}(i_u) \leq N)
+$$
+
 ## Train, Dev and Test Sets 
 Basically you train on the training set, evaluate results on the dev set, and test on the test set.
 
