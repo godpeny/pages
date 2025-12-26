@@ -714,6 +714,12 @@ GANs are generative models that create new data instances that resemble your tra
 GANs achieve this level of realism by pairing a generator, which learns to produce the target output, with a discriminator, which learns to distinguish true data from the output of the generator. The generator tries to fool the discriminator, and the discriminator tries to keep from being fooled.
 
 #### GAN Structures
+The generator learns to generate plausible data. The generated instances become negative training examples for the discriminator.  
+The discriminator learns to distinguish the generator's fake data from real data. The discriminator penalizes the generator for producing implausible results.
+
+<img src="images/blog1_gan_structure.svg" alt="GAN Structurer" width="400"/>   
+
+Both the generator and the discriminator are neural networks. The generator output is connected directly to the discriminator input. Through backpropagation, the discriminator's classification provides a signal that the generator uses to update its weights.
 ##### Generator
 ##### Discriinator
 #### GAN Training
