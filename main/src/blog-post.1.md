@@ -722,6 +722,22 @@ The discriminator learns to distinguish the generator's fake data from real data
 Both the generator and the discriminator are neural networks. The generator output is connected directly to the discriminator input. Through backpropagation, the discriminator's classification provides a signal that the generator uses to update its weights.
 ##### Generator
 ##### Discriinator
+It is simply a classifier. It tries to distinguish real data from the data created by the generator. It could use any network architecture appropriate to the type of data it's classifying.  
+
+The discriminator's training data comes from two sources.
+- Real data instances, such as real pictures of people. The discriminator uses these instances as positive examples during training.
+- Fake data instances created by the generator. The discriminator uses these instances as negative examples during training.
+
+During discriminator training:
+
+1. The discriminator classifies both real data and fake data from the generator.
+2. The discriminator loss penalizes the discriminator for misclassifying a real instance as fake or a fake instance as real.
+3. The discriminator updates its weights through backpropagation from the discriminator loss through the discriminator network.
+
+Also note that,
+1. during discriminator training the generator does not train. Its weights remain constant while it produces examples for the discriminator to train on.
+2. During discriminator training, the discriminator ignores the generator loss and just uses the discriminator loss. We use the generator loss during generator training.
+
 #### GAN Training
 #### Loss Functions
 
