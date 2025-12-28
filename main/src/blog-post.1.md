@@ -720,7 +720,6 @@ The discriminator learns to distinguish the generator's fake data from real data
 <img src="images/blog1_gan_structure.svg" alt="GAN Structurer" width="400"/>   
 
 Both the generator and the discriminator are neural networks. The generator output is connected directly to the discriminator input. Through backpropagation, the discriminator's classification provides a signal that the generator uses to update its weights.
-##### Generator
 ##### Discriinator
 It is simply a classifier. It tries to distinguish real data from the data created by the generator. It could use any network architecture appropriate to the type of data it's classifying.  
 
@@ -737,6 +736,25 @@ During discriminator training:
 Also note that,
 1. during discriminator training the generator does not train. Its weights remain constant while it produces examples for the discriminator to train on.
 2. During discriminator training, the discriminator ignores the generator loss and just uses the discriminator loss. We use the generator loss during generator training.
+
+##### Generator
+The generator learns to create fake data by incorporating feedback from the discriminator. It learns to make the discriminator classify its output as real. 
+
+Note that the generator in GAN is not directly connected to the loss that we're trying to affect. The generator feeds into the discriminator net, and the discriminator produces the output we're trying to affect. So during the backpropagation, the impact of a generator weight depends on the impact of the discriminator weights it feeds into. So backpropagation starts at the output and flows back through the discriminator into the generator. Also note that the discriminator has to be fixed and doesn't change during generator training.
+
+1. Sample random noise.
+2. Produce generator output from sampled random noise.
+3. Get discriminator "Real" or "Fake" classification for generator output.
+4. Calculate loss from discriminator classification.
+5. Backpropagate through both the discriminator and generator to obtain gradients.
+6. Use gradients to change only the generator weights.
+
+##### Random Input 
+Neural networks need some form of input. Normally we input data that we want to do something with, like an instance that we want to classify or make a prediction about. But what do we use as input for a network that outputs entirely new data instances?
+
+In its most basic form, a GAN takes random noise as its input. The generator then transforms this noise into a meaningful output. By introducing noise, we can get the GAN to produce a wide variety of data, sampling from different places in the target distribution.
+
+Experiments suggest that the distribution of the noise doesn't matter much, so we can choose something that's easy to sample from, like a uniform distribution. 
 
 #### GAN Training
 #### Loss Functions
