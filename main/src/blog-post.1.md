@@ -757,6 +757,20 @@ In its most basic form, a GAN takes random noise as its input. The generator the
 Experiments suggest that the distribution of the noise doesn't matter much, so we can choose something that's easy to sample from, like a uniform distribution. 
 
 #### GAN Training
+GAN training proceeds in alternating periods:
+
+1. The discriminator trains for one or more epochs.
+2. The generator trains for one or more epochs.
+3. Repeat steps 1 and 2 to continue to train the generator and discriminator networks.  
+
+Note that keep the generator constant during the discriminator training phase. As discriminator training tries to figure out how to distinguish real data from fake, it has to learn how to recognize the generator's flaws. Similarly, keep the discriminator constant during the generator training phase. Otherwise the generator would be trying to hit a moving target and might never converge.
+
+#### Convergence of GAN
+As the generator improves with training, the discriminator performance gets worse because the discriminator can't easily tell the difference between real and fake. If the generator succeeds perfectly, then the discriminator has a 50% accuracy. In effect, the discriminator flips a coin to make its prediction.
+
+This progression poses a problem for convergence of the GAN as a whole: the discriminator feedback gets less meaningful over time. If the GAN continues training past the point when the discriminator is giving completely random feedback, then the generator starts to train on junk feedback, and its own quality may collapse.
+
+For a GAN, convergence is often a fleeting, rather than stable, state.
 #### Loss Functions
 
 #### References
