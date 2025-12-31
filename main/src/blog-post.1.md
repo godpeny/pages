@@ -822,6 +822,34 @@ Also note that Wasserstein GANs are less vulnerable to getting stuck than minima
 - Cross-entropy is not a metric in this sense: 거리(distance)로서 가져야 할 성질을 만족하지 않는다. 왜냐면 CE 는 “진짜 분포가 P일 때, 모델이 Q라고 믿고 코딩하면 평균적으로 얼마나 놀라게 되는가” -> 본질적으로 거리라기보다 손실(loss)이다. 그래서 P를 기준으로 Q를 평가한 값과 Q를 기준으로 P를 평가한 값은 다름. 하지만 “거리”라면 방향에 따라 값이 바뀌면 안 된다. -> cross-entropy는 방향성이 있음.
 - KL Divergence: P를 기준으로 봤을 때, Q가 얼마나 잘못된 분포인가” 즉, 비대칭적인 ‘불일치 정도’*지, 거리 개념이 아니다.
 
+#### Common Problems of GANs
+<b> Vanishing Gradients </b>
+Research has suggested that if your discriminator is too good, then generator training can fail due to vanishing gradients. In effect, an optimal discriminator doesn't provide enough information for the generator to make progress.
+
+Attempts to Remedy: 
+- Wasserstein los
+- Modified minimax loss
+
+<b> Mode Collapse </b>  
+Usually you want your GAN to produce a wide variety of outputs. You want, for example, a different face for every random input to your face generator.
+
+However, if a generator produces an especially plausible output, the generator may learn to produce only that output. In fact, the generator is always trying to find the one output that seems most plausible to the discriminator.
+
+If the generator starts producing the same output (or a small set of outputs) over and over again, the discriminator's best strategy is to learn to always reject that output. But if the next generation of discriminator gets stuck in a local minimum and doesn't find the best strategy, then it's too easy for the next generator iteration to find the most plausible output for the current discriminator.
+
+Each iteration of generator over-optimizes for a particular discriminator, and the discriminator never manages to learn its way out of the trap. As a result the generators rotate through a small set of output types. This form of GAN failure is called mode collapse.
+
+Attempts to Remedy
+
+- Wasserstein loss: it alleviates mode collapse by letting you train the discriminator to optimality without worrying about vanishing gradients. If the discriminator doesn't get stuck in local minima, it learns to reject the outputs that the generator stabilizes on. So the generator has to try something new.
+- Unrolled GANs
+
+<b> Failure to Converge </b>  
+Researchers have tried to use various forms of regularization to improve GAN convergence.
+
+Attempts to Remedy
+- Adding noise to discriminator inputs
+- Penalizing discriminator weights
 #### References
 - https://developers.google.com/machine-learning/gan
 - https://arxiv.org/pdf/1406.2661
