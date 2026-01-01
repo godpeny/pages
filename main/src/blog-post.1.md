@@ -850,8 +850,26 @@ Researchers have tried to use various forms of regularization to improve GAN con
 Attempts to Remedy
 - Adding noise to discriminator inputs
 - Penalizing discriminator weights
+
+#### GAN Variations
+##### Progressive GANs
+The generator's first layers produce very low resolution images, and subsequent layers add details. This technique allows the GAN to train more quickly than comparable non-progressive GANs, and produces higher resolution images.
+
+##### Conditional GANs
+Train on a labeled data set and let you specify the label for each generated instance. For example, an unconditional MNIST GAN would produce random digits, while a conditional MNIST GAN would let you specify which digit the GAN should generate. Instead of modeling the joint probability $P(X, Y)$, conditional GANs model the conditional probability $P(X | Y)$.
+
+##### Image-to-Image Translation
+GANs take an image as input and map it to a generated output image with different properties. For example, we can take a mask image with blob of color in the shape of a car, and the GAN can fill in the shape with photorealistic car details.
+
+##### CycleGAN
+CycleGANs learn to transform images from one set into images that could plausibly belong to another set. For example, a CycleGAN can takes an image of a horse and turned it into an image of a zebra.
+
+##### Text-to-Image Synthesis
+Text-to-image GANs take text as input and produce images that are plausible and described by the text. For example, the flower image can be produced by feeding a text description to a GAN.
+
 #### References
 - https://developers.google.com/machine-learning/gan
 - https://arxiv.org/pdf/1406.2661
+- https://arxiv.org/abs/1710.10196
 
 ### Earth Mover Distance 
