@@ -516,3 +516,13 @@ $$
 $$
 {\displaystyle F(x;\alpha ,\beta )={\frac {\mathrm {B} {}(x;\alpha ,\beta )}{\mathrm {B} {}(\alpha ,\beta )}}=I_{x}(\alpha ,\beta )}
 $$
+
+## Kendall rank correlation coefficient
+Kendall rank correlation coefficient, commonly referred to as Kendall's $\tau$ coefficient  is a statistic used to measure the ordinal association between two measured quantities.
+$$
+{\displaystyle \tau ={\frac {({\text{number of concordant pairs}})-({\text{number of discordant pairs}})}{({\text{number of pairs}})}}=1-{\frac {2({\text{number of discordant pairs}})}{n \choose 2}}} \\[5pt]
+{\displaystyle i<j<n} \quad \text{where} \quad {\displaystyle {n \choose 2}={n(n-1) \over 2}} 
+$$  
+
+(*concordant: 부합하는)  
+Intuitively, the Kendall correlation between two variables will be high when observations have a similar or identical rank.
