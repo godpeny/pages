@@ -1068,3 +1068,93 @@ https://arxiv.org/pdf/2305.18290
 
 ## Trajectory in RL
 A "trajectory" is the sequence of what has happened (in terms of state, action, reward) over a set of contiguous timestamps, from a single episode, or a single part of a continuous problem.
+
+## Off-Policy vs On-Policy
+- On-Policy Method: Behavior Policy != Target Policy  
+- Off-Policy Method: Behavior Policy = Target Policy
+- Behavior Policy ($b(a|s)$): action을 선택하고 데이터 샘플을 얻는데 사용하는 policy
+- Target Policy($\pi(a|s)$): 평가(evaluate) 하고 수정(improve)하는 policy
+
+### Off-Policy (Q-Learning)
+Q-learning은 대부분은 최선의 행동을 선택하고 가끔은 랜덤하게 탐험합니다. 그리고 behavior policy로 데이터를 모으되, 항상 greedy policy를 기준으로 Q(action value function)를 업데이트 합니다.
+
+상태 s에서 행동 a를 선택할 behavior policy 확률은 아래와 같습니다.
+$$
+b(a \mid s) =
+\begin{cases}
+(1 - \epsilon) + \dfrac{\epsilon}{|\mathcal{A}|}
+& \text{if } a = \arg\max_a Q(s,a) \\
+\\
+\dfrac{\epsilon}{|\mathcal{A}|}
+& \text{otherwise}
+\end{cases}
+$$
+
+target policy 는 아래와 같습니다. 상태 s가 주어지면 Q값이 가장 큰 행동 하나만 선택, 그 행동의 확률은 1 이고 나머지 모든 행동의 확률은 0이 됩니다.
+$$
+\pi(a \mid s) =
+\begin{cases}
+1 & \text{if } a = \arg\max_a Q(s,a) \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+실제 업데이트 식은 아래와 같습니다.
+
+$$
+Q(s_t, a_t) \leftarrow Q(s_t, a_t)
++ \alpha \Big[
+r_t + \gamma \max_a Q(s_{t+1}, a)
+- Q(s_t, a_t)
+\Big]
+$$
+
+### On-Policy (SARSA)
+SARSA에서는 behavior policy와 target policy가 동일합니다. 대부분의 시간에는 현재 Q값이 가장 큰 행동을 선택 (exploitation), 가끔은 랜덤한 행동을 선택하는 건 Q-Learning 과 똑같지만 행동을 선택하는 정책과 Q를 업데이트할 때 가정하는 정책이 동일합니다.
+$$
+b(a \mid s) = \pi(a \mid s) =
+\begin{cases}
+(1 - \varepsilon) + \dfrac{\varepsilon}{|\mathcal{A}|}
+& \text{if } a = \arg\max_a Q(s,a) \\
+\dfrac{\varepsilon}{|\mathcal{A}|}
+& \text{otherwise}
+\end{cases}
+$$
+
+업데이트 식은 아래와 같습니다.
+$$
+Q(s_t, a_t) \leftarrow Q(s_t, a_t)
++ \alpha \Big[
+r_t + \gamma Q(s_{t+1}, a)
+- Q(s_t, a_t)
+\Big]
+$$
+
+### Pros & Cons
+#### Off-policy의 장단점
+- High sample efficiency
+  - 과거의 policy로부터 획득한 sample을 현재 policy를 업데이트할 때 여러 번 재사용이 가능하여 environment와의 상호작용을 적게 할 수 있습니다.
+- High bias error
+  - 과거의 policy와 현재의 policy가 많이 달라진 경우, 과거의 sample은 현재의 policy를 업데이트하기에 좋은 sample이 아닐 수 있습니다.
+
+#### On-policy의 장단점
+- Low bias error
+  - Behavior policy와 target policy가 같으므로 일반적으로 bias error를 유발시키지 않아 성능이 안정적입니다.
+- Low sample efficiency
+  - 획득한 sample을 이용해 policy를 한 번 업데이트하고 폐기하므로 environment와의 상호작용이 많이 필요합니다.
+
+## Action Value Function vs State Value Function
+### State-Value Function
+$$
+\mathbf{V}^{\pi}(s)
+$$
+- 상태 s 에 있을 때, 정책 $\pi$ 를 따르면 앞으로 받을 기대 누적 보상
+- 행동을 이미 평균낸 값
+
+### Action-Value Function (Q-function)
+$$
+\mathbf{Q}^{\pi}(s,a)
+$$
+- 상태 s 에서 행동 a 를 한 뒤, $\pi$ 를 따르면 앞으로 받을 기대 누적 보상 
+(지금은 a를 했다고 가정하고, 그 다음부터는 정책을 따르면 얼마나 좋을까?)
+- 행동을 구체적으로 구분한 값
