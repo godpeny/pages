@@ -36,11 +36,11 @@ DSPy는 우리가 시스템을 제어하고 모듈식으로 개선하는 방법�
 ```
 for hop in range(2):라는 파이썬 루프를 사용하여 두 번의 검색 과정을 거치는 로직을 명확하게 프로그래밍
 
-dspy.ChainOfThought("context, question -> query")라고 작성하면, 이는 "컨텍스트와 질문을 입력받아 검색 쿼리를 출력한다"는 함수의 타입(입출력 사양)을 정의하는 것과 같습
+dspy.ChainOfThought("context, question -> query")라고 작성하면, 이는 "컨텍스트와 질문을 입력받아 검색 쿼리를 출력한다"는 함수의 타입(입출력 사양)을 정의하는 것과 같습니다.
  ```
 
 ## Optimizing Instructions and Demonstrations for Multi-stage Language Model Programs
-단계 언어 모델 프로그램(Multi-stage Language Model Programs)의 지시문과 예시를 최적화하는 연구입니다. 즉, 이 연구는 여러 개의 모듈형 LM 호출이 복잡한 파이프라인으로 연결된 'LM 프로그램'의 성능을 최적화하는 것을 목표로 합니다. 개발자가 작성한 프로그램 구조(코드)와 최적화하려는 메트릭(Metric), 그리고 소량의 훈련 데이터가 주어졌을 때, 각 모듈의 프롬프트 변수(지시문 및 few-shot 예시)에 가장 적합한 문자열을 할당하여 전체 시스템의 성능을 극대화하는 것입니다.
+다단계 언어 모델 프로그램(Multi-stage Language Model Programs)의 지시문과 예시를 최적화하는 연구입니다. 즉, 이 연구는 여러 개의 모듈형 LM 호출이 복잡한 파이프라인으로 연결된 'LM 프로그램'의 성능을 최적화하는 것을 목표로 합니다. 개발자가 작성한 프로그램 구조(코드)와 최적화하려는 메트릭(Metric), 그리고 소량의 훈련 데이터가 주어졌을 때, 각 모듈의 프롬프트 변수(지시문 및 few-shot 예시)에 가장 적합한 문자열을 할당하여 전체 시스템의 성능을 극대화하는 것입니다.
 
 ### Constraints / Assumptions (제약 조건 및 가정)
 실제 개발 환경을 반영하여 다음과 같은 까다로운 제약을 가정합니다:
@@ -54,7 +54,7 @@ dspy.ChainOfThought("context, question -> query")라고 작성하면, 이는 "�
 2. Credit Assignment (기여도 할당)
 여러 모듈이 섞여 있을 때, 전체 성능 향상이나 저하가 어떤 모듈의 프롬프트 때문인지 판별하기 어렵습니다. 각 모듈의 변수가 최종 성능에 미치는 영향을 정확히 추론해야 탐색 효율을 높일 수 있습니다.
 
-### # Methods (최적화 방법론)
+### Methods (최적화 방법론)
 #### Bootstrap Few-shot
 훈련 데이터를 프로그램에 입력하여 실행 궤적(trace)을 추적합니다. 이때 최종 메트릭 점수가 높은 성공적인 사례의 중간 단계 입출력을 해당 모듈의 few-shot 예시(demonstration)로 수집하는 기법입니다. 이후 랜덤 서치를 통해 최적의 예시 조합을 찾습니다.
 
@@ -74,7 +74,7 @@ dspy.ChainOfThought("context, question -> query")라고 작성하면, 이는 "�
 
 - 예시: 처음에는 "단계별로 생각해보세요"라는 지시문으로 점수 31점을 받았다면, 이력을 본 제안 모델이 "심호흡을 하고 단계별로 논리적으로 생각해보세요"라고 수정하여 42점을 받는 식으로 개선해 나갑니다.
 
-#### MIPRO (Multi-prompt Instruction PRoposal Optimizer)
+#### MIPRO (Multi-prompt Instruction Proposal Optimizer)
 MIPRO는 지시문과 예시를 동시에(Jointly) 최적화하며, 베이지안 최적화(Bayesian Optimization)를 도입한 가장 정교한 도구입니다.
 - 원리
   - 접지(Grounding): 지시문을 제안할 때 단순히 점수만 주는 것이 아니라, 데이터셋의 특성 요약, 프로그램 코드 구조, 성공했던 실행 예시(Bootstrap demos) 등을 문맥으로 제공하여 매우 구체적인 후보를 만듭니다.
