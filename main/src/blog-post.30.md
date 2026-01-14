@@ -392,7 +392,14 @@ The AOC represents the probability that the model, if given a randomly chosen po
 
 <img src="images/blog30_roc_auc.png" alt="ROC and AUC" width="400"/>  
 
-
 The perfect model above, containing a square with sides of length 1, has an area under the curve (AUC) of 1.0. This means there is a 100% probability that the model will correctly rank a randomly chosen positive example higher than a randomly chosen negative example. While the AUC is 0.5, representing a 50% probability of correctly ranking a random positive and negative example. 
 
 https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
+
+## Permutation Feature Importance
+Permutation feature importance (PFI) measures the increase in the prediction error of the model after we permute the values of the feature, which breaks the relationship between the feature and the true outcome.
+
+The concept is really straightforward.
+$A$ feature is “important” if shuffling its values increases the model error, because in this case, the model relied on the feature for the prediction. $A$ feature is “unimportant” if shuffling its values leaves the model error unchanged, because in this case, the model ignored the feature for the prediction.
+
+원리: 특정 특성(Feature)이 모델의 예측 성능에 얼마나 기여하는지 평가하기 위해, 해당 특성의 데이터를 고의로 훼손했을 때 성능이 얼마나 떨어지는지를 측정합니다. 그리고 성능이 하락한 정도(또는 손실 함수의 증가량)가 바로 해당 작업(Task j)에 대한 그 특성의 중요도를 나타내고 $N$ 개의 작업에 대해 반복하여, 각 특성마다 $N$ 개의 중요도 점수를 가진 벡터 $F_i$(특성 $i$의 중요도 점수 벡터) ($f_{i,1}, f_{i,2}, \cdots, f_{i,N})$를 생성하게 됩니다. 
