@@ -217,7 +217,14 @@ $$
  - Sylvester’s rank inequality: if $A$ is an $m \times n$ matrix and $B$ is $n \times k$, then,
  $$ \operatorname {rank} (A)+\operatorname {rank} (B)-n\leq \operatorname {rank} (AB) $$
  - Subadditivity: $$ \operatorname {rank} (A+B)\leq \operatorname {rank} (A)+\operatorname {rank} (B) $$
-
+ - The rank of an $m \times n$ matrix is a nonnegative integer and cannot be greater than either $m$ or $n$.
+ $$
+ {\displaystyle \operatorname {rank} (A)\leq \min(m,n).}
+ $$
+ - If $B$ is any $n \times k$ matrix, then,
+ $$
+ {\displaystyle \operatorname {rank} (AB)\leq \min(\operatorname {rank} (A),\operatorname {rank} (B)).}
+ $$
 ### Inner Product (Dot Product)
 Inner Product also called as a scalar product is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors), and returns a single number.
 
