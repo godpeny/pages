@@ -24,6 +24,20 @@ This clustering approach assumes data is composed of probabilistic distributions
 Hierarchical clustering creates a tree of clusters. Hierarchical clustering, not surprisingly, is well suited to hierarchical data, such as taxonomies.
 
 ## Clustering Workflows
+Introduce steps to cluster data.
+
+1. Prepare data
+As with any ML problem, you must normalize, scale, and transform feature data before training or fine-tuning a model on that data. In addition, before clustering, check that the prepared data lets you accurately calculate similarity between examples.
+
+2. Create similarity metric
+Before a clustering algorithm can group data, it needs to know how similar pairs of examples are. You can quantify the similarity between examples by creating a similarity metric, which requires a careful understanding of your data. (Euclidean distance, Cosine, Dot Product)
+
+3. Run clustering algorithm
+A clustering algorithm uses the similarity metric to cluster data. For example, k-means.
+
+4. Interpret results and adjust
+Because clustering doesn't produce or include a ground "truth" against which you can verify the output, it's important to check the result against your expectations at both the cluster level and the example level. If the result looks odd or low-quality, experiment with the previous three steps. Continue iterating until the quality of the output meets your needs.
+
 ## Data preparation
 
 ## K-Means Clustering
