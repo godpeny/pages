@@ -38,9 +38,22 @@ BPR works by maximizing the posterior probability of a user preferring a known p
 Reference - https://www.geeksforgeeks.org/machine-learning/recommender-system-using-bayesian-personalized-ranking/  
 https://arxiv.org/pdf/1205.2618
 
-### Approximate Nearest Neighbor (ANN) Search
-https://medium.com/data-science/comprehensive-guide-to-approximate-nearest-neighbors-algorithms-8b94f057d6b6
 
+### Nearest Neighbor Search
+NN is a form of proximity search, is the optimization problem of finding the point in a given set that is closest (or most similar) to a given point. Closeness is typically expressed in terms of a dissimilarity function: the less similar the objects, the larger the function values.  
+NN can be defined as "given a set $S$ of points in a space $M$ and a query point $q\in M$, find the closest point in $S$ to $q$."
+
+#### Methods
+#### Linear Search
+The simplest solution to the NNS problem is to compute the distance from the query point to every other point in the database, keeping track of the "best so far". This algorithm, sometimes referred to as the naive approach, has a running time of O(dN), where $N$ is the cardinality of $S$ and $d$ is the dimensionality of $S$.
+
+#### Space Partitioning(K-D Trees)
+K-D Tree which iteratively bisects the search space into two regions containing half of the points of the parent region. Queries are performed via traversal of the tree from the root to a leaf by evaluating the query point at each split. Depending on the distance specified in the query, neighboring branches that might contain hits may also need to be evaluated. For constant dimension query time, average complexity is O($\log N$)in the case of randomly distributed points.
+
+#### Approximate Nearest Neighbor (ANN) Search
+Approximate Nearest Neighbor (ANN) is an algorithm that finds a data point in a dataset that’s very close to the given query point but not necessarily the absolute closest one.
+
+##### Reference
 https://dytis.tistory.com/108
 
 ### Stein’s Identity and Kernelized Stein Discrepancy
