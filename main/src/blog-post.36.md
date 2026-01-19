@@ -61,7 +61,10 @@ For example, let's consider 3-layered codebook tokens.
 - Codebook learning: K-means + EMA
 - Encoder+decoder learning: normal neural network backprop
 
-https://arxiv.org/pdf/2203.01941
-
 ### RQ-KMeans
 https://arxiv.org/pdf/2411.11739
+
+## RQ,PQ,VQ
+- VQ: https://scispace.com/papers/vector-quantization-2q8u54zz2s
+- PQ: https://inria.hal.science/inria-00514462v2/document
+- RQ(RQ-VAE): https://arxiv.org/abs/2203.01941
