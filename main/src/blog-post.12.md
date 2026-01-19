@@ -311,6 +311,16 @@ The following result is due to Mercer.
 For kernel $K : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ to be valid(mercer) kernel, it is necessary and sufficient that for any $\{ x^{(1)}, \ldots, x^{(m)} \}, \quad (m < \infty)$, the corresponding kernel matrix is symmetric
 positive semi-definite.
 
+### Reproducing Kernel Hilbert Space(RKHS)
+https://en.wikipedia.org/wiki/Reproducing_kernel_Hilbert_space
+
+### Maximum Mean Discrepancy (MMD)
+A distance-measure between distributions $\displaystyle P(X)$ and $\displaystyle Q(Y)$ which is defined as the distance between their embeddings in the RKHS(Reproducing kernel Hilbert space).
+$$
+{\displaystyle {\text{MMD}}(P,Q)=\left\|\mu _{X}-\mu _{Y}\right\|_{\mathcal {H}}}
+$$
+직관적으로, 같은 커널로 정의된 특징 공간에서, 두 분포의 평균 벡터 차이로 이해할 수 있다.
+
 ## Basics of SVM
  - https://www.ibm.com/topics/support-vector-machine
  - https://en.wikipedia.org/wiki/Support_vector_machine
