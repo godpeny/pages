@@ -653,6 +653,23 @@ Online learning is ideal for machine learning systems that receive data as a con
 #### Offline Training
 Traditional machine learning is performed offline using the batch learning method. In batch learning, data is accumulated over a period of time. The machine learning model is then trained with this accumulated data from time to time in batches. 
 
+### Curse of Dimensionality 
+Curse of Dimensionality refers to the phenomenon where the efficiency and effectiveness of algorithms deteriorate as the dimensionality of the data increases exponentially.
+
+In high-dimensional spaces, data points become sparse, making it challenging to discern meaningful patterns or relationships due to the vast amount of data required to adequately sample the space.
+Curse of Dimensionality significantly impacts machine learning algorithms in various ways. It leads to increased computational complexity, longer training times, and higher resource requirements. Moreover, it escalates the risk of overfitting and spurious correlations, hindering the algorithms' ability to generalize well to unseen data.
+
+##### How to Overcome the Curse of Dimensionality?
+To overcome the curse of dimensionality, you can consider the following strategies:
+
+1. Dimensionality Reduction Techniques
+- Feature Selection: Identify and select the most relevant features from the original dataset while discarding irrelevant or redundant ones. This reduces the dimensionality of the data, simplifying the model and improving its efficiency.
+- Feature Extraction: Transform the original high-dimensional data into a lower-dimensional space by creating new features that capture the essential information. Techniques such as Principal Component Analysis (PCA) and t-distributed Stochastic Neighbor Embedding (t-SNE) are commonly used for feature extraction.
+
+2. Data Preprocessing:
+- Normalization: Scale the features to a similar range to prevent certain features from dominating others, especially in distance-based algorithms.
+- Handling Missing Values: Address missing data appropriately through imputation or deletion to ensure robustness in the model training process.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
