@@ -54,7 +54,38 @@ The simplest solution to the NNS problem is to compute the distance from the que
 K-D Tree which iteratively bisects the search space into two regions containing half of the points of the parent region. Queries are performed via traversal of the tree from the root to a leaf by evaluating the query point at each split. Depending on the distance specified in the query, neighboring branches that might contain hits may also need to be evaluated. For constant dimension query time, average complexity is O($\log N$)in the case of randomly distributed points.
 
 #### Approximate Nearest Neighbor (ANN) Search
-Approximate Nearest Neighbor (ANN) is an algorithm that finds a data point in a dataset that’s very close to the given query point but not necessarily the absolute closest one.
+Approximate Nearest Neighbor (ANN) is an algorithm that finds a data point in a dataset that’s very close to the given query point but not necessarily the absolute closest one. More specifically, an approximate nearest neighbor search algorithm is allowed to return points whose distance from the query is at most $c$ times the distance from the query to its nearest points. The appeal of this approach is that, in many cases, an approximate nearest neighbor is almost as good as the exact one.
+
+##### How ANN works
+1. Dimensionality Reduction: High-dimensional data such as images, text or sensor readings which can overwhelm traditional search methods. Dimensionality reduction simplifies the data while preserving its essential characteristics, making it easier and faster to analyze. The first steps in ANN is reducing the dimensionality of the data.
+2. Metric Spaces: ANN operates within metric spaces where distances between data points are defined according to specific rules (Euclidean distance or cosine similarity ).
+3. Indexing Structures: ANN uses indexing structures like KD-trees, Locality-Sensitive Hashing (LSH) and Hierarchical Navigable Small World (HNSW). These structures preprocess the data enabling faster navigation through the search space. 
+
+##### When to Use ANN Search
+1. Large Datasets: When dealing with millions or billions of data points the exhaustive nature of exact NN becomes useless but ANN excels with vast datasets efficiently.
+2. High-Dimensional Data: As dimensions increase exact NN computations become prohibitively expensive. ANN’s dimensionality reduction techniques shrink the search space, making it suitable for complex data like images or text.
+3. Real-Time Applications: Recommendation systems, fraud detection and anomaly detection require instant results. ANN’s speed makes it perfect for these use cases.
+4. Acceptable Approximation:If your application can tolerate slight inaccuracies, ANN’s efficiency becomes invaluable.
+
+##### Types of Approximate Nearest Neighbor Algorithms
+<b> KD-Trees </b>  
+KD-trees arrange data points in a tree-like hierarchy, dividing the space according to particular dimensions. They excel in low-dimensional spaces and Euclidean distance-based queries. However, they struggle with high-dimensional data due to the “curse of dimensionality.”
+
+<b> Locality-Sensitive Hashing (LSH) </b>  
+LSH hashes data points into lower-dimensional spaces while preserving similarity relationships. It’s highly effective for searching massive, high-dimensional datasets like images or text. While LSH is fast and scalable, it may occasionally produce false positives.
+
+<b> Hierarchical Navigable Small World (HNSW) </b>  
+HNSW builds a graph-based index that facilitates quick searches in large-scale datasets. Its layered structure enables logarithmic search complexity, making it one of the fastest ANN algorithms available.
+
+<b> FAISS (Facebook AI Similarity Search)  </b>  
+FAISS is a library optimized for ANN search, widely used in deep learning applications. It supports both CPU and GPU acceleration, making it ideal for efficient vector similarity retrieval.
+
+<b> Annoy  </b>  
+Annoy (Approximate Nearest Neighbors Oh Yeah) is an open-source library designed for memory-efficient and fast search in high-dimensional spaces. It combines multiple ANN approaches under one roof, offering flexibility for different data types and search scenarios.
+
+<b> Linear Scan </b>  
+Although not typically classified as an ANN technique, linear scan is a brute-force approach that iterates through every data point sequentially. While simple to implement, it’s inefficient for large datasets and impractical for real-time applications.
+
 
 ##### Reference
 https://dytis.tistory.com/108
