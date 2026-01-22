@@ -1044,6 +1044,52 @@ Altogether, <b>reward → advantage → PPO optimization</b>. Check below image 
 <img src="images/blog28_ppo_grpo.png" alt="ppo and grpo architecture" width="600"/>  
 
 ## Generalized Advantage Estimation(GAE)
+$\pi_theta(a_t|s_t)$: 상태 s_t가 주어졌을 때 행동 a_t 를 선택할 조건부 확률 분포 -> 모델이 현재 상황(s_t)에서 어떤 행동(a_t​)을 취할 가능성이 얼마나 높은지를 수치화합니다.
+$A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)$: 정책 \pi 에 따른 어드밴티지 함수
+Q-term: 상태 s_t에서 특정 행동 a_t를 취한 다음, 그 이후로 부터는 정책 \pi를 따랐을 때의 총 보상의 합
+V-term: 상태 s_t에서 단순히 현재 정책 \pi를 따랐을 때 기대되는 총 보상의 합
+즉, 내가 지금 한 행동(a_t) 이 평소 하던 대로(\pi) 했을 때보다 얼마나 더 좋은가?"를 측정하는 것.
+
+
+$g^\gamma := \mathbb{E}_{\substack{s_{0:\infty} \\ a_{0:\infty}}} \left[ \sum_{t=0}^\infty A^{\pi,\gamma} (s_t, a_t) \nabla_\theta \log \pi_\theta (a_t | s_t) \right] $: 
+
+(1) 정책 그래디언트의 일반적인 형태에서 분산을 줄이기 위해 할인 계수(γ)를 도입한 구체적인 버전
+
+
+
+$$
+
+\hat{g} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=0}^{\infty} \hat{A}_t^n \nabla_\theta \log \pi_\theta (a_t^n | s_t^n)
+
+$$
+
+(1)=정책 그래디언트를 구현하기 위해 배치 처리와 어드밴티지 추정 기법을 적용한 식
+
+
+
+$$
+
+\delta_t^{V^{\pi,\gamma}}] &= \mathbb{E}_{s_{t+1}} [r_t + \gamma V^{\pi,\gamma}(s_{t+1}) - V^{\pi,\gamma}(s_t)
+
+$$
+
+TD-Residual:  현재 상태 s_t 에서 행동 a_t 를 취했을 때 얻은 즉각적인 보상(r_t) 과 다음 상태의 가치($\gamma V^{\pi,\gamma}(s_{t+1})$)의 합에서, 원래 예상했던 현재 상태의 가치$V^{\pi,\gamma}(s_t)$)를 뺀 값 -> 행동 a_t 에 대한 어드밴티지의 추정치로 간주할 수 있음.
+
+
+
+$$
+
+r_t + \gamma V^{\pi,\gamma}(s_{t+1}) = Q^{\pi,\gamma}(s_t, a_t) \\
+
+ \mathbb{E}_{s_{t+1}} [r_t + \gamma V^{\pi,\gamma}(s_{t+1}) - V^{\pi,\gamma}(s_t)] = \mathbb{E}_{s_{t+1}} [Q^{\pi,\gamma}(s_t, a_t) - V^{\pi,\gamma}(s_t)] = A^{\pi,\gamma}(s_t, a_t)
+
+$$
+
+앞의 Q-term을 대입할 수 있음을 확인.
+
+
+
+즉 GAE는 *TD 잔차(TD residual)**를 기본 벽돌로 삼아, 여러 개의 k-스텝 어드밴티지 추정치를 **λ를 이용해 지수 가중 평균(weighted sum)**하는 개념.
 
 ## Group Relative Policy Optimization (GRPO)
 GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
