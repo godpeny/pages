@@ -1043,6 +1043,7 @@ Since $V_\psi(o_t)$ is a value model, it gives a baseline estimate of how good t
 Altogether, <b>reward → advantage → PPO optimization</b>. Check below image to clarify the understanding.
 <img src="images/blog28_ppo_grpo.png" alt="ppo and grpo architecture" width="600"/>  
 
+## Generalized Advantage Estimation(GAE)
 
 ## Group Relative Policy Optimization (GRPO)
 GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
@@ -1062,6 +1063,9 @@ $$
 \hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \mathrm{mean}(\mathbf{r})}{\mathrm{std}(\mathbf{r})}
 $$
 Again, like PPO, optimize the policy by maximizing the objective function using advantages.
+
+## GDPO: Group reward-Decoupled Normalization Policy Optimization for Multi-reward RL Optimization
+https://arxiv.org/pdf/2601.05242
 
 ## Direct Preference Optimization (DPO)
 https://arxiv.org/pdf/2305.18290
