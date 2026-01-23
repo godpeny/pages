@@ -1123,6 +1123,19 @@ PPO와 GRPO 모두 보상 모델(Reward Model)은 학습된 신경망(Neural Rew
 ## GDPO: Group reward-Decoupled Normalization Policy Optimization for Multi-reward RL Optimization
 https://arxiv.org/pdf/2601.05242
 
+### Multi Rewards (GRPO & GDPO)
+
+### Problem of GRPO
+#### Example
+
+### Group reward-Decoupled normalization Policy Optimization
+### Effective incorporation of priority variation
+
+### Experiments
+#### Tool Calling
+#### Mathmatical Reasoning
+#### Coding Reasoning
+
 ## Direct Preference Optimization (DPO)
 https://arxiv.org/pdf/2305.18290
 
