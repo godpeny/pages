@@ -1089,7 +1089,7 @@ $$
 
 
 
-즉 GAE는 *TD 잔차(TD residual)**를 기본 벽돌로 삼아, 여러 개의 k-스텝 어드밴티지 추정치를 **λ를 이용해 지수 가중 평균(weighted sum)**하는 개념.
+즉 GAE는 *TD 잔차(TD residual)**를 기본 벽돌로 삼아, 여러 개의 k-스텝 어드밴티지(Q-V) 추정치를 **λ를 이용해 지수 가중 평균(weighted sum)**하는 개념.
 
 ## Group Relative Policy Optimization (GRPO)
 GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
@@ -1109,6 +1109,16 @@ $$
 \hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \mathrm{mean}(\mathbf{r})}{\mathrm{std}(\mathbf{r})}
 $$
 Again, like PPO, optimize the policy by maximizing the objective function using advantages.
+
+<b> 계산 과정 정리 </b>  
+1. 현재 정책 모델로부터 G개의 출력 {$o_1, o_2, \cdots, o_G$}을 샘플링합니다.
+2. 보상 모델($r$) 을 통해 각 출력에 대한 보상 r={$r_1, r_2, \cdots, r_G$} 을 얻습니다.
+3. 이 보상들을 그룹 내에서 정규화(Normalization)하여 최종 어드밴티지($\hat{\text{A}}$)를 구합니다
+
+
+<b> Reward Model($r$) of GRPO (vs $r$ of PPO)</b>  
+PPO와 GRPO 모두 보상 모델(Reward Model)은 학습된 신경망(Neural Reward Model)을 사용하여 생성된 답변의 품질을 수치화된 점수로 변환하는 역할을 합니다. GRPO의 경우 DeepSeekMath-Base 7B를 기반으로 학습된 신경망으로, 답변의 최종 결과나 중간 추론 단계에 대해 수치화된 점수를 부여하여 그룹 내 상대적 어드밴티지를 계산할 수 있도록 합니다.  
+다만 PPO는 그 점수를 해석하기 위해 '가치 모델'이라는 또 다른 AI를 옆에 두는 방식이고, GRPO는 여러 답변의 점수를 서로 비교하는 통계적 방식을 택해 자원을 절약한다는 점이 다릅니
 
 ## GDPO: Group reward-Decoupled Normalization Policy Optimization for Multi-reward RL Optimization
 https://arxiv.org/pdf/2601.05242
