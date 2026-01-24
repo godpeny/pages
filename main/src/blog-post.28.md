@@ -1044,52 +1044,84 @@ Altogether, <b>reward → advantage → PPO optimization</b>. Check below image 
 <img src="images/blog28_ppo_grpo.png" alt="ppo and grpo architecture" width="600"/>  
 
 ## Generalized Advantage Estimation(GAE)
-$\pi_theta(a_t|s_t)$: 상태 s_t가 주어졌을 때 행동 a_t 를 선택할 조건부 확률 분포 -> 모델이 현재 상황(s_t)에서 어떤 행동(a_t​)을 취할 가능성이 얼마나 높은지를 수치화합니다.
-$A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)$: 정책 \pi 에 따른 어드밴티지 함수
-Q-term: 상태 s_t에서 특정 행동 a_t를 취한 다음, 그 이후로 부터는 정책 \pi를 따랐을 때의 총 보상의 합
-V-term: 상태 s_t에서 단순히 현재 정책 \pi를 따랐을 때 기대되는 총 보상의 합
-즉, 내가 지금 한 행동(a_t) 이 평소 하던 대로(\pi) 했을 때보다 얼마나 더 좋은가?"를 측정하는 것.
+### Preliminary
+<b> $\pi_{\theta(a_t|s_t)}$ </b>  
+상태 $s_t$가 주어졌을 때 행동 $a_t$ 를 선택할 조건부 확률 분포 -> 모델이 현재 상황($s_t$)에서 어떤 행동($a_t$​)을 취할 가능성이 얼마나 높은지를 수치화합니다.  
 
+<b> $A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)$ </b>  
+정책 $\pi$ 에 따른 어드밴티지 함수로 특정 행동 $a_t$가 정책의 평균적인 행동보다 얼마나 더 좋은지를 나타냅니다.
+- $Q^\pi(s_t, a_t)$: 상태 $s_t$ 에서 특정 행동 $a_t$ 를 취한 다음, 그 이후로 부터는 정책 $\pi$를 따랐을 때의 총 보상의 합. = State-Value Function
+- $V^\pi(s_t)$: 상태 $s_t$ 에서 단순히 현재 정책 $\pi$ 를 따랐을 때 기대되는 총 보상의 합. 즉, 내가 지금 한 행동($a_t$) 이 평소 하던 대로($\pi$) 했을 때보다 얼마나 더 좋은가?"를 측정하는 것. = Action-Value Function
 
-$g^\gamma := \mathbb{E}_{\substack{s_{0:\infty} \\ a_{0:\infty}}} \left[ \sum_{t=0}^\infty A^{\pi,\gamma} (s_t, a_t) \nabla_\theta \log \pi_\theta (a_t | s_t) \right] $: 
+<b> Policy Gradient </b>  
+Policy gradient methods are a sub-class of policy optimization methods. Unlike value-based methods which learn a value function to derive a policy, policy optimization methods directly learn a policy function $\pi$ that selects actions without consulting a value function.
 
-(1) 정책 그래디언트의 일반적인 형태에서 분산을 줄이기 위해 할인 계수(γ)를 도입한 구체적인 버전
-
-
-
+### 정책 그래디언트(Policy Gradient)의 기본 원리와 어드밴티지 함수
+정책 최적화 문제에서는 매 타임스텝마다 보상 $r_t$ 를 받으며, 목표는 기대 총 보상의 합을 최대화하는 것입니다.
+$$
+\text{Maximize } \mathbb{E}\left[\sum_{t=0}^{\infty} r_t\right]
 $$
 
+"Policy Gradient methods" 를 사용하면 위 "the expected total reward"를 최대화(maximize) 하기 위해 반복적으로 gradient를 추정합니다. 이 "Policy Gradient" 는 일반적으로 아래와 같은 form을 가집니다. 모델은 아래 식을 통해 보상이 높았던 행동의 발생 확률을 높이도록 스스로를 교정합니다.
+
+$$
+g = \mathbb{E}\left[\sum_{t=0}^{\infty} \Psi_t \nabla_\theta \log \pi_\theta (a_t \mid s_t)\right]
+$$
+
+- $g$(Policy Gradient): 기대 총 보상($\mathbb{E}\left[\sum_{t=0}^{\infty} r_t\right]$)을 최대화하기 위해 정책 파라미터 $\theta$ 가 이동해야 할 경사(Gradient) 방향입니다.
+- $\mathbb{E}$: 정책에 의해 생성된 모든 가능한 궤적(Trajectory)에 대한 평균값을 의미합니다.
+- $\nabla_\theta \log \pi_\theta (a_t \mid s_t)$: 상태 $s_t$ 에서 행동 $a_t$ 를 선택할 로그 확률의 기울기입니다. 이 항은 파라미터 $\theta$ 를 수정하여 해당 행동이 일어날 확률을 높이는 방향을 가리킵니다.
+- $\Psi_t$(Scalar Weight): 해당 타임스텝의 행동이 "얼마나 좋았는지"를 나타내는 가중치입니다. 이 값이 그래디언트의 방향을 결정하는 지표가 됩니다.
+
+GAE 에서는 $\Psi_t$로 어드밴티지 함수를 사용합니다. 어드밴티지 함수는 특정 행동 $a_t$가 정책의 평균적인 행동보다 얼마나 더 좋은지를 나타냅니다.
+$$
+A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)
+$$
+
+하지만 실제 계산에서 무한한 타임스텝의 보상을 합산하면 분산이 매우 커집니다. 따라서 이를 해결하기 위해 분산 감소를 위한 할인 계수($\gamma$) 를 도입합니다.
+$$
+g^\gamma := \mathbb{E}_{\substack{s_{0:\infty} \\ a_{0:\infty}}} \left[ \sum_{t=0}^\infty A^{\pi,\gamma}(s_t, a_t) \nabla_\theta \log \pi_\theta (a_t | s_t) \right], \quad A^{\pi,\gamma}(\mathbf{s}_t, \mathbf{a}_t) := Q^{\pi,\gamma}(\mathbf{s}_t, \mathbf{a}_t) - V^{\pi,\gamma}(\mathbf{s}_t).
+$$
+
+### 어드밴티지 함수 추정
+실제 할인된 ($\gamma$ 가 적용된) 어드밴티지 함수 $A^\pi(s_t, a_t)$ 는 알 수 없으므로, 전체 궤적 데이터를 사용하여 계산한 근사치를 대신 사용해야하므로 이를 추정하는 방법을 다룹니다. 즉, ground truth 할인된 어드밴티지 함수($A^\pi(s_t, a_t)$)를 정확하게 추정하는 $\hat{A}$ 를 만드는 것입니다.
+
+$$
 \hat{g} = \frac{1}{N} \sum_{n=1}^{N} \sum_{t=0}^{\infty} \hat{A}_t^n \nabla_\theta \log \pi_\theta (a_t^n | s_t^n)
+$$
+실제 어드밴티지 $A$를 모르니 위와 같이 어드밴티지 추정치 $\hat{A}$ 를 만들어 배치 단위(N)로 평균을 내는 방식을 사용합니다.
+
+추정치 $\hat{A}$ 를 만들 때는 TD-Residual 개념을 사용합니다. 근사 가치 함수 $V$를 사용하여 다음과 같이 정의 할 수 있습니다.
 
 $$
+\delta_t^{V^{\pi,\gamma}} = r_t + \gamma V^{\pi,\gamma}(s_{t+1}) - V^{\pi,\gamma}(s_t)
+$$
+위 식은 현재 상태 $s_t$ 에서 행동 $a_t$ 를 취했을 때 얻은 즉각적인 보상($r_t$) 과 다음 상태의 가치($\gamma V^{\pi,\gamma}(s_{t+1})$)의 합에서, 원래 예상했던 현재 상태의 가치($V^{\pi,\gamma}(s_t)$)를 뺀 값으로 나타납니다. 즉 TD-Reisudal은 행동 $a_t$ 에 대한 어드밴티지의 추정치로 간주할 수 있습니다.
 
-(1)=정책 그래디언트를 구현하기 위해 배치 처리와 어드밴티지 추정 기법을 적용한 식
+이를 $k$ 타입스텝으로 확장하면,
+$$
+\hat{A}_t^{(1)} := \delta_t^V = -V(s_t) + r_t + \gamma V(s_{t+1}) \\[5pt]
+\hat{A}_t^{(2)} := \delta_t^V + \gamma\delta_{t+1}^V = -V(s_t) + r_t + \gamma r_{t+1} + \gamma^2 V(s_{t+2}) \\[5pt]
+\hat{A}_t^{(3)} := \delta_t^V + \gamma\delta_{t+1}^V + \gamma^2\delta_{t+2}^V = -V(s_t) + r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \gamma^3 V(s_{t+3}) \\[5pt]
+\cdots \\[5pt]
+\hat{A}_t^{(k)} := \sum_{l=0}^{k-1} \gamma^l \delta^{V}_{t+l} = -V(s_t) + r_t + \gamma r_{t+1} + \cdots + \gamma^{k-1} r_{t+k-1} + \gamma^k V(s_{t+k}) \\[5pt]
 
-
-
+\hat{A}_t^{(k)} = \sum_{l=0}^{k-1} \gamma^l \delta_{t+l}^V = -V(s_t) + \sum_{l=0}^{k-1} \gamma^l r_{t+l}
 $$
 
-\delta_t^{V^{\pi,\gamma}}] &= \mathbb{E}_{s_{t+1}} [r_t + \gamma V^{\pi,\gamma}(s_{t+1}) - V^{\pi,\gamma}(s_t)
-
+위를 바탕으로 일반화된 어드밴티지 추정치(Generalized Advantage Estimator, GAE)를 정의합니다. GAE는 현재 시점($1$)에서 $\infin$ 단계까지의 어드밴티지 추정치들을 적절한 비율($\lambda$)로 지수적으로 가중 평균한 것입니다.
+$$
+\begin{align*}
+\hat{A}_t^{\text{GAE}(\gamma,\lambda)} &:= (1 - \lambda) (\hat{A}_t^{(1)} + \lambda \hat{A}_t^{(2)} + \lambda^2 \hat{A}_t^{(3)} + \ldots) \\
+&= (1 - \lambda)(\delta_t^V + \lambda(\delta_t^V + \gamma\delta_{t+1}^V) + \lambda^2(\delta_t^V + \gamma\delta_{t+1}^V + \gamma^2\delta_{t+2}^V) + \ldots) \\
+&= (1 - \lambda)\left(\delta_t^V (1 + \lambda + \lambda^2 + \ldots ) + \gamma\delta_{t+1}^V (\lambda + \lambda^2 + \lambda^3 + \ldots ) \right. \\
+& \quad \left. {} + \gamma^2\delta_{t+2}^V (\lambda^2 + \lambda^3 + \lambda^4 + \ldots ) + \ldots \right) \\
+&= (1 - \lambda) \left( \delta_t^V \left( \frac{1}{1 - \lambda} \right) + \gamma\delta_{t+1}^V \left( \frac{\lambda}{1 - \lambda} \right) + \gamma^2\delta_{t+2}^V \left( \frac{\lambda^2}{1 - \lambda} \right) + \ldots \right) \\
+&= \sum_{l=0}^{\infty} (\gamma\lambda)^l \delta_{t+l}^V
+\end{align*}
 $$
 
-TD-Residual:  현재 상태 s_t 에서 행동 a_t 를 취했을 때 얻은 즉각적인 보상(r_t) 과 다음 상태의 가치($\gamma V^{\pi,\gamma}(s_{t+1})$)의 합에서, 원래 예상했던 현재 상태의 가치$V^{\pi,\gamma}(s_t)$)를 뺀 값 -> 행동 a_t 에 대한 어드밴티지의 추정치로 간주할 수 있음.
-
-
-
-$$
-
-r_t + \gamma V^{\pi,\gamma}(s_{t+1}) = Q^{\pi,\gamma}(s_t, a_t) \\
-
- \mathbb{E}_{s_{t+1}} [r_t + \gamma V^{\pi,\gamma}(s_{t+1}) - V^{\pi,\gamma}(s_t)] = \mathbb{E}_{s_{t+1}} [Q^{\pi,\gamma}(s_t, a_t) - V^{\pi,\gamma}(s_t)] = A^{\pi,\gamma}(s_t, a_t)
-
-$$
-
-앞의 Q-term을 대입할 수 있음을 확인.
-
-
-
-즉 GAE는 *TD 잔차(TD residual)**를 기본 벽돌로 삼아, 여러 개의 k-스텝 어드밴티지(Q-V) 추정치를 **λ를 이용해 지수 가중 평균(weighted sum)**하는 개념.
+즉 GAE는 TD residual을 이용하여 여러 개의 k-스텝 어드밴티지(Q-V) 추정치를 $\lambda$ 를 이용해 지수 가중 평균(weighted sum)하는 개념입니다.
 
 ## Group Relative Policy Optimization (GRPO)
 GRPO is variant of PPO, that enhances mathematical reasoning abilities while concurrently optimizing the memory usage of PPO. GRPO removes the need for additional value model as
