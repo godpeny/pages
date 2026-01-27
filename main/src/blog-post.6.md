@@ -225,6 +225,9 @@ f(x + h) = (x + h)^T A (x + h) \\
 $$
 So $\frac{\partial}{\partial x} \left (x^T A x \right)$ is $(A + A^T) x$ if $A$ is not symmetric, and $2Ax$ if $A$ is symmetric because $A^T = A$ when $A$ is symmetric matrix.
 
+## Influence Function
+https://pydvl.org/stable/influence/#construction
+
 
 ## Product Rule
 It is a formula used to find the derivatives of products of two or more functions. For two functions,
