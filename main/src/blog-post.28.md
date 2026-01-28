@@ -1242,11 +1242,8 @@ $$
 
 두 예시를 통해 GRPO와 GDPO를 비교해 보았을 때, GRPO는 다중 보상을 처리할 때 신호를 압축해버려 모델이 "무엇을 더 잘했는지" 구분하기 어렵게 만든 반면, GDPO는 보상 간의 구분을 유지함으로써 더 정확한 정책 업데이트(Accurate policy updates)와 우수한 수렴 성능을 이끌어냅니다.
 
-### GRPO Methods
-GRPO의 한계(다중 보상 처리시 보상 신호 붕괴)를 극복하기 위해 제안된 GDPO 알고리즘을 설명합니다.
-
-#### Group reward-Decoupled normalization Policy Optimization
-기존 GRPO는 모든 보상을 먼저 더한 뒤 그룹 정규화를 수행하여 정보 손실(붕괴)을 야기했습니다. 반면, GDPO는 각 보상 항목을 개별적으로 정규화한 뒤 합산하는 방식을 취합니다. 이는 답변 간의 미세한 차이(fine-grained differences)를 보존하여 더 정확한 학습 신호를 제공하기 위함입니다.
+### GDPO Methods
+GRPO의 한계(다중 보상 처리시 보상 신호 붕괴)를 극복하기 위해 제안된 GDPO 알고리즘을 설명합니다. 기존 GRPO는 모든 보상을 먼저 더한 뒤 그룹 정규화를 수행하여 정보 손실(붕괴)을 야기했습니다. 반면, GDPO는 각 보상 항목을 개별적으로 정규화한 뒤 합산하는 방식을 취합니다. 이는 답변 간의 미세한 차이(fine-grained differences)를 보존하여 더 정확한 학습 신호를 제공하기 위함입니다.
 
 $$
 A^{(i,j)}_n = \frac{r^{(i,j)}_n - \text{mean}\left\{r^{(i,1)}_n, \ldots, r^{(i,G)}_n\right\}}{\text{std}\left\{r^{(i,1)}_n, \ldots, r^{(i,G)}_n\right\}} \\[5pt]
@@ -1304,6 +1301,11 @@ GDPO는 GRPO와 비교했을 때 형식 보상과 정확도 보상 모두에서 
 3. 버그 보상: 생성된 코드가 런타임 에러나 컴파일 에러 없이 실행되는지 여부를 체크하여 1 또는 0을 부여합니다
 
 결과적으로 2개 보상과 3개 보상인 상황 모두에서 GDPO가 나은 성능을 보이며, GDPO의 방식이 보상 항목이 많아질수록 발생하는 신호의 혼선과 붕괴를 효과적으로 막아주며, 결과적으로 정확도, 효율성, 코드 품질이라는 다중 목표를 모두 만족시키는 모델을 만들 수 있음을 보여주었습니다.
+
+### References
+- https://arxiv.org/pdf/2601.05242 (GDPO)
+- https://arxiv.org/pdf/2402.03300 (GRPO, DeepSeekMath)
+- https://arxiv.org/pdf/1506.02438 (GAE)
 
 ## Direct Preference Optimization (DPO)
 https://arxiv.org/pdf/2305.18290
