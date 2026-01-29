@@ -537,3 +537,22 @@ If the system always recommend items that are "closest" to the query embedding, 
 - https://developers.google.com/machine-learning/recommendation?_gl=1*100s3or*_up*MQ..*_ga*NDEzMDgzNTk0LjE3NjMwNDM1Mzc.*_ga_SM8HXJ53K2*czE3NjMwNDM1MzckbzEkZzAkdDE3NjMwNDM1MzckajYwJGwwJGgw
 - https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems)
 - https://www.ibm.com/think/topics/content-based-filtering
+
+## Metrics
+### Precision/Recall@K
+<img src="images/blog33_precision_recall_at_k.png" alt="Precision/Recall@K" width="600"/>   
+
+
+Precision은 내가 1로 예측한 것 중에 실제 1이 얼마나 있는지 비율 -> Precision@K는 내가 추천한 K개 아이템 중 실제 사용자가 관심있는 아이템의 비율
+
+Recall은 실제 모든 1 중에서 내가 1로 예측한 것이 얼마나 되는지 비율 -> Recall@K는 사용자가 관심있는 전체 아이템의 중 내가 추천한 아이템의 비율
+
+### Hit Rate@K
+
+### Mean Average Precision@K (MAP@K)
+
+### Normalized Discounted Cumulative Gain@K (NDCG@K)
+
+
+### Reference
+https://lsjsj92.tistory.com/663
