@@ -208,6 +208,31 @@ Based on language models, LLMs acquire these abilities by learning statistical r
 LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.
 LLMs are artificial neural networks that utilize the transformer architecture, invented in 2017. The largest and most capable LLMs, as of June 2024, are built with a decoder-only transformer-based architecture, which enables efficient processing and generation of large-scale text data.
 
+#### Temperature
+LLM의 temperature 는 모델이 출력을 생성할 때 다양성(diversity)과 창의성(creativity)의 정도를 결정하는 설정값이다. 이 값은 통계학적으로 볼츠만 분포(Boltzmann distribution)에서 유래한 것으로, 모델이 단어 선택 시 각 단어의 확률 분포를 얼마나 균일하게 또는 극단적으로 설정할지를 결정한다.
+
+<b> 낮은 temperature(예: 0에 가까움)</b>  
+- 확률이 높은 상위 후보 단어를 매우 높은 확률로 선택한다.
+- 결정론적(deterministic)이며, 예측 가능한 결과를 만들어낸다.
+- 생성된 문장이 반복적이거나 상투적일 가능성이 높다.
+
+<b>높은 temperature(예: 1 이상)</b>
+- 다양한 단어를 선택할 확률이 더 균등해진다.
+- 무작위성(randomness)이 증가하여 예측 불가능한 창의적 결과가 나온다.
+- 때로는 일관성이 떨어지거나, 부적절한 표현을 생성할 수 있다.
+
+$$
+P_i = \frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
+$$
+- $z_i$: ㅗ델이 단어 에 부여한 원래의 로짓 값이다.
+- $T$: temperature 값이다.
+  - $T \rightarrow 0$:  가장 높은 로짓값을 가진 단어의 확률이 1에 근접한다. (결정론적 출력)
+  - $T = 1$: 모델이 훈련한 원본 분포를 그대로 따른다. (기본값)
+  - $T > 1$: 각 단어의 확률이 고르게 분산되어 다양한 단어가 선택될 가능성이 커진다.
+
+일반적으로는 0.7 전후에서 시작하여 필요에 따라 조정하는 것이 가장 좋다.
+
+
 ### Parametic vs Non-Parametic Learning Algorithm
 - Parametic : fixed finite number of parameters ($\theta$) for fitting to the data. So After fitting theta, trainning data is no more needed to make prediction.    
 e.g. linear regression
