@@ -542,12 +542,14 @@ If the system always recommend items that are "closest" to the query embedding, 
 ### Precision/Recall@K
 <img src="images/blog33_precision_recall_at_k.png" alt="Precision/Recall@K" width="600"/>   
 
-
 Precision은 내가 1로 예측한 것 중에 실제 1이 얼마나 있는지 비율 -> Precision@K는 내가 추천한 K개 아이템 중 실제 사용자가 관심있는 아이템의 비율
 
 Recall은 실제 모든 1 중에서 내가 1로 예측한 것이 얼마나 되는지 비율 -> Recall@K는 사용자가 관심있는 전체 아이템의 중 내가 추천한 아이템의 비율
 
 ### Hit Rate@K
+<img src="images/blog33_hit_rate_at_k.png" alt="Hit Rate @K" width="600"/>   
+
+Hit Rate at K calculates the share of users for which at least one relevant item is present in the K.
 
 ### Mean Average Precision@K (MAP@K)
 
