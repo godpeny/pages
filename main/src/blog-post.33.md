@@ -552,6 +552,19 @@ Recall은 실제 모든 1 중에서 내가 1로 예측한 것이 얼마나 되�
 Hit Rate at K calculates the share of users for which at least one relevant item is present in the K.
 
 ### Mean Average Precision@K (MAP@K)
+Mean Average Precision (MAP) at K evaluates the average Precision at all relevant ranks within the list of top K recommendations.
+
+To compute MAP, you first need to calculate the Average Precision (AP) for each list which is an average of Precision values at all positions in K with relevant recommendations. Once you compute the AP for every list, you can average it across all users.
+
+<b> Average Precision @ K </b>  
+<img src="images/blog33_average_precision.png" alt="Average Precision" width="600"/>   
+
+<b> Mean Average Precision @ K</b>  
+
+$$
+\mathrm{MAP@K} = \frac{1}{U} \sum_{u=1}^{U} \mathrm{AP@K}_u
+$$
+For example, if you have 100 users, you sum AP for each one and divide by 100.
 
 ### Normalized Discounted Cumulative Gain@K (NDCG@K)
 
