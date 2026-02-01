@@ -567,7 +567,44 @@ $$
 For example, if you have 100 users, you sum AP for each one and divide by 100.
 
 ### Normalized Discounted Cumulative Gain@K (NDCG@K)
+#### Cumulative Gain (CG@K)
+CG is the sum of the graded relevance values of all results in a search result list. It does not take into account the rank (position) of a result in the result list.
+$$
+{\displaystyle \mathrm {CG_{K}} =\sum _{i=1}^{K}rel_{i}}
+$$
 
+*relevance score:해당 쿼리(또는 유저)에 대해, 그 아이템이 얼마나 관련 있는지를 나타내는 비음수 값. (정답(label) 기반 점수, 모델 예측 X)
+
+CG = 순서를 고려하지 않은 추천한 아이템의 관련성 합
+
+#### Discounted Cumulative Gain (DCG@K)
+The premise of DCG is that highly relevant documents appearing lower in a search result list should be penalized, as the graded relevance value is reduced logarithmically proportional to the position of the result.
+$$
+{\displaystyle \mathrm {DCG_{K}} =\sum _{i=1}^{K}{\frac {rel_{i}}{\log _{2}(i+1)}}=rel_{1}+\sum _{i=2}^{K}{\frac {rel_{i}}{\log _{2}(i+1)}}}
+$$
+
+An alternative formulation of DCG[4] places stronger emphasis on retrieving relevant documents.
+$$
+{\displaystyle \mathrm {DCG_{K}} =\sum _{i=1}^{K}{\frac {2^{rel_{i}}-1}{\log _{2}(i+1)}}}
+$$
+
+DCG = 순서를 고려한 CG 값. (뒤에 나온 값의 영향도가 줄어듦)
+
+#### Normalized DCG (NCDG@K)
+$$
+{\displaystyle \mathrm {nDCG_{K}} ={\frac {DCG_{K}}{IDCG_{K}}}},
+$$
+Where IDCG is Ideal DCG as shown below.
+$$
+{\displaystyle \mathrm {IDCG_{K}} =\sum _{i=1}^{|REL_{K}|}{\frac {2^{rel_{i}}-1}{\log _{2}(i+1)}}}
+$$
+Where ${\displaystyle REL_{p}}$ represents the list of relevant documents (ordered by their relevance) in the corpus up to position $K$.
+
+<img src="images/blog33_ndcg.png" alt="Normalized DCG" width="600"/>   
+
+
+IDCG = 최적의 추천일 때의 DCG  
+NCCG = DCG/IDCG
 
 ### Reference
 https://lsjsj92.tistory.com/663
