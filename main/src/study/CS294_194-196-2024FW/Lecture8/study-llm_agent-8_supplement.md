@@ -23,5 +23,11 @@ Mixed integer programming (MIP) is a mathematical optimization technique that so
 Abvoe is an example of a mixed integer programming (MIP) model and its solution space: $x$ and $y$ are the decision variables, and $z$ is the objective function. 
 The inequalities form the constraint boundaries, represented as lines. Blue dots indicate feasible (valid) solutions that satisfy all constraints, while the green dot marks an optimal solution that maximizes the objective.
 
+# Fourier Transform
+The Fourier transform (FT) is an integral transform that takes a function as input, and outputs another function that describes the extent to which various frequencies are present in the original function. The output of the transform is a complex valued function of frequency.
+$$
+{\displaystyle {\widehat {f}}(\xi )=\int _{-\infty }^{\infty }f(x)\ e^{-i2\pi \xi x}\,dx,\quad \forall \xi \in \mathbb {R} .}    
+$$
 
 
+https://en.wikipedia.org/wiki/Fourier_transform
