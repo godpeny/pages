@@ -1045,10 +1045,10 @@ Altogether, <b>reward → advantage → PPO optimization</b>. Check below image 
 
 ## Generalized Advantage Estimation(GAE)
 ### Preliminary
-<b> $\pi_{\theta(a_t|s_t)}$ </b>  
+<b> $\pi_{\theta(a_t|s_t)}$ - 정책 함수</b>  
 상태 $s_t$가 주어졌을 때 행동 $a_t$ 를 선택할 조건부 확률 분포 -> 모델이 현재 상황($s_t$)에서 어떤 행동($a_t$​)을 취할 가능성이 얼마나 높은지를 수치화합니다.  
 
-<b> $A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)$ </b>  
+<b> $A^\pi(s_t, a_t) := Q^\pi(s_t, a_t) - V^\pi(s_t)$ - 어드밴티지 함수</b>  
 정책 $\pi$ 에 따른 어드밴티지 함수로 특정 행동 $a_t$가 정책의 평균적인 행동보다 얼마나 더 좋은지를 나타냅니다.
 - $Q^\pi(s_t, a_t)$: 상태 $s_t$ 에서 특정 행동 $a_t$ 를 취한 다음, 그 이후로 부터는 정책 $\pi$를 따랐을 때의 총 보상의 합. = State-Value Function
 - $V^\pi(s_t)$: 상태 $s_t$ 에서 단순히 현재 정책 $\pi$ 를 따랐을 때 기대되는 총 보상의 합. 즉, 내가 지금 한 행동($a_t$) 이 평소 하던 대로($\pi$) 했을 때보다 얼마나 더 좋은가?"를 측정하는 것. = Action-Value Function
@@ -1082,6 +1082,13 @@ $$
 $$
 g^\gamma := \mathbb{E}_{\substack{s_{0:\infty} \\ a_{0:\infty}}} \left[ \sum_{t=0}^\infty A^{\pi,\gamma}(s_t, a_t) \nabla_\theta \log \pi_\theta (a_t | s_t) \right], \quad A^{\pi,\gamma}(\mathbf{s}_t, \mathbf{a}_t) := Q^{\pi,\gamma}(\mathbf{s}_t, \mathbf{a}_t) - V^{\pi,\gamma}(\mathbf{s}_t).
 $$
+
+강화학습에서는 보상을 높여야 하므로 위에서 예측한 기울기(Gradient) 방향으로 매개변수를 더해주는 Gradient Ascent 방법을 사용합니다. 
+$$\theta_{i+1} \leftarrow \theta_i + \alpha_i g_i$$
+- $\theta_i$: 현재 단계($i$)의 정책함수의 파라미터입니다.
+- $\theta_{i+1}$: 업데이트된 다음 단계의 파라미터입니다.
+- $\alpha_i$: 학습률(Learning rate)로, 한 번의 업데이트에서 정책을 얼마나 변경할지 결정합니다.
+- $g_i$**: 파라미터 공간에서 추정된 기울기로 높은 보상과 연결된 행동의 발생 확률을 높이는 방향을 가리킵니다.
 
 ### 어드밴티지 함수 추정
 실제 할인된 ($\gamma$ 가 적용된) 어드밴티지 함수 $A^\pi(s_t, a_t)$ 는 알 수 없으므로, 전체 궤적 데이터를 사용하여 계산한 근사치를 대신 사용해야하므로 이를 추정하는 방법을 다룹니다. 즉, ground truth 할인된 어드밴티지 함수($A^\pi(s_t, a_t)$)를 정확하게 추정하는 $\hat{A}$ 를 만드는 것입니다.
