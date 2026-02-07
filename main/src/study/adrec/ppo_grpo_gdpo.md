@@ -185,13 +185,69 @@ $\lambda$는 여러 단계의 어드밴티지 추정치들을 어떻게 섞을�
 ##### $0 < \lambda < 1$ (Compromise)
 - $\lambda$를 중간값으로 설정하면 분산을 대폭 낮추면서도 가치 함수가 합리적으로 정확할 경우 편향을 허용 가능한 수준으로 유지할 수 있습니다.
 
-### 3. GRPO (Group Relative Policy Optimization) 설명
-DeepSeek 연구진이 수학적 추론 능력을 높이기 위해 제안한 PPO의 변형 알고리즘입니다.
+### 3. GRPO (Group Relative Policy Optimization)
+#### PPO의 문제점
+#### 1. 보상의 희소성 (Sparse Reward)
+LLM이 문장을 생성할 때, 보상 모델(Reward Model)은 보통 전체 답변이 완성된 후 마지막 토큰에만 점수를 부여합니다. 하지만 가치 모델은 특정 상태($s_t$, 즉 현재까지 생성된 토큰들)에서 앞으로 얻을 기대 보상을 예측해야 합니다. 하지만 실제 데이터에는 중간 단계의 보상이 없고 오직 마지막에만 결과가 나타나기 때문에, 각 중간 토큰이 최종 보상에 얼마나 기여했는지 직접적으로 알 수 있는 정답(Ground Truth)이 없습니다.  
+따라서 정답 데이터가 마지막에만 집중되어 있으므로, 중간 단계의 모든 토큰에 대해 정확한 가치($V$)를 예측하도록 가치 모델을 훈련시키는 것은 매우 복잡하고 어려운 작업이 됩니다.
 
-*   **가치 모델(Critic) 생략**: 정책 모델과 크기가 비슷한 가치 모델을 별도로 두지 않아 **훈련 자원(메모리 및 계산량)을 획기적으로 절감**합니다.
-*   **그룹 상대적 어드밴티지**: 각 질문($q$)에 대해 여러 개의 답변(Group $G$)을 샘플링한 뒤, 해당 그룹 내에서의 상대적 점수를 기반으로 어드밴티지를 계산합니다.
-    *   $A_{i,j} = \frac{r_{i,j} - \text{mean}(r)}{\text{std}(r)}$
-*   **학습 방식**: 답변의 최종 결과에 점수를 매기는 **결과 감독(Outcome Supervision)**이나 단계별로 점수를 주는 **과정 감독(Process Supervision)**을 통해 수학적 추론 효율을 극대화합니다.
+### 2. 신용 할당 문제 (Credit Assignment Problem)
+행동(특정 토큰 선택)과 그 결과(최종 보상) 사이의 시간적 간격이 매우 길 때 발생하는 문제를 '신용 할당 문제'라고 합니다. 수백 개의 토큰으로 구성된 답변에서 최종적으로 높은 점수를 받았을 때, 과연 어떤 토큰이 결정적인 역할을 했는지 판별하기 어렵습니다. 
+
+### 3. 가치 모델의 부정확성이 미치는 영향 (편향 발생)
+가치 모델이 모든 토큰에 대해 정확한 가치를 예측하지 못하면 다음과 같은 치명적인 문제가 발생합니다. PPO 알고리즘에서 가치 모델은 어드밴티지($A_t$)를 계산하는 기준점이 됩니다. 만약 가치 모델이 부정확한 값을 내놓으면 정책 업데이트 방향에 편향이 생기게 됩니다. 분산(Variance)은 더 많은 샘플로 해결할 수 있지만, 부정확한 가치 모델로 인한 편향은 알고리즘을 잘못된 방향으로 수렴하게 하거나 아예 수렴하지 못하게 만들 수 있습니다.
+
+#### 4. 메모리 및 연산 자원 낭비
+가치 모델은 보통 정책 모델과 크기가 비슷합니다. 만약에 이를 제거함으로써 학습에 필요한 메모리 사용량을 획기적으로 줄일 수 있습니다.
+
+#### GRPO의 알고리즘
+이러한 PPO의 까다로운 점들 때문에 새로운 알고리즘 GRPO는 가치 모델을 아예 제거하는 방식으로 DeepSeek 연구진이 수학적 추론 능력을 높이기 위해 제안한 PPO의 변형 알고리즘입니다. 
+
+GRPO(Group Relative Policy Optimization)는 PPO의 변형으로 PPO에서 어드밴티지를 계산하기 위해 필수적이었던 가치 모델(Critic)과 이를 이용한 GAE(Generalized Advantage Estimation) 방식의 어드밴티지 추정을 사용하지 않는대신 동일한 질문에 대해 생성된 여러 샘플링 출력의 평균 보상을 베이스라인(baseline)으로 사용합니다.
+
+구체적으로, 각 질문 $q$에 대해 GRPO는 이전 정책 $\pi_{\theta_{\text{old}}}$로부터 출력 그룹 $\{o_1, o_2, \cdots, o_G\}$를 샘플링한 후, 다음 목적 함수를 최대화하여 정책 모델을 최적화합니다.
+
+$$
+\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{q \sim P(Q), \{o_i\}_{i=1}^{G} \sim \pi_{\theta_{\text{old}}}(O|q)} \left[ \frac{1}{G} \sum_{i=1}^{G} \frac{1}{|o_i|} \sum_{t=1}^{|o_i|} \left\{ \min \left[ \frac{\pi_{\theta}(o_{i,t}|q, o_{i,<t})}{\pi_{\theta_{\text{old}}}(o_{i,t}|q, o_{i,<t})} \hat{A}_{i,t}, \text{clip}\left(\frac{\pi_{\theta}(o_{i,t}|q, o_{i,<t})}{\pi_{\theta_{\text{old}}}(o_{i,t}|q, o_{i,<t})}, 1-\varepsilon, 1+\varepsilon\right) \hat{A}_{i,t} \right] \right\} - \beta \mathbb{D}_{\text{KL}} \left[ \pi_{\theta} \| \pi_{\text{ref}} \right] \right]
+$$
+아래와 같이 GRPO는 PPO와 달리 수정된 KL-Divergence 항을 사용합니다. 이 KL 발산 항은 학습 중인 정책이 레퍼런스 정책(보통, 초기 SFT 모델)으로부터 너무 멀어지지 않도록 강제합니다. 이 KL 발산 항은 손실함수의 어드밴티지 항 뒤에 위치해서 만약 새로운 정책이 참조 정책과 너무 달라지면 KL 값이 커지게 되고, 이는 전체 목적 함수 값을 낮추는 결과(페널티)를 초래합니다. 따라서 모델은 보상을 최대화하는 동시에 참조 정책과의 유사성을 유지하는 방향으로 학습됩니다.
+
+이 KL 발산항은 오리지널 KL 발산의 무편향 추정량(Unbiased estimator)으로 기댓값을 구했을 때 우리가 원래 구하려던 KL 발산과 일치하게 되는 식이 됩니다.
+$$
+\mathbb{D}_{KL} [\pi_\theta || \pi_{ref}] = \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - \log \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - 1
+$$
+$r = \frac{\pi_{ref}(o)}{\pi_\theta(o)}$라고 할 때, $r - \log r - 1$의 형태가 되며 이 항의 평균을 구해서 각 항을 분리해서 보면 아래와 같습니다.  
+
+<b> 첫 번째 항 </b>  
+$$\mathbb{E}_{\pi_\theta} \left[ \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right] = \sum_{o} \pi_\theta(o) \cdot \frac{\pi_{ref}(o)}{\pi_\theta(o)} = \sum_{o} \pi_{ref}(o) = 1$$
+
+$$(\mathbb{E}_{\pi_\theta} \left[ \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right] = \sum_{o} \pi_\theta(o) \times \left( \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right))$$
+
+<b> 두 번째 항 </b>  
+$$\mathbb{E}_{\pi_\theta} \left[ \log \frac{\pi_\theta(o)}{\pi_{ref}(o)} \right] = D_{KL}(\pi_\theta \| \pi_{ref})$$
+원래의 KL 발산 항입니다.
+
+<b> 세 번째 항 </b>  
+1
+
+이를 통해 첫번째, 두번재, 세번재 항을 합해서 $1 - \log r -1 = \log r$ 로 KL 발산항이 됩니다.
+
+어드밴티지 항인 $\hat{A}_{i,t}$는 어떻게 계산할까요? 각 질문 $q$에 대해, 이전 정책 모델 $\pi_{\theta_{\text{old}}}$로부터 출력 그룹 $\{o_1, o_2, \cdots, o_G\}$를 샘플링합니다. 그런 다음 보상 모델을 사용하여 출력들에 대한 점수를 매기고, 이에 상응하는 $G$개의 보상 $r = \{r_1, r_2, \cdots, r_G \}$를 얻습니다. 그 후, 출력 내 모든 토큰의 어드밴티지 $\hat{A}_{i,t}$를 다음과 같이 정규화된 보상으로 설정합니다.
+
+$$
+\hat{A}_{i,t} = \tilde{r}_i = \frac{r_i - \mathrm{mean}(\mathbf{r})}{\mathrm{std}(\mathbf{r})}
+$$
+PPO 와 같이 이 목표 함수를 어드밴티지를 이용해 최대화함으로 정책을 최적화 합니다.
+
+<b> 계산 과정 정리 </b>  
+1. 현재 정책 모델로부터 G개의 출력 {$o_1, o_2, \cdots, o_G$}을 샘플링합니다.
+2. 보상 모델($r$) 을 통해 각 출력에 대한 보상 r={$r_1, r_2, \cdots, r_G$} 을 얻습니다.
+3. 이 보상들을 그룹 내에서 정규화(Normalization)하여 최종 어드밴티지($\hat{\text{A}}$)를 구합니다
+
+
+<b> Reward Model($r$) of GRPO (vs $r$ of PPO)</b>  
+PPO와 GRPO 모두 보상 모델(Reward Model)은 학습된 신경망(Neural Reward Model)을 사용하여 생성된 답변의 품질을 수치화된 점수로 변환하는 역할을 합니다. GRPO의 경우 DeepSeekMath-Base 7B를 기반으로 학습된 신경망으로, 답변의 최종 결과나 중간 추론 단계에 대해 수치화된 점수를 부여하여 그룹 내 상대적 어드밴티지를 계산할 수 있도록 합니다.  
+다만 PPO는 그 점수를 해석하기 위해 '가치 모델'이라는 또 다른 AI를 옆에 두는 방식이고, GRPO는 여러 답변의 점수를 서로 비교하는 통계적 방식을 택해 자원을 절약한다는 점이 다릅니다.
 
 ### 4. GDPO (Group reward-Decoupled normalization Policy Optimization) 설명
 NVIDIA에서 제안한 알고리즘으로, 여러 보상이 동시에 존재하는 **다중 보상(Multi-reward) 환경**에서의 GRPO 한계를 극복합니다.
