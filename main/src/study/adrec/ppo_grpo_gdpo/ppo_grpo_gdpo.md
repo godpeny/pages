@@ -72,7 +72,7 @@ $$
 
 PPO는 이처럼 clip 방식을 사용하여 새 정책을 이전 정책과 **"가깝게(close)"** 유지함으로써 파괴적인 대규모 업데이트를 방지합니다. 이것이 기존의 기본적인 정책 경사법과 비교하여 PPO의 훈련을 안정화하는 핵심 요소입니다,.
 
-KL-패널티(KL-penalty)가 포함된 보상 모델은 다음과 같이 정의됩니다.
+보상 모델은 다음과 같이 정의됩니다.
 
 $$
 r_t = r_\phi(q, o_{\le t}) - \beta \log \frac{\pi_\theta(o_t \mid q, o_{<t})} {\pi_{\text{ref}}(o_t \mid q, o_{<t})}
@@ -138,6 +138,10 @@ $$
 $$
 구한 어드밴티지 추정치 $\hat{A}$를 사용하여 **각 개별 에피소드($n$)의 정책 경사를 계산한 후, 이를 배치 단위($N$)로 평균 내어 최종 정책 경사($\hat{g}$)를 구하게 됩니다.
 
+(PPO의 손실함수를 미분해서 나온 policy gradient 수식입니다.)
+$$\nabla_\theta L(\theta) = \mathbb{E}_{t} \left[ \frac{\nabla_\theta \pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)} \hat{A}_t \right] = \mathbb{E}_{t} \left[ \hat{A}_t \nabla_\theta \log \pi_\theta(a_t|s_t) \right] = \hat{g}
+$$
+
 ### 3. GAE 에서 $\lambda$에 따른 편향-분산 트레이드오프
 #### 3-1. 분산 (Variance): 샘플링의 불확실성
 Policy Gradient Method에서 분산이 높다는 것은 수집된 데이터(샘플)에 따라 기울기 추정값이 너무 크게 변한다는 것을 의미합니다.
@@ -168,11 +172,12 @@ $$\mathbb{E} [f(a|s)] = \sum_{s} Pr(s) \sum_{a} \pi_\theta(a|s) f(a|s)$$
 ### 3-3. GAE의 절충 전략: $\gamma$와 $\lambda$
 GAE는 두 가지 파라미터($\gamma, \lambda$)를 통해 분산과 편향의 균형을 조절합니다,.
 
+<b> $\gamma$ 의 역할 </b>  
 - 분산 감소: 미래 보상의 가중치를 낮추어 지연된 효과로 인한 노이즈(분산)를 줄입니다,.
 - 편향 유발: $\gamma < 1$을 사용하면 가치 함수가 정확하더라도 정책 경사 추정치에 항상 편향이 도입됩니다.
 (가치 함수가 '할인된 세계'에서는 완벽할지 몰라도, '할인이 없는 원래의 세계'의 관점에서 보면 먼 미래의 보상을 무시하고 있는 셈이 되므로 정답에서 벗어난 편향(Bias)이 발생하는 것)
 
-#### **(2) $\lambda$ (GAE 파라미터)의 역할**
+<b> $\lambda$ (GAE 파라미터)의 역할 </b>  
 $\lambda$는 여러 단계의 어드밴티지 추정치들을 어떻게 섞을지 결정하며, 가치 함수의 정확도에 따라 편향을 조절합니다.
 
 ##### $\lambda = 1$ (High Variance, Low Bias)
@@ -215,16 +220,14 @@ $$
 $$
 아래와 같이 GRPO는 PPO와 달리 수정된 KL-Divergence 항을 사용합니다. 이 KL 발산 항은 학습 중인 정책이 레퍼런스 정책(보통, 초기 SFT 모델)으로부터 너무 멀어지지 않도록 강제합니다. 이 KL 발산 항은 손실함수의 어드밴티지 항 뒤에 위치해서 만약 새로운 정책이 참조 정책과 너무 달라지면 KL 값이 커지게 되고, 이는 전체 목적 함수 값을 낮추는 결과(페널티)를 초래합니다. 따라서 모델은 보상을 최대화하는 동시에 참조 정책과의 유사성을 유지하는 방향으로 학습됩니다.
 
-이 KL 발산항은 오리지널 KL 발산의 무편향 추정량(Unbiased estimator)으로 기댓값을 구했을 때 우리가 원래 구하려던 KL 발산과 일치하게 되는 식이 됩니다.
 $$
 \mathbb{D}_{KL} [\pi_\theta || \pi_{ref}] = \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - \log \frac{\pi_{ref}(o_{i,t}|q, o_{i,<t})}{\pi_\theta(o_{i,t}|q, o_{i,<t})} - 1
 $$
+이 KL 발산항은 오리지널 KL 발산의 무편향 추정량(Unbiased estimator)으로 기댓값을 구했을 때 우리가 원래 구하려던 KL 발산과 일치하게 되는 식이 됩니다.  
 $r = \frac{\pi_{ref}(o)}{\pi_\theta(o)}$라고 할 때, $r - \log r - 1$의 형태가 되며 이 항의 평균을 구해서 각 항을 분리해서 보면 아래와 같습니다.  
 
 <b> 첫 번째 항 </b>  
 $$\mathbb{E}_{\pi_\theta} \left[ \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right] = \sum_{o} \pi_\theta(o) \cdot \frac{\pi_{ref}(o)}{\pi_\theta(o)} = \sum_{o} \pi_{ref}(o) = 1$$
-
-$$(\mathbb{E}_{\pi_\theta} \left[ \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right] = \sum_{o} \pi_\theta(o) \times \left( \frac{\pi_{ref}(o)}{\pi_\theta(o)} \right))$$
 
 <b> 두 번째 항 </b>  
 $$\mathbb{E}_{\pi_\theta} \left[ \log \frac{\pi_\theta(o)}{\pi_{ref}(o)} \right] = D_{KL}(\pi_\theta \| \pi_{ref})$$
@@ -245,7 +248,7 @@ PPO 와 같이 이 목표 함수를 어드밴티지를 이용해 최대화함으
 <b> 계산 과정 정리 </b>  
 1. 현재 정책 모델로부터 G개의 출력 {$o_1, o_2, \cdots, o_G$}을 샘플링합니다.
 2. 보상 모델($r$) 을 통해 각 출력에 대한 보상 r={$r_1, r_2, \cdots, r_G$} 을 얻습니다.
-3. 이 보상들을 그룹 내에서 정규화(Normalization)하여 최종 어드밴티지($\hat{\text{A}}$)를 구합니다
+3. 이 보상들을 그룹 내에서 정규화(Normalization)하여 최종 어드밴티지($\hat{\text{A}}$)를 구합니다.
 
 
 <b> Reward Model($r$) of GRPO (vs $r$ of PPO)</b>  
@@ -375,7 +378,7 @@ $$
 기존의 조건부 보상 없이 단순히 가중치만 줄였을 때는 모델의 행동이 예측 불가능하거나, 가중치를 아주 극단적으로 낮추어야만 겨우 효과가 나타났습니다. 하지만 Conditioned Rewards 을 도입한 후에는 가중치를 조금만 조절해도 모델의 성능(정확도 vs 효율성)이 매우 예측 가능하고 정교하게(Fine-grained) 변화하는 것을 확인했습니다.
 
 ### 5. PPO vs GRPO vs GDPO 비교
-
+TBD
 | 비교 항목 | PPO | GRPO | GDPO |
 | :--- | :--- | :--- | :--- |
 | **가치 모델(Critic)** | **필수** (별도 모델 필요) | **없음** (그룹 통계로 대체) | **없음** (그룹 통계로 대체) |
