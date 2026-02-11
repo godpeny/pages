@@ -102,9 +102,7 @@ $$
 
 결론적으로, **보상(reward) → 어드밴티지(advantage) → PPO 최적화**의 흐름으로 진행됩니다. 이해를 돕기 위해 관련 이미지를 함께 확인하시기 바랍니다.
 
-> **Gist 사용 시:** 이미지는 절대 URL로 넣어야 합니다. (예: `![PPO vs GRPO](https://...이미지URL...)`)
->
-> ![PPO vs GRPO](https://via.placeholder.com/500x300?text=PPO+vs+GRPO+%28%EC%9D%B4%EB%AF%B8%EC%A7%80+URL%EB%A5%BC+%EB%84%A3%EC%96%B4%EC%A3%BC%EC%84%B8%EC%9A%94%29)
+> ![PPO vs GRPO](https://github.com/godpeny/pages/blob/main/main/src/study/adrec/ppo_grpo_gdpo/blog28_ppo_grpo.png?raw=true)
 
 ## GAE에서 어드밴티지 함수 추정
 실제 할인된 ($\gamma$ 가 적용된) 어드밴티지 함수 $A^\pi(s_t, a_t)$ 는 알 수 없으므로, 전체 궤적 데이터를 사용하여 계산한 근사치를 대신 사용해야 하므로 이를 추정하는 방법을 다룹니다. 즉, ground truth 할인된 어드밴티지 함수 $A^\pi(s_t, a_t)$ 를 정확하게 추정하는 $\hat{A}$ 를 만드는 것입니다.
@@ -235,9 +233,9 @@ $\hat{A}_t = \delta_t^V$, 1단계 TD 잔차($\delta_t$)만을 사용합니다.
 ##### $0 < \lambda < 1$ (Compromise)
 - $\lambda$를 중간값으로 설정하면 분산을 대폭 낮추면서도 가치 함수가 합리적으로 정확할 경우 편향을 허용 가능한 수준으로 유지할 수 있습니다.
 
-### 3. GRPO (Group Relative Policy Optimization)
-#### PPO의 문제점
-#### 1. 보상의 희소성 (Sparse Reward)
+# 3. GRPO (Group Relative Policy Optimization)
+## PPO의 문제점
+### 1. 보상의 희소성 (Sparse Reward)
 LLM이 문장을 생성할 때, 보상 모델(Reward Model)은 보통 전체 답변이 완성된 후 마지막 토큰에만 점수를 부여합니다. 하지만 가치 모델은 특정 상태($s_t$, 즉 현재까지 생성된 토큰들)에서 앞으로 얻을 기대 보상을 예측해야 합니다. 하지만 실제 데이터에는 중간 단계의 보상이 없고 오직 마지막에만 결과가 나타나기 때문에, 각 중간 토큰이 최종 보상에 얼마나 기여했는지 직접적으로 알 수 있는 정답(Ground Truth)이 없습니다.  
 따라서 정답 데이터가 마지막에만 집중되어 있으므로, 중간 단계의 모든 토큰에 대해 정확한 가치($V$)를 예측하도록 가치 모델을 훈련시키는 것은 매우 복잡하고 어려운 작업이 됩니다.
 
@@ -250,7 +248,7 @@ LLM이 문장을 생성할 때, 보상 모델(Reward Model)은 보통 전체 답
 #### 4. 메모리 및 연산 자원 낭비
 가치 모델은 보통 정책 모델과 크기가 비슷합니다. 만약에 이를 제거함으로써 학습에 필요한 메모리 사용량을 획기적으로 줄일 수 있습니다.
 
-#### GRPO의 알고리즘
+## GRPO의 알고리즘
 이러한 PPO의 까다로운 점들 때문에 새로운 알고리즘 GRPO는 가치 모델을 아예 제거하는 방식으로 DeepSeek 연구진이 수학적 추론 능력을 높이기 위해 제안한 PPO의 변형 알고리즘입니다.
 
 GRPO(Group Relative Policy Optimization)는 PPO의 변형으로 PPO에서 어드밴티지를 계산하기 위해 필수적이었던 가치 모델(Critic)과 이를 이용한 GAE(Generalized Advantage Estimation) 방식의 어드밴티지 추정을 사용하지 않는 대신 동일한 질문에 대해 생성된 여러 샘플링 출력의 평균 보상을 베이스라인(baseline)으로 사용합니다.
@@ -319,10 +317,10 @@ PPO 와 같이 이 목표 함수를 어드밴티지를 이용해 최대화함으
 PPO와 GRPO 모두 보상 모델(Reward Model)은 학습된 신경망(Neural Reward Model)을 사용하여 생성된 답변의 품질을 수치화된 점수로 변환하는 역할을 합니다. GRPO의 경우 DeepSeekMath-Base 7B를 기반으로 학습된 신경망으로, 답변의 최종 결과나 중간 추론 단계에 대해 수치화된 점수를 부여하여 그룹 내 상대적 어드밴티지를 계산할 수 있도록 합니다.  
 다만 PPO는 그 점수를 해석하기 위해 '가치 모델'이라는 또 다른 AI를 옆에 두는 방식이고, GRPO는 여러 답변의 점수를 서로 비교하는 통계적 방식을 택해 자원을 절약한다는 점이 다릅니다.
 
-### 4. GDPO (Group reward-Decoupled normalization Policy Optimization) 알고리즘
+# 4. GDPO (Group reward-Decoupled normalization Policy Optimization) 알고리즘
 GDPO는 GRPO를 다중 보상(Multi-reward) 환경에 적용할 때 발생하는 '보상 신호 붕괴(reward collapse)' 문제를 해결하기 위해 NVIDIA 연구진에서 제시한 방법론으로 여러 보상 항목(예: 정확도, 형식, 길이 등)을 단순히 합산한 뒤 정규화하는 GRPO와 달리, 각 보상 항목을 개별적으로 정규화한 후 합산 한 후 전체 배치 단위로 한 번 더 정규화하여 안정성을 높이는 것이 특징입니다.
 
-### Multi Rewards (다중 보상 in GRPO & GDPO)
+## Multi Rewards (다중 보상 in GRPO & GDPO)
 GRPO는 구조적으로 $n$개의 보상 모델로부터 오는 신호를 수용할 수 있도록 설계되었고 최근 트렌드에서 그렇게 활용되고 있습니다. 이를 통해 GRPO는 여러 목표와 목표에 부합하는 보상을 처리할 수 있습니다.
 
 $$
@@ -331,7 +329,7 @@ $$
 
 위 GRPO 보상 함수 수식은 $n$ 개의 목표(objectives)가 있을 때, 한 질문($i$)에 대한 $j$ 번째 응답에 대한 집계된 보상을 의미합니다. 가령 GDPO 논문처럼 도구 호출(형식 + 정확도), 수학 추론(정확도 + 길이 제약), 코딩 추론(통과율 + 길이 + 버그 비율) 등의 보상 모델들을 설정할 수 있습니다.
 
-### Problem of GRPO: reward signal collapse in multi-reward RL
+## Problem of GRPO: reward signal collapse in multi-reward RL
 다중 보상 환경에서 GRPO 방식은 아래 식처럼 모든 개별 보상을 먼저 합산(Sum)한 뒤, 그 합계 점수를 그룹 내에서 정규화합니다.
 
 $$
@@ -344,10 +342,9 @@ $$
 
 이 경우 서로 다른 보상 성분들이(정확도, 형식, 길이 등등) 하나로 뭉쳐서 정규화하면, 서로 다른 품질의 답변들이 동일한 어드밴티지(Advantage) 값으로 변환되는 현상이 발생합니다. 그로 인해 모델은 여러 다른 품질의 답변들 중 어느 답변이 더 우수한지에 대한 정교한 차이를 구분하지 못하게 됩니다. 이를 "보상 신호 붕괴(reward signal collapse)" 라고 합니다.
 
-#### Example
-> **Gist 사용 시:** 아래 이미지도 절대 URL로 교체해 주세요.
->
-> ![GDPO reward_signal_collapse](https://via.placeholder.com/500x300?text=GDPO+reward+signal+collapse)
+## Example
+> ![GDPO reward_signal_collapse](https://github.com/godpeny/pages/blob/main/main/src/study/adrec/ppo_grpo_gdpo/blog28_gdpo_reward_signal_collapse.png?raw=true)
+
 
 예를 들어, 위 그림 처럼 (0점, 1점) 조합과 (0점, 2점) 조합을 GRPO와 GDPO에서 비교해 보겠습니다.
 
@@ -469,7 +466,7 @@ $$
 
 두 예시를 통해 GRPO와 GDPO를 비교해 보았을 때, GRPO는 다중 보상을 처리할 때 신호를 압축해버려 모델이 "무엇을 더 잘했는지" 구분하기 어렵게 만든 반면, GDPO는 보상 간의 구분을 유지함으로써 더 정확한 정책 업데이트(Accurate policy updates)와 우수한 수렴 성능을 이끌어냅니다.
 
-### GDPO Methods
+## GDPO Methods
 GRPO의 한계(다중 보상 처리시 보상 신호 붕괴)를 극복하기 위해 제안된 GDPO 알고리즘을 설명합니다. 기존 GRPO는 모든 보상을 먼저 더한 뒤 그룹 정규화를 수행하여 정보 손실(붕괴)을 야기했습니다. 반면, GDPO는 각 보상 항목을 개별적으로 정규화한 뒤 합산하는 방식을 취합니다. 이는 답변 간의 미세한 차이(fine-grained differences)를 보존하여 더 정확한 학습 신호를 제공하기 위함입니다.
 
 $$
@@ -488,7 +485,7 @@ $$
 
 그 이후 합산된 어드밴티지를 전체 배치($D_{\text{Batch}}$)에 대해 다시 한번 정규화합니다. 이를 통해 최종 어드밴티지의 수치 범위를 일정하게 유지하여 학습의 안정성을 높입니다. 실제로 이 단계를 생략하면 가끔 학습이 수렴하지 못하고 실패하는 경우가 발생합니다.
 
-#### Effective incorporation of priority variation: Conditioned Rewards
+### Effective incorporation of priority variation: Conditioned Rewards
 여러 보상 항목 사이에 Priority 가 다를 때, 이를 어떻게 효과적으로 모델 학습에 반영할 것인가에 대한 전략을 다룹니다. 일반적으로 여러 목표가 있을 때 각 보상에 가중치($w$)를 부여하여 중요도를 조절합니다.
 
 $$
@@ -506,15 +503,69 @@ $$
 
 기존의 조건부 보상 없이 단순히 가중치만 줄였을 때는 모델의 행동이 예측 불가능하거나, 가중치를 아주 극단적으로 낮추어야만 겨우 효과가 나타났습니다. 하지만 Conditioned Rewards 을 도입한 후에는 가중치를 조금만 조절해도 모델의 성능(정확도 vs 효율성)이 매우 예측 가능하고 정교하게(Fine-grained) 변화하는 것을 확인했습니다.
 
-### 5. PPO vs GRPO vs GDPO 비교
-TBD
+# 5. Iterative Group Relative Policy Optimization (iGRPO)
 
-| 비교 항목 | PPO | GRPO | GDPO |
-| :--- | :--- | :--- | :--- |
-| **가치 모델(Critic)** | **필수** (별도 모델 필요) | **없음** (그룹 통계로 대체) | **없음** (그룹 통계로 대체) |
-| **어드밴티지 방식** | 가치 함수 기반 GAE | 그룹 내 상대적 표준 점수 | 보상 항목별 개별 정규화 후 합계 |
-| **자원 효율성** | 낮음 (메모리 부담 큼) | 매우 높음 (효율적 수렴) | 매우 높음 (다중 보상에 효율적) |
-| **다중 보상 처리** | 합산 후 GAE 적용 가능 | 합산 후 정규화 (정보 손실 위험) | **개별 정규화 (높은 정밀도 보존)** |
-| **주요 장점** | 가장 범용적이고 안정적 | 단일 목표(수학 등) 학습에 최적화 | 도구 호출 등 복합 목표 학습에 탁월 |
+iGRPO는 GRPO의 확장 알고리즘으로, 인간이 복잡한 문제를 풀 때 초안을 작성하고 이를 수정하는 과정에서 아이디어를 얻는 방식에 착안하여 **동적 자기 조건화(Dynamic Self-Conditioning)** 메커니즘을 도입했습니다. 기존 GRPO가 단 한 번의 시도로 정답을 내놓는 법을 배운다면, iGRPO는 모델이 스스로 생성한 최선의 초안을 바탕으로 이를 정교화(Refinement)하는 능력을 학습합니다.
 
-요약하자면, **PPO**는 안정적인 업데이트를 위한 표준 기법이며, **GRPO**는 가치 모델을 없애 효율성을 극대화한 DeepSeek의 혁신이고, **GDPO**는 GRPO의 효율성을 유지하면서 다중 보상 학습의 정밀도를 보완한 NVIDIA의 개선안입니다.
+## iGRPO의 2단계 알고리즘 프레임워크
+iGRPO는 다음과 같은 2단계 과정으로 이루어져 있습니다.
+
+### 1단계: 탐색적 초안 생성 (Exploratory Draft Generation)
+질문 $q$에 대해 현재 정책 $\pi_{\theta_{\text{old}}}$로부터 $N$개의 후보 초안 $d_i$를 샘플링합니다. 이 후보 초안들은 정책 모델이 생성한 action이며, 보상 함수 $R_\phi$로 점수를 매겨 가장 높은 최선의 초안 $d$를 하나 선택합니다.
+
+$$
+d = \arg\max_{i \in \{1,\ldots,N\}} R_\phi(d_i)
+$$
+
+이 단계에서는 그래디언트 업데이트(학습)가 일어나지 않으며, 학습을 위한 **최적의 컨텍스트**를 준비하는 역할만 합니다.
+
+### 2단계: 조건부 정교화 (Conditioned Refinement)
+원래 질문 $q$와 최선 초안 $d$를 결합하여 확장된 프롬프트 $q' = \text{Concat}(q, d)$를 만듭니다. 이 $q'$를 입력으로 다시 $G$개의 최종 답변 $o_j$를 샘플링하고, GRPO와 동일한 방식으로 어드밴티지 계산 및 정책 파라미터 $\theta$ 업데이트를 수행합니다.
+
+## Objective Function of iGRPO
+iGRPO의 전체 목적 함수는 보강된 쿼리 $q'$ 조건 하에서 계산되며, 수식은 다음과 같습니다.
+
+$$
+\mathcal{J}_{\text{iGRPO}}(\theta) = \mathbb{E}[q \sim P(Q)] \mathbb{E}\left[\underbrace{\{d_i\}_{i=1}^N \sim \pi_{\theta_{\text{old}}}(\cdot | q)}_{\text{Stage 1}}, \hat{d} = \arg \max_i R_\phi(d_i), q' = \text{Concat}(q, \hat{d}), \underbrace{\{o_j\}_{j=1}^G \sim \pi_{\theta_{\text{old}}}(\cdot | q')}_{\text{Stage 2}}\right] \times \frac{1}{G} \sum_{j=1}^G \frac{1}{|o_j|} \sum_{t=1}^{|o_j|} \left[\min\left(r_{j,t}(\theta) \hat{A}_j, \text{clip}\left(r_{j,t}(\theta), 1 - \epsilon, 1 + \epsilon\right) \hat{A}_j\right) - \beta \hat{D}_{\text{KL}}^{(j,t)}\right]
+$$
+
+$$
+r_{j,t}(\theta) = \frac{\pi_\theta (o_{j,t} \mid q', o_{j,{<}t})}{\pi_{\theta_{\text{old}}} (o_{j,t} \mid q', o_{j,{<}t})}
+$$
+
+- $r_{j,t}(\theta)$: 확장된 프롬프트 $q'$ 하에서 새 정책을 이전 정책과 "가깝게(close)" 유지해 파괴적인 대규모 업데이트를 방지 (PPO, GRPO, GDPO 동일).
+- $\hat{D}_{\text{KL}}^{(j,t)}$: 레퍼런스 모델 $\pi_{\text{ref}}$와의 이탈을 막기 위한 KL 페널티이며, $q'$ 조건 하에서 계산됩니다.
+- $\mathbb{E}[q \sim P(Q)]$: 질문 데이터셋에서 질문 $q$를 샘플링하는 과정입니다.
+- **Stage 1 (탐색적 초안 생성)**: 현재 정책 $\pi_{\theta_{\text{old}}}$로부터 $N$개의 후보 초안 $d_i$를 추출합니다.
+- $\hat{d} = \arg \max_i R_\phi(d_i)$: $N$개 초안 중 보상 모델 $R_\phi$ 점수가 가장 높은 **최선의 초안**을 선택합니다.
+- $q' = \text{Concat}(q, \hat{d})$: 원래 질문 뒤에 최선의 초안을 붙여 확장된 쿼리를 만듭니다.
+- **Stage 2 (조건부 정교화 샘플링)**: 확장된 쿼리 $q'$를 입력하여 $G$개의 최종 답변 $o_j$를 샘플링합니다.
+
+## 핵심 특징 및 장점
+- **부트스트래핑(Bootstrapping) 효과**: 모델 성능이 향상될수록 1단계에서 선택되는 초안의 질이 높아지고, 이가 2단계 학습의 더 강한 가이드가 되어 성능 향상을 가속화합니다.
+- **엔트로피 붕괴 지연**: 표준 GRPO보다 엔트로피가 급격히 낮아지는 것을 늦춰, 모델이 더 오랫동안 다양한 해결 경로를 탐색할 수 있게 합니다.
+- **효율성 및 추론 능력 향상**: 가치 모델을 사용하지 않는 GRPO의 메모리 효율성을 유지하면서, AIME·MATH 등 고난도 수학·논리 추론에서 GRPO 대비 유의미하게 높은 성능과 새로운 SOTA를 달성합니다.
+
+# 6. PPO vs GRPO vs GDPO vs iGRPO 비교 정리
+## PPO (Proximal Policy Optimization)
+Actor(Policy Model)-Critic(Value Model) 방식의 Policy Gradient 알고리즘으로, 현재 정책과 이전 정책의 확률 비율을 일정 범위 내로 제한하는 'clip' 함수를 통해 학습의 안정성을 도모한게 특징입니다.  
+
+하지만 어드밴티지($A$)를 계산하기 위해 정책 모델과 같은 크기의 가치 모델(Value Model)을 별도로 학습시켜야 하므로, 메모리와 연산 자원의 소모가 심한 단점이 있었습니다.
+
+### GRPO (Group Relative Policy Optimization)
+PPO에서 Value Model을 제거하여 효율성을 높인 알고리즘으로, 동일 질문에 대해 여러 답변을 샘플링한 후 Normalization 하여 어드밴티지를 계산합니다.  
+PPO와 달리 별도의 Critic(Value Model) 없이 그룹 내 상대적 비교를 통해 학습 신호를 얻기 때문에 학습 자원을 절약하면서 수학적 추론 능력이 강화되었습니다. 
+
+### GDPO (Group reward-Decoupled Normalization Policy Optimization)
+다중 보상(Multi-reward) 환경에서 GRPO의 성능을 개선한 알고리즘으로, 여러 보상을 단순히 더하지 않고 각 보상 항목별로 그룹 정규화를 먼저 수행(Decoupled Normalization)한 뒤 합산합니다.
+
+Multi-reward 환경에서 GRPO의 서로 다른 성격의 보상 신호들이 하나로 뭉쳐 변별력을 잃는 '보상 신호 붕괴' 현상을 방지하여, 정확도와 출력 형식 등 여러 제약 조건을 동시에 학습할 때 훨씬 안정적이고 정교한 업데이트가 가능했습니다.
+
+### iGRPO (Iterative Group Relative Policy Optimization)
+GRPO에 "Dynamic Self-Conditioning" 메커니즘을 도입한 GRPO의 2단계 확장 알고리즘입니다. 1단계에서 최선의 초안(Draft)을 선정하고, 2단계에서 이 초안을 질문과 결합하여 이를 수정 및 보완하는 '정교화' 과정을 학습함으로써 모델이 스스로의 시도를 바탕으로 성능을 높였습니다.
+
+# References
+- GAE: https://arxiv.org/pdf/1506.02438
+- GRPO(+PPO): https://arxiv.org/pdf/2402.03300
+- GDPO: https://arxiv.org/pdf/2601.05242
+- iGRPO: https://arxiv.org/pdf/2602.09000

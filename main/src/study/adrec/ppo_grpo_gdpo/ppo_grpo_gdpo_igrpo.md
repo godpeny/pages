@@ -193,7 +193,7 @@ $\lambda$는 여러 단계의 어드밴티지 추정치들을 어떻게 섞을�
 ##### $0 < \lambda < 1$ (Compromise)
 - $\lambda$를 중간값으로 설정하면 분산을 대폭 낮추면서도 가치 함수가 합리적으로 정확할 경우 편향을 허용 가능한 수준으로 유지할 수 있습니다.
 
-### 3. GRPO (Group Relative Policy Optimization)
+# 3. GRPO (Group Relative Policy Optimization)
 #### PPO의 문제점
 #### 1. 보상의 희소성 (Sparse Reward)
 LLM이 문장을 생성할 때, 보상 모델(Reward Model)은 보통 전체 답변이 완성된 후 마지막 토큰에만 점수를 부여합니다. 하지만 가치 모델은 특정 상태($s_t$, 즉 현재까지 생성된 토큰들)에서 앞으로 얻을 기대 보상을 예측해야 합니다. 하지만 실제 데이터에는 중간 단계의 보상이 없고 오직 마지막에만 결과가 나타나기 때문에, 각 중간 토큰이 최종 보상에 얼마나 기여했는지 직접적으로 알 수 있는 정답(Ground Truth)이 없습니다.  
@@ -267,7 +267,7 @@ PPO 와 같이 이 목표 함수를 어드밴티지를 이용해 최대화함으
 PPO와 GRPO 모두 보상 모델(Reward Model)은 학습된 신경망(Neural Reward Model)을 사용하여 생성된 답변의 품질을 수치화된 점수로 변환하는 역할을 합니다. GRPO의 경우 DeepSeekMath-Base 7B를 기반으로 학습된 신경망으로, 답변의 최종 결과나 중간 추론 단계에 대해 수치화된 점수를 부여하여 그룹 내 상대적 어드밴티지를 계산할 수 있도록 합니다.  
 다만 PPO는 그 점수를 해석하기 위해 '가치 모델'이라는 또 다른 AI를 옆에 두는 방식이고, GRPO는 여러 답변의 점수를 서로 비교하는 통계적 방식을 택해 자원을 절약한다는 점이 다릅니다.
 
-### 4. GDPO (Group reward-Decoupled normalization Policy Optimization) 알고리즘
+# 4. GDPO (Group reward-Decoupled normalization Policy Optimization) 알고리즘
 GDPO는 GRPO를 다중 보상(Multi-reward) 환경에 적용할 때 발생하는 '보상 신호 붕괴(reward collapse)' 문제를 해결하기 위해 NVIDIA 연구진에서 제시한 방법론으로 여러 보상 항목(예: 정확도, 형식, 길이 등)을 단순히 합산한 뒤 정규화하는 GRPO와 달리, 각 보상 항목을 개별적으로 정규화한 후 합산 한 후 전체 배치 단위로 한 번 더 정규화하여 안정성을 높이는 것이 특징입니다.
 
 ### Multi Rewards (다중 보상 in GRPO & GDPO)
@@ -389,14 +389,63 @@ $$
 
 기존의 조건부 보상 없이 단순히 가중치만 줄였을 때는 모델의 행동이 예측 불가능하거나, 가중치를 아주 극단적으로 낮추어야만 겨우 효과가 나타났습니다. 하지만 Conditioned Rewards 을 도입한 후에는 가중치를 조금만 조절해도 모델의 성능(정확도 vs 효율성)이 매우 예측 가능하고 정교하게(Fine-grained) 변화하는 것을 확인했습니다.
 
-### 5. PPO vs GRPO vs GDPO 비교
-TBD
-| 비교 항목 | PPO | GRPO | GDPO |
-| :--- | :--- | :--- | :--- |
-| **가치 모델(Critic)** | **필수** (별도 모델 필요) | **없음** (그룹 통계로 대체) | **없음** (그룹 통계로 대체) |
-| **어드밴티지 방식** | 가치 함수 기반 GAE | 그룹 내 상대적 표준 점수 | 보상 항목별 개별 정규화 후 합계 |
-| **자원 효율성** | 낮음 (메모리 부담 큼) | 매우 높음 (효율적 수렴) | 매우 높음 (다중 보상에 효율적) |
-| **다중 보상 처리** | 합산 후 GAE 적용 가능 | 합산 후 정규화 (정보 손실 위험) | **개별 정규화 (높은 정밀도 보존)** |
-| **주요 장점** | 가장 범용적이고 안정적 | 단일 목표(수학 등) 학습에 최적화 | 도구 호출 등 복합 목표 학습에 탁월 |
+# 5. Iterative Group Relative Policy Optimization (iGRPO)**
 
-요약하자면, **PPO**는 안정적인 업데이트를 위한 표준 기법이며, **GRPO**는 가치 모델을 없애 효율성을 극대화한 DeepSeek의 혁신이고, **GDPO**는 GRPO의 효율성을 유지하면서 다중 보상 학습의 정밀도를 보완한 NVIDIA의 개선안입니다.
+iGRPO는 GRPO의 확장 알고리즘으로, 인간이 복잡한 문제를 풀 때 초안을 작성하고 이를 수정하는 과정에서 아이디어를 얻는 방식에 착안하여 '동적 자기 조건화(Dynamic Self-Conditioning)' 메커니즘을 도입했습니다.  
+기존 GRPO가 단 한 번의 시도로 정답을 내놓는 법을 배운다면, iGRPO는 모델이 스스로 생성한 최선의 초안을 바탕으로 이를 정교화(Refinement)하는 능력을 학습합니다.
+
+## iGRPO의 2단계 알고리즘 프레임워크
+iGRPO는 다음과 같은 2단계 과정으로 이루어져있습니다.
+
+### 1단계: 탐색적 초안 생성 (Exploratory Draft Generation)
+질문 $q$에 대해 현재 정책$\pi_{\theta_{old}}$ 으로부터 $N$개의 후보 초안($d_i$)을 샘플링합니다. 즉 이 후보 초안들은 Policy Model이 생성한 action 입니다. 이후 보상 함수($R_\phi$)를 통해 가장 점수가 높은 최선의 초안($d$)을 하나 선택합니다. 
+$$ d = \arg\max_{i \in \{1,...,N\}} R_\phi(d_i)$$
+
+이 단계에서는 그래디언트 업데이트(학습)가 일어나지 않으며, 오직 학습을 위한 '최적의 컨텍스트'를 준비하는 역할만 합니다.
+
+### 2단계: 조건부 정교화 (Conditioned Refinement)
+원래 질문 $q$와 최선 초안 $d$를 결합하여 확장된 프롬프트 $q' = \text{Concat}(q, d)$를 만듭니다. 그리고 이 $q'$를 입력으로 주어 다시 $G$개의 최종 답변($o_j$)을 샘플링하고, GRPO 방식의 어드밴티지 계산 및 정책 파라미터($\theta$) 업데이트를 수행합니다.
+
+## Objective Function of iGRPO
+iGRPO의 전체 목적 함수는 보강된 쿼리 $q'$ 조건 하에서 계산되며, 수식은 다음과 같습니다:
+$$
+\mathcal{J}_{\text{iGRPO}}(\theta) = \mathbb{E}[q \sim P(Q)] \mathbb{E}\left[\underbrace{\{d_i\}_{i=1}^N \sim \pi_{\theta_{\text{old}}}(\cdot | q)}_{\text{Stage 1}}, \hat{d} = \arg \max_i R_\phi(d_i), q' = \text{Concat}(q, \hat{d}), \underbrace{\{o_j\}_{j=1}^G \sim \pi_{\theta_{\text{old}}}(\cdot | q')}_{\text{Stage 2}}\right] \times \frac{1}{G} \sum_{j=1}^G \frac{1}{|o_j|} \sum_{t=1}^{|o_j|} \left[\min\left(r_{j,t}(\theta) \hat{A}_j, \text{clip}\left(r_{j,t}(\theta), 1 - \epsilon, 1 + \epsilon\right) \hat{A}_j\right) - \beta \hat{D}_{\text{KL}}^{(j,t)}\right] \\ \\
+r_{j,t}(\theta) = \frac{\pi_\theta (o_{j,t} \mid q', o_{j,<t})}{\pi_{\theta_{\text{old}}} (o_{j,t} \mid q', o_{j,<t})}
+$$
+
+- $r_{j,t}(\theta)$: 확장된 프롬프트($q'$) 하에서의 새 정책을 이전 정책과 "가깝게(close)" 유지함으로써 파괴적인 대규모 업데이트를 방지하는 요소 (PPO, GRPO, GDPO 동일)
+- $\hat{D}_{KL}^{(j,t)}$: 레퍼런스 모델($\pi_{ref}$)과의 이탈을 막기 위한 KL 페널티이며, 역시 $q'$ 조건 하에서 계산됩니다.
+- $\mathbb{E}[q \sim P(Q)]$: 질문 데이터셋에서 질문($q$)을 뽑는 과정입니다.
+- $\text{Stage 1 (탐색적 초안 생성)}$: 현재 정책($\pi_{\theta_{old}}$)으로부터 $N$개의 후보 초안($d_i$)을 추출합니다.
+- $\hat{d} = \arg \max_i R_\phi(d_i)$: 생성된 $N$개의 초안 중 보상 모델($R_\phi$) 점수가 가장 높은 '최선의 초안'을 선택합니다.
+- $q' = \text{Concat}(q, \hat{d})$: 원래 질문 뒤에 최선의 초안을 붙여 확장된 쿼리를 만듭니다. 
+- $\text{Stage 2 (조건부 정교화 샘플링)}$: 확장된 쿼리($q'$)를 입력하여 다시 $G$개의 최종 답변($o_j$)을 샘플링합니다.
+
+## **3. 핵심 특징 및 장점**
+- 부트스트래핑(Bootstrapping) 효과: 모델의 성능이 향상될수록 1단계에서 선택되는 초안의 질이 높아지고, 이는 다시 2단계 학습을 위한 더 강력한 가이드가 되어 성능 향상을 가속화합니다.
+- 엔트로피 붕괴 지연: 표준 GRPO보다 모델의 엔트로피가 급격히 낮아지는 것을 늦춰줌으로써, 모델이 더 오랫동안 다양한 해결 경로를 탐색할 수 있게 돕습니다.
+- 효율성 및 추론능력 향상: 가치 모델(Value Model)을 사용하지 않는 GRPO의 메모리 효율성을 그대로 유지하면서도, 특히 AIME나 MATH와 같은 고난도 수학 및 논리 추론 작업에서 기존 GRPO 대비 유의미하게 높은 성능을 기록하며 새로운 SOTA를 달성
+
+# 6. PPO vs GRPO vs GDPO vs iGRPO 비교 정리
+## PPO (Proximal Policy Optimization)
+Actor(Policy Model)-Critic(Value Model) 방식의 Policy Gradient 알고리즘으로, 현재 정책과 이전 정책의 확률 비율을 일정 범위 내로 제한하는 'clip' 함수를 통해 학습의 안정성을 도모한게 특징입니다.  
+
+하지만 어드밴티지($A$)를 계산하기 위해 정책 모델과 같은 크기의 가치 모델(Value Model)을 별도로 학습시켜야 하므로, 메모리와 연산 자원의 소모가 심한 단점이 있었습니다.
+
+### GRPO (Group Relative Policy Optimization)
+PPO에서 Value Model을 제거하여 효율성을 높인 알고리즘으로, 동일 질문에 대해 여러 답변을 샘플링한 후 Normalization 하여 어드밴티지를 계산합니다.  
+PPO와 달리 별도의 Critic(Value Model) 없이 그룹 내 상대적 비교를 통해 학습 신호를 얻기 때문에 학습 자원을 절약하면서 수학적 추론 능력이 강화되었습니다. 
+
+### GDPO (Group reward-Decoupled Normalization Policy Optimization)
+다중 보상(Multi-reward) 환경에서 GRPO의 성능을 개선한 알고리즘으로, 여러 보상을 단순히 더하지 않고 각 보상 항목별로 그룹 정규화를 먼저 수행(Decoupled Normalization)한 뒤 합산합니다.
+
+Multi-reward 환경에서 GRPO의 서로 다른 성격의 보상 신호들이 하나로 뭉쳐 변별력을 잃는 '보상 신호 붕괴' 현상을 방지하여, 정확도와 출력 형식 등 여러 제약 조건을 동시에 학습할 때 훨씬 안정적이고 정교한 업데이트가 가능했습니다.
+
+### iGRPO (Iterative Group Relative Policy Optimization)
+GRPO에 "Dynamic Self-Conditioning" 메커니즘을 도입한 GRPO의 2단계 확장 알고리즘입니다. 1단계에서 최선의 초안(Draft)을 선정하고, 2단계에서 이 초안을 질문과 결합하여 이를 수정 및 보완하는 '정교화' 과정을 학습함으로써 모델이 스스로의 시도를 바탕으로 성능을 높였습니다.
+
+# References
+- GAE: https://arxiv.org/pdf/1506.02438
+- GRPO(+PPO): https://arxiv.org/pdf/2402.03300
+- GDPO: https://arxiv.org/pdf/2601.05242
+- iGRPO: https://arxiv.org/pdf/2602.09000
