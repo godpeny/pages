@@ -354,3 +354,23 @@ References
 - https://arxiv.org/pdf/2006.16668
 - https://arxiv.org/pdf/1701.06538
 - https://arxiv.org/pdf/2101.03961
+
+## Gated Attention (Qwen)
+Gated Attention에서는 Y가 일반적인 Attention의 결과물일 때 입력값 (주로 히든 임베딩) X를 학습 가능한 파라미터 $W_\theta$로 선형변환한 후 시그모이드를 통과한 값과 내적합니다.
+
+$$ \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \\[5pt]
+ Y' = Y \odot \sigma(XW_\theta) $$
+
+- $Y=O_{SDPA}$: Scaled Dot-Product Attention(SDPA)의 출력값(Attention Output) 입니다.
+- $X$: 게이팅 점수를 계산하기 위한 입력입니다 (주로 현재 레이어의 hidden states).
+- $W_\theta$: 학습 가능한 게이트의 가중치 파라미터입니다.
+- $\sigma$: 활성화 함수로, 0~1 사 값으로 변ㅏ하는 Sigmoid($\frac{1}{1+e^{-x}}$) 함ㅜ를 사용합니다. 
+- $\odot$: Element-wise multiplication 입니다.
+
+<b> 알고리즘 작동 원리 </b>  
+1. 어텐션 계산: $O_{SDPA} = \text{softmax}(\dots)V$를 계산합니다.
+2. 게이트 점수 계산: 입력 $X$를 선형 변환($W_\theta$)하고 시그모이드를 통과시켜 게이트 값 $Gate = \sigma(X W_\theta)$를 구합니다.
+3. 최종 출력: 어텐션 출력($O_{SDPA}$)에 게이트 값($Gate$)을 곱합니다.
+$$ Y_{final} = O_{SDPA} \odot Gate $$
+
+이를 통해 쿼리(X)에 유의미한 정보가 없다면 게이트 값(시그모이드)이 0에 가깝게 닫히면서, 불필요한 노이즈 정보를 제거할 수 있도록 학습됩니다.
