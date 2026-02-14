@@ -695,6 +695,30 @@ To overcome the curse of dimensionality, you can consider the following strategi
 - Normalization: Scale the features to a similar range to prevent certain features from dominating others, especially in distance-based algorithms.
 - Handling Missing Values: Address missing data appropriately through imputation or deletion to ensure robustness in the model training process.
 
+### Univariate, Bivariate and Multivariate data 
+#### Univariate Data
+Univariate data involves observations consisting of only one variable. The goal is to describe and summarize this single variable’s properties such as its average, spread and shape of distribution.
+- Measures central tendency (mean, median, mode) to find the typical value.
+- Measures dispersion (range, variance, standard deviation) to see how data spreads.
+- Detects patterns like skewness or outliers that affect data interpretation.
+- Common visuals include histograms, box plots and density plots to show frequency and spread.
+
+#### Bivariate data 
+Bivariate data refers to a dataset where each observation is associated with two different variables. The goal of analyzing bivariate data is to understand the relationship or association between these two variables. It helps to identify how one variable might affect or be related to the other.
+
+- Detects whether the relationship is positive, negative or non-existent.
+- Correlation measures the strength and direction of the relationship (range: -1 to +1).
+- Visualization tools like scatter plots and regression lines show the pattern of change clearly.
+- Often used as a foundation before moving to multivariate models.
+
+#### Multivariate data 
+Multivariate data contains three or more variables for each observation. The objective is to uncover how multiple variables interact or jointly affect outcomes. It’s crucial in fields like predictive analytics, econometrics and data science, where relationships are seldom limited to two variables.
+
+- Useful when an outcome depends on several influencing factors.
+- Techniques include multiple regression, PCA, MANOVA and clustering.
+- Reduces data complexity using dimensionality reduction (like PCA).
+- Commonly visualized using heatmaps, pair plots and 3D scatter plots for high-dimensional insight.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
