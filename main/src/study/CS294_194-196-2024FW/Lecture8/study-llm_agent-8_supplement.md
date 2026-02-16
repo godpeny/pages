@@ -32,8 +32,20 @@ $$
 $$
 $\Omega$ (Feasible Region) 가 비어 있지 않고(bound되지 않았더라도) 최적해가 존재한다면, 적어도 하나의 최적해는 $\Omega$ 의 극점(extreme point, 꼭짓점) 에서 달성된다.
 
+# Group
+A group is a set $G$ together with a binary operation on ⁠$G$⁠, here denoted "$\cdot$, that combines any two elements $a$ and $b$ of $G$ to form an element of ⁠$G$⁠, denoted ⁠$ a\cdot b$ such that the following three requirements, known as group axioms, are satisfied.
+
+- Associativity: For all ⁠$a,b,c$ in $G$, one has ⁠$(a\cdot b)\cdot c=a\cdot (b\cdot c)$
+- Identity element: There exists an element $e$ in $G$ such that, for every $a$ in ⁠$G$⁠, one has ⁠$e\cdot a=a$⁠ and ⁠$a\cdot e=a$.  
+Such an element $e$ is unique. It is called the identity element of the group.
+- Inverse element: For each $a$ in ⁠$G$⁠, there exists an element $b$ in $G$ such that $a\cdot b=e$ and ⁠$b\cdot a=e$ where $e$ is the identity element.  
+For each ⁠$a$⁠, the element $b$ is unique; it is called the inverse of $a$ and is commonly denoted ⁠$a^{-1}$.
+
 # Abelian group
-https://en.wikipedia.org/wiki/Abelian_group#:~:text=In%20mathematics%2C%20an%20abelian%20group,the%20group%20operation%20is%20commutative.
+The group operation is commutative. (Associativity, Identity Element,Inverse Element + Commutativity )
+
+- Commutativity
+For all $a$, $b$ in $G$, $a\cdot b=b\cdot a$
 
 # Ring homomorphism
 https://en.wikipedia.org/wiki/Ring_homomorphism
