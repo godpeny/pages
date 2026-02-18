@@ -48,7 +48,11 @@ The group operation is commutative. (Associativity, Identity Element,Inverse Ele
 For all $a$, $b$ in $G$, $a\cdot b=b\cdot a$
 
 # Ring homomorphism
-https://en.wikipedia.org/wiki/Ring_homomorphism
+In mathematics, a ring homomorphism is a structure-preserving function between two rings. More explicitly, if R and S are rings, then a ring homomorphism is a function f : R → S that preserves addition, multiplication and multiplicative identity.
+$$
+\begin{aligned}f(a+b)&=f(a)+f(b),\\f(ab)&=f(a)f(b),\\f(1)&=1,\end{aligned}
+$$
+for all a, b in R.
 
 # Mixed Integer Programming
 Mixed integer programming (MIP) is a mathematical optimization technique that solves problems involving a mix of continuous variables (which can have any value, including decimals and fractions), discrete variables (which must be countable whole numbers), and binary variables (which can only take values 0 or 1).
