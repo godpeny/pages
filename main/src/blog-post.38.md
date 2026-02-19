@@ -39,6 +39,11 @@ A clustering algorithm uses the similarity metric to cluster data. For example, 
 Because clustering doesn't produce or include a ground "truth" against which you can verify the output, it's important to check the result against your expectations at both the cluster level and the example level. If the result looks odd or low-quality, experiment with the previous three steps. Continue iterating until the quality of the output meets your needs.
 
 ## Data preparation
+- Normalizing data: You can transform data for multiple features to the same scale by normalizing the data.
+- Z-scores: Whenever you see a dataset roughly shaped like a Gaussian distribution, you should calculate z-scores for the data. 
+Z-scores are the number of standard deviations a value is from the mean. 
+- Log transforms: When a dataset perfectly conforms to a power law distribution, where data is heavily clumped at the lowest values, use a log transform.
+- Quantiles: Binning the data into quantiles works well when the dataset does not conform to a known distribution. It means dividing the dataset into intervals that each contain equal numbers of examples, and assigning the quantile index to each example.
 
 ## K-Means Clustering
 ## Supervised Deep Neural Network for Clustering
