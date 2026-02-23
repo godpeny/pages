@@ -150,6 +150,76 @@ p_\theta(x_0) = \int p_\theta(x_{0:T}) dx_{1:T} = \int q(x_{1:T}|x_0) \frac{p_\t
 \log p_\theta(x_0) = \log \mathbb{E}_q \left[ \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)} \right] \geq \mathbb{E}_q \left[ \log \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)} \right]
 $$
 
+<b> 재구성 </b>  
+모델($p_\theta$)이 비교해야 할 대상을 "알 수 없는 전이($q(x_t|x_{t-1})$)"에서 "수학적으로 계산 가능한 Posterior Distribution ($q(x_{t-1}|x_t, x_0)$)"로 바꾸기 위한 수학적 절차입니다.
+
+먼저 합계 기호($\sum_{t \geq 1}$)에서 첫 번째 단계인 $t=1$ 항을 밖으로 꺼내어 별도로 표시합니다.
+$$L = \mathbb{E}_q\left[-\log p(\mathbf{x}_T) - \sum_{t \geq 1} \log \frac{p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t)}{q(\mathbf{x}_t|\mathbf{x}_{t-1})}\right] = \mathbb{E}_q \left[ -\log p(x_T) - \sum_{t>1} \log \frac{p_\theta(x_{t-1}|x_t)}{q(x_t|x_{t-1})} - \log \frac{p_\theta(x_0|x_1)}{q(x_1|x_0)} \right]$$
+
+다음은 Forward Process $q(x_t|x_{t-1})$ 를 Bayes' Rule를 이용해 Posterior 형태로 바꿉니다.  
+베이즈 정리에 의해 다음과 같은 관계가 성립합니다. 마르코프 체인에서는 현재 상태($x_t$)가 직전 상태($x_{t-1}$)에만 의존하며, 그보다 더 과거인 $x_0$ 에는 영향을 받지 않습니다. 따라서 $q(\mathbf{x}_t | \mathbf{x}_{t-1}, \mathbf{x}_0)= q(\mathbf{x}_t | \mathbf{x}_{t-1})$ 입니다. 
+
+$$q(x_t | x_{t-1}, \mathbf{x}_0) = q(x_t|x_{t-1}) = \frac{q(x_{t-1}|x_t, x_0) q(x_t|x_0)}{q(x_{t-1}|x_0)}$$
+
+이를 위 식의 분모에 있는 $q(x_t|x_{t-1})$ 자리에 위 식을 대입하면 아래와 같습니다.
+$$
+\mathbb{E}_q \left[ -\log p(x_T) - \sum_{t>1} \log \frac{p_\theta(x_{t-1}|x_t)}{q(x_{t-1}|x_t, x_0) \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}} - \log \frac{p_\theta(x_0|x_1)}{q(x_1|x_0)} \right] \\[5pt]
+= \mathbb{E}_q \left[ - \log p(\mathbf{x}_T) - \sum_{t>1} \log \frac{p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t)}{q(\mathbf{x}_{t-1}|\mathbf{x}_t, \mathbf{x}_0)} \cdot \frac{q(\mathbf{x}_{t-1}|\mathbf{x}_0)}{q(\mathbf{x}_t|\mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0|\mathbf{x}_1)}{q(\mathbf{x}_1|\mathbf{x}_0)} \right]
+$$
+
+위 수식의 $\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}$ 부분을 로그 밖으로 꺼내어 전개하면 대부분의 항이 서로 지워지는 Telescoping sum현상이 발생합니다. 
+$$
+-\sum_{t=2}^T \log \frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = -\log \frac{q(x_{T-1}|x_0)}{q(x_T|x_0)} - \log \frac{q(x_{T-2}|x_0)}{q(x_{T-1}|x_0)} - \dots - \log \frac{q(x_1|x_0)}{q(x_2|x_0)} \\[5pt] 
+= \log q(x_T|x_0) - \log q(x_1|x_0)
+$$
+
+$-\log q(x_1|x_0)$와 $\log q(x_1|x_0)$는 서로 지워지고, 아래와 같이 정리됩니다.
+$$L = \mathbb{E}_q \left[ -\log \frac{p(x_T)}{q(x_T|x_0)} - \sum_{t>1} \log \frac{p_\theta(x_{t-1}|x_t)}{q(x_{t-1}|x_t, x_0)} - \log p_\theta(x_0|x_1) \right]$$
+
+마지막으로 $-\log \frac{A}{B} = \log \frac{B}{A}$라는 성질을 이용하여 각 항을 두 확률 분포 간의 거리를 나타내는 KL Divergence 기호로 바꿉니다.
+$$
+L = \mathbb{E}_q \left[ -\log \frac{p(x_T)}{q(x_T|x_0)} - \sum_{t>1} \log \frac{p_\theta(x_{t-1}|x_t)}{q(x_{t-1}|x_t, x_0)} - \log p_\theta(x_0|x_1) \right] \\[5pt]
+= \mathbb{E}_q [ L_T + \sum_{t>1} L_{t-1} + L_0 ]
+$$
+
+- $L_T$ 항: $\mathbb{E}_q [-\log \frac{p(x_T)}{q(x_T|x_0)}] = \mathbb{E}_q [\log \frac{q(x_T|x_0)}{p(x_T)}] = D_{KL}(q(x_T|x_0) \parallel p(x_T))$
+- $L_{t-1}$ 항: $-\sum \log \frac{p_\theta}{q} = \sum \log \frac{q}{p_\theta} = \sum D_{KL}(q(x_{t-1}|x_t, x_0) \parallel p_\theta(x_{t-1}|x_t))$
+- $L_0$ 항: $- \log p_\theta(x_0|x_1)$
+
+#### Posterior Distribution $q(x_{t-1}|x_t, x_0)$
+수학적으로 계산 가능한 Posterior Distribution ($q(x_{t-1}|x_t, x_0)$) 은 앞선 수식을 이용해 가우시안 분포 간를 따른다는 걸 도출 할 수 있습니다. 이는 앞선 가우시안 분포를 따르는 Forward Process 의 수식 2개와, Bayes' Rule, 그리고 가우시안 분포끼리의 곱셈과 나눗셈 결과는 다시 가우시안 분포가 되는 성질을 이용한 것입니다. 
+
+
+##### 1. 베이즈 정리의 적용
+원본 데이터 $x_0$와 현재 상태 $x_t$가 주어졌을 때 이전 단계 $x_{t-1}$의 확률을 구하기 위해 다음과 같이 베이즈 정리를 사용합니다.
+$$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \frac{q(\mathbf{x}_t | \mathbf{x}_{t-1}, \mathbf{x}_0) q(\mathbf{x}_{t-1} | \mathbf{x}_0)}{q(\mathbf{x}_t | \mathbf{x}_0)}$$
+
+##### 2. Forward Process
+$$
+\quad q(\mathbf{x}_t | \mathbf{x}_{t-1}) := \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I})
+$$
+
+$$
+q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t}\mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
+$$
+
+
+"1. 베이즈 정리의 적용" 을 구성하는 세 가지 확률 분포는 "2. Forward Process" 에서 정의된 수식 들을 통해 알 수 있습니다.
+
+- $q(\mathbf{x}_t | \mathbf{x}_{t-1}, \mathbf{x}_0)$: 순방향 과정은 마르코프 체인이므로 $x_t$는 오직 $x_{t-1}$에만 의존합니다. 따라서 기존 $\quad q(\mathbf{x}_t | \mathbf{x}_{t-1})$ 와 동일한 $\mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I})$가 됩니다.
+- $q(\mathbf{x}_{t-1} | \mathbf{x}_0)$: $q(\mathbf{x}_t | \mathbf{x}_0)$ 에서 시점만 $t-1$로 바꾼 것으로, $\mathcal{N}(\mathbf{x}_{t-1}; \sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})$입니다.
+- $q(\mathbf{x}_t | \mathbf{x}_0)$: q(\mathbf{x}_t | \mathbf{x}_0)을 그대로 사용합니다.
+
+이 가우시안 분포를 따르는 항들을 곱하고 나누면 결과적으로 $x_{t-1}$에 대한 새로운 가우시안 분포가 만들어집니다.
+$$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1}; \tilde{\mu}_t(\mathbf{x}_t, \mathbf{x}_0), \tilde{\beta}_t \mathbf{I})$$
+
+- 평균($\tilde{\mu}_t$): $\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} \mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \mathbf{x}_t$
+- 분산($\tilde{\beta}_t$): $\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t$
+
+정리하면, 이 Posterior Distribution ($q(x_{t-1}|x_t, x_0)$)는 $x_0$와 $x_t$를 알고 있을 때 평균($\tilde{\mu}_t$)과 분산($\tilde{\beta}_t$)이 명확히 정의되는 가우시안 분포 입니다. 따라서 이 Posterior Distribution을 사용하는 식으로 바꾸면, 모델의 예측($p_\theta$)과 정답($q$)이 모두 가우시안 분포가 됩니다. 이를 통해  모든 KL 발산을 고비용의 몬테카를로 추정 대신 닫힌 형태(closed form)의 수식으로 정확하게 계산할 수 있게 됩니다.
+다시 말해 원본 데이터 $\mathbf{x}_0$ 가 조건으로 주어지면, 알기 어려웠던 역방향 전이 $q(\mathbf{x}_{t-1}|\mathbf{x}_t, \mathbf{x}_0)$가 명확한 가우시안 분포로 계산 가능하다는 점입니다. 
+
+($q(x_{t-1}|x_t, x_0)$가 가우시안이라는 사실을 밝혀냄으로써, "수만 번 찍어서 맞추는 방식(몬테카를로)" 대신 " 가우시안 분포 공식에 대입해서 바로 답을 구하는 방식(닫힌 형태)"으로 모델을 아주 효율적으로 훈련시킬 수 있게 된 것)
 
 ## High-Resolution Image Synthesis with Latent Diffusion Models
 https://arxiv.org/pdf/2112.10752
