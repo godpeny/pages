@@ -51,6 +51,17 @@ $$
 \varphi(\mathbb{E}[X]) \geq \mathbb{E}[\varphi(X)]
 $$
 
+#### Reparameterization Trick
+https://en.wikipedia.org/wiki/Reparameterization_trick
+https://www.geeksforgeeks.org/deep-learning/reparameterization-trick/
+
+For some common distributions, the reparameterization trick takes specific forms
+Normal distribution: For $z\sim {\mathcal {N}}(\mu ,\sigma ^{2})$ we can use,
+$$
+z=\mu +\sigma \epsilon ,\quad \epsilon \sim {\mathcal {N}}(0,1)
+$$
+
+
 ### Mathematical Background of Diffusion Model
 확산 모델(Diffusion Models)의 수학적 기초를 설명합니다. 확산 모델은 Latent variable model로 아래의 적분 형태로 나타낼 수 있습니다.
 $$p_\theta(x_0) := \int p_\theta(x_{0:T}) dx_{1:T}$$
@@ -208,7 +219,7 @@ $$
 
 - $q(\mathbf{x}_t | \mathbf{x}_{t-1}, \mathbf{x}_0)$: 순방향 과정은 마르코프 체인이므로 $x_t$는 오직 $x_{t-1}$에만 의존합니다. 따라서 기존 $\quad q(\mathbf{x}_t | \mathbf{x}_{t-1})$ 와 동일한 $\mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I})$가 됩니다.
 - $q(\mathbf{x}_{t-1} | \mathbf{x}_0)$: $q(\mathbf{x}_t | \mathbf{x}_0)$ 에서 시점만 $t-1$로 바꾼 것으로, $\mathcal{N}(\mathbf{x}_{t-1}; \sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})$입니다.
-- $q(\mathbf{x}_t | \mathbf{x}_0)$: q(\mathbf{x}_t | \mathbf{x}_0)을 그대로 사용합니다.
+- $q(\mathbf{x}_t | \mathbf{x}_0)$: $q(\mathbf{x}_t | \mathbf{x}_0)$을 그대로 사용합니다.
 
 이 가우시안 분포를 따르는 항들을 곱하고 나누면 결과적으로 $x_{t-1}$에 대한 새로운 가우시안 분포가 만들어집니다.
 $$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1}; \tilde{\mu}_t(\mathbf{x}_t, \mathbf{x}_0), \tilde{\beta}_t \mathbf{I})$$
@@ -220,6 +231,54 @@ $$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1
 다시 말해 원본 데이터 $\mathbf{x}_0$ 가 조건으로 주어지면, 알기 어려웠던 역방향 전이 $q(\mathbf{x}_{t-1}|\mathbf{x}_t, \mathbf{x}_0)$가 명확한 가우시안 분포로 계산 가능하다는 점입니다. 
 
 ($q(x_{t-1}|x_t, x_0)$가 가우시안이라는 사실을 밝혀냄으로써, "수만 번 찍어서 맞추는 방식(몬테카를로)" 대신 " 가우시안 분포 공식에 대입해서 바로 답을 구하는 방식(닫힌 형태)"으로 모델을 아주 효율적으로 훈련시킬 수 있게 된 것)
+
+### Reverse Process $L_{t-1}$
+원래 모델 $\mu_\theta$는 역과정의 평균인 $\tilde{\mu}_t$를 맞추도록 설계하는 것이 가장 직관적입니다. 하지만 저자들은 모델이 입력값 $\mathbf{x}_t$를 알고 있다면실제 주입된 노이즈 $\epsilon$을 예측하는 것만으로도 충분히 평균값을 재구성할 수 있다는 점을 발견했습니다. 이를 통해 식을 복잡한 이론적 손실 함수가 실제 노이즈와 예측 노이즈 사이의 차이를 줄이는 MSE(평균 제곱 오차) 형태로 바뀔 수 있습니다. 그리고 실험 결과(Ablation study), 평균을 직접 예측하는 것보다 노이즈를 예측하도록 모델을 구성하고 단순화된 손실 함수로 학습했을 때 샘플의 품질이 훨씬 뛰어났다고 합니다.
+
+앞선 모델의 훈련을 위한 "Objective Function and Variational Bound"의 수식을 다시 살펴보겠습니다.
+$$
+\mathbb{E}_q\left[\underbrace{D_{KL}(q(\mathbf{x}_T | \mathbf{x}_0) \| p(\mathbf{x}_T))^{\vphantom{D_{KL}(q(\mathbf{x}_T | \mathbf{x}_0) \| p(\mathbf{x}_T))}}}_{L_T} + \sum_{t>1} \underbrace{D_{KL}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t))^{\vphantom{D_{KL}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t))}}}_{L_{t-1}} - \underbrace{\log p_\theta(\mathbf{x}_0 | \mathbf{x}_1)^{\vphantom{\log p_\theta(\mathbf{x}_0 | \mathbf{x}_1)}}}_{L_0}\right]
+
+$$
+
+- $L_T$: forward process 의 마지막 단계인 $q(x_T|x_0)$와 모델의 사전 분포(prior)인 $p(x_T)$ 사이의 KL 발산으로 forward process 과정의 분산($\beta_t$)은 고정하기 때문에 $q$에는 학습 가능한 매개변수가 없어서 학습중 무시되는 항입니다.
+- $L_{t-1}$: 학습된 reverse process 인 $p_\theta(x_{t-1}|x_t)$를 forward process 의 posterior distribution 인 $q(x_{t-1}|x_t, x_0)$와 직접 비교하는 KL divergence 항으로 모델이 학습해야 할 핵심 부분입니다. 이 항을 통해 모델은 노이즈 섞인 이미지에서 한 단계 이전의 깨끗한 상태로 되돌아가는 방법을 배웁니다.
+
+그리고 앞서 정의한/도출한 아래 두 수식과 각 수식의 분산을 학습하지 않는 상수로 고정할 경우($\Sigma_\theta= \sigma_t^2\mathbf{I}$),
+$$
+\quad p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t) := \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t)) \\[5pt]
+q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1}; \tilde{\mu}_t(\mathbf{x}_t, \mathbf{x}_0), \tilde{\beta}_t \mathbf{I})
+$$
+KL Divergence 항 $L_{t-1}$ 를 두 분포의 평균의 MSE 형태로 변경할 수 있습니다.
+$$
+L_{t-1} = \mathbb{E}_q \left[ \frac{1}{2\sigma_t^2} \left\| \tilde{\mu}_t(\mathbf{x}_t, \mathbf{x}_0) - \mu_\theta(\mathbf{x}_t, t) \right\|^2 \right] + C
+$$
+
+다시 앞서 소개한 아래 수식에 가우시안 분포 Reparameterization trick 을 적용하면, 아래와 같이 표현할 수 있습니다. 
+$$
+q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t}\mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \\[5pt]
+\rightarrow x_t(x_0, \epsilon) = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon \quad ( \epsilon \sim \mathcal{N}(0, I))
+$$
+
+이 $x_t(x_0, \epsilon)$ 를 위 MSE 수식에 대입한 후 풀면 아래와 같습니다.
+$$
+\mathbb{E}_{\mathbf{x}_0, \boldsymbol{\epsilon}} \left[ \frac{1}{2\sigma_t^2} \left\| \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t(\mathbf{x}_0, \boldsymbol{\epsilon}) - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \boldsymbol{\epsilon} \right) - \boldsymbol{\mu}_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \boldsymbol{\epsilon}), t) \right\|^2 \right]
+$$
+전개해 보니, 모델의 Loss를 0으로 만들기 위해 예측해야 할 목표치(Target)가 $\frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon \right)$라는 것을 알았습니다. 이 식에서 $\mathbf{x}_t$ 는 모델의 입력값으로 이미 주어져 있으므로, 모델이 알아내야 하는 유일한 미지수는 이미지에 섞인 노이즈 $\epsilon$ 뿐인 것입니다.
+
+즉, 아래와 같이 모델은 역과정의 평균($\mu_\theta$)을 단순히 예측하는 대신 이미지에 포함된 노이즈($\epsilon$)를 예측하는 방식으로 모델의 구조를 구체화할 수 있습니다.
+
+$$
+\mu_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(\mathbf{x}_t, t)\right)
+$$
+여기서 $\epsilon_\theta(\mathbf{x}_t, t)$ 은 신경망(U-Net 등)으로 구현된 노이즈 예측기로 입력된 $x_t$에서 어떤 노이즈가 섞여 있는지를 예측하는 역할을 합니다.  
+
+이제 위 식을 앞선 MSE 수식의 $\boldsymbol{\mu}_{\theta}$ 항에 대입하면 아래와 같습니다.
+$$
+\mathbb{E}_{\mathbf{x}_0, \epsilon} \left[ \frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1 - \bar{\alpha}_t)} \left\| \epsilon - \epsilon_\theta \left( \sqrt{\bar{\alpha}_t} \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon, t \right) \right\|^2 \right]
+$$
+
+결과적으로 복잡했던 MSE 손실 함수가 위 수식과 같이 "실제 노이즈 $\epsilon$과 예측 노이즈 $\epsilon_\theta$ 사이의 차이"만 계산하면 되는 아주 단순한 형태($L_{simple}$)로 줄어들 수 있게 된 것입니다. 이로써 확산 모델의 학습은 "이미지에서 노이즈를 찾아내는 문제"로 완전히 전환되며, 이것이 DDPM 성능 향상의 핵심 비결 중 하나입니다.
 
 ## High-Resolution Image Synthesis with Latent Diffusion Models
 https://arxiv.org/pdf/2112.10752
