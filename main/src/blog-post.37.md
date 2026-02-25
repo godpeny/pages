@@ -61,6 +61,8 @@ $$
 z=\mu +\sigma \epsilon ,\quad \epsilon \sim {\mathcal {N}}(0,1)
 $$
 
+#### LangeLangevin dynamics  
+
 
 ### Mathematical Background of Diffusion Model
 확산 모델(Diffusion Models)의 수학적 기초를 설명합니다. 확산 모델은 Latent variable model로 아래의 적분 형태로 나타낼 수 있습니다.
@@ -232,21 +234,23 @@ $$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1
 
 ($q(x_{t-1}|x_t, x_0)$가 가우시안이라는 사실을 밝혀냄으로써, "수만 번 찍어서 맞추는 방식(몬테카를로)" 대신 " 가우시안 분포 공식에 대입해서 바로 답을 구하는 방식(닫힌 형태)"으로 모델을 아주 효율적으로 훈련시킬 수 있게 된 것)
 
-### Reverse Process $L_{t-1}$
-원래 모델 $\mu_\theta$는 역과정의 평균인 $\tilde{\mu}_t$를 맞추도록 설계하는 것이 가장 직관적입니다. 하지만 저자들은 모델이 입력값 $\mathbf{x}_t$를 알고 있다면실제 주입된 노이즈 $\epsilon$을 예측하는 것만으로도 충분히 평균값을 재구성할 수 있다는 점을 발견했습니다. 이를 통해 식을 복잡한 이론적 손실 함수가 실제 노이즈와 예측 노이즈 사이의 차이를 줄이는 MSE(평균 제곱 오차) 형태로 바뀔 수 있습니다. 그리고 실험 결과(Ablation study), 평균을 직접 예측하는 것보다 노이즈를 예측하도록 모델을 구성하고 단순화된 손실 함수로 학습했을 때 샘플의 품질이 훨씬 뛰어났다고 합니다.
-
+### $L_{t-1}$, $L_T$ and $L_0$
 앞선 모델의 훈련을 위한 "Objective Function and Variational Bound"의 수식을 다시 살펴보겠습니다.
 $$
 \mathbb{E}_q\left[\underbrace{D_{KL}(q(\mathbf{x}_T | \mathbf{x}_0) \| p(\mathbf{x}_T))^{\vphantom{D_{KL}(q(\mathbf{x}_T | \mathbf{x}_0) \| p(\mathbf{x}_T))}}}_{L_T} + \sum_{t>1} \underbrace{D_{KL}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t))^{\vphantom{D_{KL}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t))}}}_{L_{t-1}} - \underbrace{\log p_\theta(\mathbf{x}_0 | \mathbf{x}_1)^{\vphantom{\log p_\theta(\mathbf{x}_0 | \mathbf{x}_1)}}}_{L_0}\right]
-
 $$
 
 - $L_T$: forward process 의 마지막 단계인 $q(x_T|x_0)$와 모델의 사전 분포(prior)인 $p(x_T)$ 사이의 KL 발산으로 forward process 과정의 분산($\beta_t$)은 고정하기 때문에 $q$에는 학습 가능한 매개변수가 없어서 학습중 무시되는 항입니다.
 - $L_{t-1}$: 학습된 reverse process 인 $p_\theta(x_{t-1}|x_t)$를 forward process 의 posterior distribution 인 $q(x_{t-1}|x_t, x_0)$와 직접 비교하는 KL divergence 항으로 모델이 학습해야 할 핵심 부분입니다. 이 항을 통해 모델은 노이즈 섞인 이미지에서 한 단계 이전의 깨끗한 상태로 되돌아가는 방법을 배웁니다.
+- $L_0$ : 마지막 reverse process 인 $x_1$ 상태에서 원본 이미지 $x_0$를 복원할 때의 negative log likelihood ($-\log p_\theta(x_0|x_1)$)를 의미합니다.
 
-그리고 앞서 정의한/도출한 아래 두 수식과 각 수식의 분산을 학습하지 않는 상수로 고정할 경우($\Sigma_\theta= \sigma_t^2\mathbf{I}$),
+
+#### Reverse Process $L_{t-1}$
+원래 모델 $\mu_\theta$는 역과정의 평균인 $\tilde{\mu}_t$를 맞추도록 설계하는 것이 가장 직관적입니다. 하지만 저자들은 모델이 입력값 $\mathbf{x}_t$를 알고 있다면실제 주입된 노이즈 $\epsilon$을 예측하는 것만으로도 충분히 평균값을 재구성할 수 있다는 점을 발견했습니다. 이를 통해 식을 복잡한 이론적 손실 함수가 실제 노이즈와 예측 노이즈 사이의 차이를 줄이는 MSE(평균 제곱 오차) 형태로 바뀔 수 있습니다. 그리고 실험 결과(Ablation study), 평균을 직접 예측하는 것보다 노이즈를 예측하도록 모델을 구성하고 단순화된 손실 함수로 학습했을 때 샘플의 품질이 훨씬 뛰어났다고 합니다.
+
+앞서 정의한/도출한 아래 두 수식과 각 수식의 분산을 학습하지 않는 상수로 고정할 경우($\Sigma_\theta= \sigma_t^2\mathbf{I}$),
 $$
-\quad p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t) := \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t)) \\[5pt]
+ p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t) := \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t)) \\[5pt]
 q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1}; \tilde{\mu}_t(\mathbf{x}_t, \mathbf{x}_0), \tilde{\beta}_t \mathbf{I})
 $$
 KL Divergence 항 $L_{t-1}$ 를 두 분포의 평균의 MSE 형태로 변경할 수 있습니다.
@@ -279,6 +283,60 @@ $$
 $$
 
 결과적으로 복잡했던 MSE 손실 함수가 위 수식과 같이 "실제 노이즈 $\epsilon$과 예측 노이즈 $\epsilon_\theta$ 사이의 차이"만 계산하면 되는 아주 단순한 형태($L_{simple}$)로 줄어들 수 있게 된 것입니다. 이로써 확산 모델의 학습은 "이미지에서 노이즈를 찾아내는 문제"로 완전히 전환되며, 이것이 DDPM 성능 향상의 핵심 비결 중 하나입니다.
+
+##### Simplified training objective
+저자들이 제안한 단순화된 손실함수는 위 식에서 앞의 계수를 모두 제거하고 단순한 MSE 형태만 남긴 형태입니다.
+
+$$
+L_{\text{simple}}(\theta) := \mathbb{E}_{t, \mathbf{x}_0, \epsilon} \left[ \left\| \epsilon - \epsilon_{\theta}\left( \sqrt{\bar{\alpha}_t} \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon, t \right) \right\|^2 \right]
+$$
+
+즉, 이론적인 정확도(로그 가능도)를 조금 희생하더라도, 가중치를 제거한 단순한 형태가 실제 이미지를 생성하는 품질(FID) 면에서는 훨씬 뛰어난 결과를 보여준다는 것을 실험을 통해 확인하고 이를 채택했다고 합니다.
+
+#### $L_0$
+마지막 reverse process 인 $x_1$ 상태에서 원본 이미지 $x_0$를 복원할 때의 negative log likelihood ($-\log p_\theta(x_0|x_1)$)를 의미합니다. 소스에서는 이미지 데이터가 {0, 1, ..., 255} 사이의 정수임을 고려하여, 이를 독립적인 이산 디코더(discrete decoder)로 설정합니다. 즉 이미지는 원래 이산적인(discrete) 값인데, 모델은 연속적인 가우시안 분포를 다루기 때문에 이 간극을 메우기 위해 reverse process의  마지막 단계($L_0$)에 모델이 생성한 최종 결과가 실제 이산적인 이미지 데이터와 일치하도록 보장하는 역할을 합니다.
+
+$$p_\theta(\mathbf{x}_0|\mathbf{x}_1) = \prod_{i=1}^D \int_{\delta_-(\mathbf{x}_i^0)}^{\delta_+(\mathbf{x}_i^0)} \mathcal{N}(x; \mu_\theta^i(\mathbf{x}_1, 1), \sigma_1^2) dx$$
+- $p_\theta(\mathbf{x}_0|\mathbf{x}_1)$: 모델이 마지막 역과정 단계인 $\mathbf{x}_1$ 상태를 보고 원본 이미지 $\mathbf{x}_0$를 복원할 확률입니다.
+- $\prod_{i=1}^D$: 이미지의 모든 픽셀과 색상 채널에 대해 독립적으로 확률을 계산하여 모두 곱한다는 의미입니다.(픽셀 간의 의존성이 독립적이라고 가정합니다)
+- $\int_{\delta_-}^{\delta_+}$: 특정 픽셀 값에 해당하는 구간에 대해 가우시안 확률 밀도 함수를 적분하여 해당 칸의 확률 질량(Probability Mass)을 구합니다.
+- $\mathcal{N}(x; \mu_\theta^i(\mathbf{x}_1, 1), \sigma_1^2)$: 모델이 예측한 시점 $t=1$에서의 가우시안 분포입니다.
+
+##### 적분 범위 $\delta_+, \delta_-$의 의미
+디지털 이미지는 0~255 사이의 정수이지만, 모델 내부에서는 이를 $[-1, 1]$ 범위의 실수로 스케일링하여 처리합니다. 따라서 특정 정수 픽셀 값에 해당하는 구간을 설정해야 합니다.
+
+<b> 일반적인 경우 ($-1 < x^0_i < 1$) </b>  
+해당 픽셀 값을 중심으로 양옆으로 약 $\frac{1}{255}$ 만큼의 범위를 설정하여 그 사이의 확률을 계산합니다.
+- $\delta_+(x^0_i) = x^0_i + \frac{1}{255}$
+- $\delta_-(x^0_i) = x^0_i - \frac{1}{255}$
+
+<b> 경계값 처리 (양 끝점)</b>  
+- $x = 1$일 때 (가장 밝은 값): $\delta_+(x) = \infty$. 즉, 1보다 큰 모든 영역의 확률을 이 칸에 포함시킵니다.
+- $x = -1$일 때 (가장 어두운 값):*$\delta_-(x) = -\infty$. 즉, -1보다 작은 모든 영역의 확률을 이 칸에 포함시킵니다.
+
+정리하면 이 과정은 모델이 예측한 연속적인 확률 분포를 256개의 픽셀 칸 중 가장 적절한 칸에 확률을 배분하는 규칙이라고 이해할 수 있습니다. 
+
+### Training
+훈련 과정의 목표는 모델($\epsilon_\theta$)이 이미지에 섞인 **노이즈를 정확하게 예측**하도록 학습시키는 것입니다.
+1. 데이터 샘플링: 실제 데이터 분포($q(x_0)$)에서 깨끗한 이미지 $x_0$를 하나 선택합니다.
+2. 시점 선택: $1$부터 $T$ 사이의 시점 $t$를 균등한 확률로 무작위 선택합니다.
+3. 노이즈 생성: 표준 정규 분포에서 이미지와 크기가 같은 무작위 노이즈 $\epsilon$을 샘플링합니다.
+4. 경사하강법(Gradient Descent): 단순화된 손실 함수($L_{simple}$)를 최소화하도록 모델을 업데이트합니다.
+
+
+### Sampling
+샘플링 과정은 훈련된 모델을 사용해 완전한 노이즈로부터 새로운 이미지를 생성해내는 과정입니다. 즉, 학습이 완료된 모델을 사용하여 새로운 데이터를 생성해내는 실제 추론(Inference) 단계입니다.
+
+1. 초기: 표준 정규 분포($\mathcal{N}(0, \mathbf{I})$)에서 무작위 노이즈인 $x_T$를 추출합니다.
+2. 반복적 데노이징: $t = T$부터 $1$까지 거꾸로 내려오며 다음을 계산합니다.  
+  2-1. 평균 계산: 현재 이미지 $x_t$와 모델이 예측한 노이즈($\epsilon_\theta$)를 사용하여 이전 단계의 평균적인 모습($x_{t-1}$)을 계산합니다.  $ \mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \boldsymbol{\epsilon}_{\theta}(\mathbf{x}_t, t) \right) + \sigma_t \mathbf{z}$  
+  ($p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t)$의 분산을 학습하지 않는 상수 $\sigma_t^2\mathbf{I}$로 고정)  
+  2-2. 무작위성 추가: $t > 1$인 경우, 계산된 값에 무작위 노이즈($\sigma_t z$)를 다시 더해줍니다. 이는 역과정의 확률적 성질을 유지하기 위함이며, 라쥬방 역학(Langevin dynamics)과 유사한 효과를 냅니다.
+3. 최종 결과: $t=1$까지 도달한 후 최종적으로 생성된 이미지 **$x_0$를 반환**합니다.
+
+
+
+\]
 
 ## High-Resolution Image Synthesis with Latent Diffusion Models
 https://arxiv.org/pdf/2112.10752
