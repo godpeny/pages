@@ -382,9 +382,9 @@ $L_0$은 왜곡(Distortion)을 의미하며 모델이 예측한 최종 이미지
 저자들은 일반적인 모델이 데이터를 완벽하게(lossless) 설명하는 데 사용하는 전체 비트 중 절반 이상이 인간의 눈으로는 인식조차 할 수 없는 미세한 디테일(imperceptible distortions)을 설명하는 데 소모되고 있다는 사실을 발견했습니다. 
 하지만 그럼에도 불구하고 "bits/dim" 기준으로 보면 DDPM이 생성한 샘플의 품질이 매우 높다는 것은, DDPM이 사람의 눈에 중요한 특징(이미지의 형태, 구조 등)을 우선적으로 학습하고 생성하는 아주 훌륭한 손실 압축기(lossy compressors - 데이터를 압축할 때 사람이 인지하기 어려운 미세한 정보를 일부 제거하여 압축 효율을 높이는 장치나 알고리즘) 로서의 성질을 가졌기 때문으로 설명할 수 있습니다.
 
-<img src="images/blog37_lossy_compression_figure.png" alt="Model architecture" width="600"/>  
+<img src="images/blog37_lossy_compression_figure.png" alt="lossy_compression_figure" width="600"/>  
 
-<img src="images/blog37_lossy_compression_table.png" alt="Model architecture" width="600"/>  
+<img src="images/blog37_lossy_compression_table.png" alt="lossy_compression_table" width="600"/>  
 
 위 Figure & Table을 보면, 인간의 눈에 중요한 거시적 정보(형체 등)를 아주 적은 비트만으로 효율적으로 먼저 복원하고, 나머지 많은 비트는 인지하기 어려운 미세한 디테일(imperceptible distortions)을 채우는 데 사용한다는 점을 실험을 통해 증명됨을 알 수 있습니다.  
 따라서 Diffusion 모델은 이러한 특성 때문에 수학적인 NLL 점수에서는 손해를 보더라도, 실제 사람이 보기에는 매우 뛰어난 품질의 이미지를 생성하는 "훌륭한 손실 압축기(excellent lossy compressors)"의  inductive bias 을 가졌다고 결론내릴 수 있습니다.
@@ -404,6 +404,19 @@ $$
 \mathbf{x}_t = \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon \quad (\text{where } \epsilon \sim \mathcal{N}(0, \mathbf{I})) \\[5pt] 
 \rightarrow \quad  \hat{x}_0 = \frac{x_t - \sqrt{1 - \bar{\alpha}_t} \epsilon_\theta(x_t)}{\sqrt{\bar{\alpha}_t}}
 $$
+
+##### Progressive generation
+Progressive generation(점진적 생성)" 부분은 확산 모델이 무작위 노이즈로부터 이미지를 만들어낼 때, 어떤 순서로 정보가 형성되는지를 분석한 내용입니다.  
+앞선 수식을 이용해서 역과정 중($x_T$, $x_{T-1}, x_{T-2} \dots$ )에 현재의 노이즈 상태 $x_t$를 보고 모델이 생각하는 최종 결과물의 예상치($\hat{\mathbf{x}}_0$)를 계산해서 "이 노이즈를 다 걷어내면 결국 이런 그림이 될 것이다" 라고 모델이 추측한 결과물을 시각화하는 방식으로 분석했습니다. 
+
+$$
+\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon \quad (\text{where } \epsilon \sim \mathcal{N}(0, \mathbf{I}))
+$$
+
+그 결과 아래 그림과 같이 초기 단계(큰 t 시점)에는 이미지의 거시적인 특징(Large scale image features), 즉 전체적인 형태, 구도, 주요 색감 등이 먼저 결정되고 후기 단계(작은 t 시점)에는 흐를수록 미세한 디테일(Fine details)들이 마지막에 채워지며 이미지가 선명해지는 결과가 나왔습니다.  
+따라서 Diffusion 모델이 "Large scale image features appear first and details appear last" 함을 알 수 있습니다.
+
+<img src="images/blog37_progressive_generation.png" alt="Progressive Generation" width="600"/>  
 
 
 ## High-Resolution Image Synthesis with Latent Diffusion Models
