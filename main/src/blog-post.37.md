@@ -418,6 +418,18 @@ $$
 
 <img src="images/blog37_progressive_generation.png" alt="Progressive Generation" width="600"/>  
 
+##### Connection to autoregressive decoding
+Diffusion Model이 수학적으로 Autoregressive model의 일반화된 형태라는 점을 증명합니다. 아래 두 가지 근거를 듭니다.
+
+<b> 1. Generalized Bit Ordering </b>  
+기존의 AR 모델은 픽셀의 위치(예: 왼쪽 위에서 오른쪽 아래로)라는 고정된 좌표 순서에 따라 데이터를 하나씩 채워나갑니다. 반면, Diffusion 모델은 가우시안 노이즈를 사용함으로써 특정 픽셀 위치가 아니라 "정보의 중요도(비트 순서)"를 따릅니다. 
+실제로 위 "Progressive generation" 과정에서,이미지의 거시적인 특징(Large scale features)이 먼저 나타나고 세부적인 디테일이 마지막에 완성되는 'Coarse-to-Fine'의 순서를 따르는 것을 볼 수 있습니다.
+
+<b> 2. 마스킹(Masking)보다 진보된 노이즈 학습법 </b>
+논문 에서는 확산 단계 $T$를 데이터의 차원 수와 같게 설정하고, 순방향 과정에서 픽셀을 하나씩 가리는(masking) 특수한 경우를 가정하면 확산 모델이 정확히 AR 모델과 수학적으로 동일해짐을 증명합니다. 하지만 저자들은 이미지 데이터에 있어 특정 픽셀을 아예 지워버리는 마스킹 방식보다, 전체적으로 미세하게 입혀지는 가우시안 노이즈가 훨씬 '자연스러운(natural)' 유도 편향(Inductive bias)을 제공한다고 설명합니다. 또한, AR 모델은 단계 수가 차원 수에 고정되지만, 확산 모델은 단계 수($T$)를 차원 수보다 작게(빠른 샘플링) 혹은 크게(표현력 강화) 자유롭게 설정할 수 있어 훨씬 유연합니다.
+
+따라서 정리하면 확산 모델은 AR 모델의 수학적 구조를 포함하면서도, 픽셀 순서라는 제약을 깨고 '이미지의 본질적인 특징'부터 단계적으로 복원해 나가는 훨씬 일반화되고 진보된 형태의 생성 모델이라고 할 수 있습니다.
+
 
 ## High-Resolution Image Synthesis with Latent Diffusion Models
 https://arxiv.org/pdf/2112.10752
