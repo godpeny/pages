@@ -61,7 +61,10 @@ $$
 z=\mu +\sigma \epsilon ,\quad \epsilon \sim {\mathcal {N}}(0,1)
 $$
 
-#### LangeLangevin dynamics  
+#### Markov chain Monte Carlo (MCMC)
+https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo
+#### Langevin dynamics  
+https://friedmanroy.github.io/blog/2022/Langevin/
 
 ### Mathematical Background of Diffusion Model
 확산 모델(Diffusion Models)의 수학적 기초를 설명합니다. 확산 모델은 Latent variable model로 아래의 적분 형태로 나타낼 수 있습니다.
