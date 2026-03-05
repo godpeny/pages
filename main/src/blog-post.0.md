@@ -719,6 +719,39 @@ Multivariate data contains three or more variables for each observation. The obj
 - Reduces data complexity using dimensionality reduction (like PCA).
 - Commonly visualized using heatmaps, pair plots and 3D scatter plots for high-dimensional insight.
 
+### Gated Linear Unit(GLU)
+Gated Linear Units (GLUs) adapt the gating mechanism for use in feedforward neural networks, often within transformer-based architectures. 
+$$
+\mathrm {GLU} (a,b)=a\odot \sigma (b)
+$$
+- $a,b$: The first and second inputs, respectively. 
+- $\sigma$: The sigmoid activation function.
+
+Replacing $\sigma$ with other activation functions leads to variants of GLU.
+$$
+\displaystyle {\begin{aligned}\mathrm {ReGLU} (a,b)&=a\odot {\text{ReLU}}(b)\\\mathrm {GEGLU} (a,b)&=a\odot {\text{GELU}}(b)\\\mathrm {SwiGLU} (a,b,\beta )&=a\odot {\text{Swish}}_{\beta }(b)\end{aligned}}
+$$
+Where ReLU, GELU, and Swish are different activation functions.
+
+In transformer models, such gating units are often used in the feedforward modules. For a single vector input, this results in as follows.
+$$
+\displaystyle {\begin{aligned}\operatorname {GLU} (x,W,V,b,c)&=\sigma (xW+b)\odot (xV+c)\\\operatorname {Bilinear} (x,W,V,b,c)&=(xW+b)\odot (xV+c)\\\operatorname {ReGLU} (x,W,V,b,c)&=\max(0,xW+b)\odot (xV+c)\\\operatorname {GEGLU} (x,W,V,b,c)&=\operatorname {GELU} (xW+b)\odot (xV+c)\\\operatorname {SwiGLU} (x,W,V,b,c,\beta )&=\operatorname {Swish} _{\beta }(xW+b)\odot (xV+c)\end{aligned}}
+$$
+
+### Swish Function
+The swish function is a family of mathematical function defined as follows.
+$$
+\displaystyle \operatorname {swish} _{\beta }(x)=x\operatorname {sigmoid} (\beta x)={\frac {x}{1+e^{-\beta x}}}
+$$
+Where $\beta$ can be constant (usually set to 1) or trainable and "sigmoid" refers to the logistic function.
+
+The swish family was designed to smoothly interpolate between a linear function and the Rectified linear unit (ReLU) function.  
+
+<img src="images/blog0_swish_func.png" alt="Swish Function" width="200"/>   
+
+
+
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
