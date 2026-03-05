@@ -749,7 +749,12 @@ The swish family was designed to smoothly interpolate between a linear function 
 
 <img src="images/blog0_swish_func.png" alt="Swish Function" width="200"/>   
 
+### Collective Operations
+https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html
+https://en.wikipedia.org/wiki/Collective_operation
 
+#### AllReduce
+https://medium.com/@niruthiha2000/allreduce-explained-the-key-to-efficient-distributed-training-2cbbcc871832
 
 
 ### Tips for reading papers
