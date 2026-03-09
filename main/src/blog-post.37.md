@@ -61,10 +61,31 @@ $$
 z=\mu +\sigma \epsilon ,\quad \epsilon \sim {\mathcal {N}}(0,1)
 $$
 
+#### Stationary Distribution
+A stationary distribution of a Markov chain is a probability distribution that remains unchanged in the Markov chain as time progresses.
+
 #### Markov chain Monte Carlo (MCMC)
-https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo
-#### Langevin dynamics  
-https://friedmanroy.github.io/blog/2022/Langevin/
+A class of algorithms used to draw samples from a probability distribution. Markov chain Monte Carlo methods create samples from a continuous random variable, with probability density proportional to a known function. 
+
+Suppose $\mathcal {X_n}$ is a Markov Chain in the general state space $\mathcal {X}$ with specific properties.
+$$
+\displaystyle S_{n}(h)={\dfrac {1}{n}}\sum _{i=1}^{n}h(X_{i})
+$$
+- $X_{i}$: sample from Markov chain
+- $h$: function or hypothesis
+- $S_{n}(h)$: expected value
+
+MCMC는 우리가 샘플을 얻고자 하는 어떤 목표 확률분포(Target Probability Distribution)로부터 랜덤 샘플을 얻는 방법이다. 정확히 말해, MCMC는 목표 분포를 Stationary distribution으로 가지는 마코프 체인을 만드는 과정이다.
+
+#### Langevin Dynamics  
+(내용이 복잡하니 기본 개념만...)  
+Langevin dynamics (or sampling) is one of the most popular Markov chain Monte Carlo (MCMC) methods out there. It is used for countless tasks that require sampling from a distribution, and is even really simple to use especially since automatic differentiation is easily accessible.
+
+핵심만 설명하면 Langevin dynamics는 다음 확률 미분 방정식(SDE)을 이용하여 어떤 목표 분포에서 샘플을 생성하는 방법입니다.  
+$x(t)$가 $dx_t = -\nabla E(x_t)\,dt + \sqrt{2}\,dW_t$ SDE 를 따른다고 정의하면 이 SDE의 stationary distribution이 $\pi(x) \propto e^{-E(x)}$ 가 되기 때문에 샘플에 이용할 수 있습니다. 그리고 이를 이산화 하면 아래와 같이 표현할 수 있습니다.
+$$
+x_{k+1} = x_k - \epsilon \nabla E(x_k) + \sqrt{2\epsilon}\,\eta_k
+$$
 
 ### Mathematical Background of Diffusion Model
 확산 모델(Diffusion Models)의 수학적 기초를 설명합니다. 확산 모델은 Latent variable model로 아래의 적분 형태로 나타낼 수 있습니다.
