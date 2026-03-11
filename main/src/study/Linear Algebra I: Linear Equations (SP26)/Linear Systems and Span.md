@@ -159,6 +159,57 @@ If a linear system is consistent,
 1. a unique solution if and only if there are no free variables.
 2. infinitely many solutions that are parameterized by free variables.
 
-
-
 ## Topic 3: Vector Equations
+### Vectors in $\mathbb{R}$
+It is a way to think linear algebra in terms of geometry.
+
+$\mathbb{R}$ denotes the collection of all real numbers.  
+$\mathbb{R}^n$ is all ordered $n$-tuples of real numbers $(x_1, x_2, x_3, \cdots, x_n)$.
+
+We can think the elements of $\mathbb{R}^n$  as points (points in the
+line, plane, space, etc.) Also We can  think of them as vectors.(arrows with a given length and direction)
+
+#### Vector Algebra
+Vectors have the following properties.
+$$
+\vec{u} = \begin{pmatrix}
+u_1 \\
+u_2
+\end{pmatrix},
+\qquad
+\vec{v} = \begin{pmatrix}
+v_1 \\
+v_2
+\end{pmatrix}
+$$
+
+1. Scalar Multiples
+$$
+c\vec{u} = \begin{pmatrix}
+cu_1 \\
+cu_2
+\end{pmatrix}
+= c \begin{pmatrix}
+u_1 \\
+u_2
+\end{pmatrix}
+$$
+
+2. Vector Addition
+$$
+\vec{u} + \vec{v} = \begin{pmatrix}
+u_1 + v_1 \\
+u_2 + v_2
+\end{pmatrix}
+= \begin{pmatrix}
+u_1 \\
+u_2
+\end{pmatrix} + \begin{pmatrix}
+v_1 \\
+v_2
+\end{pmatrix}
+$$
+Note that vectors in higher dimensions have the same properties.
+
+#### Parallelogram Rule for Vector Addition
+<img src="./Parallelogram.png" alt="Parallelogram Rule for Vector Addition" width="300"/>    
