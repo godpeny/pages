@@ -213,3 +213,24 @@ Note that vectors in higher dimensions have the same properties.
 
 #### Parallelogram Rule for Vector Addition
 <img src="./Parallelogram.png" alt="Parallelogram Rule for Vector Addition" width="300"/>    
+
+### Linear Combinations
+Given vectors $\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p \in \mathbb{R}^n$ and scalars $c_1, c_2, \ldots, c_p$, the vector $\vec{y}$ where 
+$$\vec{y} = c_1 \vec{v}_1 + c_2 \vec{v}_2 + \cdots + c_p \vec{v}_p$$
+is called a linear combination of $\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p$ with weights $c_1, c_2, \ldots, c_p$.
+
+#### Geometric Interpretation of Linear Combinations
+<img src="./Geometric_Interpretation_of_Linear_Combinations.png" alt="Geometric Interpretation of Linear Combinations" width="400"/>    
+
+### Span
+Given vectors $\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p \in \mathbb{R}^n$ and scalars $c_1, c_2, \ldots, c_p$, the set of all linear combinations of
+$ \vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p $
+is called a linear combination of $\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p$ is called the span of $\vec{v}_1, \vec{v}_2, \ldots, \vec{v}_p$.
+
+#### The Matrices have columns that span the same space
+A의 column space = B의 column space 인지 확인하는 것입니다.
+즉, 서로의 span이 서로를 포함하는지 확인하는 것.
+
+A의 column들을 B의 column들로 만들 수 있어야 하고 B의 column들을 A의 column들로 만들 수 있어야 한다.
+
+즉, "A column -> B span 가능" + "B column -> A span 가능" 둘 다 만족해야 한다.
