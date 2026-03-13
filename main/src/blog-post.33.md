@@ -38,6 +38,18 @@ Bayesian Personalized Ranking is a machine learning algorithm specifically desig
 
 BPR works by maximizing the posterior probability of a user preferring a known positive item over a randomly chosen negative item.
 
+#### Objective Function of BPR
+The BPR objective function is designed to maximize the probability that a user prefers a purchased (positive) item($i$) over a non-purchased (negative) item($j$).
+$$
+\sum_{(u,i,j)\in D_s}
+\ln \sigma\!\left(\hat{r}_{ui} - \hat{r}_{uj}\right)
+- \lambda \left( \lVert U \rVert^2 + \lVert I \rVert^2 \right)
+$$
+- $\sigma$: the logistic sigmoid function.
+- $D_s$​: the set of triplets $(u,i,j)$, such that user $u$ has interacted with item $i$ but not with item $j$.
+- $\lambda$: a regularization parameter to prevent overfitting.
+- $ \lVert U \rVert^2 + \lVert I \rVert^2$: the regularization terms for user and item matrices.
+
 Reference - https://www.geeksforgeeks.org/machine-learning/recommender-system-using-bayesian-personalized-ranking/  
 https://arxiv.org/pdf/1205.2618
 
