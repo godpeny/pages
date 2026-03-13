@@ -315,6 +315,20 @@ Therefore, combining the two derivation above, we can conclude that the rank of 
 ### Diagonal Matrix
 In linear algebra, a diagonal matrix is a matrix in which the entries outside the main diagonal are all zero; the term usually refers to square matrices. Elements of the main diagonal can either be zero or nonzero.  
 In geometry, a diagonal matrix may be used as a scaling matrix, since matrix multiplication with it results in changing scale (size) and possibly also shape; only a scalar matrix results in uniform change in scale.
+
+#### Properties of Diagonal Matrix
+- The determinant of $\text{diag}(a_1, \cdots, a_n)$ is the product $a_1 \cdots a_n$.
+- For a diagonal matrix $D = 
+\begin{pmatrix}
+d_{11} & 0 & 0 \\
+0 & d_{22} & 0 \\
+0 & 0 & d_{33}
+\end{pmatrix}$, the power $D^k$ is $\begin{pmatrix}
+d_{11}^k & 0 & 0 \\
+0 & d_{22}^k & 0 \\
+0 & 0 & d_{33}^k
+\end{pmatrix}$.
+
 #### Identity Matrix
 An identity matrix of size $n$ is  $n\times n$ square matrix with ones on the main diagonal and zeros elsewhere. 
 #### Scaling Matrix
