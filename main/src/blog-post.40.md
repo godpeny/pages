@@ -60,7 +60,44 @@ This continues until the modularity stops improving. Once this local maximum of 
 For each community in our graph's partition, the individual nodes making up that community are combined and the community itself becomes a node. The edges connecting distinct communities are used to weight the new edges connecting our aggregate nodes. (third image)
 
 ## Leiden algorithm
-https://en.wikipedia.org/wiki/Leiden_algorithm#Modularity
+It was developed as a modification of the Louvain method. Like the Louvain method, the Leiden algorithm attempts to optimize modularity in extracting communities from networks.  
+
+Broadly, the Leiden algorithm uses the same two primary phases as the Louvain algorithm. a local node moving step and a graph aggregation step. However, to address the issues with poorly-connected communities and the merging of smaller communities into larger communities (the resolution limit of modularity), the Leiden algorithm employs an intermediate refinement phase in which communities may be split to guarantee that all communities are well-connected.
+
+### Problem of Louvain Algorithm (poorly connected)
+<img src="./images/blog40_problem_of_louvain1.png" alt="Problem of Louvain 1" width="100"/>  
+<img src="./images/blog40_problem_of_louvain2.png" alt="Problem of Louvain 2" width="100"/>  
+
+Consider the result of a node-moving step which merges the communities denoted by red and green nodes into a single community as the two communities are highly connected.  
+Notably, the center "bridge" node is now a member of the larger red community after node moving occurs (due to the greedy nature of the local node moving algorithm).  
+
+In the Louvain method, such a merging would be followed immediately by the graph aggregation phase. However, this causes a disconnection between two different sections of the community represented by blue nodes. 
+
+<img src="./images/blog40_problem_of_louvain3.png" alt="Problem of Louvain 3" width="100"/>  
+
+In the Leiden algorithm, the graph is instead refined as above. This refinement step ensures that the center "bridge" node is kept in the blue community to ensure that it remains intact and connected, despite the potential improvement in modularity from adding the center "bridge" node to the red community.
+
+### Algorithm
+<img src="./images/blog40_leiden-algorithm.png" alt="Leiden Algorithm" width="400"/>  
+
+#### Phase 1
+The Leiden algorithm starts with a graph of disorganized nodes and sorts it by partitioning them to maximize modularity. - P
+
+#### Phase 2
+Then the algorithm refines this partition by first placing each node into its own individual community and then moving them from one community to another to maximize modularity. It does this iteratively until each node has been visited and moved, and each community has been refined - this creates partition. - P_refined
+정제 단계를 시작할 때, 알고리즘은 1단계에서 묶였던 커뮤니티 구조를 그대로 쓰는 것이 아니라, 모든 노드를 다시 자기 자신만 속한 개별 커뮤니티(singleton community)에 할당합니다. 노드들을 다시 흩어놓고 모듈러리티를 계산하면, 기존에 속했던 커뮤니티가 내부적으로 잘 연결되지 않았을 경우 여러 개의 더 작은 커뮤니티로 쪼개질 수 있기 때문입니다. 즉, 대략적으로 잡은 커뮤니티 안의 노드들을 다시 낱개로 풀어서, 내부 연결 상태를 꼼꼼히 따져가며 더 견고한 구조로 재구성하는 과정입니다.
+
+#### Phase 3
+Then an aggregate networ is created by turning each community into a node. 
+"P_refined" is used as the basis for the aggregate network while "P" is used to create its initial partition. Because we use the original partition "P" in this step, we must retain it so that it can be used in future iterations. 
+
+These steps together form the first iteration of the algorithm. In subsequent iterations, the nodes of the aggregate network (which each represent a community) are once again placed into their own individual communities and then sorted according to modularity to form a new 
+P_refined.
+2번째 iteration부터는 이전 단계에서 정제된 그룹 P_refined 들이 새로운 '노드' 가 되어 Step 1부터 다시 시작합니다.
+
+### Limitation
+- 하드 파티션(Hard Partition): 노드는 오직 하나의 커뮤니티에만 속할 수 있습니다. 현실의 소셜 네트워크처럼 한 사람이 여러 그룹에 속하는 '중첩 커뮤니티' 구조는 반영하기 어렵습니다.
+- 계산 복잡도: 루뱅보다 효율적이지만, 매우 거대한 그래프(massive graphs)에서는 처리 시간이 길어질 수 있습니다.
 
 ## Graph Collaborative Filtering
 https://dl.acm.org/doi/epdf/10.1145/3331184.3331267
