@@ -181,6 +181,13 @@ In metaphysics and statistics, SCM is a conceptual model that represents the cau
 ### Diminishing Marginal Return
 The diminishing marginal returns is an economic concept that explains how, beyond a certain point, increasing one input while keeping others constant will lead to progressively smaller gains in output.
 
+### Power Law
+In statistics, a power law is a functional relationship between two quantities, where a relative change in one quantity results in a relative change in the other quantity proportional to the change raised to a constant exponent: one quantity varies as a power of another. The change is independent of the initial size of those quantities.  
+
+<img src="images/blog0_power_law_graph.png" alt="Power Law Graph" width="200"/>   
+
+An example power-law graph that demonstrates ranking of popularity. To the right is the long tail, and to the left are the few that dominate (also known as the 80–20 rule).
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
