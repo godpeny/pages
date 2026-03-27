@@ -144,8 +144,8 @@ So put it simply, FTRL’s idea can be represented as follow.
 reference: https://optimization.cbe.cornell.edu/index.php?title=FTRL_algorithm
 
 ### Multi-armed bandit (MAB)
-https://www.geeksforgeeks.org/machine-learning/multi-armed-bandit-problem-in-reinforcement-learning/
-https://en.wikipedia.org/wiki/Multi-armed_bandit
+In the multi-armed bandit problem, decisions are made without context. Every action’s outcome depends only on prior attempts. 
+It is a problem in which a decision maker iteratively selects one of multiple fixed choices (i.e., arms or actions) when the properties of each choice are only partially known at the time of allocation, and may become better understood as time passes
 
 ### Radial Basis Function (RBF) kernel
 RBF kernel is a popular kernel function used in various kernelized learning algorithms. In particular, it is commonly used in support vector machine classification. Since the value of the RBF kernel decreases with distance and ranges between zero (in the infinite-distance limit) and one (when $x = x'$), it has a ready interpretation as a similarity measure.  
