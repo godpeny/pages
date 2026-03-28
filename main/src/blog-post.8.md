@@ -830,6 +830,12 @@ $$
 \theta_j := \theta_j + \alpha \left( y^{(i)} - h_{\theta}(x^{(i)}) \right) x_j^{(i)}
 $$  
 
+#### Binary Cross Entropy(BCE) = Log Loss for Binary Classification
+Binary cross-entropy is a loss function used in binary classification problems. It quantifies the difference between the actual class labels (0 or 1) and the predicted probabilities output by the model as described in "Binary Classification Model in Logistic Regression (label: 1,0)" part.
+$$
+\ell(\theta) = \log L(\theta) = \sum_{i=1}^{m} \left[ y^{(i)} \log h_{\theta}(x^{(i)}) + (1 - y^{(i)}) \log \left( 1 - h_{\theta}(x^{(i)}) \right) \right].
+$$ 
+
 ### Why Logistic Regression linear model?
 Logistic regression is considered a generalized linear model because the outcome always depends on the sum of the inputs and parameters. ($\theta^T x = \theta_{0} x_{0} + \theta_{1} x_{1} \cdots \theta_{m} x_{m}$)  
 In other words, the output cannot depend on the product (or quotient, etc.) of its parameters.(example of non linear: $ \theta_{1} x_{1} \times  \theta_{2} x_{2} ...$)  
@@ -855,7 +861,7 @@ $$
 $$  
 $y\theta^Tx$ is called margin.  
 
-#### Loss Function for Binary Classification (Binary Cross Entropy)
+#### Loss Function for Binary Classification (Surrogate Loss)
 Choose some loss function so that
 for our training data, makes the margin $y^{(i)}\theta^Tx^{(i)}$
 very large for each training example.  
@@ -881,7 +887,8 @@ yield a $\theta$ for which $y^{(i)}\theta^Tx^{(i)} > 0$ for most (or even all!) 
  - hinge loss: $\varphi_{\text{hinge}}(z) = [1 - z]_+ = \max\{1 - z, 0\}$  
  - exponential loss: $\varphi_{\exp}(z) = e^{-z}$  
 
-#### Probabilistic intrepretation
+
+#### Probabilistic interpretation of BCE
 When hypothesis as,  
 $$
 h_\theta(x) = g(\theta^T x) = \frac{1}{1 + e^{-\theta^T x}},
@@ -894,6 +901,28 @@ And Choose $\theta$ that minimizes $J(\theta)$ which is logistic regression risk
 $$
 J(\theta) = \frac{1}{m} \sum_{i=1}^{m} \varphi_{\text{logistic}}(y^{(i)}\theta^T x^{(i)}) = \frac{1}{m} \sum_{i=1}^{m} \log \left( 1 + \exp(-y^{(i)}\theta^T x^{(i)}) \right).
 $$
+
+Note that, above formula is same as binary cross entropy with 1/0 labels.
+$$
+\log \sigma\!\left(y \theta^T x\right)
+=
+\begin{cases}
+\log \sigma(\theta^T x) & \text{if } y = 1 \\
+\log \bigl(1 - \sigma(\theta^T x)\bigr) & \text{if } y = -1
+\end{cases}
+$$
+
+$$
+\ell(\theta)
+=
+- \sum_{i=1}^{m}
+\left[
+y^{(i)} \log \sigma(\theta^T x^{(i)})
++
+(1 - y^{(i)}) \log \bigl(1 - \sigma(\theta^T x^{(i)})\bigr)
+\right]
+$$
+
 The likelihood of the training data is,   
 $$
 L(\theta) = \prod_{i=1}^{m} p(Y = y^{(i)} \mid x^{(i)}; \theta) = \prod_{i=1}^{m} h_\theta(y^{(i)} x^{(i)})
