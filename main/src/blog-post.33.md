@@ -30,11 +30,17 @@ CPR은 Reach 1%를 올리는데 들어간 비용을 말한다.
 <b>CTR Click-Through Rate</b>  
 CTR은 일반적으로 말하는 '클릭율'로서 광고 노출 대비 광고를 클릭한 비율을 백분율로 환산한 수치를 말한다. CTR=100*(Click Impressions)
 
-### Sequential Model
+### Sequential Recommendation Models, SRM
 User의 과거 행동 순서(sequence)를 분석하여 관심사(user interests)를 포착하는 것을 목적으로 하는 모델. 사용자가 과거에 어떤 아이템을 클릭하거나 구매했는지 시간 순서대로 파악함으로써, 다음에 무엇을 선호할지 예측하고 클릭률(CTR)과 같은 비즈니스 지표를 극대화하는 데 사용합니다.
 
 ### Generative Recommendation Models, GRM
 사용자 행동 기록을 일련의 '토큰(token)' 시퀀스로 취급하여 언어 모델과 유사한 방식으로 다음 아이템을 예측하는 방식
+
+### SRM vs GRM
+SRM: 사용자의 과거 행동(상호작용) 기록에 담긴 순차적인 패턴을 모델링하여 미래의 상호작용을 정확하게 예측하는 '문제 설정(Problem setting)' 혹은 목표 그 자체를 의미함.
+GRM: 앞서 말한 SRM의 문제를 푸는 접근방식입니다. 기존의 전통적인 방법론(discriminative methods)들이 순차 추천을 풀기 위해 각 아이템을 단일 ID로 취급했던 것과 달리, 생성형 추천은 이 문제를 시퀀스-투-시퀀스(sequence-to-sequence) 문제로 재정의합니다. 즉, 추천할 아이템을 여러 개의 이산적인 토큰으로 분할(토큰화)한 뒤, 사용자의 과거 기록을 조건으로 삼아 다음 아이템의 토큰 시퀀스를 자기회귀적(autoregressively)으로 차례차례 생성해 내는 모델링 방식입니다.  
+
+요약하자면, 순차 추천이 "과거 행동을 바탕으로 다음 행동을 예측한다"는 풀고자 하는 문제라면, 생성형 추천은 그 문제를 "아이템을 토큰화하여 언어 모델처럼 순차적으로 생성해 낸다"는 방식으로 접근하는 최신 해결책
 
 ### Bayesian Personalized Ranking (BPR)
 Bayesian Personalized Ranking is a machine learning algorithm specifically designed for enhancing the recommendation process. It operates under a pairwise ranking framework where the goal is not just to predict the items a user might like but to rank them in the order of potential interest. Unlike traditional methods that might predict absolute ratings, BPR focuses on getting the order of recommendations right.
