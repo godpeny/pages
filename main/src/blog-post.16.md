@@ -355,6 +355,12 @@ References
 - https://arxiv.org/pdf/1701.06538
 - https://arxiv.org/pdf/2101.03961
 
+### MegaBlocks
+https://arxiv.org/pdf/2211.15841
+
+A light-weight library for mixture-of-experts (MoE) training. The core of the system is efficient "dropless-MoE" and standard MoE layers.
+
+
 ## Gated Attention (Qwen)
 Gated Attention에서는 Y가 일반적인 Attention의 결과물일 때 입력값 (주로 히든 임베딩) X를 학습 가능한 파라미터 $W_\theta$로 선형변환한 후 시그모이드를 통과한 값과 내적합니다.
 
@@ -374,3 +380,24 @@ $$ \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right
 $$ Y_{final} = O_{SDPA} \odot Gate $$
 
 이를 통해 쿼리(X)에 유의미한 정보가 없다면 게이트 값(시그모이드)이 0에 가깝게 닫히면서, 불필요한 노이즈 정보를 제거할 수 있도록 학습됩니다.
+
+## FlashAttention
+https://arxiv.org/pdf/2205.14135
+
+## Operator Fusion
+https://medium.com/@enerzai/optimium-%ED%83%90%EA%B5%AC-3-optimium%EC%9D%80-operator-fusion%EC%9D%84-%EC%8D%BC%EB%8B%A4-%ED%9A%A8%EA%B3%BC%EB%8A%94-%EA%B5%89%EC%9E%A5%ED%96%88%EB%8B%A4-e3792ed252e5
+
+## LLM 범용 최적화 기법 (General Optimization on LLM)
+대규모 언어 모델(LLM)을 효율적으로 서빙(추론)하기 위해 널리 쓰이는 표준 기술들입니다.
+
+### 반정밀도(Half-precision) 연산
+전통적인 인공지능은 매우 정밀한 32비트 소수점(FP32)을 사용하여 계산했습니다. 하지만 이를 16비트(FP16 또는 BF16)로 절반으로 줄여도 모델의 정확도는 거의 떨어지지 않습니다. 대신 GPU의 메모리 사용량이 절반으로 줄고 계산 속도는 2배 이상 빨라지는 엄청난 이점이 있습니다.
+
+### KV 캐싱 (KV Caching)
+트랜스포머가 단어나 토큰을 순차적으로 처리할 때, 이전 토큰들의 연산 결과물인 Key(K)와 Value(V) 벡터를 버리지 않고 메모리에 저장(캐싱)해 두는 기술입니다. 새로운 토큰을 처리할 때 과거의 값을 다시 계산할 필요 없이 캐시에서 꺼내 쓰기만 하면 되므로 응답 속도가 획기적으로 빨라집니다.
+
+### 다중 컨텍스트 및 다중 스트림 실행 (Multi-context and multi-stream execution)
+GPU라는 거대한 공장이 쉬는 시간 없이 돌아가게 만드는 기술입니다.
+
+- 다중 컨텍스트: 여러 사용자의 추천 요청(Context)을 한 번에 묶어서(배치 처리) GPU에 밀어 넣는 것입니다.
+- 다중 스트림: GPU 내에서 서로 의존성이 없는 독립적인 여러 연산 흐름(Stream)을 동시에 병렬로 실행하는 것입니다. 이를 통해 하드웨어의 활용률(Utilization)을 극한까지 끌어올립니다.
