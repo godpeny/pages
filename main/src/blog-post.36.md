@@ -68,3 +68,7 @@ https://arxiv.org/pdf/2411.11739
 - VQ: https://scispace.com/papers/vector-quantization-2q8u54zz2s
 - PQ: https://inria.hal.science/inria-00514462v2/document
 - RQ(RQ-VAE): https://arxiv.org/abs/2203.01941
+
+## TurboQuant
+https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/?utm_source=twitter&utm_medium=social&utm_campaign=social_post&utm_content=gr-acct
+https://arxiv.org/pdf/2504.19874
