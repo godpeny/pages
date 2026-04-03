@@ -46,6 +46,8 @@ Z-scores are the number of standard deviations a value is from the mean.
 - Quantiles: Binning the data into quantiles works well when the dataset does not conform to a known distribution. It means dividing the dataset into intervals that each contain equal numbers of examples, and assigning the quantile index to each example.
 
 ## K-Means Clustering
+See SubTopic "K-means Clustering" in Topic "EM Algorithm"
+
 ## Supervised Deep Neural Network for Clustering
 
 ## References

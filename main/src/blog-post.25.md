@@ -129,6 +129,76 @@ m_i^{(t+1)} = \frac{1}{|S_i^{(t)}|} \sum_{x_j \in S_i^{(t)}} x_j
 $$
 
 ### Is the k-means algorithm guaranteed to converge?
+
+### Time Complexity of K-means Clustering
+K-means algorithm scales as $O(nk)$, where $k$ is the number of clusters chosen by the user and $n$ is the number of all total data.
+
+### Manual Similarity Measure
+To apply k-means to feature data, you will need to define a measure of similarity that combines all the feature data into a single numeric value, called a manual similarity measure.  
+
+Let's consider about the shoe dataset example that had two numeric features, size and price. Then, you can combine them into a single number representing similarity. First scale the data so both features are comparable.
+
+- Size (s): Shoe size probably forms a Gaussian distribution. Confirm this. Then normalize the data.
+- Price (p): The data is probably a Poisson distribution. Confirm this. If you have enough data, convert the data to quantiles and scale to $[0,1]$.
+
+Next, combine the two features by calculating the root mean squared error (RMSE). This rough measure of similarity is given by $\sqrt{\frac{(s_i - s_j)^2+(p_i - p_j)^2}{2}}$.
+
+For a simple example, calculate similarity for two shoes with US sizes 8 and 11, and prices 120 and 150. Since we don't have enough data to understand the distribution, we'll scale the data without normalizing or using quantiles.
+1. Scale the size.	Assume a maximum possible shoe size of 20
+2. Divide 8 and 11 by the maximum size 20 to get 0.4 and 0.55.
+Scale the price.	Divide 120 and 150 by the maximum price 150 to get 0.8 and 1.
+3. Find the difference in size. $ 0.55 - 0.4 = 0.15$
+4. Find the difference in price. $ 1 - 0.8 = 0.2 $
+5. Calculate the RMSE. $\sqrt{\frac{(0.2)^2+(0.15)^2}{2}} = 0.17$
+
+Note that this similarity measure (RMSE) decreases when feature data is more similar. Make your similarity measure follow your intuition by subtracting it from 1.
+$$
+\text{Similarity} = 1 - 0.17 = 0.83
+$$
+
+### Evaluating results
+#### 1. Assess quality of clustering
+Cluster cardinality is the number of examples per cluster. Plot the cluster cardinality for all clusters and investigate clusters that are major outliers. 
+
+Cluster magnitude is the sum of distances from all examples in a cluster to the cluster's centroid. Plot cluster magnitude for all clusters and investigate outliers.
+
+You can also identify anomalous clusters by looking for ones where this relationship between cardinality and magnitude is very different than for other clusters
+
+#### 2. Reassess your similarity measure
+Make sure your similarity measure returns sensible results. A quick check is to identify pairs of examples known to be more or less similar. Calculate the similarity measure for each pair of examples, and compare your results to your knowledge.
+
+The performance of your similarity measure, whether manual or supervised, must be consistent across your dataset. If your similarity measure is inconsistent for some examples, those examples won't be clustered with similar examples.
+
+If you find examples with inaccurate similarity scores, then your similarity measure probably doesn't fully capture the feature data that distinguishes those examples. Experiment with your similarity measure until it returns more accurate and consistent results.
+
+#### 3.Find the optimal number of clusters
+Above a certain $k$, the reduction in loss becomes marginal with increasing $k$. Consider using the $k$ where the slope first has a drastic change, which is called the elbow method. 
+
+For the plot shown, the optimal $k$ is approximately $11$.
+<img src="images/blog25_k-means_optimum_clusters.png" alt="K-means optimum Clusters" width="300"/>  
+
+### Advantages and Disadvantages
+#### Advantages
+- Relatively simple to implement.
+- Scales to large data sets.
+- Always converges.
+- Allows warm-starting the positions of centroids.
+- Smoothly adapts to new examples.
+- Can be generalized to clusters of different shapes and sizes, such as elliptical clusters.
+
+#### Disadvantages
+- $k$ must be chosen manually.
+- Results depend on initial values: For low $k$, you can mitigate this dependence by running k-means several times with different initial values and picking the best result. As $k$ increases, you need k-means seeding to pick better initial centroids For a full discussion of k-means seeding(A Comparative Study of Efficient Initialization Methods for the K-Means Clustering Algorithm)
+- Difficulty clustering data of varying sizes and densities without generalization.
+- Difficulty clustering outliers.
+- Difficulty scaling with number of dimensions: As the number of dimensions in the data increases, a distance-based similarity measure converges to a constant value between any given examples. Reduce dimensionality either by using PCA on the feature data or by using spectral clustering to modify the clustering algorithm.
+
+You can avoid this diminishment in performance with spectral clustering, which adds pre-clustering steps to the algorithm. To perform spectral clustering:
+
+1. Reduce the dimensionality of feature data by using PCA.
+2. Project all data points into the lower-dimensional subspace.
+3. Cluster the data in this subspace using your chosen algorithm
+
 #### Distortion Function
 
 ## Density Estimation
