@@ -161,6 +161,17 @@ $$
 $$
 Where $ \|\mathbf {x} -\mathbf {x'} \|^{2}$ may be recognized as the squared Euclidean distance between the two feature vectors and $\sigma$ is a free parameter. 
 
+### Feature Selection
+추천 시스템에서 특성 선택의 주된 목표는 모델의 정확도는 최대한 유지하면서 사용하는 특성 하위 집합의 크기를 최소화하는 것입니다. 이를 최적화 문제로 정의하면, 전체 특성 집합을 E, 선택된 특성 하위 집합을 E_s 라고 할 때, E_s 만을 사용한 예측의 손실(Loss)과 전체 E를 사용한 예측의 손실 차이가 임의로 정의한 최대 허용 성능 저하폭인 δ보다 작도록 보장하면서 E_s 의 크기를 최소화하는 것입니다.
+
+이를 위해서는 개별 특성 필드(예: 성별, 연령 등)가 모델에 얼마나 기여하는지 정량적으로 측정할 수 있는 특성 중요도 지표(feature importance metric) I(e_i)를 먼저 수립하고 이 지표를 바탕으로 점수가 가장 높은 상위 K개(Top-K)의 특성 필드들만 골라내어 모델을 재학습시키는 데 활용하게 됩니다.
+
+결론적으로 성공적인 특성 선택은 이 특성의 중요도를 나타내는 함수 I를 어떻게 편향 없이 정확하게 추정할 것인가?" 라는 근본적인 과제를 해결하는 문제로 귀결됩니다.
+
+#### Feature Selection 필요성
+- 성능 저하: 특성에 포함된 노이즈 정보가 신경망의 표현력을 낭비하게 만들어 전체적인 모델 성능을 떨어뜨립니다.
+- 지연 시간 증가: 불필요하게 중복된 특성들은 계산 부담을 가중시켜 서비스 지연(Serving latency)을 초래합니다.
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
