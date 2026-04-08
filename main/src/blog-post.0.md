@@ -188,6 +188,23 @@ In statistics, a power law is a functional relationship between two quantities, 
 
 An example power-law graph that demonstrates ranking of popularity. To the right is the long tail, and to the left are the few that dominate (also known as the 80–20 rule).
 
+### Interpolation
+In the mathematical field of numerical analysis, interpolation is a type of estimation, a method of constructing (finding) new data points based on the range of a discrete set of known data points.
+이미 알고 있는 이산적인(discrete) 데이터 점들 사이에서 새로운 데이터 점을 추정하여 만들어내는 기법. 
+
+#### Continuous Interpolation
+이 개념을 차용하여 두 특성(원래 특성과 베이스라인 특성) 사이의 무한한 공간을 채우는 연속적인 보간 경로(continuous interpolation path)등 으로 그 의미를 확장하여 사용하기도 한다.
+
+### Mean value theorem
+In mathematics, the mean value theorem states, roughly, that for a given planar arc between two endpoints, there is at least one point at which the tangent(접선) to the arc is parallel to the secant (시작점과 끝점을 잇는 할선) through its endpoints. 즉, 곡선 위 어느 한 점에서, 그 점의 접선은 양 끝점을 잇는 직선과 평행하다.= 어딘가에서 순간 기울기와 전체 평균 기울기가 같다.
+
+#### The Mean Value Theorem for Integrals
+The Mean Value Theorem for Integrals states that a continuous function on a closed interval takes on its average value at the same point in that interval. The theorem guarantees that if $f(x)$
+is continuous, a point $c$ exists in an interval $[a,b]$ such that the value of the function at $c$ is equal to the average value of 
+$f(x)$ over $[a,b]$.
+어떤 경로에 대한 함수의 정적분(definite integral) 값이 '경로의 길이'와 '해당 경로를 따라 나타나는 함수의 평균값'을 곱한 것과 같다는 수학적 원리.
+이 정리의 가장 중요한 핵심은, 연속적인 경로가 주어졌을 때 해당 경로 상의 어딘가에는 전체 경로의 '평균 기울기(또는 평균 함수값)'와 정확히 일치하는 특정 지점 $c$가 반드시 존재한다는 것.
+ 
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
