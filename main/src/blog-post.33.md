@@ -30,6 +30,12 @@ CPR은 Reach 1%를 올리는데 들어간 비용을 말한다.
 <b>CTR Click-Through Rate</b>  
 CTR은 일반적으로 말하는 '클릭율'로서 광고 노출 대비 광고를 클릭한 비율을 백분율로 환산한 수치를 말한다. CTR=100*(Click Impressions)
 
+### PCOC(Predict Click Over Click): 실제 발생한 전체 클릭 수 대비 모델이 예측한 총 클릭 수의 비율
+CTR 예측 모델이 산출한 점수가 단순한 순위를 넘어 실제 클릭 확률과 얼마나 정확하게 일치하는지를 나타내는 모델의'절대적인 예측 정확도(absolute prediction accuracy)'를 측정하는 지표입니다.
+
+이상적인 PCOC 값은 1.0입니다. PCOC가 1.0에 가깝다는 것은 모델이 10%의 확률로 클릭될 것이라고 예측한 상품들이 실제로도 딱 10% 비율로 클릭되었다는 것을 의미합니다.
+만약 PCOC가 1.0을 크게 초과한다면, 모델이 변별력을 높이려는 과정에서 점수를 과도하게 올려 실제 클릭 확률보다 Over-estimation하고 있다는 뜻이 됩니다.
+
 ### Sequential Recommendation Models, SRM
 User의 과거 행동 순서(sequence)를 분석하여 관심사(user interests)를 포착하는 것을 목적으로 하는 모델. 사용자가 과거에 어떤 아이템을 클릭하거나 구매했는지 시간 순서대로 파악함으로써, 다음에 무엇을 선호할지 예측하고 클릭률(CTR)과 같은 비즈니스 지표를 극대화하는 데 사용합니다.
 
