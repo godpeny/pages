@@ -32,6 +32,28 @@ One example of static embedding is word2vec. The word2vec trains on a corpus of 
 
 Research suggests that these static embeddings, once trained, encode some degree of semantic information, particularly in relationships between words. That is, words that are used in similar contexts will be closer to each other in embedding space.
 
+## Training an embedding as part of a neural network
+You can create an embedding while training a neural network for your target task. This approach gets you an embedding well customized for your particular system, but may take longer than training the embedding separately.
+
+In general, you can create a hidden layer of size $d$ in your neural network that is designated as the embedding layer, where $d$ represents both the number of nodes in the hidden layer and the number of dimensions in the embedding space. This embedding layer can be combined with any other features and hidden layers.  
+
+As in any deep neural network, the parameters will be optimized during training to minimize loss on the nodes in the network's output layer. During training, the neural network model will learn the optimal weights for the nodes in the first hidden layer, which serves as the embedding layer.
+
+## Contextual embeddings
+One limitation of word2vec static embedding vectors is that words can mean different things in different contexts. However, with static embeddings, each word is represented by a single point in vector space, even though it may have a variety of meanings.
+
+Contextual embeddings were developed to address this limitation. Contextual embeddings allow a word to be represented by multiple embeddings that incorporate information about the surrounding words as well as the word itself. Orange would have a different embedding for every unique sentence containing the word in the dataset.
+
+Some methods for creating contextual embeddings, like ELMo, take the static embedding of an example, such as the word2vec vector for a word in a sentence, and transform it by a function that incorporates information about the words around it. This produces a contextual embedding.
+
+### Details on contextual embeddings
+For ELMo models specifically, the static embedding is aggregated with embeddings taken from other layers, which encode front-to-back and back-to-front readings of the sentence.  
+
+BERT models mask part of the sequence that the model takes as input.  
+
+Transformer models use a self-attention layer to weight the relevance of the other words in a sequence to each individual word. They also add the relevant column from a positional embedding matrix (see positional encoding) to each previously learned token embedding, element by element, to produce the input embedding that is fed into the rest of the model for inference. This input embedding, unique to each distinct textual sequence, is a contextual embedding.
+
+
 
 ## Reference
 https://developers.google.com/machine-learning/crash-course/embeddings/embedding-space
