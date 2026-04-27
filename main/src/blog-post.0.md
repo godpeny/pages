@@ -762,7 +762,7 @@ $$
 \displaystyle {\begin{aligned}\operatorname {GLU} (x,W,V,b,c)&=\sigma (xW+b)\odot (xV+c)\\\operatorname {Bilinear} (x,W,V,b,c)&=(xW+b)\odot (xV+c)\\\operatorname {ReGLU} (x,W,V,b,c)&=\max(0,xW+b)\odot (xV+c)\\\operatorname {GEGLU} (x,W,V,b,c)&=\operatorname {GELU} (xW+b)\odot (xV+c)\\\operatorname {SwiGLU} (x,W,V,b,c,\beta )&=\operatorname {Swish} _{\beta }(xW+b)\odot (xV+c)\end{aligned}}
 $$
 
-### Swish Function
+### Swish Function (Sigmoid Linear Unit - SiLU)
 The swish function is a family of mathematical function defined as follows.
 $$
 \displaystyle \operatorname {swish} _{\beta }(x)=x\operatorname {sigmoid} (\beta x)={\frac {x}{1+e^{-\beta x}}}
