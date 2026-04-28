@@ -56,6 +56,11 @@ $$
 - https://web3.arxiv.org/pdf/2511.23312
 
 ### Logistic Loss
+The log loss is only defined for two or more labels.(2개: sigmoid, 3개 이상: softmax)  
+$$
+\ell_{n=2} = -\left( y \log p + (1 - y)\log(1 - p) \right) \\
+\ell_{n>2} = -\sum_{i=1}^{K} y_i \log p_i
+$$
 
 ## Reference
 https://arxiv.org/pdf/2002.05709
