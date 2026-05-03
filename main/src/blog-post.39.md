@@ -1,6 +1,19 @@
-# Collective Operations
+# Hardware Optimization
+
+## Collective Operations
 https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html
 https://en.wikipedia.org/wiki/Collective_operation
 
 ## AllReduce
 https://medium.com/@niruthiha2000/allreduce-explained-the-key-to-efficient-distributed-training-2cbbcc871832
+
+## Gradient Checkpointing
+
+## FlashAttention-2
+
+## Mixed Precision
+bf16, fp16, ...
+
+## DeepSpeed
+## vLLM(PagedAttention)
+
