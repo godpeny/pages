@@ -1315,7 +1315,25 @@ GDPO는 GRPO와 비교했을 때 형식 보상과 정확도 보상 모두에서 
 - https://arxiv.org/pdf/1506.02438 (GAE)
 
 ## Direct Preference Optimization (DPO)
+전통적인 강화학습은 선호도를 평가하는 별도의 '보상 모델(Reward Model)'을 훈련시켜야 하는 번거로움이 있습니다. 하지만 DPO는 보상 모델을 없이 쌍으로 이루어진 선호도 데이터(선택된 아이템 vs 거부된 아이템)로부터 바로 모델을 학습하는 방식입니다.
+
+$$L_{DPO}(\pi_\theta; \pi_{ref}) = - \mathbb{E}_{(x_u, y_c, y_-) \sim D} \left[ \log \sigma \left( \beta \log \frac{\pi_\theta(y_c|x_u)}{\pi_{ref}(y_c|x_u)} - \beta \log \frac{\pi_\theta(y_-|x_u)}{\pi_{ref}(y_-|x_u)} \right) \right]$$
+
+- $x_u$:  사용자의 과거 기록 등 문맥이 담긴 입력 프롬프트입니다.
+- $y_c$: 사용자가 실제로 선택한 아이템입니다.
+- $y_-$: 사용자가 선택하지 않은 거부된 아이템입니다.
+- $\pi_{\theta}$ : 현재 우리가 훈련시키고 있는 '타겟 LLM'입니다.
+- $\pi_{\text{ref}}$: 훈련의 기준점이 되는 '참조 모델'(SFT만 완료된 고정된 LLM)입니다.
+- $\beta$: 참조 모델에서 얼마나 벗어날지를 조절하는 하이퍼파라미터입니다.
+- $\log \frac{\pi_\theta(y_c|x_u)}{\pi_{ref}(y_c|x_u)}$: 특정 아이템 $y$ 에 대해 현재 훈련 중인 모델($\pi_{\theta}$)이 기준 모델($\pi_{\text{ref}}$)보다 얼마나 더 높은 확률을 부여하는지를 나타냅니다. 값이 클수록 모델이 해당 아이템에 더 큰 보상 을 주고 있다는 뜻입니다.
+- $\sigma$: 두 아이템의 보상 차이를 0에서 1 사이의 확률값으로 변환합니다.
+
+즉, 손실을 최소화한다는 것은, 모델이 거부된 아이템(y_)에 대한 보상보다 선택된 아이템(y_c)에 대한 보상을 훨씬 더 크게 만들도록 훈련시킨다는 것을 의미합니다. 
+
+### Reference
 https://arxiv.org/pdf/2305.18290
+https://openreview.net/pdf?id=WYfDoB44xy
+
 
 ## Trajectory in RL
 A "trajectory" is the sequence of what has happened (in terms of state, action, reward) over a set of contiguous timestamps, from a single episode, or a single part of a continuous problem.
