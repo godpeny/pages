@@ -13,7 +13,31 @@ Self-supervised learning (SSL) is a paradigm in machine learning where a model i
 
 ## Loss
 ### Contrasive Loss
+Contrastive loss takes the output of the network for a positive example and calculates its distance to an example of the same class and contrasts that with the distance to negative examples. Said another way, the loss is low if positive samples are encoded to similar (closer) representations and negative examples are encoded to different (farther) representations.
+$$
+\ell_{i,j} = -\log \frac{\exp(\mathrm{sim}(z_i, z_j)/\tau)}{\sum_{k=1}^{2N} \mathbf{1}_{[k \ne i]} \exp(\mathrm{sim}(z_i, z_k)/\tau)}
+$$
+- 분자: positive pair의 similarity
+- 분모: 자기 자신을 제외한 모든 similarity (positive + negative)
+
+즉, $ - \log{\frac{p}{p+n}}$ 구조에서 $p,n$ 은 모두 지수함수 이기에 최소가 되려면 log 안이 1이 되어야 한다. 즉, 분자(p)가 커지거나 분모의 n이 작아지는 방향으로 학습되는 것이다.
+
 ### Triplet Loss
+The loss function is defined using triplets of training points of the form (A,P,N). In each triplet, A denotes a reference point of a particular identity, P(called a "positive point") denotes another point of the same identity in point A, and N (called a "negative point") denotes a point of an identity different from the identity in point A and P.
+
+Let $x$ be some point and let $f(x)$ be the embedding of $x$ in the finite-dimensional Euclidean space. We assemble $m$ triplets of points from the training dataset. The goal of training here is to ensure that, after learning, the following condition (called the "triplet constraint") is satisfied by all triplets $(A^{(i)},P^{(i)},N^{(i)})$ in the training data set.
+$$
+\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}+\alpha <\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}
+$$
+The variable $\alpha$ is a hyperparameter called the margin, and its value must be set manually. In the FaceNet system, its value was set as 0.2.
+
+Thus, the full form of the function to be minimized is the following.
+$$
+L=\sum _{i=1}^{m}\max {\Big (}\Vert f(A^{(i)})-f(P^{(i)})\Vert _{2}^{2}-\Vert f(A^{(i)})-f(N^{(i)})\Vert _{2}^{2}+\alpha ,0{\Big )}
+$$
+
+Triplet loss innovates by considering relative distances. Its goal is that the embedding of an anchor (query) point be closer to positive points than to negative points (also accounting for the margin). It does not try to further optimize the distances once this requirement is met. This is approximated by simultaneously considering two pairs (anchor-positive and anchor-negative), rather than each pair in isolation.
+
 ### InfoNCE Loss
 Contrastive Learning (CL) is an Self-Supervised Learning(SSL) paradigm where an encoder $f : X → Z$ learns to map observations x to latent vectors z.
 
