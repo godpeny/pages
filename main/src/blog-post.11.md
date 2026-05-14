@@ -228,3 +228,139 @@ samples = np.array(np.array_split(x[idx], K))
 ## Other Python Operators
 - ``**``: 	Exponentiation.
 - ``//``:	Floor division.
+
+## Pysaprk 
+### `f.col(name)`
+컬럼 객체 참조. 거의 모든 컬럼 연산의 시작점.
+```python
+f.col("kuid")                   # kuid 컬럼 참조
+f.col("kuid") == "click"        # 비교 (Column 객체 반환)
+```
+### `.cast(type)`
+컬럼의 데이터 타입 변환.
+```python
+f.col("ad_group_id").cast("long")    # string → long
+f.col("kuid").cast("string")
+```
+### `.alias(name)`
+컬럼에 이름 부여 (SQL의 `AS`). 필요한 이유: `cast` 후 이름을 안 주면 `CAST(... AS BIGINT)` 같은 더러운 이름이 됨.
+```python
+f.col("plusfriend_id").cast("long").alias("channel_id")
+# 결과 컬럼명: channel_id
+```
+### `.select(...)`
+"이 컬럼들만 남기고 새 DataFrame 생성". 나열 안 한 컬럼은 사라짐.
+```python
+df.select(
+    uk_col,                                 # Column 객체 (변환 포함)
+    "action",                               # 문자열 (변환 없이 그대로)
+    f.col("x").cast("long").alias("x"),     # Column 표현식
+)
+```
+### `.withColumn(name, expr)`
+"컬럼 하나를 추가하거나, 같은 이름이면 덮어쓰기". row 수는 그대로.
+```python
+df.withColumn("action_label", f.when(f.col("action") == "click", 1).otherwise(0))
+df.withColumn("sample_weight", ...)   # 같은 이름이면 덮어쓰기
+df.withColumn("has_imp", f.lit(1))    # 상수값으로 컬럼 추가
+```
+#### `.select` vs `.withColumn`
+|                  | row 수 | 다른 컬럼              |
+| ---------------- | ------ | ---------------------- |
+| `.select`        | 그대로 | **명시한 것만 남음**   |
+| `.withColumn`    | 그대로 | **다 유지** + 새 컬럼  |
+### `f.lit(value)`
+상수값을 Column으로 변환. `withColumn`에 상수 박을 때 필요.
+```python
+f.lit(1)        # 모든 row에 1
+f.lit("KAKAO")  # 모든 row에 "KAKAO"
+```
+### `f.when(cond, val).otherwise(val)`
+조건 분기.
+```python
+f.when(f.col("action") == "click", 1).otherwise(0)
+```
+중첩으로 3-way 분기도 가능:
+```python
+f.when(x < min, min).otherwise(
+    f.when(x > max, max).otherwise(x)
+)
+# CASE WHEN x<min THEN min WHEN x>max THEN max ELSE x END
+```
+### `.drop_duplicates()` / `.dropDuplicates()`
+완전히 동일한 row 제거. 지정 컬럼 기준도 가능.
+```python
+df.drop_duplicates()                    # 모든 컬럼 기준
+df.drop_duplicates(["kuid", "p_dt"])    # 두 컬럼 기준
+```
+### `.groupby(cols).agg(...)`
+"같은 키 묶고 그룹별로 집계". row 수가 줄어듦.
+```python
+df.groupby(["kuid", "creative_id"]).agg(
+    f.sum("action_label").alias("clicks"),
+    f.signum(f.sum("action_label")).alias("clicked"),
+)
+```
+`.groupby(...)` 단독은 의미 없음 → 반드시 `.agg(...)` 또는 `.count()` 등 집계 함수와 짝
+
+### 집계 함수들
+| 함수                       | 의미                              |
+| -------------------------- | --------------------------------- |
+| `f.sum("x")`               | 합계                              |
+| `f.count("x")`             | 개수                              |
+| `f.max("x")` / `f.min("x")`| 최댓값/최솟값                     |
+| `f.avg("x")`               | 평균                              |
+| `f.signum(x)`              | 부호 함수: 양수→1, 0→0, 음수→-1   |
+
+### `.join(other, on, how)`
+SQL의 `JOIN`.
+```python
+df_send.join(df_reaction, ["kuid", "creative_id"], "left")
+```
+
+- `on`: 조인 키 (리스트로 주면 양쪽 동일 컬럼명 매칭)
+- `how`: `"inner"`, `"left"`, `"right"`, `"outer"`, `"semi"`, `"anti"`
+
+**LEFT JOIN 결과**
+- 좌측 모든 row 유지
+- 우측에 매칭 없으면 → 우측 컬럼들이 **NULL**
+### `.fillna(value, subset=[...])`
+NULL을 채움.
+```python
+df.fillna(0, subset=["action_label", "has_imp"])
+# action_label, has_imp가 NULL이면 0으로 채움
+```
+### `.where(cond)` / `.filter(cond)`
+조건에 맞는 row만 남김 (둘은 동일).
+```python
+df.where(f.col("kuid").isNotNull())
+df.filter(f.col("p_dt") >= "2026-05-01")
+```
+자주 쓰는 Column 메서드:
+
+- `.isNull()` / `.isNotNull()`
+- `.isin([v1, v2])`
+- `.between(a, b)`
+- `==`, `!=`, `<`, `>`, `<=`, `>=`
+
+### `spark.sql(query)`
+문자열 SQL을 그대로 실행해서 DataFrame 반환.
+
+```python
+df = spark.sql(f"""
+    SELECT ... FROM {table}
+    WHERE p_dt BETWEEN '{start}' AND '{end}'
+""")
+```
+- f-string으로 변수 주입
+- 결과는 일반 DataFrame이라 이후 `.select`, `.withColumn` 등 체이닝 가능
+
+### `get_json_object(col, '$.path')` (Spark SQL 함수)
+JSON 문자열 컬럼에서 특정 경로 값 추출.
+
+```sql
+get_json_object(log_data, '$.rawMessage.user.kuid')
+```
+
+- `$` = JSON 루트
+- 결과는 **무조건 string**. 숫자가 필요하면 이후 `.cast("long")` 필요
