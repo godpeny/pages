@@ -773,6 +773,38 @@ The swish family was designed to smoothly interpolate between a linear function 
 
 <img src="images/blog0_swish_func.png" alt="Swish Function" width="200"/>   
 
+
+### Byte-pair encoding (BPE)
+The original BPE algorithm operates by iteratively replacing the most common contiguous sequences of characters in a target text with unused 'placeholder' bytes. The iteration ends when no sequences can be found, leaving the target text effectively compressed.
+
+For example,  Suppose the data to be encoded is `aaabdaaabac`. The byte pair `aa` occurs most often, so it will be replaced by a byte that is not used in the data, such as `Z`. Now there is the following data and replacement table.
+```
+ZabdZabac
+Z=aa
+```
+Then the process is repeated with byte pair `ab`, replacing it with `Y`.
+```
+ZYdZYac
+Y=ab
+Z=aa
+```
+The only literal byte pair left occurs only once, and the encoding might stop here. Alternatively, the process could continue with recursive byte-pair encoding, replacing `ZY` with `X`.
+```
+XdXac
+X=ZY
+Y=ab
+Z=aa
+```
+This data cannot be compressed further by byte-pair encoding because there are no pairs of bytes that occur more than once.
+
+### Modeified BPE in Language Model
+The original BPE algorithm is modified for use in language modeling, especially for large language models based on neural networks. Compared to the original BPE, the modified BPE does not aim to maximally compress text, but rather, to encode plaintext into "tokens", which are natural numbers.
+
+Suppose we are encoding the previous example of `aaabdaaabac`, with a specified vocabulary size of `6`. Then it would first be encoded as `0, 0, 0, 1, 2, 0, 0, 0, 1, 0, 3` with a vocabulary of `a=0, b=1, d=2, c=3`. Then it would proceed as before, and obtain `4, 5, 2, 4, 5, 0, 3` with a vocabulary of "a=0, b=1, d=2, c=3, aa=4, ab=5".
+
+So far this is essentially the same as before. However, if we only had specified a vocabulary size of `5`, then the process would stop at vocabulary `a=0, b=1, d=2, c=3, aa=4`, so that the example would be encoded as `4, 0, 1, 2, 4, 0, 1, 0, 3`.  
+Conversely, if we had specified a vocabulary size of `8`, then it would be encoded as `7, 6, 0, 3`, with a vocabulary of "a=0, b=1, d=2, c=3, aa=4, ab=5, aaab=6, aaabd=7". This is not maximally compressed, because modified BPE does not aim for maximum compression. Instead, it aims for an encoding that is efficient and practical for language model training.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
