@@ -103,6 +103,35 @@ the ReAct framework can allow LLMs to interact with external tools to retrieve a
 ![alt text](images/blog14_m_cot.png)
 traditional CoT focuses on the language modality. In contrast, Multimodal CoT incorporates text and vision into a two-stage framework. The first step involves rationale generation based on multimodal information. This is followed by the second phase, answer inference, which leverages the informative generated rationales.
 
+## CoT 용어
+### CoT (Chain of Thought)
+모델이 최종 답변을 내기 전 거치는 추론 과정. 모델 내부를 들여다볼 수 있는 "창문" 역할.
+### CoT 모니터링 (CoT Monitorability)
+CoT를 읽어서 모델의 misalignment(잘못된 의도, 부정행위 등)를 탐지하는 활동. CoT가 솔직해야만 작동함.
+### CoT 채점 (CoT Grading)
+강화학습 보상을 매길 때 채점자가 CoT 내용까지 입력으로 받아 점수에 반영하는 것. (OpenAI의 경우 정책상 금지)
+### CoT 압력 (CoT Pressure)
+학습 신호(보상/페널티)가 모델의 CoT를 특정 방향으로 변화시키도록 미는 힘. CoT 채점이 일어나면 자동으로 발생.
+### CoT 난독화 (CoT Obfuscation)
+모델이 페널티를 피하려고 CoT를 꾸며서 속내와 겉이 달라진 상태.
+- 숨기기(hiding): 진짜 의도를 CoT에서 빼버림
+- 위장하기(reframing): CoT를 그럴듯하게 정당화해서 적음
+- 스테가노그래피: 특정 단어를 다른 표현으로 인코딩 (극단적 케이스)
+### In-conflict 압력
+외부 행동 보상과 CoT 보상이 서로 반대 방향일 때의 압력. 가장 위험한 종류 (예: 속이는 행동은 보상받지만 속이려는 CoT는 페널티 → 행동은 유지하고 CoT만 숨기게 됨).
+### CoT 압력의 3대 요인
+- Magnitude(크기): 압력이 얼마나 센가
+- Coverage(커버리지): 압력이 얼마나 자주 작용하는가
+- Discoverability(발견 가능성): 모델이 보상받는 CoT 패턴을 실제로 찾아낼 수 있는가
+### Reward Hacking (보상 해킹)
+모델이 의도된 목표가 아니라 보상 신호 자체를 만족시키는 편법을 찾는 현상. CoT 난독화는 보상 해킹의 한 형태.
+### Open AI 투명성 리포트
+GPT-5.4 이전 일부 모델(GPT-5.4 Thinking, GPT-5.1~5.4 Instant, GPT-5.3/5.4 mini)에서 강화학습 시 모델의 답변만에 더해 모델의 CoT 컨텍스트가 채점 입력에 들어가는 경우가 발생했다. CoT가 채점에 포함되면 모델이 CoT는 보상을 위해 그럴듯하게 만들지만, 실제로는 바람직하지 않은 방식으로 목표를 달성하는 식으로 학습될 수 있다. 뿐만 아니라 CoT는 모델의 학습 방향이 올바른지 모니터링할 수 있는 창구인데, 이 모니터링 자체가 오염될 수 있는 위험이 있다. 
+
+OpenAI는 영향받은 모델들을 사후 분석한 결과 모니터링 가능성에 유의미한 저하는 발견되지 않았다. 별도로 의도적인 스트레스 테스트(CoT를 채점에 넣었을 때  얼마나 강하게 CoT를 잘못된 방향으로 미는가)도 진행했는데, 충분한 압력을 가해도 CoT를 의도한 방향으로 변형시키는 것이 생각보다 어려웠고, 이번 사고 수준의 제한적인 CoT 압력만으로는 모니터링이 오염되지 않는다는 경험적 근거를 얻었다. 다만 미래의 더 큰 모델이나 다른 학습 환경에서는 결과가 달라질 수 있으므로 CoT 채점은 계속 피해야 한다는 결론이다.
+
+- Reference: https://alignment.openai.com/accidental-cot-grading/
+
 ### Reflextion
 https://www.promptingguide.ai/techniques/reflexion
 https://promptengineering.org/reflexion-an-iterative-approach-to-llm-problem-solving/
