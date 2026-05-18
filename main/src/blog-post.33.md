@@ -408,6 +408,11 @@ $$
 On the other hand, items that appear very rarely may not be updated frequently during training. Consequently, if they are initialized with a large norm, the system may recommend rare items over more relevant items. To avoid this problem, be careful about embedding initialization, and use appropriate regularization.
 
 #### Content-based Filtering
+핵심 아이디어: "당신이 좋아한 것과 비슷한 속성을 가진 아이템을 추천한다."
+아이템 자체의 feature을 분석해서, 사용자가 과거에 좋아한 아이템과 유사한 아이템을 찾아냅니다. 사용자의 취향을 아이템 속성의 집합으로 모델링하는 방식이에요.
+
+작동 방식: 각 아이템을 특징 벡터로 표현 (예: 영화 → 장르, 감독, 배우, 키워드) -> 사용자가 좋아한 아이템들의 특징을 모아 사용자 프로파일 생성 ->새 아이템과 사용자 프로파일의 유사도(코사인 유사도 등)를 계산해서 추천
+
 Content-based filtering uses item features to recommend other items similar to what the user likes, based on their previous actions or explicit feedback. It uses item features to select and return items relevant to a user’s query. 
 
 In Content-based recommender systems(CBRSs), the model compares a user profile and item profile to predict user-item interaction and recommend items accordingly.
@@ -428,17 +433,72 @@ While content-based filtering struggles with new users, it nevertheless adeptly 
 
 Content-based filtering enables greater degree of transparency by providing interpretable features that explain recommendations. For example, a movie recommendation system may explain why a certain movie is recommended, such as genre or actor overlap with previously watched movies.  
 
+다른 사용자 데이터가 없어도 작동 (사용자 한 명의 이력만 있으면 됨)
+새 아이템(cold-start item)도 특징만 분석하면 바로 추천 가능
+추천 이유를 설명하기 쉬움 ("당신이 좋아한 SF 영화와 유사해서")
+
 <b> Disadvantages </b>  
 Feature limitation. Content-based recommendations are derived exclusively from the features used to describe items. A system’s item features may not be able to capture what a user likes however. In other words, since the feature representation of the items are hand-engineered to some extent, this technique requires a lot of domain knowledge. Therefore, the model can only be as good as the hand-engineered features.
 
 Because content-based filtering only recommends items based on a user’s previously evidenced interests, its recommendations are often similar to items a user liked in the past. So the model has limited ability to expand on the users' existing interests.
 
+특징 추출이 어려운 도메인에선 한계 (예: 음악의 미묘한 분위기, 예술작품의 감성)
+필터 버블 문제: 비슷한 것만 계속 추천되어 새로운 발견이 어려움
+새 사용자(cold-start user)에겐 여전히 약함 (선호 이력이 있어야 작동)
+
 #### Collaborative Filtering
+핵심 아이디어: "당신과 취향이 비슷한 사람들이 좋아한 것을 추천한다."
+아이템의 속성은 보지 않고, 오직 사용자-아이템 상호작용(평점, 클릭, 구매 등) 데이터만으로 추천합니다. "비슷한 사용자는 비슷한 것을 좋아한다"는 가정에 기반해요.
+두 가지 방향이 있습니다.
+
+- User-based CF (사용자 기반): 나와 평점 패턴이 비슷한 다른 사용자들을 찾는다. 그 사람들이 좋아한 아이템 중 내가 안 본 것을 추천
+- Item-based CF (아이템 기반): 내가 좋아한 아이템과 평점 패턴이 비슷한 아이템들을 찾는다. 그 아이템들을 추천
+
 Collaborative filtering is an information retrieval method that recommends items to users based on how other users with similar preferences and behavior have interacted with that item. It uses similarities between users and items simultaneously to provide recommendations.
 
 In practice, the embeddings can be learned automatically, which is the power of collaborative filtering models. Suppose the embedding vectors for the movies are fixed. Then, the model can learn an embedding vector for the users to best explain their preferences. Consequently, embeddings of users with similar preferences will be close together. Similarly, if the embeddings for the users are fixed, then we can learn movie embeddings to best explain the feedback matrix. As a result, embeddings of movies liked by similar users will be close in the embedding space.
 
+##### Advantages & Disadvantages
+<b> Advantages </b>  
+No domain knowledge necessary: We don't need domain knowledge because the embeddings are automatically learned.
+Serendipity(우연): The model can help users discover new interests. In isolation, the ML system may not know the user is interested in a given item, but the model might still recommend it because similar users are interested in that item.
+Great starting point
+
+아이템 특징을 정의할 필요 없음 (음악, 영화처럼 특징 추출이 어려운 영역에 강함)
+뜻밖의 발견(serendipity) 가능 — 내 평소 취향과 다른 장르도 추천될 수 있음
+도메인 지식 없이도 작동
+
+<b> Disadvantages </b>  
+Cannot handle fresh items(cold-start problem): The prediction of the model for a given (user, item) pair is the dot product of the corresponding embeddings. So, if an item is not seen during training, the system can't create an embedding for it and can't query the model with this item.
+
+Hard to include side features for query/item: Side features are any features beyond the query or item ID. For movie recommendations, the side features might include country or age. Including available side features improves the quality of the model. 
+
+Cold-start 문제: 새 사용자/새 아이템은 상호작용 데이터가 없어서 추천 불가
+희소성(sparsity) 문제: 대부분의 사용자는 극히 일부 아이템만 평가했기 때문에 매트릭스가 거의 비어 있음
+사용자/아이템이 많아질수록 계산 비용 폭증 (모든 쌍의 유사도 계산)
+
+
 ##### Matrix Factorization in Recommender Systems
+핵심 아이디어: 거대한 사용자-아이템 평점 행렬을 두 개의 작은 행렬의 곱으로 분해해서, 숨겨진 잠재 요인(latent factor)을 찾아낸다.
+Collaborative Filtering의 한 종류이지만, 워낙 중요하고 영향력이 커서 별도로 다루는 경우가 많아요. Netflix Prize(2006~2009) 대회에서 우승 기법으로 유명해졌습니다.
+```
+사용자 × 아이템 평점 행렬 R (대부분 비어 있음, 매우 큼)-> 이걸 두 행렬로 분해: R ≈ U × Vᵀ
+
+U: 사용자 × 잠재요인 행렬 (각 사용자를 k개의 잠재요인으로 표현)
+V: 아이템 × 잠재요인 행렬 (각 아이템을 k개의 잠재요인으로 표현)
+
+비어 있던 칸의 평점을 U와 V의 곱으로 예측
+```
+잠재 요인이 뭔지에 대한 직관
+예를 들어 영화 도메인에서 잠재요인 k=3이라면 학습 결과 이런 게 자동으로 발견될 수 있어요:
+
+요인 1: "액션 ↔ 드라마" 축
+요인 2: "가벼움 ↔ 진지함" 축
+요인 3: "대중적 ↔ 컬트적" 축
+
+각 사용자도, 각 영화도 이 3차원 공간의 한 점이 됩니다. 사용자 벡터와 영화 벡터의 내적이 클수록 그 사용자가 그 영화를 좋아할 확률이 큰 거죠.
+중요한 건 이 요인들이 사람이 미리 정의한 게 아니라 데이터에서 자동으로 학습된다는 점이에요. 그래서 Content-based처럼 "장르"라는 명시적 특징을 쓰지 않으면서도, 비슷한 효과를 더 정교하게 냅니다.
+
 <img src="images/blog33_matrix_factorization.svg" alt="Matrix Factorization" width="400"/>  
 
 Matrix factorization is a simple embedding model. Given the feedback matrix $A \in \mathbb{R}^{n \times m}$, where $m$ is the number of users and $n$ is the number of items. A user embedding matrix $U \in \mathbb{R}^{m \times d}$, where row $i$ is the embedding for user $i$. An item embedding matrix $V \in \mathbb{R}^{m \times d}$, where row $j$ is the embedding for item $j$. Each embeddings are learned such that the product $UV^{T}$ is a good approximation of the feedback matrix $A$.
