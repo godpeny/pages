@@ -123,24 +123,6 @@ https://arxiv.org/pdf/1608.04471
 ### Cold Start
 Cold start is a potential problem in automated data modelling. It concerns the issue that the system cannot draw any inferences for users or items about which it has not yet gathered sufficient information.
 
-### Calibration in Recommendation
-A classification algorithm is called calibrated if the predicted proportions of the various classes agree with the
-actual proportions of data points in the available data. Analogously(Similarly), the goal of calibrated recommendations is to reflect the various interests of a user in the recommended list, and with their appropriate proportions.  
-
-#### References 
-- Calibrated Recommendations: https://dl.acm.org/doi/pdf/10.1145/3240323.3240372
-- Lirank: https://arxiv.org/pdf/2402.06859
-- Deep Ensemble Shape Calibration: Multi-Field Post-hoc
-Calibration in Online Advertising: https://arxiv.org/pdf/2401.09507
-- Beyond Binary Preference: Leveraging Bayesian Approaches for Joint
-Optimization of Ranking and Calibration: https://dl.acm.org/doi/pdf/10.1145/3637528.3671577
-- A Self-boosted Framework for Calibrated Ranking: https://arxiv.org/pdf/2406.08010
-- Unconstrained Monotonic Calibration of Predictions in Deep Ranking
-Systems: https://dl.acm.org/doi/pdf/10.1145/3726302.3730105
-- Unconstrained Monotonic Neural Networks: https://proceedings.neurips.cc/paper_files/paper/2019/file/2a084e55c87b1ebcdaad1f62fdbbac8e-Paper.pdf
-
-
-
 ### Follow The Regularized Leader (FTRL)
 The FTRL (Follow the Regularized Leader) family of learning algorithms is a core set of learning methods used in online learning. As a type of FTL (Follow the Leader) algorithm, they select a weight function at each timestep that minimizes the loss of all previously observed data. To reduce computational complexity, implementations of the FTRL algorithm generally utilize a linearized loss function, while a regularizer ensures solution stability by limiting changes to the weight vector.  
 
