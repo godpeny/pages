@@ -123,6 +123,64 @@ https://arxiv.org/pdf/1608.04471
 ### Cold Start
 Cold start is a potential problem in automated data modelling. It concerns the issue that the system cannot draw any inferences for users or items about which it has not yet gathered sufficient information.
 
+#### Cold Start in Recommend System
+There are three cases of cold start.
+
+<b> New community </b>  
+This refers to the start-up of the recommender, when, although a catalogue of items might exist, almost no users are present and the lack of user interaction makes it very hard to provide reliable recommendations. This case presents the disadvantages of both the New user and the New item case, as all items and users are new. 
+
+<b> New item </b>  
+A new item is added to the system, it might have some content information but no interactions are present.
+
+<b> New user </b>  
+A new user registers and has not provided any interaction yet, therefore it is not possible to provide personalized recommendations.
+
+##### Mitigation strategies
+추천 시스템에서 cold start 문제는 사용자나 아이템에 대한 상호작용 데이터가 부족해서 발생한다. 이를 해결하기 위해 가장 많이 사용되는 방법은 하이브리드 추천 시스템(Hybrid Recommender)이다. 이는 협업 필터링(Collaborative Filtering)과 콘텐츠 기반 필터링(Content-based Filtering)을 함께 사용하는 방식이다. 일반적으로 기존 데이터가 충분한 warm item에는 협업 필터링을 적용하고, 새 아이템이나 데이터가 부족한 cold item에는 콘텐츠 기반 추천을 사용한다. 다만 콘텐츠 기반 추천은 아이템의 특성을 충분히 설명할 수 없는 경우 추천 품질이 낮아질 수 있다는 단점이 있다. 새 사용자에 대해서는 개인화 정보가 없기 때문에 전체 인기 아이템이나 지역·언어 기반 인기 아이템을 우선 추천하는 경우가 많다.
+
+<b> Profile Completion </b>
+
+Cold user 또는 cold item 문제를 해결하기 위한 대표적인 방법 중 하나는 가능한 빨리 선호 데이터를 수집하는 것이다. 이를 preference elicitation 전략이라고 부른다. 방법은 크게 두 가지로 나뉜다. 첫 번째는 사용자가 직접 정보를 입력하는 explicit 방식이고, 두 번째는 사용자의 행동을 관찰해 데이터를 수집하는 implicit 방식이다.
+
+대표적인 예로 MovieLens는 회원가입 과정에서 사용자가 영화 평점을 입력하도록 한다. 이렇게 하면 시스템은 초기 사용자 프로필을 빠르게 구축할 수 있다. 하지만 이 과정은 사용자에게 추가적인 부담을 주며, 사용자가 오래전에 본 영화를 기억에 의존해 평가하거나 귀찮아서 대충 입력할 가능성이 있다는 문제가 있다.
+
+또 다른 방법은 외부 활동 데이터를 활용하는 것이다. 예를 들어 사용자가 특정 음악가 관련 콘텐츠를 자주 읽는다면, 추천 시스템은 이를 바탕으로 해당 아티스트의 음악을 추천할 수 있다. 즉, 추천 시스템 외부의 행동 데이터를 초기 프로필 생성에 활용하는 방식이다.
+
+새 아이템의 경우에는 비슷한 아이템에 대한 커뮤니티 평가를 기반으로 초기 평점을 자동 부여할 수도 있다. 아이템 간의 유사성은 장르, 배우, 감독 등의 콘텐츠 특성으로 계산된다.
+
+최근에는 사용자의 성격(Personality)을 활용하는 방법도 연구되고 있다. Five Factor Model(FFM) 같은 성격 모델을 기반으로 초기 사용자 프로필을 생성하고 이를 통해 개인화 추천을 수행한다.
+
+또 하나의 중요한 접근법은 Active Learning이다. 이는 추천 정확도를 가장 크게 향상시킬 수 있는 질문만 사용자에게 선택적으로 제시하는 방법이다. 예를 들어 이미 취향이 명확한 영화 대신 사용자의 선호 경계에 있는 영화를 질문함으로써 적은 수의 질문만으로도 효율적으로 사용자 취향을 학습할 수 있다.
+
+마지막으로 interface agent 기반 시스템에서는 여러 사용자의 agent가 서로 학습 결과를 공유하는 collaborative agent 방식도 사용된다. 이를 통해 새로운 상황에서도 다른 agent의 경험을 활용해 더 빠르게 적응할 수 있다.
+
+<b> Feature Mapping </b>
+
+최근에는 머신러닝 기반의 고급 방법들이 많이 사용된다. 이들은 콘텐츠 정보와 협업 정보를 하나의 모델 안에서 통합하려고 한다. 대표적인 방법이 attribute-to-feature mapping이다.
+
+Matrix Factorization 기반 추천 시스템에서는 사용자와 아이템을 latent factor라는 잠재 벡터로 표현한다. 하지만 새 아이템은 사용자 상호작용 데이터가 없기 때문에 latent factor를 학습할 수 없다. 이를 해결하기 위해 아이템의 메타데이터(예: 감독, 배우, 장르, 출판사 등)를 입력으로 받아 latent factor를 예측하는 embedding function을 학습한다.
+
+즉, 콘텐츠 특성을 이용해 협업 필터링 모델에서 필요한 latent representation을 생성하는 것이다. 이 embedding function은 기존 warm item 데이터를 사용해 학습된다.
+
+또 다른 방식은 group-specific method이다. 이 방법에서는 latent factor를 개별 아이템 요소와 그룹 공통 요소로 분리한다. 예를 들어 새 영화가 들어오더라도 “SF 영화”라는 그룹 특성을 공유할 수 있기 때문에 최소한 그룹 수준의 latent factor는 즉시 사용할 수 있다. 사용자도 마찬가지로 나이, 성별, 국적 등의 정보를 이용해 초기 latent factor를 추정할 수 있다.
+
+<b> Hybrid Feature Weighting </b>  
+
+Hybrid feature weighting은 콘텐츠 기반 추천에서 feature마다 서로 다른 중요도를 학습하는 방법이다. 추천 시스템은 모든 feature를 동일하게 취급하지 않는다.
+
+예를 들어 James Bond 영화 시리즈에서는 주연 배우는 자주 바뀌지만 Lois Maxwell 같은 배우는 오랫동안 등장했다. 따라서 추천 시스템 입장에서는 메인 배우보다 Lois Maxwell의 존재가 James Bond 스타일을 더 잘 설명하는 feature가 될 수 있다.
+
+기존에는 tf-idf나 BM25 같은 정보검색(IR) 기반 weighting 기법이 사용되었다. 하지만 최근에는 추천 시스템에 특화된 feature weighting 기법들이 개발되었다. 일부 방법은 사용자의 interaction 데이터를 직접 활용해 feature importance를 학습하고, 또 다른 방법은 collaborative filtering 모델을 근사하도록 feature weight를 학습한다.
+
+많은 hybrid 방법은 Factorization Machine(FM)의 특수한 형태로 볼 수 있다. FM은 sparse feature interaction을 잘 학습하기 때문에 cold start 문제에 강한 특징을 가진다.
+
+<b> Differentiating Regularization Weights</b>  
+
+최근에는 regularization 강도를 사용자나 아이템별로 다르게 적용하는 방법도 제안되었다. 핵심 아이디어는 정보가 부족한 user/item에는 더 강한 regularization을 적용하고, 충분한 데이터를 가진 인기 아이템이나 활동적인 사용자에는 더 약한 regularization을 적용하는 것이다.
+
+이는 데이터가 부족한 경우 모델이 과적합(overfitting)되는 것을 방지하기 위함이다. 실제로 다양한 추천 모델에서 이 전략이 성능 향상에 도움이 되는 것으로 알려져 있으며, 다른 cold start 해결 전략들과 함께 결합해서 사용할 수도 있다.
+
+
 ### Follow The Regularized Leader (FTRL)
 The FTRL (Follow the Regularized Leader) family of learning algorithms is a core set of learning methods used in online learning. As a type of FTL (Follow the Leader) algorithm, they select a weight function at each timestep that minimizes the loss of all previously observed data. To reduce computational complexity, implementations of the FTRL algorithm generally utilize a linearized loss function, while a regularizer ensures solution stability by limiting changes to the weight vector.  
 
