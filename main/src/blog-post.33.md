@@ -758,3 +758,20 @@ NCCG = DCG/IDCG
 
 ### Reference
 https://lsjsj92.tistory.com/663
+
+## Deep & Cross Network (DCN)
+크로스 네트워크 (입력 초기값을 출력벡터와 계속 교차 + 이전 입력 잔차 더함)의 출력과 딥 네트워크 (일반적인 뉴럴네트워크)의 출력물을 concate 한 뒤 가중치를 곱하고 시그모이드를 통과 시켜서 확률을 얻는 구조.  
+
+1. Cross Network
+매 레이어마다 초기 입력값($x_0$)과 현재 레이어의 출력($x_l$)을 교차(cross)시키고, 여기에 이전 레이어의 입력값($x_l$)을 잔차(residual) 형태로 더해주는 구조입니다. 
+$$x_{l+1} = x_0 x_l^T w_l + b_l + x_l$$
+
+2. Deep Network
+크로스 네트워크와 병렬로 작동하며, 일반적인 다층 퍼셉트론(MLP)처럼 활성화 함수(ReLU)를 거쳐 복잡한 비선형적 상호작용을 학습하는 일반적인 전방향 뉴럴 네트워크입니다.
+$$h_{l+1} = ReLU(W_l h_l + b_l)$$
+
+3. Combination Layer및 확률 도출**:
+크로스 네트워크의 최종 출력($x_{L_1}$)과 딥 네트워크의 최종 출력($h_{L_2}$)을 하나의 벡터로 이어 붙입니다(concatenate). 그 후, 이 결합된 벡터에 최종 선형 가중치($w_{logits}$)를 곱한 뒤 시그모이드(Sigmoid, $\sigma$) 함수를 통과시켜 최종 예측 확률($p$)을 얻게 됩니다.
+$$p = \sigma( [x_{L_1}^T, h_{L_2}^T] w_{logits} )$$
+
+### DCN v2
