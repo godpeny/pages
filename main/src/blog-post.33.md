@@ -239,8 +239,27 @@ https://arxiv.org/abs/1904.06690
 ## Models
 CTR prediction Models
 https://medium.com/@lonslonz/추천-모델-개발-2-딥러닝-모델-29dbf704715
+
 ### Wide and Deep Model
-https://arxiv.org/pdf/1606.07792
+Wide & Deep 네트워크는 추천 시스템에서 과거 데이터의 구체적인 패턴을 기억하는 Memorizatio 과 새로운 조합을 유추하는 Generalization 의 장점을 하나의 모델로 통합한 아키텍처입니다. 
+
+#### Wide 컴포넌트(Memorization)
+특정 특징(Feature)들이 함께 등장하는 빈도나 상관관계를 직관적으로 학습하여 강력하게 기억(암기)하는 역할을 합니다.주로 일반화 선형 모델(Generalized Linear Model) 형태로 구성됩니다.
+BPE 알고리즘을 통해 자주 함께 등장하는 토큰들을 묶어 만든 암기력 토큰(mem-tokens)을 네트워크의 입력으로 사용하여, 빈번하게 노출되는 아이템이 가진 세밀한 조합 지식을 보존합니다.
+
+#### Deep 컴포넌트 (Generalization)
+데이터의 이면적인 맥락을 추상화하여, 과거 훈련 데이터에 거의 없었거나 완전히 새로운 특징 조합에 대해서도 유연하고 다양하게 대처할 수 있도록 돕습니다. 다층 피드포워드 신경망(Feed-forward Neural Network)으로 구성됩니다.  
+희소하고 차원이 높은 범주형 특징들을 저차원의 밀집 임베딩(dense embedding) 벡터로 변환한 뒤, 여러 층의 은닉층(Hidden layers, 예: ReLU)을 통과시키며 특징들 간의 복잡한 상호작용을 학습합니다. 이때 훈련 데이터에만 과도하게 맞춰지는 과적합을 방지하기 위해 랜덤 드롭아웃(random dropout)을 적용하면서 깊은 수준의 학습을 수행합니다.
+
+#### Joint Training
+Wide와 Deep은 단순히 따로 학습된 후 마지막에 결과만 합치는 앙상블(Ensemble) 방식이 아닙니다. 두 네트워크는 훈련 과정에서부터 하나의 Loss function를 이ㅇㅐ 파라미터들을 동시에 최적화하는 Joint Training을 거칩니다.  
+Wide 측면과 Deep 측면을 각각 통과하며 만들어진 두 가지 성격의 임베딩을 하나로 결합하여, 랭킹 모델의 최종 입력값인 **'하이브리드 토큰(hybrid tokens)'**을 완성하는 구조로 활용됩니다.
+
+결과적으로 이 네트워크 구조는 Deep 컴포넌트만 사용할 경우 데이터가 희소할 때 발생할 수 있는 '과도한 일반화(over-generalize)' 문제를 Wide 컴포넌트의 명시적인 암기력으로 완벽하게 보완하며 시스템의 전반적인 성능을 극대화합니다.
+
+#### References
+- https://arxiv.org/pdf/1606.07792
+- https://arxiv.org/pdf/2601.22694 
 
 ### Deep and Cross Model
 https://arxiv.org/abs/1708.05123
