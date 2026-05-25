@@ -261,3 +261,6 @@ $$
 \mathrm {H} {(T|a)} = 0
 $$
 It is because no uncertainty remains once you know $a$. So the information gain equals the total entropy of the target.
+
+## Information bottleneck method
+https://en.wikipedia.org/wiki/Information_bottleneck_method

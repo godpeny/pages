@@ -549,3 +549,6 @@ https://arxiv.org/abs/1609.03499
 
 ## BERT
 https://arxiv.org/pdf/1810.04805
+
+## Hyperbolic Embedding
+https://arxiv.org/pdf/1804.03329

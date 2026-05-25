@@ -526,3 +526,6 @@ $$
 
 (*concordant: 부합하는)  
 Intuitively, the Kendall correlation between two variables will be high when observations have a similar or identical rank.
+
+## Optimal Transport
+https://ddangchani.github.io/Optimal-Transport/
