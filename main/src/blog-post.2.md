@@ -262,5 +262,13 @@ $$
 $$
 It is because no uncertainty remains once you know $a$. So the information gain equals the total entropy of the target.
 
-## Information bottleneck method
-https://en.wikipedia.org/wiki/Information_bottleneck_method
+## Information Bottleneck Method
+Information Bottleneck Method 는 주어진 데이터에서 불필요한 정보는 버리고 중요한 정보만 남기는 '압축'과 '정확성' 사이의 최적의 균형을 찾는 것을 목표로 합니다. 즉, 압축과 정확성의 트레이드오프로 어떤 확률 변수 $X$ (입력 데이터)와 우리가 관찰하고자 하는 관련 변수 $Y$(타겟/출력 데이터)가 결합 확률 분포 $p(X,Y)$ 로 주어졌을 때, $X$를 압축하여 새로운 표현인 $T$를 만듭니다. 이때 데이터 $X$를 무작정 압축하면 정보가 손실되어 $Y$를 예측하는 데 필요한 정확도가 떨어지게 됩니다. 반대로 정확도를 높이려면 데이터를 덜 압축해야 하므로 복잡성이 증가합니다. 정보 병목 방법은 이 둘 사이의 최적의 균형점(Trade-off)을 찾는 수학적 프레임워크입니다.  
+
+입력 데이터(X)의 원본 정보는 최대한 버리면서도($I(X;T)$ 최소화), 타겟 변수(Y)를 예측하는 데 필요한 핵심 정보는 최대한 보존하는($I(T;Y)$ 최대화)" 최적의 압축 모델 $p(t|x)$를 찾는 과정을 수식으로 나타내면 아래와 같습니다. 
+$$\inf_{p(t|x)} (I(X;T) - \beta I(T;Y))$$
+- $I(X;T)$: 입력 데이터 $X$ 와 압축된 표현 $T$ 사이의 Mutual Information 입니다. 이 값이 클수록 $T$가 $X$의 정보를 많이 가지고 있다는 뜻이며, 데이터를 덜 압축했다는 의미(높은 복잡도)가 됩니다.
+- $I(T;Y)$: 압축된 표현 $T$와 타겟 변수 $Y$ 사이의 상호 정보입니다. 이 값이 클수록 압축된 데이터 $T$가 $Y$에 대한 핵심 정보를 많이 담고 있어 예측 정확도가 높다는 뜻입니다. 수식에서는 앞에 마이너스가 붙어 있으므로, 전체 수식을 최소화하려면 이 항목은 최소화 되어야 합니다.
+- $\beta$: 두 목표 사이의 가중치를 조절하는 Lagrange multiplier 입니다. $\beta$ 값을 조절함으로써, 데이터를 더 강하게 압축할지(복잡성 최소화) 아니면 Y를 예측하기 위한 정보를 더 많이 남길지(정확도 최대화)를 결정하게 됩니다.
+
+Reference: https://en.wikipedia.org/wiki/Information_bottleneck_method
