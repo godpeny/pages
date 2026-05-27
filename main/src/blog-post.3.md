@@ -550,5 +550,16 @@ https://arxiv.org/abs/1609.03499
 ## BERT
 https://arxiv.org/pdf/1810.04805
 
-## Hyperbolic Embedding
+
+## Euclidean Embedding
+A Euclidean embedding represents data points as vectors in an $n$-dimensional geometric space where relationships are defined by straight-line (Euclidean) distances. It maps complex information into a continuous, flat coordinate system so that similarities correspond to spatial proximity.
+https://dl.acm.org/doi/epdf/10.1145/1864708.1864728
+
+## Non-Euclidean Embedding
+https://medium.com/explorations-in-language-and-learning/beyond-euclidean-embeddings-c125bbd07398
+### Hyperbolic Embedding
+Representation Learning을 쌍곡면 공간, 즉 Hyperbolic space에서 임베딩을 하고 이를 바탕으로 학습하는 방식으로 low-dimension에서 기존의 Euclidean 기반 Embedding기법에 비해서 좋은 성능을 보인다고 합니다.
+https://papers.nips.cc/paper/2017/file/59dfa2df42d9e3d41f5b02bfc32229dd-Paper.pdf
 https://arxiv.org/pdf/1804.03329
+https://arxiv.org/pdf/1806.03417
+https://chumji.tistory.com/3
