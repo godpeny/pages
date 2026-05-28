@@ -841,3 +841,6 @@ $$E_i(x_l) = x_0 \odot \left( U_l^i \cdot g(C_l^i \cdot g(V_l^{iT} x_l)) + b_l \
 참고로 1번 수식이 DCNv2의 가장 기본이 되는 표준 원형(Standard Cross Layer)이며, 2, 3, 4번 수식은 실제 대규모 산업 환경의 자원 제약이나 성능 극대화 요구에 맞춰 고안된 상황별 변형(variation) 구조입니다.
 
 최종적으로는 이 결합된 벡터에 선형 가중치를 곱하고 시그모이드(Sigmoid) 함수를 통과시켜 예측 확률을 도출하게 됩니다.
+
+## NVIDIA Triton Inference Server
+https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/index.html
