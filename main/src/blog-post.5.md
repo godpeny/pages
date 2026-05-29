@@ -528,4 +528,27 @@ $$
 Intuitively, the Kendall correlation between two variables will be high when observations have a similar or identical rank.
 
 ## Optimal Transport
+### Background
+A fundamental problem in statistics and machine learning is to come up with useful measures of “distance” between pairs of probability distributions. Two desirable properties of a distance function are symmetry and the triangle inequality. Unfortunately, many notions of “distance” between probability distributions do not satisfy these properties. These weaker notions of distance are often called divergences. Perhaps the most well-known divergence is the Kullback-Lieibler (KL) divergence.
+$$
+D_{KL}(P \| Q) = \int p(x) \log \left ( \frac{p(x)}{q(x)} \right ) \mathrm{d}x
+$$
+While the KL divergence is incredibly useful and fundamental in information theory, it also has its shortcomings. For instance, one of the first things we learn about the KL divergence is that it is not symmetric. 
+$$
+D_{KL}(P \| Q) \neq D_{KL}(Q \| P)
+$$
+This is arguably not a huge problem, since various symmetrized analogues to the KL divergence exist. A bigger problem is that the divergence may be infinite.
+<img src="images/blog5_infinite_kl_divergence.png" alt="Infinite KL Divergence" width="400"/>    
+Above picture shows three examples with infinite KL divergence. These density functions are infinitely far apart according to KL divergence, since in each case there exist intervals of 
+$x$ where $p(x) >0, q(x) =0$, leading to division by zero.  
+Intuitively, some of these distribution pairs seem “closer” to each other than others. But the KL divergence says that they are all infinitely far apart. One way of circumventing this is to smooth (i.e. add blur to) the distributions before computing the KL divergence,however, choosing the bandwidth parameter of the smoothing kernel is not always straightforward.
+
+### Abstract
+Optimal transport theory is one way to construct an alternative notion of distance between probability distributions. In particular, we will encounter the Wasserstein distance(a distance function defined between probability distributions on a given metric space), which is also known as “Earth Mover’s Distance” for reasons which will become apparent. This distance is not only symmetric, but also satisfies the triangle inequality.
+
+### Monge and Kantorovich formulations
+### References
 https://ddangchani.github.io/Optimal-Transport/
+https://alexhwilliams.info/itsneuronalblog/2020/10/09/optimal-transport/
+https://en.wikipedia.org/wiki/Transportation_theory_(mathematics)
+
