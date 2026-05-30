@@ -36,6 +36,27 @@ Autoencoders are trained end-to-end by having the decoder attempt to reconstruct
 - If the input data is a graphic, the non-exact copy would be similar to the original graphic, but somewhat modified. Perhaps the non-exact copy removes noise from the original graphic or fills in some missing pixels.
 - If the input data is text, an autoencoder would generate new text that mimics (but is not identical to) the original text.
 
+### Sparse Auto-Encoders(SAE)
+#### Introduction
+희소 오토인코더는 거대 언어모델 (LLM)이 데이터를 학습해서 만들어내는 표현 (Representation)을 이해할 수 있게 도와주는 도구로 널리 알려져 있는데요. 직접 사람이 손으로 뽑아낸 특징을 사용하는 지도 학습은, 시간도 많이 소요될 뿐 아니라 새로운 문제가 닥쳤을 때 적용이 힘들죠. 반면에, 비지도 신경망의 하나인 희소 오토인코더는 데이터로부터 의미있는 특징들을 자동적으로 뽑아내도록 학습을 합니다.
+
+일반적인 오토인코더와는 조금 다르게, 희소 오토인코더는 입력이 들어왔을 때 ‘소수의 뉴런만이 활성화’되도록 해서, 가장 중요한 패턴을 더 부각시키도록 해 줍니다. 그래서 희소 오토인코더는 ‘Feature Extraction (특징 추출)’, ‘Dimension Reduction (차원 축소)’, ‘Pretraining Deep Networks (심층 네트워크의 사전 훈련)’ 등에 광범위하게 사용되고 있습니다.
+
+#### Algorithm
+기존 임베딩을 더 많은 차원의 임베딩으로 보낸뒤 다시 원래 차원의 임베딩으로 복원 하되, 이때 최대한 많은 0을 써서 원래 임베딩을 복원하도록 제약을 걸어서 중요한 피쳐만 남기는 것입니다.
+https://web.stanford.edu/class/cs294a/sparseAutoencoder.pdf
+https://turingpost.co.kr/p/sparse-autoencoder-12
+
+### Auto-Encoder vs SAE
+| 구분 | 일반 오토인코더 (Autoencoder) | 희소 오토인코더 (Sparse Autoencoder) |
+| :--- | :--- | :--- |
+| **핵심 목적** | 차원 축소 및 본질적 특징 압축 | 더 고차원적이면서도 뚜렷한(해석 가능한) 특징 추출 |
+| **은닉층 크기** | 주로 입력층보다 작음 (Undercomplete) | 입력층보다 커도 상관없음 (Overcomplete 가능) |
+| **제약 조건** | 은닉층의 **뉴런 개수**를 제한하여 압축 | 뉴런 개수가 많아도 **동시 활성화율**을 제한 |
+| **손실 함수** | 복원 오차 (Reconstruction Error) | 복원 오차 + **희소성 패널티 (Sparsity Penalty)** |
+| **특징 결과물** | 밀집된 표현 (Dense Representation) | 희소한 표현 (Sparse Representation) |
+
+
 ### Variational autoencoder (VAE)
 A type of autoencoder that leverages the discrepancy between inputs and outputs to generate modified versions of the inputs. Variational autoencoders are useful for generative AI.
 
