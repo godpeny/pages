@@ -403,7 +403,21 @@ https://arxiv.org/abs/2508.20900
 https://arxiv.org/abs/2510.24431
 
 ### Matryoshka Representation Learning (MRL)
+As new state-of-the-art (text) embedding models started producing embeddings with increasingly higher output dimensions, i.e., every input text is represented using more values. Although this improves performance, it comes at the cost of efficiency of downstream tasks such as search or classification.
+
+Kusupati et al. (2022) were inspired to create embedding models whose embeddings could reasonably be shrunk without suffering too much on performance. Rather than performing your downstream task (e.g., nearest neighbor search) on the full embeddings, you can shrink the embeddings to a smaller size and very efficiently "shortlist" your embeddings. Afterwards, you can process the remaining embeddings using their full dimensionality.
+
+For Matryoshka Embedding models, a training step involves producing embeddings for your training batch, then you use some loss function to determine not just the quality of your full-size embeddings, but also the quality of your embeddings at various different dimensionalities. For example, output dimensionalities are 768, 512, 256, 128, and 64. The loss values for each dimensionality are added together, resulting in a final loss value. The optimizer will then try and adjust the model weights to lower this loss value.
+
+즉, MRL 방식으로 모델을 학습시키면, 전체 차원 중 앞부분의 $m$개 차원(예: 앞의 128개 또는 256개 숫자)만 뚝 잘라서 써도 그 자체로 의미가 통하는 훌륭한 저차원 임베딩 벡터가 됩니다. 학습할 때 임의로 차원을 정하는 것이 아니라, [40, 80, 160, 320, 640, 1280, 2560]처럼 로그 스케일 간격($2^n$배 형태)으로 목표 차원($m$)들을 설정합니다.그리고 인형 속에 인형이 계속 들어있는 것처럼, "40차원도 완벽해야 하고, 80차원도 완벽해야 하고, 최종 차원도 완벽해야 한다"는 목적 함수(Objective)를 중첩해서 모델을 훈련시킵니다.
+이 방식의 가장 큰 장점은 개발사가 모델을 딱 하나만 만들어서 출시(Ship)하면 된다는 것입니다. 사용자(Caller)는 각자의 서비스 환경에 따라 추론(Inference) 시점에 원하는 크기를 마음대로 골라 쓸 수 있습니다. 저장 공간과 연산 속도가 중요하다면 앞부분의 작은 차원(예: 160차원)만 잘라서 가볍고 빠르게 씁니다. 정확도가 최우선이라면 전체 차원(예: 2560차원)을 모두 활용합니다.
+
+#### Algorithm of MRL
 https://arxiv.org/abs/2205.13147
+https://huggingface.co/blog/matryoshka#%F0%9F%AA%86-matryoshka-embeddings
+
+#### Compared to Projection
+https://zeroentropy.dev/articles/matryoshka-is-dead/#what-we-shipped-instead-learned-projection-matrices
 
 
 ## Factorized Personalized MC(Markov Chains) Model
