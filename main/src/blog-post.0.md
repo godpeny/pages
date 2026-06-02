@@ -624,6 +624,14 @@ Suppose we are encoding the previous example of `aaabdaaabac`, with a specified 
 So far this is essentially the same as before. However, if we only had specified a vocabulary size of `5`, then the process would stop at vocabulary `a=0, b=1, d=2, c=3, aa=4`, so that the example would be encoded as `4, 0, 1, 2, 4, 0, 1, 0, 3`.  
 Conversely, if we had specified a vocabulary size of `8`, then it would be encoded as `7, 6, 0, 3`, with a vocabulary of "a=0, b=1, d=2, c=3, aa=4, ab=5, aaab=6, aaabd=7". This is not maximally compressed, because modified BPE does not aim for maximum compression. Instead, it aims for an encoding that is efficient and practical for language model training.
 
+### Cascade Model
+Cascading is a particular case of ensemble learning based on the concatenation of several classifiers, using all information collected from the output from a given classifier as additional information for the next classifier in the cascade. Simply speaking it is an approach where multiple models are chained together and the output of one model becomes the input to the next, forming a pipeline that prioritizes either step-by-step refinement or computational efficiency.
+
+#### Voting vs Stacking vs Cascade Model
+- Voting(투표): "이 이미지는 고양이인가요?"라고 물었을 때, 3개의 모델 중 2개가 고양이라고 하면 고양이로 최종 결정합니다(다수결).
+- Stacking(스태킹): 각 전문가들의 예측 결과를 다시 모아서, 최종 결정을 내리는 '마스터 분류기(Meta Classifier)'에게 보내 결론을 냅니다.
+- Cascade(Multi-Stage): 데이터가 들어오면 1단계 분류기만 먼저 작동합니다. 여기서 확실하게 결론(예: "이건 절대 우리가 찾는 객체가 아님")이 나면, 뒤에 있는 분류기들은 일할 필요도 없이 상황이 종료(Pass/Drop)됩니다. 1단계를 통과한 데이터만 2단계 분류기로 가고, 또 거길 통과하면 3단계로 가는 식으로 순차적(Multistage)으로 검증합니다. 앞 단계에서 노이즈를 빠르게 쳐내기 때문에, 뒷 단계의 무거운 모델들이 일할 분량이 대폭 줄어듭니다. 덕분에 속도가 빠릅니다.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
