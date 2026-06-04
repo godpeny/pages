@@ -8,6 +8,26 @@ https://en.wikipedia.org/wiki/Collective_operation
 https://medium.com/@niruthiha2000/allreduce-explained-the-key-to-efficient-distributed-training-2cbbcc871832
 
 ## Gradient Checkpointing
+### How neural networks use memory 
+인공신경망을 학습시킬 때 GPU 메모리를 차지하는 요소는 크게 정적 메모리(Static Memory)와 동적 메모리(Dynamic Memory) 두 가지로 나뉩니다.
+
+<b> 정적 메모리 (Static Memory) </b>  
+모델의 구조 자체와 모델 가중치(Weights/Parameters)가 차지하는 고정된 메모리입니다.  
+최신 딥러닝 모델들은 수백만에서 수천억 개의 매개변수를 가집니다. 예를 들어, 16GB 메모리를 가진 NVIDIA T4 GPU의 경우, 순수 모델 크기만으로 감당할 수 있는 실질적인 한계는 약 1억~1억 5천만 개의 매개변수 수준입니다. 이 메모리는 배치를 얼마나 크게 하든 고정되어 있습니다.  
+
+<b> 동적 메모리 (Dynamic Memory) </b>  
+순방향 연산(Forward Pass)을 진행할 때, 각 뉴런에서 계산되어 나오는 중간 결과값(활성화 함수 출력값, Activations)을 저장하는 메모리입니다.  
+이 활성화 값들을 버리지 않고 메모리에 보존하는 이유는 역방향 연산(Backward Pass) 때 가중치의 그래디언트(Gradient)를 계산하기 위해 반드시 필요하기 때문입니다.  
+중요한 점은 이 활성화 값들이 학습 데이터의 배치 사이즈(Batch Size)에 비례해서 늘어난다는 것입니다. 데이터가 많을수록 저장해야 할 중간 결과가 많아지므로, GPU가 뱉어내는 'OOM(Out of Memory, 메모리 부족 오류)'의 주된 원인이 됩니다.
+
+### How Gradient Checkpoints works
+모델이 커지고 데이터 배치 사이즈가 늘어나면 GPU 메모리가 버티지 못합니다. 이때 분산 학습(Distributed Training) 같은 복잡한 기술을 쓰지 않고, 단일 GPU 환경에서 메모리를 아낄 수 있는 기술이 바로  Gradient Checkpoints 입니다. 즉, 모든 레이어의 활성화 값을 메모리에 다 들고 있는 대신, 중간중간 중요한 길목(체크포인트)의 활성화 값만 메모리에 남겨두고 나머지는 삭제합니다.
+
+- 순방향 연산(Forward) 시: 모든 활성화 값을 저장하지 않고, 특정 레이어(체크포인트)의 입력값만 메모리에 기록(Memoization)해 둡니다. 이 덕분에 dynamic memory 사용량이 급격히 줄어듭니다.
+- 역방향 연산(Backward) 시: 그래디언트를 계산하려고 보니 중간 활성화 값이 삭제되어 없습니다. 이때 PyTorch는 체크포인트에 저장해 둔 입력값을 기반으로, 그 구간만 순방향 연산을 실시간으로 다시 수행(Recompute)하여 활성화 값을 번개처럼 복구합니다.
+- 결과: 계산이 끝나면 복구했던 활성화 값은 다시 버립니다.
+
+https://residentmario.github.io/pytorch-training-performance-guide/gradient-checkpoints.html
 
 ## FlashAttention-2
 https://arxiv.org/pdf/2307.08691
