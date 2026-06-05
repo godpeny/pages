@@ -137,6 +137,73 @@ x^{(i)}_0\,(a\,x^{(i)}_0 + b\,x^{(i)}_1)
 x^{(i)}_1\,(c\,x^{(i)}_0 + d\,x^{(i)}_1) 
 $$
 
+## '*' In Python
+### 1. 곱셈 및 거듭제곱 연산으로 사용할 때
+파이썬은 곱셈 뿐만 아니라 거듭제곱 연산까지 내장 기능으로 지원하고 있다.
+```python
+>>> 2 * 3
+6
+>>> 2 ** 3
+8
+>>> 1.414 * 1.414
+1.9993959999999997
+>>> 1.414 ** 1.414
+1.6320575353248798
+```
+### 2. 리스트형 컨테이너 타입의 데이터를 반복 확장하고자 할 때
+리스트형 컨테이너 타입에서 데이터를 반복적으로 확장하기 위해 사용할 수도 있다.
+
+```python
+# 길이 100의 제로값 리스트 초기화
+zeros_list = [0] * 100
+
+# 길이 100의 제로값 튜플 선언
+zeros_tuple = (0,) * 100
+
+# 리스트 3배 확장 후 연산
+vector_list = [[1, 2, 3]]
+for i, vector in enumerate(vector_list * 3):
+    print("{0} scalar product of vector: {1}".format((i + 1), [(i + 1) * e for e in vector]))
+# 1 scalar product of vector: [1, 2, 3]
+# 2 scalar product of vector: [2, 4, 6]
+# 3 scalar product of vector: [3, 6, 9]
+```
+
+### 3.가변인자 (Variadic Parameters)를 사용하고자 할 때
+positional arguments의 경우 생략이 불가능하며 갯수대로 정해진 위치에 인자를 전달해야한다. 그러나 keyword arguments의 경우 함수 선언시 디폴트값을 설정할 수 있으며, 만약 인자를 생략할 시 해당 디폴트값이 인자의 값으로 들어간다. 그런데, 여기서 한 가지 문제를 맞닥뜨릴 수 있다. argument로 선언한 수 이상의 인자를 사용하는게 바로 **가변인자 (Variadic Arguments)**이다. 가변인자는 좀 전에 위에서 설명한 positional arguments와 keyword arguments에 모두 사용할 수 있으며, 사용 방법은 다음과 같다.
+
+positional arguments만 받을 때
+```python
+def save_ranking(*args):
+    print(args)
+save_ranking('ming', 'alice', 'tom', 'wilson', 'roy')
+# ('ming', 'alice', 'tom', 'wilson', 'roy')
+```
+keyword arguments만 받을 때
+```python
+def save_ranking(**kwargs):
+    print(kwargs)
+save_ranking(first='ming', second='alice', fourth='wilson', third='tom', fifth='roy')
+# {'first': 'ming', 'second': 'alice', 'fourth': 'wilson', 'third': 'tom', 'fifth': 'roy'}
+```
+```python
+positional arguments와 keyword arguments를 모두 받을 때
+def save_ranking(*args, **kwargs):
+    print(args)
+    print(kwargs)
+save_ranking('ming', 'alice', 'tom', fourth='wilson', fifth='roy')
+# ('ming', 'alice', 'tom')
+# {'fourth': 'wilson', 'fifth': 'roy'}
+```
+
+위에서 ``*args``는 임의의 갯수의 positional arguments를 받음을 의미하며, ``**kwargs``는 임의의 갯수의 keyword arguments를 받음을 의미한다. 이 때 ``*args, **kwargs`` 형태로 가변인자를 받는걸 packing이라고 한다.
+
+위의 예시에서 볼 수 있듯이, 임의의 갯수와 임의의 키값을 갖는 인자들을 전달하고 있다. positional 형태로 전달되는 인자들은 args라는 tuple에 저장되며, keyword 형태로 전달되는 인자들은 kwargs라는 dict에 저장된다.
+
+keyword는 positional보다 앞에 선언할 수 없기 때문에 다음의 코드는 에러를 발생시킨다.
+```python
+def save_ranking(**kwargs, *args):
+```
 ## '|' In Python
 ### 1. Union
 when used with data structure such as dictionary or set, it performs a union operation and returns a set/dictionary containingitems from both initial data structures.
