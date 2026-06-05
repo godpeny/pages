@@ -44,6 +44,37 @@ Suppose that $A$ is an $m \times n$ matrix. Then $U$ is defined to be an $m \tim
 Each of these matrices is defined to have a special structure. The matrices $U$ and $V$ are both defined to be orthogonal matrices. The matrix $D$ is defined to be a diagonal matrix. Note that $D$ is not necessarily square.  
 The elements along the diagonal of $D$ are known as the singular values of the matrix $A$. The columns of $U$ are known as the "left-singular vectors". The columns of $V$ are known as as the "right-singular vectors".
 
+#### SVD and Singular Value
+SVD는 임의의 $m \times n$ 행렬 $M$을 다음과 같이 세 개의 특별한 행렬의 곱으로 분해하는 것을 말합니다.
+
+$$M = U \Sigma V^* \\ = (MV = U \Sigma)$$
+
+$V^*$ (Right-singular vectors의 켤레전치): 입력 공간을 회전(또는 반사)시킵니다. V의 컬럼 벡터는 행렬 $M$이 곱해지기 전, 입력 공간(원래 공간)에서 서로 직교하는 기준 축들입니다.  
+($V$가 실수(Real number)로만 이루어진 행렬일 때는 역행렬이 전치행렬($V^T$)과 같고, 복소수(Complex number)까지 포함된 행렬일 때는 역행렬이 켤레전치행렬($V^*$)과 같습니다. 따라서 위 수식이 성립합니다.)
+
+$\Sigma$ (Singular values, 특이값 행렬): 주축을 따라 크기를 늘리거나 줄입니다. (대각 행렬) 이 행렬의 대각성분은 벡터는 아니지만 둘을 연결하는 핵심인 특이값입니다. 원래 축 $v_i$가 결과 축 $u_i$ 방향으로 변환될 때 얼마나 인장(확대/축소)되었는지 그 크기(Scale)를 나타냅니다. 
+
+$U$ (Left-singular vectors): 변환된 공간을 최종적으로 다시 회전(또는 반사)시킵니다. U의 컬럼 벡터행렬 $M$이 곱해진 후, 출력 공간(변환된 공간)에서 서로 직교하는 결과 축들입니다.즉, 입력 공간의 특이 벡터 $v_i$가 행렬 $M$을 통과하여 최종적으로 도달한 결과물의 주축 방향을 나타냅니다.
+
+##### SVD의 의의 
+<b> 정보의 중요도 파악 (차원 축소) </b>  
+SVD를 하면 특이값($\sigma$)이 큰 순서대로 정렬할 수 있습니다. 특이값이 크다는 것은 그 축으로 데이터가 아주 길게 늘어나 있다는 뜻이고, 이는 "이 축이 데이터의 특징을 가장 잘 설명하는 중요한 축이다"라는 의미가 됩니다. 중요도가 낮은(특이값이 작은) 축들을 버리면 데이터 용량을 획기적으로 줄이는 PCA(주성분 분석)나 이미지 압축이 가능해집니다.
+
+<b> 노이즈 제거 </b>  
+데이터에서 가장 큰 특이값 몇 개와 그에 대응하는 특이 벡터들만 남기고 나머지를 제거(0으로 만듦)한 뒤 행렬을 다시 복원하면, 자잘한 노이즈가 사라진 깨끗한 핵심 데이터만 남게 됩니다.
+
+##### SVD Mechanism
+https://www.geeksforgeeks.org/data-science/singular-value-decomposition-svd/
+
+##### 직교하는 축'을 기준으로 삼는이유 (SVD의 핵심)
+임의의 행렬 $M$은 공간을 사선으로 비틀고, 찌그러뜨리고, 엉망으로 만듭니다. 그래서 그냥 보면 행렬이 공간을 어떻게 변화시키는지 한눈에 알기 어렵습니다. 그런데 수학자들이 발견한 놀라운 사실이 있습니다. 
+아무리 무작위로 공간을 구기고 찌그러뜨리는 행렬이라 하더라도, 변환하기 전 입력 공간에서 '정확히 90도로 만나는 특정 축 세트'를 잘 고르면, 변환된 후(출력 공간)에도 자기들끼리 정확히 90도를 유지하며 예쁘게 늘어나게 만들 수 있다는 것입니다.
+
+- 입력 공간의 기준 축 (V): "행렬을 곱하기 전, 원래 공간에서 미리 준비해 둔 90도짜리 축 세트"
+- 출력 공간의 결과 축 (U): "행렬을 곱해 데이터가 타원으로 찌그러진 후, 그 타원의 가장 긴 방향과 짧은 방향을 가리키는 90도짜리 새로운 축 세트"
+
+결국 SVD는 "입력할 때 90도였던 축(V)이, 행렬을 통과해 찌그러진 후에도 여전히 90도를 유지하는 축(U)으로 변환되는 순간"을 포착한 것입니다. 그리고 그 축들이 얼마나 길어졌는지를 나타내는 상수가 바로 특이값($\Sigma$)이 됩니다.
+
 ### Method of Lagrangie Multiplier
 In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equation constraints.  
 (i.e., subject to the condition that one or more equations have to be satisfied exactly by the chosen values of the variables)
