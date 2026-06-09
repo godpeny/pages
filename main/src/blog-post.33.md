@@ -106,6 +106,7 @@ HNSW builds a graph-based index that facilitates quick searches in large-scale d
 
 <b> FAISS (Facebook AI Similarity Search)  </b>  
 FAISS is a library optimized for ANN search, widely used in deep learning applications. It supports both CPU and GPU acceleration, making it ideal for efficient vector similarity retrieval.
+https://github.com/facebookresearch/faiss/wiki
 
 <b> Annoy  </b>  
 Annoy (Approximate Nearest Neighbors Oh Yeah) is an open-source library designed for memory-efficient and fast search in high-dimensional spaces. It combines multiple ANN approaches under one roof, offering flexibility for different data types and search scenarios.
