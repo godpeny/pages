@@ -676,6 +676,11 @@ Cascading is a particular case of ensemble learning based on the concatenation o
 - Stacking(스태킹): 각 전문가들의 예측 결과를 다시 모아서, 최종 결정을 내리는 '마스터 분류기(Meta Classifier)'에게 보내 결론을 냅니다.
 - Cascade(Multi-Stage): 데이터가 들어오면 1단계 분류기만 먼저 작동합니다. 여기서 확실하게 결론(예: "이건 절대 우리가 찾는 객체가 아님")이 나면, 뒤에 있는 분류기들은 일할 필요도 없이 상황이 종료(Pass/Drop)됩니다. 1단계를 통과한 데이터만 2단계 분류기로 가고, 또 거길 통과하면 3단계로 가는 식으로 순차적(Multistage)으로 검증합니다. 앞 단계에서 노이즈를 빠르게 쳐내기 때문에, 뒷 단계의 무거운 모델들이 일할 분량이 대폭 줄어듭니다. 덕분에 속도가 빠릅니다.
 
+### Masked Language Model (MLM)
+마스킹된 언어 모델(MLM)은 자연어 처리(NLP) 작업에서 텍스트의 누락된 단어를 예측하는 데 사용되는 대규모 언어 모델(LLM)의 한 유형입니다. 확장해 말하자면, 마스킹된 언어 모델링은 텍스트 내에서 마스킹된 단어를 채우도록 모델을 학습시킴으로써, 문장을 가장 자연스럽고 일관되게 완성할 가능성이 높은 단어를 예측하도록 하는 방식으로, 트랜스포머 모델—특히 BERT(Bidirectional Encoder Representations from Transformers)와 그 변형인 RoBERTa(Robustly Optimized BERT Pretraining Approach)—을 NLP 작업에 맞게 학습시키는 방법 중 하나입니다.1
+
+- Reference: https://www.ibm.com/kr-ko/think/topics/masked-language-model
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
