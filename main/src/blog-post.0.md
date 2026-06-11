@@ -236,18 +236,29 @@ $f(x)$ over $[a,b]$.
 어떤 경로에 대한 함수의 정적분(definite integral) 값이 '경로의 길이'와 '해당 경로를 따라 나타나는 함수의 평균값'을 곱한 것과 같다는 수학적 원리.
 이 정리의 가장 중요한 핵심은, 연속적인 경로가 주어졌을 때 해당 경로 상의 어딘가에는 전체 경로의 '평균 기울기(또는 평균 함수값)'와 정확히 일치하는 특정 지점 $c$가 반드시 존재한다는 것.
 
-#### Jaccard index
+### Jaccard index
 The Jaccard index is a statistic used for gauging the similarity and diversity of sample sets.
 The Jaccard index measures similarity between finite non-empty sample sets and is defined as the size of the intersection divided by the size of the union of the sample sets.
 $$
 {\displaystyle J(A,B)={\frac {|A\cap B|}{|A\cup B|}}={\frac {|A\cap B|}{|A|+|B|-|A\cap B|}}}
 $$
 
-##### Jaccard distance
+#### Jaccard distance
 The Jaccard distance which measures dissimilarity between sample sets, is complementary to the Jaccard index and is obtained by subtracting the Jaccard index from 1 or, equivalently, by dividing the difference of the sizes of the union and the intersection of two sets by the size of the union.
 $$
 {\displaystyle d_{J}(A,B)=1-J(A,B)={\frac {|A\cup B|-|A\cap B|}{|A\cup B|}}.}
 $$
+
+### Inverted Index
+An Inverted Index is a data structure used in information retrieval systems to efficiently retrieve documents or web pages containing a specific term or set of terms. In an inverted index, the index is organized by terms (words), and each term points to a list of documents or web pages that contain that term.
+
+#### 색인(Index) vs 역색인(Inverted Index)
+<b> 색인 </b>  
+문서에서 키워드를 찾아보기 쉽도록 정렬/나열한 목록을 말합니다.
+일반적으로 책 뒷편에 색인, 인덱스, 찾아보기와 같은 이름으로 정돈된 목록을 말합니다.  
+<b> 역색인 </b>  
+키워드를 통해 문서를 찾아내는 방식을 말합니다.
+책 뒷편의 색인된 키워드를 이용해 역으로 본문(혹은 문서)을 찾는 방식을 말합니다.
 
 ## A.I Related Terminology
 ### Supervised Learning
