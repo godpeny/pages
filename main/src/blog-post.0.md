@@ -260,6 +260,27 @@ An Inverted Index is a data structure used in information retrieval systems to e
 키워드를 통해 문서를 찾아내는 방식을 말합니다.
 책 뒷편의 색인된 키워드를 이용해 역으로 본문(혹은 문서)을 찾는 방식을 말합니다.
 
+### Fourier Transform
+연속적인 신호를 주파수 성분으로 분해하는 푸리에 변환은 현실 세계의 연속적인(Continuous) 신호를 대상으로 합니다.끊김 없이 흐르는 아날로그 소리나 전파를 주파수 성분으로 바꿀 때 사용하며, 수학적으로는 끝없는 연산(적분, $\int$)을 사용합니다.
+
+e.g., 우리가 듣는 소리, 주파수, 파도 같은 신호들은 보통 시간의 흐름에 따라 변합니다. 푸리에 변환은 이 신호를 받아서 "여기에 몇 Hz(헤르츠) 짜리 성분이 얼마만큼 들어있는지" 분해해서 보여주는 수학적 연산입니다.
+예시: 여러 악기가 동시에 연주된 녹음 파일(신호)을 넣으면, "도(C) 음이 얼마만큼, 미(E) 음이 얼마만큼 들어있다"라고 성분별로 나누어 알려주는 것과 같습니다.
+
+#### Inverse Fourier Transform
+역변환(IFT)은 분해된 성분들을 다시 합쳐서 원래의 신호로 조립해내는 과정입니다.
+e.g.,  "도, 미, 솔"이라는 음의 정보를 가지고 다시 원래의 연주 소리(오디오 신호)를 만들어내는 것입니다.
+
+#### 이산 푸리에 변환(Discrete Fourier Transform, DFT)
+컴퓨터는 아날로그처럼 '연속적인 데이터'를 이해하지 못합니다. 0과 1로 이루어진 '숫자의 나열(디지털 데이터)'만 처리할 수 있죠.따라서 연속적인 신호를 일정한 간격으로 뚝뚝 끊어서 샘플링한 데이터(시퀀스)를 가지고 푸리에 변환을 하도록 만든 것이 바로 이산(Discrete) 푸리에 변환입니다. 수학적으로는 더하기(시그마, $\sum$)를 사용합니다.
+
+#### Fast Fourier Transform
+위에서 말한 DFT를 컴퓨터로 계산하려면 데이터가 많아질수록 시간이 엄청나게 오래 걸립니다. (수학적으로 데이터 양의 제곱($O(n^2)$)만큼 계산량이 늘어납니다.)  
+FFT(고속 푸리에 변환)는 이 계산 과정을 수학적인 알고리즘(분할 정복 등)을 이용해 혁신적으로 빠르게($O(n \log n)$) 줄여준 방법입니다. 똑같은 수학적 결과물을 내지만 속도가 수백, 수천 배 빠르기 때문에 현대 컴퓨터가 실시간으로 소리나 영상을 처리할 수 있게 만든 일등 공신입니다.
+
+##### Cooley-Tukey Algorithm 
+By far the most commonly used FFT is the Cooley–Tukey algorithm.
+https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
