@@ -64,7 +64,59 @@ SVD를 하면 특이값($\sigma$)이 큰 순서대로 정렬할 수 있습니다
 데이터에서 가장 큰 특이값 몇 개와 그에 대응하는 특이 벡터들만 남기고 나머지를 제거(0으로 만듦)한 뒤 행렬을 다시 복원하면, 자잘한 노이즈가 사라진 깨끗한 핵심 데이터만 남게 됩니다.
 
 ##### SVD Mechanism
-https://www.geeksforgeeks.org/data-science/singular-value-decomposition-svd/
+SVD의 최종 목표는 주어진 행렬을 $A = U \Sigma V^T$ 형태로 쪼개는 것입니다.
+
+<b> Step 1 - $AA^T$ 계산하기 </b>  
+좌특이벡터(Matrix $U$)와 특이값($\Sigma$)을 구하기 위해, 먼저 원래 행렬 $A$와 그 전치행렬(Transpose)인 $A^T$를 곱해줍니다.  
+
+$$A = \begin{bmatrix} 3 & 2 & 2 \\ 2 & 3 & -2 \end{bmatrix}, \quad A^T = \begin{bmatrix} 3 & 2 \\ 2 & 3 \\ 2 & -2 \end{bmatrix}$$  
+두 행렬을 곱하면 다음과 같은 $2 \times 2$ 정방행렬이 나옵니다.
+
+$$AA^T = \begin{bmatrix} 3&2&2 \\ 2&3&-2 \end{bmatrix} \begin{bmatrix} 3&2 \\ 2&3 \\ 2&-2 \end{bmatrix} = \begin{bmatrix} 17 & 8 \\ 8 & 17 \end{bmatrix}$$
+
+<b> Step 2 - $AA^T$의 고유값(Eigenvalues)과 특이값(Singular Values) 찾기</b>  
+방금 구한 행렬의 특성방정식 $\det(AA^T - \lambda I) = 0$을 풀어 고유값($\lambda$)을 찾습니다.
+$$\det \begin{bmatrix} 17-\lambda & 8 \\[3pt] 8 & 17-\lambda \end{bmatrix} = 0 \\[3pt] (17-\lambda)^2 - 64 = 0 \\(\lambda - 25)(\lambda - 9) = 0$$
+
+고유값 ($\lambda$): $\lambda_1 = 25$, $\lambda_2 = 9$, 특이값 ($\sigma$)은 고유값에 루트($\sqrt{}$)를 씌운 값입니다. 내림차순으로 정렬합니다.$$\sigma_1 = \sqrt{25} = 5, \quad \sigma_2 = \sqrt{9} = 3$$이 특이값들로 대각행렬 $\Sigma$가 만들어집니다. 크기는 원래 행렬 $A$와 같은 $2 \times 3$입니다.$$\Sigma = \begin{bmatrix} 5 & 0 & 0 \\ 0 & 3 & 0 \end{bmatrix}$$
+
+<b> Step 3 - 우특이벡터(Right Singular Vectors, Matrix $V$) 구하기 </b>  
+Step 3의 목표는 $A^TA$라는 행렬의 고유벡터(Eigenvectors)들을 구하는 것입니다. 이 벡터들이 행렬 $V$의 열(Column)을 구성하게 됩니다.먼저 원래 행렬 $A$와 전치행렬 $A^T$를 곱해 $A^TA$를 구하면 다음과 같은 $3 \times 3$ 행렬이 나옵니다.
+$$A^TA = \begin{bmatrix} 3 & 2 \\ 2 & 3 \\ 2 & -2 \end{bmatrix} \begin{bmatrix} 3 & 2 & 2 \\ 2 & 3 & -2 \end{bmatrix} = \begin{bmatrix} 13 & 12 & 2 \\ 12 & 13 & -2 \\ 2 & -2 & 8 \end{bmatrix}$$
+이 행렬의 고유값은 $\lambda_1 = 25$, $\lambda_2 = 9$, $\lambda_3 = 0$ 입니다. 이제 각 고유값에 대응하는 고유벡터를 하나씩 연립방정식으로 풀어보겠습니다.
+
+1. $\lambda_1 = 25$ 일 때의 고유벡터 구하기$(A^TA - 25I)v_1 = 0$ 식을 세웁니다. 대각 성분에서 25를 빼주면 다음과 같습니다.$$\begin{bmatrix} 13-25 & 12 & 2 \\ 12 & 13-25 & -2 \\ 2 & -2 & 8-25 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} -12 & 12 & 2 \\ 12 & -12 & -2 \\ 2 & -2 & -17 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$$이 행렬을 기본 행 연산(Row reduction)을 통해 정리하면 다음과 같은 관계식이 나옵니다.$-12x + 12y + 2z = 0 \rightarrow 6x - 6y - z = 0$, $2x - 2y - 17z = 0$ 두 식을 연립하면 $z = 0$이 되고, 자연스럽게 $x = y$라는 결론을 얻습니다.  
+따라서 기본 고유벡터는 $\begin{bmatrix} 1 \ 1 \ 0 \end{bmatrix}$이 됩니다.정규화(크기를 1로 만들기)를 적용합니다. 벡터의 크기는 $\sqrt{1^2 + 1^2 + 0^2} = \sqrt{2}$이므로, 각 성분을 $\sqrt{2}$로 나눕니다.$$v_1 = \begin{bmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \\ 0 \end{bmatrix}$$
+2. $\lambda_2 = 9$ 일 때의 고유벡터 구하기$(A^TA - 9I)v_2 = 0$ 식을 세웁니다. 대각 성분에서 9를 빼줍니다.$$\begin{bmatrix} 13-9 & 12 & 2 \\ 12 & 13-9 & -2 \\ 2 & -2 & 8-9 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 4 & 12 & 2 \\ 12 & 4 & -2 \\ 2 & -2 & -1 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$$  
+방정식을 정리하면 $y = -x$이므로, $z = 2x - 2(-x) = 4x$가 됩니다. $x=1$이라고 두면 고유벡터는 $\begin{bmatrix} 1 \ -1 \ 4 \end{bmatrix}$가 됩니다. 마찬가지로 정규화 하면 벡터의 크기는 $\sqrt{1^2 + (-1)^2 + 4^2} = \sqrt{18}$입니다.$$v_2 = \begin{bmatrix} \frac{1}{\sqrt{18}} \\ -\frac{1}{\sqrt{18}} \\ \frac{4}{\sqrt{18}} \end{bmatrix}$$
+3. $\lambda_3 = 0$ 일 때의 고유벡터 구하기본문에서는 $v_1$과 $v_2$에 모두 수직인 벡터(내적이 0인 벡터)를 찾는 방식으로 $v_3$를 구했습니다. $v_3 = \begin{bmatrix} x \ y \ z \end{bmatrix}$ 라 두고, 앞서 구한 정규화 전의 벡터들과 내적을 구합니다. 
+$$\begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix} \cdot \begin{bmatrix} x \\ y \\ z \end{bmatrix} = 0 \rightarrow x + y = 0 \rightarrow y = -x \\[3pt] \begin{bmatrix} 1 \\ -1 \\ 4 \end{bmatrix} \cdot \begin{bmatrix} x \\ y \\ z \end{bmatrix} = 0 \rightarrow x - y + 4z = 0$$
+$z = -1$이라고 두면, $x = 2$, $y = -2$가 되어 고유벡터는 $\begin{bmatrix} 2 \ -2 \ -1 \end{bmatrix}$이 됩니다. 정규화 하면 벡터의 크기는 $\sqrt{2^2 + (-2)^2 + (-1)^2} = \sqrt{9} = 3$입니다. 
+$$v_3 = \begin{bmatrix} \frac{2}{3} \\ -\frac{2}{3} \\ -\frac{1}{3} \end{bmatrix}$$
+이렇게 구한 $v_1, v_2, v_3$를 합치면 본문의 행렬 $V$가 완성됩니다.
+
+<b> Step 4: 좌특이벡터(Left Singular Vectors, Matrix $U$) 구하기 </b>  
+SVD 정의로 행렬 $A$는 $A = U \Sigma V^T$로 분해됩니다. 우특이벡터 행렬 $V$는 직교행렬이므로 $V^T V = I$(단위행렬)가 성립합니다. 따라서 양변의 오른쪽에 $V$를 곱하면 식은 다음과 같이 변합니다.
+$$ AV = U \Sigma V^T V \rightarrow AV = U \Sigma $$
+
+이 행렬 곱셈을 행렬 내부의 열벡터 단위로 표현하면 다음과 같습니다.
+$$A \begin{bmatrix} v_1 & v_2 & v_3 \end{bmatrix} = \begin{bmatrix} u_1 & u_2 \end{bmatrix} \begin{bmatrix} \sigma_1 & 0 & 0 \\ 0 & \sigma_2 & 0 \end{bmatrix}$$
+이를 전개하면 각 열마다 다음과 같은 규칙이 생깁니다.
+$$Av_1 = \sigma_1 u_1, \quad Av_2 = \sigma_2 u_2$$
+$u_i$에 대해 정리: 우리가 알고 싶은 것은 $u_i$이므로, 양변을 특이값 $\sigma_i$로 나누어 줍니다. 
+$$u_i = \frac{1}{\sigma_i} A v_i$$
+
+위 공식 $u_i = \frac{1}{\sigma_i} A v_i$를 사용해 $U$의 열벡터들을 구합니다. 
+$$u_1 = \frac{1}{5} A v_1 = \begin{bmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{bmatrix} \\[3pt]
+u_2 = \frac{1}{3} A v_2 = \begin{bmatrix} \frac{1}{\sqrt{2}} \\ -\frac{1}{\sqrt{2}} \end{bmatrix}$$
+이 두 벡터를 합쳐 행렬 $U$를 만듭니다.$$U = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix}$$
+
+<b> Step 5 - 종 SVD 방정식 완성 ($A = U \Sigma V^T$) </b>
+ 
+이제 구한 세 개의 행렬을 공식에 그대로 대입하면 SVD가 완료됩니다. 주의할 점은 마지막 행렬은 $V$가 아니라 $V$의 전치행렬($V^T$)이라는 점입니다.
+$$A = \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} \end{bmatrix} \begin{bmatrix} 5 & 0 & 0 \\ 0 & 3 & 0 \end{bmatrix} \begin{bmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0 \\ \frac{1}{\sqrt{18}} & -\frac{1}{\sqrt{18}} & \frac{4}{\sqrt{18}} \\ \frac{2}{3} & -\frac{2}{3} & -\frac{1}{3} \end{bmatrix}$$
+
+Reference - https://www.geeksforgeeks.org/data-science/singular-value-decomposition-svd/
 
 ##### 직교하는 축'을 기준으로 삼는이유 (SVD의 핵심)
 임의의 행렬 $M$은 공간을 사선으로 비틀고, 찌그러뜨리고, 엉망으로 만듭니다. 그래서 그냥 보면 행렬이 공간을 어떻게 변화시키는지 한눈에 알기 어렵습니다. 그런데 수학자들이 발견한 놀라운 사실이 있습니다. 
