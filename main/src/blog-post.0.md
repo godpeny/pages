@@ -52,7 +52,14 @@ Similarly $P$ is sufficient for $Q$, because $P$ being true always implies that 
 In mathematics, a polynomial is a mathematical expression consisting of indeterminates (also called variables) and coefficients, that involves only the operations of addition, subtraction, multiplication and exponentiation to nonnegative integer powers, and has a finite number of terms.
 
 ### Coefficient
-In mathematics, a coefficient is a multiplicative factor involved in some term of a polynomial, a series, or any other type of expression. It may be a number without units, in which case it is known as a numerical factor.[1] It may also be a constant with units of measurement, in which it is known as a constant multiplier.
+In mathematics, a coefficient is a multiplicative factor involved in some term of a polynomial, a series, or any other type of expression. It may be a number without units, in which case it is known as a numerical factor. It may also be a constant with units of measurement, in which it is known as a constant multiplier.
+
+#### Coefficient of Variation
+The coefficient of variation (CV) is defined as the ratio of the standard deviation to the mean.
+$$
+CV={\frac {\sigma }{\mu }}
+$$
+데이터의 평균에 비해서 표준편차가 얼마나 큰지를 나타내는 상대적인 지표입니다. 즉, "데이터가 평균에서 얼마나 흩어져 있는가"를 단위에 상관없이 보여줍니다.
 
 ### Variable
 In mathematics, a variable is a symbol, typically a letter, that holds a place for constants, often numbers. One say colloquially that the variable represents or denotes the object, and that the object is the value of the variable.  
