@@ -309,6 +309,19 @@ https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
 
 Reference: https://kr.mathworks.com/discovery/time-series-data.html
 
+### Hysteresis Control
+히스테리시스 제어(Hysteresis Control)는 주로 전력 전자 회로(예: 인버터, 컨버터)와 다양한 자동제어 시스템에서 널리 사용되는 빠르고 직관적인 비선형 제어 기법입니다. 일상생활에서는 '뱅뱅(Bang-bang) 제어'라는 이름으로도 흔히 알려져 있습니다. 히스테리시스 제어는 완벽하게 매끄러운 제어보다는 "약간의 오동작 구간을 허용하더라도, 빠르고 단순하며 확실하게 시스템을 제어하고 싶을 때" 사용하는 실용적인 제어 방식입니다.
+
+#### 작동 원리
+히스테리시스 제어의 핵심은 '히스테리시스 밴드(Hysteresis Band)'라는 허용 오차 구간을 설정하는 것입니다.
+
+- 비교: 제어기가 목표로 하는 '기준 신호(Reference signal)'와 현재 시스템의 '실제 신호'를 실시간으로 비교하여 오차를 계산합니다.
+- 밴드 설정: 이 오차값이 머물 수 있는 상한선(Upper limit)과 하한선(Lower limit)을 설정합니다.
+- 스위칭(On/Off): 실제 신호가 상한선에 도달하면 상태를 전환(예: 스위치 Off)하여 신호를 낮추고, 하한선에 도달하면 다시 상태를 전환(예: 스위치 On)하여 신호를 높입니다.
+
+#### 일상적인 예시 (온도 조절기)
+가정용 보일러가 대표적인 예입니다. 목표 온도를 24℃로 설정했을 때, 온도가 23℃(하한선)로 떨어지면 보일러가 '켜지고', 25℃(상한선)로 올라가면 보일러가 '꺼지는' 방식으로 작동하여 온도를 일정 구간 내로 유지하는 것이 바로 히스테리시스 제어입니다.
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
