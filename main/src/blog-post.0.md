@@ -322,6 +322,10 @@ Reference: https://kr.mathworks.com/discovery/time-series-data.html
 #### 일상적인 예시 (온도 조절기)
 가정용 보일러가 대표적인 예입니다. 목표 온도를 24℃로 설정했을 때, 온도가 23℃(하한선)로 떨어지면 보일러가 '켜지고', 25℃(상한선)로 올라가면 보일러가 '꺼지는' 방식으로 작동하여 온도를 일정 구간 내로 유지하는 것이 바로 히스테리시스 제어입니다.
 
+### Random Walk
+In mathematics, a random walk is a stochastic process that describes a path that consists of a succession of random steps on some mathematical space.  
+주어진 공간에서 매 순간 랜덤으로, 즉 확률적으로 이동하는 모습을 수학적으로 표현한 것이다.
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
