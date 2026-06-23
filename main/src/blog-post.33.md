@@ -986,6 +986,69 @@ Triton 에서는 config.pbtxt에 dynamic_batching {}이나 sequence_batching {} 
 1. **Python backend** — ONNX 모델 앞단 전처리(파싱, 토크나이즈)를 모델처럼 올림
 2. **Ensemble scheduler** — 1의 전처리와 ONNX 추론을 하나의 호출로 묶음
 
+<b> ko-sbert-onnx-mt-ensemble 구조 (in Tenth) </b>  
+```yaml
+/share-vol/ko-sbert-mt-parsing-tokenizer/
+  ├── config.pbtxt
+  └── 1/
+      ├── model.py                  ← Triton이 실행할 코드
+      ├── tokenizer.json
+      ├── tokenizer_config.json
+      ├── special_tokens_map.json
+      └── vocab.txt
+```
+- config.pbtxt:Triton에 모델 모양을 알림
+- model.py: 추론 로직
+  - 채팅버블 JSON을 파싱해 텍스트를 뽑아낸 뒤 토크나이즈
+  - initialize(): 같은 디렉토리에서 AutoTokenizer.from_pretrained()로 토크나이저 로드 (1회)
+  - execute(): BYTES 텐서 → UTF-8 디코드 → JSON 파싱 → creativeFormat으로 6가지 메시지 타입 분기 → 타입별 경로에서 텍스트 추출 → HuggingFace 토크나이저 호출(max_length=128, padding/truncation 적용) → int64 텐서로 변환해 응답 (임베딩 도출)
+- 파싱/토크나이즈 어느 단계든 실패하면 request 단위로 TritonError 응답
+- 나머지 4개 파일이 HuggingFace 토크나이저 객체를 구성하는 데이터. model.py 의 AutoTokenizer.from_pretrained()이 우선적으로 tokenizer.json을 호출함.
+
+
+<b> ko-sbert-mt-tokenizer 구조 (in Tenth) </b>  
+```yaml
+/share-vol/ko-sbert-mt-tokenizer/
+  ├── config.pbtxt
+  └── 1/
+      ├── model.py                  ← Triton이 실행할 코드
+      ├── tokenizer.json
+      ├── tokenizer_config.json
+      ├── special_tokens_map.json
+      └── vocab.txt
+```
+- config.pbtxt: Triton에 모델 모양을 알림 (input: input_text BYTES, output: input_ids/attention_mask INT64, backend: python)
+- model.py: 추론 로직. 입력 문자열을 그대로 토크나이즈 함.
+  - initialize(): 같은 디렉토리에서 AutoTokenizer.from_pretrained()로 토크나이저 로드 (1회)
+  - execute(): BYTES 텐서 → UTF-8 디코드 → HuggingFace 토크나이저 호출(max_length=300, padding/truncation 적용) → int64 텐서로 변환해 응답 (임베딩 도출)
+- 파싱 단계 없음 — parsing 버전과 달리 받은 문자열을 그대로 토크나이저에 넘김
+나- 머지 4개 파일이 HuggingFace 토크나이저 객체를 구성하는 데이터.
+model.py 의 AutoTokenizer.from_pretrained()이 우선적으로 tokenizer.json을 호출함.
+
+
+
+
+##### 컴포넌트별 역할
+한 줄 요약: S3에 모델 → init이 파드 볼륨으로 복사 → Triton이 서빙 → Ingress로 외부 노출 → curas-scorer가 호출
+
+<b> 1. 모델 저장소 = S3 </b>  
+``s3://triton/model_repository/`` 아래 모델별 디렉토리로 ONNX 파일과 Python backend 코드를 보관. 학습 파이프라인이 푸시하고, Triton은 읽기만 함. 정적 자산의 단일 소스.
+
+<b> 2. Init Container — S3 → 로컬 볼륨 동기화 </b>  
+파드 시작 시 한 번 실행되는 ``amazon/aws-cli`` 컨테이너. ``aws s3 cp --recursive``로 모델 파일들을 ``/share-vol(emptyDir)``에 복사하고 종료. Triton이 S3를 직접 보지 않고 로컬 디스크로 받아 쓰는 이유 — Triton 표준 동작에 맞추기 위함.
+
+<b> 3. 본 컨테이너 — Triton Server </b>  
+``NVIDIA Triton 24.01`` 베이스의 사내 커스텀 이미지(``curas-tritonserver-custom``). ``/share-vol``을 모델 저장소로 보고, --load-model로 명시한 7개만 띄움(explicit 모드).  
+포트 8000(HTTP)/8001(gRPC)/8002(metrics) 노출. /v2/health/{live,ready}로 헬스체크, jemalloc으로 메모리 최적화. CPU 16/메모리 8Gi, b2 노드그룹(CPU 노드), 2 replicas.
+
+<b> 4. Service + Ingress — 외부 노출 </b>  
+- Service: 클러스터 내부에서 파드 묶음에 도달하는 가상 IP. port 80 → targetPort 8000.
+- Ingress: 외부 호스트 curas-embedder.onkakao.net를 Service에 매핑.
+외부 → Ingress → Service → Triton 파드 순서로 라우팅.
+
+<b> 5. curas-scorer </b>  
+외부 호출자. http://curas-embedder.onkakao.net/v2/models/{ensemble}/infer로 KServe v2 HTTP를 호출해 임베딩을 받아 자기 API의 응답으로 반환. 임베딩 인프라의 유일한 클라이언트이자 외부에 임베딩 API를 노출하는 게이트웨이.
+
 
 ## Cross Encoder vs Bi-Encoder
 ### 크로스 인코더 (Cross-encoder)
