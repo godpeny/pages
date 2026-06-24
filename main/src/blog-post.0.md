@@ -758,6 +758,12 @@ Cascading is a particular case of ensemble learning based on the concatenation o
 
 - Reference: https://www.ibm.com/kr-ko/think/topics/masked-language-model
 
+### Synthetic Data
+Synthetic data are artificially generated data not produced by real-world events. Typically created using algorithms, synthetic data can be deployed to validate mathematical models and to train machine learning models.
+
+#### How is synthetic data generated?
+https://www.ibm.com/think/topics/synthetic-data
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
