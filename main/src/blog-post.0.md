@@ -326,6 +326,35 @@ Reference: https://kr.mathworks.com/discovery/time-series-data.html
 In mathematics, a random walk is a stochastic process that describes a path that consists of a succession of random steps on some mathematical space.  
 주어진 공간에서 매 순간 랜덤으로, 즉 확률적으로 이동하는 모습을 수학적으로 표현한 것이다.
 
+### Gini Coefficient
+<img src="images/blog0_gini_coefficient.png" alt="Gini Coefficient" width="250"/>   
+지니 계수는 한 국가나 집단의 소득 또는 부의 분배가 얼마나 불평등한지를 측정하는 지표입니다. 실제 소득 분배가 '완전한 평등' 상태에서 얼마나 벗어나 있는지를 나타냅니다.
+
+지니 계수는 위에 표시된 로렌츠 곡선 그래프를 바탕으로 수학적으로 정의됩니다.
+- X축(가로축): 소득이 가장 낮은 사람부터 시작하여 누적된 인구의 비율 (0~100%)
+- Y축(세로축): 이들 인구가 차지하는 전체 소득의 누적 비율 (0~100%)
+- 완전 평등선(Line of equality): 45도 각도의 대각선입니다. 
+
+#### 계산 방법 
+수학적으로 보면 지니 계수는 소득 분포를 나타내는 로렌츠 곡선이 완전 평등선(대각선)에서 얼마나 멀리 떨어져 있는지(영역 A의 크기)를 수학적인 면적 비율로 계산하여 불평등 정도를 수치화한 지표입니다.
+그래프는 완전 평등선 아래의 삼각형을 두 개의 영역으로 나눕니다.
+- 영역 A: 완전 평등선(대각선)과 실제 소득 분포를 보여주는 로렌츠 곡선 사이의 면적입니다. 이 면적이 넓을수록 불평등이 심하다는 뜻입니다.
+- 영역 B: 로렌츠 곡선 아래의 면적입니다.공식: 지니 계수는 전체 삼각형 면적($A + B$) 중에서 불평등을 나타내는 면적($A$)이 차지하는 비율입니다.
+$$Gini = \frac{A}{A + B}$$
+가로축과 세로축이 각각 0에서 1(100%)까지이므로, 삼각형 전체의 면적($A + B$)은 0.5($\frac{1}{2}$)가 됩니다. 마이너스(-) 소득이 없다고 가정하면 공식을 다음과 같이 단순화할 수 있습니다.
+$$Gini = 2A = 1 - 2B$$
+
+지니 계수는 이론적으로 0에서 1 사이의 값을 가집니다. (때로는 0에서 100 사이의 백분율로 표기되기도 합니다.)
+
+- 0 (완전 평등): 그래프에서 영역 A가 0인 상태로, 모든 사람이 정확히 똑같은 소득을 가지는 상태입니다.
+- 1 (완전 불평등): 한 사람이 모든 소득을 독점하고 나머지 사람들은 소득이 전혀 없는 상태입니다.
+
+#### Item Gini Coefficient
+추천 시스템에서는 '추천 기회(또는 노출 수)'가 전체 '아이템'들에 얼마나 불평등하게 분배되었는지를 측정합니다.
+
+- 0에 가까울수록 (평등): 모든 아이템이 사용자들에게 골고루 추천되고 있음을 의미합니다. 비주류 아이템(롱테일, Long-tail)들도 소외되지 않고 화면에 노출되고 있어, 추천의 다양성(Diversity)과 카탈로그 커버리지(Catalog Coverage)가 높다고 긍정적으로 평가합니다.
+- 1에 가까울수록 (불평등): 극소수의 베스트셀러나 인기 아이템이 전체 추천 횟수의 대부분을 독식하고 있음을 뜻합니다. 대다수의 아이템은 아예 추천되지 않고 창고에 묻혀버리는 인기 편향(Popularity Bias) 현상이 심각하다는 것을 보여줍니다.
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
