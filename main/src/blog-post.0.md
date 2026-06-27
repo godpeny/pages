@@ -652,6 +652,21 @@ The actor-critic algorithm (AC) is a family of reinforcement learning (RL) algor
 ### Neural Scaling Law
 An empirical scaling law that describes how neural network performance changes as key factors are scaled up or down. These factors typically include the number of parameters, training dataset size and training cost. In ML, it indicates how the performance of deep learning models scale according to parameter count and dataset size.
 
+#### Chincila Scaling
+Chinchilla 최적 할당(Chinchilla-optimal allocation)의 기준을 모델 파라미터 1개당 약 20개의 훈련 토큰(20 tokens-per-parameter ratio)으로 봅니다. 예를 들어, 8B(80억) 크기의 모델을 약 1,630억(163B) 개의 토큰으로 훈련하는 것이 이 최적 비율에 거의 들어맞는 설정입니다.
+
+Chinchilla 스케일링은 멱법칙(Power Law) 공식을 수학적으로 풀어서 얻어낸 실용적인 지침입니다. 이 법칙은 최적의 성능을 달성하려면 모델 크기(N)와 데이터 세트 크기(D)를 어느 한쪽만 극단적으로 키우는 것이 아니라 동시에 비례하여(in tandem) 늘려야 한다고 규정합니다. 논문의 실험에서는 이 이상적인 비율을 '모델 파라미터 1개당 약 20개의 훈련 토큰'으로 간주합니다.
+
+##### Power Law
+Power Law(거듭제곱 법칙)는 한 수치가 변할 때 다른 수치도 그에 비례하여 거듭제곱 배로 변하는 두 수량 사이의 수학적 관계를 말합니다. 쉽게 말해, 한쪽이 커질 때 다른 쪽이 일정 비율이 아니라 폭발적으로 증가하거나 감소하는 패턴입니다.가장 단순하게 수학식으로 표현하면 다음과 같습니다.
+$$y = ax^k$$
+(여기서 $a$와 $k$는 상수이며, $k$를 거듭제곱 지수라고 합니다.)
+
+Chinchilla Scaling 에서 자원(모델 크기나 데이터)을 늘릴 때 모델의 예측 오차가 지수 함수적으로 감소하는 곡선이 Power Law 를 따릅니다. 즉, 데이터와 모델 크기를 20:1의 비율(일정한 상수비)로 세팅하여 시스템 규모를 계속 키웠을 때 오차가 줄어드는 결과가 멱법칙 곡선을 따른다는 의미입니다.
+
+#### Sub-scaling
+모델 크기를 키워도 성능이 기대만큼 오르지 않고 정체되는 현상
+
 ### Hypernetwork
 <img src="images/blog0_hypernetwork.png" alt="Hyper Network" width="400"/>   
 
