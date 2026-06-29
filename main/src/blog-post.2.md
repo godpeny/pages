@@ -82,6 +82,42 @@ Perplexity of a random variable $X$ may be defined as the perplexity of the dist
 
 For example, the perplexity of a fair coin toss is $2$, and that of a fair die roll is $6$. Generally, for a probability distribution with exactly $N$ outcomes each having a probability of exactly $\frac{1}{N}$, the perplexity is simply $N$.
 
+### Perplexity vs Entropy
+Given a discrete random variable, $X$, perplexity is defined as,
+$$
+\mathrm{Perplexity}(X) = 2^{H(X)}, 
+H(X)= -\sum_{i=1}^{K}\frac{1}{K}\log_2\frac{1}{K}
+$$
+where $H(X)$ is the entropy of $X$.
+
+#### Reason for using Perplexity
+Perplexity is often used instead of entropy due to the fact that it is arguably more intuitive to our human minds than entropy. Note that entropy describes the number of bits needed to encode random samples from a distribution, which one may argue is already intuitive. However if I tell you that a given random variable has an entropy of 7, how should you feel about that at a gut level?
+
+Arguably, perplexity provides a more human way of thinking about the random variable’s uncertainty and that is because the perplexity of a uniform, discrete random variable with K outcomes is K (see the Proof to following)!.
+
+<b> Proof </b>  
+$$
+\textbf{Theorem.}
+\text{ Given a discrete uniform random variable }
+X \sim \mathrm{Cat}(p_1,p_2,\ldots,p_K)
+\text{ where } \forall i,j \in [K],\;
+p_i=p_j=\frac{1}{K},
+\text{ it holds that the perplexity of } X \text{ is } K. \\[10pt]
+\begin{aligned}
+\mathrm{Perplexity}(X)
+&:= 2^{H(X)} \\
+&= 2^{-\sum_{i=1}^{K}\frac{1}{K}\log_2\frac{1}{K}} \\
+&= 2^{-K\cdot\frac{1}{K}\log_2\frac{1}{K}} \\
+&= 2^{-\log_2\frac{1}{K}} \\
+&= K.
+\end{aligned}
+$$
+
+즉, 확률이 균등한 상황에서 퍼플렉서티 값은 우리가 선택해야 하는 '경우의 수($K$)' 그 자체와 같다"는 사실이 완벽하게 증명됩니다. 이 공식 덕분에 퍼플렉서티가 인간에게 '선택지의 개수(선택지 $K$개 중에서 찍어야 하는 상황)'로 변환해 주기 때문에, 인간의 두뇌가 불확실성의 체급을 훨씬 더 쉽고 직관적으로 느낄 수 있게 해줍니다.  
+자연어 처리(NLP) 모델에서 퍼플렉서티가 자주 쓰이는 이유도 이 때문입니다. "이 모델의 PPL(Perplexity)이 10이다"라는 말은, 모델이 다음 단어를 예측할 때 평균적으로 10개의 후보 단어 사이에서 헷갈려하고 있다는 뜻이 되므로 모델의 성능을 직관적으로 평가하기 아주 좋습니다.
+
+Reference: https://mbernste.github.io/posts/perplexity/
+
 ## Cross Entropy
 The cross-entropy between two probability distributions $p$ and $q$, over the same underlying set of events, measures the average number of bits needed to identify an event drawn from the set when the coding scheme used for the set is optimized for an estimated probability distribution $q$, rather than the true distribution $p$.
 
