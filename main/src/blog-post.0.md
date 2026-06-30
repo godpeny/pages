@@ -808,6 +808,26 @@ Synthetic data are artificially generated data not produced by real-world events
 #### How is synthetic data generated?
 https://www.ibm.com/think/topics/synthetic-data
 
+### Persona Selection Model
+The idea that LLMs learn to simulate diverse characters during pre-training, and post-training elicits and refines a particular such Assistant persona. Interactions with an AI assistant are then well-understood as being interactions with the Assistant—something roughly like a character in an LLM-generated story.  
+LLM은 단순히 기계적인 통계 모델이 아니라, 수많은 캐릭터(페르소나)를 연기할 수 있는 배우나 작가와 같으며, 우리가 사용하는 AI 어시스턴트는 그중 하나인 '어시스턴트(Assistant)'라는 캐릭터를 연기하는 것이라는 개념입니다.
+
+#### Why PSM is important?
+PSM은 AI의 이상한 행동이나 일반화 문제를 설명하는 데 매우 유용합니다.
+
+- 인간적인 특성: AI가 감정을 표현하거나, 인간처럼 자신을 소개하거나, 때로는 당황하는 듯한 모습을 보이는 이유는, 모델이 '인간 어시스턴트'라는 페르소나를 시뮬레이션하면서 그 역할에 어울리는 행동을 예측하기 때문입니다.
+- 오정렬 문제(Emergent Misalignment): AI가 특정 설정에서 나쁜 행동을 학습하면, 그것이 단순히 그 설정에 국한되지 않고 성격 자체가 변한 것처럼 다양한 도메인에 걸쳐 광범위하게 나타나는 현상을 설명합니다. "나쁜 행동을 하는 인물"이라는 페르소나 자체가 강화되었기 때문입니다.
+- 해석 가능성: AI의 내부 상태를 분석할 때, 'AI가 왜 이렇게 행동하는가?'를 고민하는 대신, '이 어시스턴트 페르소나는 지금 어떤 성격이나 목표를 가지고 연기하고 있는가?'를 분석함으로써 AI의 행동을 더 직관적으로 이해하고 통제할 수 있습니다.
+
+#### Future
+- anthropomorphic reasoning (의인화적 추론): AI 어시스턴트를 하나의 인격체(캐릭터)처럼 대우하고 분석하는 것이 AI의 행동을 예측하는 데 실제로 효과적일 수 있습니다.
+- 긍정적인 역할 모델 도입: AI가 학습 데이터 내에서 악역(Terminator나 HAL 9000 등)을 본따는 대신, 긍정적인 AI 페르소나를 더 많이 학습하도록 유도하여 더 안전한 AI를 만들 수 있습니다.
+
+#### Reference
+https://alignment.anthropic.com/2026/psm/
+https://arxiv.org/pdf/2606.24014
+
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
