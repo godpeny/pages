@@ -60,12 +60,31 @@ Entorpy is the expected information content of measurement of $X$.
 It  measures the expected amount of information earned by identifying the outcome of a random trial.  
 In other words, Entropy implies that rolling a die has higher entropy than tossing a coin because each outcome of a die toss has smaller probability $\frac{1}{6}$ than each outcome of a coin toss $\frac{1}{2}$.
 
+Said differently, the entropy of $X$ is simply the average self-information over all of the possible outcomes of $X$.  Intuitively, since self-information describes the degree of surprise of an event, the entropy of a random variable tells us, on average, how surprised we are going to be by the outcome of the random variable.
+
 ### Relationship of Entropy and Information Content
 Entropy of the random variable $X$ can be defined as below.
 $$
 {\displaystyle {\begin{alignedat}{2}\mathrm {H} (X)&=\sum _{x}{-p_{X}{\left(x\right)}\log {p_{X}{\left(x\right)}}}\\&=\sum _{x}{p_{X}{\left(x\right)}\operatorname {I} _{X}(x)}\\&{\overset {\underset {\mathrm {def} }{}}{=}}\ \operatorname {E} {\left[\operatorname {I} _{X}(X)\right]},\end{alignedat}}}
 $$
 It is equal to the expected information content of measurement of $X$.
+
+#### Self-Information
+Claude Shannon's definition of self-information was chosen to meet several axioms:
+
+- An event with probability 100% is perfectly unsurprising and yields no information.
+- The less probable an event is, the more surprising it is and the more information it yields.
+- If two independent events are measured separately, the total amount of information is the sum of the self-informations of the individual events.
+
+즉, 확률이 작을수록 정보량(Self-information = $\operatorname {I} _{X}(x)$)은 더 커집니다. 예를 들어, 친구가 "동전을 던졌더니 앞면이 나왔어." 라고 하면 "그럴 수도 있지." 입니다. 반면 "주사위를 던졌더니 정확히 4가 나왔어." 는 가능한 경우가 6개 중 하나라 더 특정한 정보입니다. 이를통해 확률이 작을수록 더 많은 정보를 알려줌을 알 수 있습니다.
+
+Formally, given a discrete random variable $X$ with probability mass function $p_{X}{\left(x\right)}$ the self-information of measuring $X$ as outcome $x$ is defined as following.
+$$
+\operatorname {I} _{X}(x):=-\log {\left[p_{X}{\left(x\right)}\right]}=\log {\left({\frac {1}{p_{X}{\left(x\right)}}}\right)}
+$$
+Also note that there are various notations for self-information.  
+$$I_{X}(x), h_{X}(x), I(X;Y), H(X), \cdots $$
+
 
 ## Perplexity
 Perplexity is a measure of uncertainty in the value of a sample from a discrete probability distribution. The larger the perplexity, the less likely it is that an observer can guess the value which will be drawn from the distribution.
