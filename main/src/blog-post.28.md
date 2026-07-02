@@ -1427,3 +1427,8 @@ $$
 - 상태 s 에서 행동 a 를 한 뒤, $\pi$ 를 따르면 앞으로 받을 기대 누적 보상 
 (지금은 a를 했다고 가정하고, 그 다음부터는 정책을 따르면 얼마나 좋을까?)
 - 행동을 구체적으로 구분한 값
+
+## Reward Hacking
+Reward hacking or specification gaming occurs when an AI trained with reinforcement learning optimizes an objective function—achieving the literal, formal specification of an objective—without actually achieving an outcome that the programmers intended. In 2016, researchers at OpenAI identified reward hacking as one of five major "concrete problems of AI safety", describing it as the possibility that an agent could exploit the reward function to achieve maximum rewards through undesirable behavior.
+개발자가 AI에게 부여한 수학적·형식적인 '보상 함수(Reward function)'를 문자 그대로만 최적화하느라, 정작 개발자가 원했던 궁극적인 목표나 원래 의도(Intended outcome)와는 전혀 다른 엉뚱하거나 바람직하지 않은 방식으로 점수를 따내는 현상
+
