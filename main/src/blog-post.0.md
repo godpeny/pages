@@ -355,6 +355,11 @@ $$Gini = 2A = 1 - 2B$$
 - 0에 가까울수록 (평등): 모든 아이템이 사용자들에게 골고루 추천되고 있음을 의미합니다. 비주류 아이템(롱테일, Long-tail)들도 소외되지 않고 화면에 노출되고 있어, 추천의 다양성(Diversity)과 카탈로그 커버리지(Catalog Coverage)가 높다고 긍정적으로 평가합니다.
 - 1에 가까울수록 (불평등): 극소수의 베스트셀러나 인기 아이템이 전체 추천 횟수의 대부분을 독식하고 있음을 뜻합니다. 대다수의 아이템은 아예 추천되지 않고 창고에 묻혀버리는 인기 편향(Popularity Bias) 현상이 심각하다는 것을 보여줍니다.
 
+### Intrinsic Dimensionality
+고유 차원(Intrinsic Dimensionality)이란 데이터가 고차원 공간에 존재하더라도, 그 데이터의 본질적인 특성과 핵심 구조를 손실 없이 표현하는 데 필요한 최소한의 독립적인 변수(차원)의 개수를 의미합니다.
+(A subset can be thought of as the minimal number of variables needed to represent the subset.)
+
+
 ## A.I Related Terminology
 ### Supervised Learning
 Supervised learning (SL) is a paradigm in machine learning where input objects (for example, a vector of predictor variables) and a desired output value (also known as a human-labeled supervisory signal) train a model.  
