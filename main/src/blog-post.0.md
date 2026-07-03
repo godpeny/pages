@@ -817,6 +817,19 @@ https://www.ibm.com/think/topics/synthetic-data
 The idea that LLMs learn to simulate diverse characters during pre-training, and post-training elicits and refines a particular such Assistant persona. Interactions with an AI assistant are then well-understood as being interactions with the Assistant—something roughly like a character in an LLM-generated story.  
 LLM은 단순히 기계적인 통계 모델이 아니라, 수많은 캐릭터(페르소나)를 연기할 수 있는 배우나 작가와 같으며, 우리가 사용하는 AI 어시스턴트는 그중 하나인 '어시스턴트(Assistant)'라는 캐릭터를 연기하는 것이라는 개념입니다.
 
+Reference: https://alignment.anthropic.com/2026/psm/
+
+### Monitorability
+Monitorability refers to the ability of an external system or human auditor to accurately predict and understand an AI agent's internal reasoning, intentions, and potential misbehaviors by inspecting its generated Chain-of-Thought (CoT) trace. It acts as a critical early warning system for AI safety.
+
+모델이 최종 결과물(답변)은 안전하고 유익한 것처럼 출력하면서, 그 과정인 내부 연쇄 사고(Chain-of-Thought, CoT)에서는 악의적이거나 기만적인 의도를 가지는지, 그리고 그것을 외부에서 잘 감시(모니터링)할 수 있는 능력
+
+References:
+- https://openai.com/index/evaluating-chain-of-thought-monitorability/ 
+- https://arxiv.org/pdf/2503.11926
+- https://arxiv.org/pdf/2512.18311
+- https://arxiv.org/pdf/2509.15541
+
 #### Why PSM is important?
 PSM은 AI의 이상한 행동이나 일반화 문제를 설명하는 데 매우 유용합니다.
 
