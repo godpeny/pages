@@ -62,6 +62,7 @@ A type of autoencoder that leverages the discrepancy between inputs and outputs 
 
 VAEs are based on variational inference: a technique for estimating the parameters of a probability model.
 https://arxiv.org/pdf/1312.6114
+https://mbernste.github.io/posts/vae/
 
 ### VQ-VAE
 https://arxiv.org/pdf/1711.00937
