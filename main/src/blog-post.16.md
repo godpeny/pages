@@ -13,6 +13,28 @@ Also note that there are two key ideas in transformers, which are <b> Self-Atten
 <b> Multi-Head Attention </b>.
 
 ## Preliminary
+### Decoder-only Models vs Encoder-Decoder Models
+디코더 전용(Decoder-only) 모델과 인코더-디코더(Encoder-decoder) 모델은 머신러닝에서 시퀀스 기반 작업을 처리하는 데 사용되는 두 가지 일반적인 아키텍처입니다. 핵심적인 차이점은 입력을 처리하고 출력을 생성하는 방식에 있습니다. 인코더-디코더 모델은 별도의 컴포넌트를 사용하여 먼저 입력을 이해(인코더)한 다음 출력을 생성(디코더)합니다. 반면, 디코더 전용 모델은 이러한 단계를 하나의 컴포넌트로 결합하여 출력을 직접 생성하며, 이때 입력 자체를 생성 과정의 일부로 활용하는 경우가 많습니다.
+
+#### Decoder-only Models
+디코더 전용 모델은 인코더를 제거하여 아키텍처를 단순화했습니다. GPT-3나 LLaMA 같은 모델들은 이전 토큰들을 기반으로 한 번에 하나의 토큰을 예측하는 자기회귀(Autoregressive) 방식으로 출력을 생성합니다. 이 모델들은 입력을 출력 생성 과정의 일부로 취급합니다.
+
+예를 들어, "프랑스어로 번역해줘: 'Hello'"라는 프롬프트가 주어지면, 모델은 별도의 인코딩 단계 없이 토큰별로 번역을 곧바로 생성합니다. 이 방식은 마스크드 셀프 어텐션(Masked self-attention)에 크게 의존하는데, 이는 시퀀스 내의 각 토큰이 오직 이전 토큰들만 참조하도록 보장합니다. 챗봇이나 코드 완성 같은 텍스트 생성에는 매우 효율적이지만, 정보를 전체적(양방향)으로 처리하기보다 순차적으로 처리하기 때문에 입력을 양방향에서 이해해야 하는 작업에서는 성능이 떨어질 수 있습니다.
+
+#### Encoder-Decoder Models
+인코더-디코더 아키텍처는 번역이나 요약과 같이 입력과 출력의 시퀀스가 서로 뚜렷하게 구별되는 작업을 위해 설계되었습니다. 인코더는 입력(예: 프랑스어 문장)을 처리하여 압축된 표현(흔히 '컨텍스트 벡터'라고 함)으로 만듭니다. 그런 다음 디코더는 이 표현을 사용하여 출력 시퀀스(예: 영어 번역본)를 생성합니다.
+
+예를 들어, 오리지널 트랜스포머(Transformer) 모델은 입력을 분석하기 위해 셀프 어텐션(Self-attention)을 갖춘 인코더를 사용하고, 생성을 위해 셀프 어텐션과 크로스 어텐션(인코더의 출력에 대한 어텐션)을 모두 갖춘 디코더를 사용합니다. BART나 T5 같은 모델들이 이러한 설계를 따르고 있으며, 덕분에 구조화된 출력을 생성하기 전에 입력을 깊이 있게 이해해야 하는 작업에 매우 효과적입니다. 이러한 컴포넌트의 분리는 입력과 출력 간의 복잡한 매핑을 처리할 수 있게 해주지만, 두 개의 컴포넌트를 모두 사용하기 때문에 연산 오버헤드(비용)가 증가합니다.
+
+#### When to Use?
+인코더-디코더 모델은 서로 다른 언어 간의 번역이나 주어진 문맥에서 질문에 답하는 등 입력과 출력의 구조나 의미가 크게 다를 때 뛰어난 성능을 발휘합니다. 이 모델의 2단계 프로세스는 생성을 시작하기 전에 모델이 입력을 완전히 '이해'하도록 보장합니다.
+
+디코더 전용 모델은 텍스트 이어 쓰기나 지시어 이행(Instruction following)처럼 입력과 출력이 긴밀하게 연결되어 있는 작업에 더 적합합니다. 이해와 생성 과정을 하나로 병합하여 생성 워크플로우를 효율화하기 때문입니다. 예를 들어, 코드 생성을 위해 GPT-3를 미세조정(Fine-tuning)하는 작업은 매우 잘 작동하는데, 입력(코드를 설명하는 주석)과 출력(코드 자체)이 강력하게 결합되어 있기 때문입니다.
+
+두 아키텍처 중 하나를 선택하는 것은 대개 작업의 복잡성과 컴퓨팅 자원의 제약에 따라 달라집니다. 인코더-디코더는 복잡한 매핑에 대한 정밀함을 제공하는 반면, 디코더 전용은 생성 위주의 작업에서 효율성을 최우선으로 합니다.
+
+Reference: https://milvus.io/ai-quick-reference/what-are-decoderonly-models-vs-encoderdecoder-models 
+
 ### Self-Attention (Intra-attention)
 Self-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence. Check LSTMN for further understanding of self-attention alogirhtm, it is one of early implementation form of self-attention (based on RNN). 
 
