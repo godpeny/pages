@@ -141,3 +141,35 @@ When network thought that was like tower a little bit,
 you will increase the network’s confidence in the fact
 that there’s a tower by changing the image and the tower comes out.
 
+## SHapley Additive exPlanations (SHAP)
+<img src="images/blog32_shap.png" alt="SHAP" width="400"/>   
+
+SHAP(Shapley Additive Explanations)은 각 특성(Feature)에 중요도 값을 부여하여 머신러닝 모델의 예측 결과를 설명하는 방법입니다. 이 방법은 공동의 성과에 대한 각 참여자의 기여도를 측정하는 협조적 게임 이론(Cooperative Game Theory)의 개념인 샤플리 값(Shapley values)에 기반을 두고 있습니다. SHAP은 특정 데이터 인스턴스에 대한 모델의 예측값과 전체 데이터셋의 평균 예측값 간의 차이에 각 특성이 얼마나 기여했는지를 계산합니다.
+```
+예시: 신용 평가 모델에서 SHAP을 사용하면, 지원자의 낮은 소득이 대출 거절에 -10%만큼 기여한 반면, 좋지 않은 신용 기록은 +15%만큼 기여했음을 보여줄 수 있어 개발자가 모델의 결정 이유를 이해하는 데 도움을 줍니다.
+```
+
+### SHAP의 작동 방식
+SHAP은 체계적인 과정을 통해 각 특성의 영향을 평가합니다.
+특정 예측에 대해 가능한 모든 특성 조합을 고려하고 각각의 한계 기여도(Marginal Contribution)를 계산합니다. 이는 특정 특성이 포함되거나 제외될 때 예측이 어떻게 변하는지를 모든 가능한 특성 순서에 대해 테스트하고 이를 평균 내는 방식입니다.
+
+이 접근 방식은 이론적으로 완벽하지만, 특성이 많은 모델에서는 계산 비용이 매우 많이 들 수 있습니다. 이를 해결하기 위해 SHAP은 다음과 같은 최적화된 구현체를 제공합니다.
+
+- Kernel SHAP: 모델에 구애받지 않는(Model-agnostic) 근사치 계산법
+- Tree SHAP: 트리 기반 모델을 위한 효율적인 계산법
+
+```
+의료 모델 예시: 환자의 위험도를 예측하는 의료 모델에서 Tree SHAP을 사용하면 나이와 콜레스테롤 수치가 고위험 예측의 가장 큰 기여 요인인 반면, 운동 습관은 영향이 적다는 것을 밝혀낼 수 있습니다.
+```
+SHAP을 통해 특성의 영향력을 정량화함으로써 개발자가 모델을 투명하고 신뢰할 수 있게 만들며, 도메인 지식과 일치하도록 도울 수 있습니다.
+
+### Shapley Value
+https://en.wikipedia.org/wiki/Shapley_value
+
+Reference
+- https://arxiv.org/pdf/1705.07874
+- https://forest62590.tistory.com/29
+- https://milvus.io/ai-quick-reference/what-is-shap-shapley-additive-explanations
+
+## LIME(Local Interpretable Model-agnostic Explanations)
+https://c3.ai/glossary/data-science/lime-local-interpretable-model-agnostic-explanations/
