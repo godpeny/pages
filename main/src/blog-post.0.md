@@ -845,6 +845,7 @@ PSM은 AI의 이상한 행동이나 일반화 문제를 설명하는 데 매우 
 https://alignment.anthropic.com/2026/psm/
 https://arxiv.org/pdf/2606.24014
 
+### Continued Pre-Training (CPT)
 
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
