@@ -238,3 +238,19 @@ Optimization of Ranking and Calibration: https://dl.acm.org/doi/pdf/10.1145/3637
 - Unconstrained Monotonic Calibration of Predictions in Deep Ranking
 Systems: https://dl.acm.org/doi/pdf/10.1145/3726302.3730105
 - Unconstrained Monotonic Neural Networks: https://proceedings.neurips.cc/paper_files/paper/2019/file/2a084e55c87b1ebcdaad1f62fdbbac8e-Paper.pdf
+
+### Expected Calibration Error (ECE)
+머신 러닝 모델, 특히 확률을 출력하는 분류 모델의 신뢰도(calibration)를 평가하기 위한 지표입니다. ECE는 정확도(acc)와 신뢰도(conf)의 절대 차이에 대한 가중 평균을 구함으로써, 모델의 추정 "확률"이 실제(관측된) 확률과 얼마나 잘 일치하는지 측정합니다.
+
+1. 확률 예측을 구간으로 나누기(Binning): 예측 확률들을 여러 개의 구간(bins)으로 나눕니다. 예를 들어, [0.0, 0.1), [0.1, 0.2), ..., [0.9, 1.0)와 같은 구간으로 나눌 수 있습니다.
+2. 각 구간의 평균 확률과 정확도 계산: 각 구간에서 모델이 예측한 확률의 평균값(즉, bin의 평균 신뢰도)과 실제로 맞힌 예측의 비율(즉, bin의 정확도)을 계산합니다.
+3. 각 구간의 Calibration Error 계산: 각 구간에 대해 신뢰도와 정확도의 차이를 계산합니다. 이를 각 bin의 calibration error라고 합니다.
+4. 구간별 Calibration Error의 가중 평균 계산: 각 구간의 calibration error에 그 구간 내 샘플의 비율을 가중치로 곱한 후, 모든 구간에 대해 이를 합산합니다. 이 값이 Expected Calibration Error (ECE)가 됩니다.
+
+
+$$ECE = \sum_{m=1}^{M} \frac{|B_m|}{n} \left| \text{acc}(B_m) - \text{conf}(B_m) \right|$$
+- $M$: 구간(bin)의 개수
+- $|B_m|$: 구간 $B_m$에 속한 샘플의 개수
+- $n$: 전체 샘플의 개수
+- $\text{acc}(B_m)$: 구간 $B_m$의 정확도(Accuracy)
+- $\text{conf}(B_m)$: 구간 $B_m$의 평균 신뢰도(Confidence)
