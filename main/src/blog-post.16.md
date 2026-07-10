@@ -329,6 +329,39 @@ Multi-head attention allows the model to jointly attend to information from diff
 
 <img src="images/blog16_multi_head_attention.png" alt="Transformer Intuition" width="400"/>  
 
+### Attention Pooling
+Attention Pooling(어텐션 풀링)은 가변적인 길이의 입력 데이터(시퀀스, 세트 등)를 하나의 고정된 크기의 벡터(요약 표현)로 압축하는 데이터 집약(Aggregation) 기술입니다. 
+
+#### 기존 풀링과의 차이점
+- 전통적인 풀링 (Mean / Max Pooling): 문장이나 이미지 패치 전체의 평균을 내거나 가장 큰 값만 남깁니다. 모든 요소를 획일적인 기준으로 처리하므로 중요한 정보가 희석되거나 손실될 수 있습니다.
+- 어텐션 풀링 (Attention Pooling): 질문이나 목표에 해당하는 쿼리(Query)와 입력 데이터의 특성을 나타내는 키(Key)를 비교하여 유사도 점수(어텐션 가중치)를 계산합니다. 이후 중요한 정보(가중치가 높은 데이터)를 위주로 밸류(Value)들을 가중 합산하여 요약본을 만듭니다.
+
+#### 정의 
+$$ \text{Attention}(q, DB) = \sum_{i=1}^{m} \alpha(q, k_i) v_i $$
+- Query ($q$): 내가 찾고자 하거나 집중해야 하는 기준점입니다.
+- Key ($k_i$) & Value ($v_i$): 입력 데이터 세트($DB$)를 이루는 한 쌍입니다.
+- Weight ($\alpha$): 쿼리($q$)와 키($k_i$) 사이의 유사도를 측정해 정규화한 가중치입니다. 유사도가 높을수록 더 큰 주의(Attention)를 기울입니다.
+
+####  방법론
+<b> 유사도 기반 풀링 (Attention Pooling by Similarity)</b>  
+이 방식은 쿼리와 키 벡터 사이의 수학적 유사도(호환성)를 직접 계산하여 가중치를 구합니다.
+- $\alpha$를 구하는 방법: 쿼리($q$)와 키($k_i$)의 내적(Dot-product) 혹은 벡터 차원의 제곱근으로 나눈 스케일드 내적(Scaled dot-product) 커널 함수를 주로 사용합니다. 두 벡터가 가리키는 방향이 얼마나 일치하는지(유사한지)를 점수로 환산한 뒤, 소프트맥스(Softmax) 등을 통해 정규화하여 가중치 $\alpha$를 얻습니다.
+- 특징: 트랜스포머 모델(BERT, RoBERTa, ViT 등)의 셀프 어텐션 레이어에서 가장 흔하게 쓰이는 표준적인 방식입니다.
+
+<b> 나다라야-왓슨 회귀 기반 풀링 (Attention Pooling via Nadaraya-Watson Regression)</b>  
+이 방식은 통계학의 비모수 회귀 기법에서 유래한 것으로, 쿼리와 키 사이의 '거리(Distance)'와 '분포'를 기반으로 가중치를 구합니다.
+- $\alpha$를 구하는 방법: 쿼리($q$) 위치로부터 각 키($k_i$) 데이터 포인트가 얼마나 떨어져 있는지(거리)를 가우시안 커널 같은 특정 커널 함수에 대입하여 계산합니다. 쿼리와 거리가 가까운 키(즉, 타겟 위치와 유사한 위치에 있는 데이터)에 더 높은 가중치 $\alpha$를 부여하고, 이를 정규화합니다.
+- 특징: 단순히 두 벡터의 내적을 보는 것을 넘어, 입력 데이터의 독립적인 거리와 확률 밀도(어떤 영역에 관측치가 얼마나 몰려있는가)를 고려하여 비모수적 방식으로 가중치를 할당합니다.
+
+*(비모수적 방법: 통계학에서 데이터가 특정 수학적 확률 분포(예: 정규분포)를 따른다는 가정을 하지 않고 분석을 수행하는 방법)
+
+#### Attention vs Attention Pooling
+- Attention (어텐션 메커니즘):입력 시퀀스 내의 모든 토큰(단어 또는 이미지 패치)들이 서로 어떤 관계를 가지고 있는지 평가하고 매핑합니다.예를 들어 "The bank was muddy"라는 문장에서 'bank'가 강둑(muddy)을 의미하는지 은행을 의미하는지 주변 단어들과의 관계를 통해 파악하도록 만드는 상호작용 과정입니다.
+- Attention Pooling (어텐션 풀링):어텐션 메커니즘을 통해 계산된 가중치를 사용하여 전체 시퀀스를 하나의 컴팩트한 고정 크기 벡터(요약본)로 압축하는 최종 단계의 작업입니다.문장 전체나 이미지 전체를 대표하는 단 하나의 표현(Embedding)을 만들어 분류 모델 등에 넘겨줄 때 사용됩니다.
+##### 입력과 출력의 형태 (Input $\rightarrow$ Output)
+- Attention: 시퀀스가 입력되면 각 토큰이 다른 토큰들을 반영한 시퀀스(또는 컨텍스트 벡터의 행렬) 형태로 출력됩니다. 데이터의 길이나 구조가 유지됩니다.
+- Attention Pooling: 가변적인 길이를 가진 시퀀스 데이터를 입력받아 최종적으로 단 하나의 고정된 길이의 벡터로 변환하여 출력합니다.
+
 
 ## Embedding of Transformer
 Implementing weight tying by sharing the same weight matrix between the two embedding layers(input and output embeddings) and the pre-softmax linear transformation. So the same weight matrix is used in three different places.
