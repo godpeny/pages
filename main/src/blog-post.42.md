@@ -239,7 +239,7 @@ Optimization of Ranking and Calibration: https://dl.acm.org/doi/pdf/10.1145/3637
 Systems: https://dl.acm.org/doi/pdf/10.1145/3726302.3730105
 - Unconstrained Monotonic Neural Networks: https://proceedings.neurips.cc/paper_files/paper/2019/file/2a084e55c87b1ebcdaad1f62fdbbac8e-Paper.pdf
 
-### Expected Calibration Error (ECE)
+## Expected Calibration Error (ECE)
 머신 러닝 모델, 특히 확률을 출력하는 분류 모델의 신뢰도(calibration)를 평가하기 위한 지표입니다. ECE는 정확도(acc)와 신뢰도(conf)의 절대 차이에 대한 가중 평균을 구함으로써, 모델의 추정 "확률"이 실제(관측된) 확률과 얼마나 잘 일치하는지 측정합니다.
 
 1. 확률 예측을 구간으로 나누기(Binning): 예측 확률들을 여러 개의 구간(bins)으로 나눕니다. 예를 들어, [0.0, 0.1), [0.1, 0.2), ..., [0.9, 1.0)와 같은 구간으로 나눌 수 있습니다.
