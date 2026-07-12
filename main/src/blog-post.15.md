@@ -467,6 +467,17 @@ $$
 For some $\alpha_i$’s so that $\sum_{i=1}^{m} \alpha_i x^{(i)} = 1$
 
 ## Matrix Representation as row/column vector
+### Matrix as a Collection of Column Vectors
+$$
+A = \begin{bmatrix} \vert & \vert & & \vert \\ v_1 & v_2 & \dots & v_n \\ \vert & \vert & & \vert \end{bmatrix}
+$$
+Each column vector $v_j \in \mathbb{R}^m$ is a matrix of dimension $m \times 1$.
+
+### Matrix as a Collection of Row Vectors
+$$
+A = \begin{bmatrix} - & r_1 & - \\ - & r_2 & - \\ & \vdots & \\ - & r_m & - \end{bmatrix}
+$$
+Each row vector $r_{i} \in \mathbb{R}^m$ is a matrix of dimension $1 \times n$.
 
 
 ## Bounded/Unbounded
