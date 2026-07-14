@@ -846,6 +846,14 @@ https://alignment.anthropic.com/2026/psm/
 https://arxiv.org/pdf/2606.24014
 
 ### Continued Pre-Training (CPT)
+Continued Pre-Training (CPT) is a transfer learning strategy in which a pre-existing, general foundation model is further pre-trained on new domains, languages, or modalities using additional unlabeled or specialized corpora without reinitializing or retraining from scratch.
+
+#### Methology
+The operational core of CPT involves taking a model pre-trained on a large, general corpus (e.g., web data for LLMs, LibriVox for speech models) and exposing it to new data distributions for further unsupervised (self-supervised) learning prior to or in conjunction with supervised fine-tuning.
+
+- Initialization: Start from a checkpoint trained on a broad source corpus.
+- Data Construction: Collect or synthesize in-domain, target-language, or target-modality data (may be unlabeled).
+- Continued Pre-Training Phase: Apply self-supervised learning objectives—such as next-token prediction, masked language modeling, contrastive loss for speech, or denoising autoencoding—on the new data.
 
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
