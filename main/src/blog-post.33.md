@@ -233,6 +233,15 @@ Where $ \|\mathbf {x} -\mathbf {x'} \|^{2}$ may be recognized as the squared Euc
 - 성능 저하: 특성에 포함된 노이즈 정보가 신경망의 표현력을 낭비하게 만들어 전체적인 모델 성능을 떨어뜨립니다.
 - 지연 시간 증가: 불필요하게 중복된 특성들은 계산 부담을 가중시켜 서비스 지연(Serving latency)을 초래합니다.
 
+### Hard Token vs Soft Token
+<b> 하드 토큰 (Hard Tokens) </b>  
+데이터를 미리 정의된 어휘 사전(Vocabulary)에 맞춰 고정된 식별자나 단어로 변환한 이산적인(discrete) 값입니다.  
+연속적인 숫자 데이터(dense features)는 범위를 여러 구간으로 쪼개는 버키팅(bucketing) 방식을 통해 특정 ID를 할당하고, 카테고리형이나 텍스트 데이터는 곧바로 어휘 사전에 매핑하여 생성합니다.
+
+<b> 2. 소프트 토큰 (Soft Tokens) </b>  
+고정된 사전에 얽매이지 않고, 신경망을 통해 데이터의 의미를 연속적인 숫자 공간에 투영한 연속적인 임베딩 벡터(continuous embeddings) 형태입니다.  
+각각의 특징(feature)들을 개별적으로 임베딩(embedding)한 뒤 하나로 연결(concatenating)하고, 이를 다층 퍼셉트론(MLP) 신경망을 통과시켜 최종적으로 M개의 임베딩으로 변환(projecting)하는 과정을 거쳐 만들어집니다.
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
