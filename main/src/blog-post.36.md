@@ -1,6 +1,8 @@
 # Vector Quantizations
 VQ is a classical quantization technique from signal processing that allows the modeling of probability density functions by the distribution of prototype vectors.  
 It works by dividing a large set of points (vectors) into groups having approximately the same number of points closest to them. Each group is represented by its centroid point, as in k-means and some other clustering algorithms. In simpler terms, vector quantization chooses a set of points to represent a larger set of points.
+방대한 데이터 포인트(벡터)들을 대표할 수 있는 소수의 대표 포인트(센트로이드)들로 바꾸어 표현하는 기술입니다.  
+고차원 공간에 있는 수많은 데이터 포인트들을 거리가 가까운 것끼리 묶어 그룹을 만듭니다. 그리고 각 그룹을 가장 중심에 있는 하나의 대표 벡터(Centroid)로 대치합니다. K-평균(K-means) 알고리즘과 유사한 방식입니다.
 
 ## Semantic ID
 Semantic IDs are compact, discrete, learnable “codes” that are representation of an item that captures its semantic meaning (style, category, attributes) rather than raw item identity. Think of it as a compressed code that describes what the item is.
@@ -16,6 +18,22 @@ $$
 C = {c_1, c_2, \dots, c_K}
 $$
 Simply speaking, codebook is a finite collection of learnable vectors from which the model picks the closest vector to represent (quantize) the input.
+
+코드북은 데이터들을 대표할 수 있는 소수의 대표 벡터(Centroid 또는 Codeword)들을 모아놓은 집합체입니다.
+- 코드워드(Codeword): 코드북을 구성하는 하나하나의 대표 벡터입니다.
+- 인덱스(Index): 각 코드워드에 부여된 고유 번호(주소 값)입니다.
+
+코드북의 사용 과정은 크게 [학습 ➔ 인코딩(압축) ➔ 디코딩(복원)]의 3단계로 나뉩니다.
+
+<b> 1. 코드북 생성 및 학습 (Training) </b>  
+먼저 입력될 데이터들의 분포를 분석하여 가장 효율적인 대표 벡터(코드워드)들을 찾아내야 합니다. k-means(K-평균)나 LBG 알고리즘 같은 군집화 알고리즘을 사용합니다.  
+전체 데이터 공간을 여러 영역으로 쪼갠 뒤, 각 영역의 중심점(Centroid)들을 뽑아내어 이를 코드북에 등록합니다. 데이터가 자주 발생하는 영역에는 대표 벡터를 촘촘하게 배치하고, 드물게 발생하는 영역에는 성기게 배치하여 오차를 최소화합니다.
+
+<b> 2. 인코딩 (Encoding / 데이터 압축) </b>  
+실제 데이터를 전송하거나 저장할 때 코드북을 활용해 용량을 획기적으로 줄입니다. 입력 벡터(원본 데이터)가 들어오면, 코드북에 있는 대표 벡터들과 하나씩 거리를 비교합니다. 그중 가장 유사한(거리가 가장 가까운) 대표 벡터를 찾습니다. 그리고 원본 데이터의 거대한 수치들을 그대로 보내는 것이 아니라, 찾아낸 대표 벡터의 '인덱스(번호)'만 저장하거나 전송합니다. 가령 $[0.25, 0.81, -0.12, 0.94]$라는 복잡한 소수점 벡터를 통째로 보내는 대신, 코드북의 7번 벡터와 가장 비슷하므로 그냥 숫자 7 하나만 기록하는 방식입니다.  
+
+<b> 3. 디코딩 (Decoding / 데이터 복원) </b>  
+인덱스(번호)를 받아 다시 원래의 데이터 형태로 되돌리는 과정입니다. 수신 측(혹은 재생 프로그램)도 송신 측과 동일한 코드북을 가지고 있습니다. 가령 압축된 데이터인 인덱스(7)가 들어오면, 코드북에서 7번 번호에 해당하는 대표 벡터를 찾아서 출력합니다. 이때 원본과 완벽히 똑같지는 않지만, 인간의 눈이나 귀로 구별하기 힘들 정도로 유사한 값이 복원됩니다 (손실 압축).
 
 ## Semantic ID Generation
 <img src="images/blog36_semantic_id_generation.png" alt="Semantic ID Generation" width="300"/>  
