@@ -383,14 +383,97 @@ The ROC curve is a visual representation of model performance across all thresho
 
 The ROC curve is drawn by calculating the true positive rate (TPR) and false positive rate (FPR) at every possible threshold (in practice, at selected intervals), then graphing TPR over FPR. 
 
+ROC curve는 threshold를 모델 점수(score)의 최대값부터 최소값까지 모두 변화시켰을 때의 결과를 나타낸다.
+
 <b> AOC(Area Under the ROC Curve) </b>  
 The AOC represents the probability that the model, if given a randomly chosen positive and negative example, will rank the positive higher than the negative.
 
-<img src="images/blog30_roc_auc.png" alt="ROC and AUC" width="400"/>  
+ROC 커브 하단의 전체 면적을 나타내며, 0부터 1 사이의 하나의 단일 숫자로 모델 성능을 요약합니다.
 
+<img src="images/blog30_roc_auc.png" alt="ROC and AUC" width="400"/>  
+<img src="images/blog30_roc_auc_threshold.png" alt="ROC and AUC" width="400"/>  
 The perfect model above, containing a square with sides of length 1, has an area under the curve (AUC) of 1.0. This means there is a 100% probability that the model will correctly rank a randomly chosen positive example higher than a randomly chosen negative example. While the AUC is 0.5, representing a 50% probability of correctly ranking a random positive and negative example. 
 
 https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
+
+<b> TP (True Positive) </b>  
+모델이 Positive으로 예측했고, 실제 결과도 Positive으로 맞춘 경우입니다.
+
+<b> TN (True Negative) </b>  
+모델이 Negative 로 예측했고, 실제 결과도 Negative 으로 맞춘 경우입니다.
+
+<b> FP (False Positive) </b>  
+모델이 Positive 으로 예측했으나, 실제 결과는 Negative 으로 틀린 경우입니다.
+
+<b> FN (False Negative) </b>  
+모델이 Negative으로 예측했으나, 실제 결과는 Positive으로 틀린 경우입니다.
+
+<b> TPR(True Positive Rate) </b>  
+'진짜(Positive)'인 데이터 중 모델이 맞게 '진짜'라고 분류한 비율입니다. 높을수록 좋습니다. (예: 실제 스팸 메일 100개 중 모델이 스팸으로 정확히 잡아낸 개수의 비율)
+$$\text{TPR} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
+
+<b> FPR(False Positive Rate) </b>  
+실제로 '가짜/부정(Negative)'인 데이터 중 모델이 틀리게 '진짜'라고 잘못 분류한 비율입니다. 낮을수록 좋습니다. (예: 정상 메일 100개 중 모델이 스팸으로 잘못 분류해 버린 개수의 비율)
+$$\text{FPR} = \frac{\text{FP}}{\text{FP} + \text{TN}}$$
+
+### Example of ROC Curve on Threshold
+# 📊 임계값(Threshold) 변화에 따른 ROC 좌표 이동 예시
+
+## 1. 데이터 설정
+- **암 환자 (Positive, 2명):** A, B
+- **건강한 사람 (Negative, 1명):** F
+
+| 환자 | 실제 상태 | 모델이 예측한 암 확률 |
+| :---: | :---: | :---: |
+| **A** | **암 (Pos)** | **0.9** |
+| **F** | 건강 (Neg) | **0.6** |
+| **B** | **암 (Pos)** | **0.3** |
+
+- **전체 Positive 수:** 2명
+- **전체 Negative 수:** 1명
+
+---
+
+## 2. 임계값(Threshold)에 따른 좌표 계산
+
+1. **Threshold = 1.0** *(아무도 암으로 판단하지 않음)*
+   - **TP:** 0명 / **FP:** 0명
+   - **$\text{TPR} = 0 / 2 = 0.0$**
+   - **$\text{FPR} = 0 / 1 = 0.0$**
+   - 📍 **좌표:** `(0.0, 0.0)`
+
+2. **Threshold = 0.8** *(확률 0.8 이상인 A만 암으로 판단)*
+   - **TP:** 1명 (A) / **FP:** 0명
+   - **$\text{TPR} = 1 / 2 = 0.5$**
+   - **$\text{FPR} = 0 / 1 = 0.0$**
+   - 📍 **좌표:** `(0.0, 0.5)` *(Y축 상승)*
+
+3. **Threshold = 0.5** *(확률 0.5 이상인 A, F를 암으로 판단)*
+   - **TP:** 1명 (A) / **FP:** 1명 (건강한 F 오탐)
+   - **$\text{TPR} = 1 / 2 = 0.5$**
+   - **$\text{FPR} = 1 / 1 = 1.0$**
+   - 📍 **좌표:** `(1.0, 0.5)` *(오탐 발생으로 X축 오른쪽 이동)*
+
+4. **Threshold = 0.0** *(모두 암으로 판단)*
+   - **TP:** 2명 (A, B) / **FP:** 1명 (F)
+   - **$\text{TPR} = 2 / 2 = 1.0$**
+   - **$\text{FPR} = 1 / 1 = 1.0$**
+   - 📍 **좌표:** `(1.0, 1.0)` *(모두 잡아내어 Y축 상단 도달)*
+
+---
+
+## 3. 요약표 및 이동 경로
+
+| Threshold | 암 판정 대상 | FPR (X축) | TPR (Y축) | ROC 좌표 |
+| :---: | :---: | :---: | :---: | :---: |
+| **1.0** | 없음 | **0.0** | **0.0** | `(0.0, 0.0)` |
+| **0.8** | A | **0.0** | **0.5** | `(0.0, 0.5)` |
+| **0.5** | A, F | **1.0** | **0.5** | `(1.0, 0.5)` |
+| **0.0** | A, F, B | **1.0** | **1.0** | `(1.0, 1.0)` |
+
+> **💡 핵심 요약**  
+> 임계값을 `1.0 → 0.8 → 0.5 → 0.0`으로 계속 내림에 따라  
+> 그래프 상의 좌표가 **`(0,0) → (0, 0.5) → (1, 0.5) → (1, 1)`**로 연결되어 **ROC 커브**가 만들어집니다.
 
 ## Permutation Feature Importance
 Permutation feature importance (PFI) measures the increase in the prediction error of the model after we permute the values of the feature, which breaks the relationship between the feature and the true outcome.
