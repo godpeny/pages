@@ -242,6 +242,9 @@ Where $ \|\mathbf {x} -\mathbf {x'} \|^{2}$ may be recognized as the squared Euc
 고정된 사전에 얽매이지 않고, 신경망을 통해 데이터의 의미를 연속적인 숫자 공간에 투영한 연속적인 임베딩 벡터(continuous embeddings) 형태입니다.  
 각각의 특징(feature)들을 개별적으로 임베딩(embedding)한 뒤 하나로 연결(concatenating)하고, 이를 다층 퍼셉트론(MLP) 신경망을 통과시켜 최종적으로 M개의 임베딩으로 변환(projecting)하는 과정을 거쳐 만들어집니다.
 
+### Modeled Conversions (모델링된 전환)
+모델링된 전환은 개별 사용자를 식별하지 않는 데이터를 사용해서 관찰할 수 없는 전환을 추정합니다. 쿠키 제한이나 개인정보 보호 강화, 크로스 디바이스 사용 등으로 직접 관측할 수 없는 광고 성과를 머신러닝 알고리즘으로 추정해 메워주는 측정 방식입니다.
+
 ## Sequential Recommendation
 https://arxiv.org/abs/1511.06939
 https://arxiv.org/abs/1808.09781
