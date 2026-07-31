@@ -309,6 +309,11 @@ Both models use use the same RNN architecture (or LSTM/GRU). They use teacher fo
 
 Good thing about character-level model is that you don't have to worry about UNK token. But disadvantage is that when longer sequences, it is not as good as word-level language model at capturing long-range dependencies between the early parts of the sentence and the later parts of sentence. There are more tokens than word-level model in the sentence. For example, if the sentence is composed of 10 or 20 words, but the number of characters will be much more. Also character-level model is computationally more expensive than word-level model.
 
+### Casual Language Modeling & Masked Language Modeling
+CLM(Casual Language Modeling) is an autoregressive method where the model is trained to predict the next token in a sequence given the previous tokens. CLM is used in models like GPT-2 and GPT-3 and is well-suited for tasks such as text generation and summarization. However, CLM models have unidirectional context, meaning they only consider the past and not the future context when generating predictions.
+
+MLM(Masked Language Modeling) is a training method used in models like BERT, where some tokens in the input sequence are masked, and the model learns to predict the masked tokens based on the surrounding context. MLM has the advantage of bidirectional context, allowing the model to consider both past and future tokens when making predictions. This approach is especially useful for tasks like text classification, sentiment analysis, and named entity recognition.
+
 ## Vanishing Gradients with RNNs
 Think of a case when language have very long term dependency as below. This is the case that the word from very early can affect what needs to come much later in the sentence.
 ```
