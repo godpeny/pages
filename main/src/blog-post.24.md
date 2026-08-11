@@ -116,6 +116,9 @@ $$
 $$
 While $ \mathbb{E}[X\mu_Y] =  \mathbb{E}[X\mu_Y]  = \mathbb{E}[\mu_X \mu_Y]$.
 
+### Spearman Rank Correlation Coefficient
+https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
+
 ### Covariance and Correlation
 In probability theory and statistics, the mathematical concepts of covariance and correlation are very similar. Since both describe the degree to which two random variables or sets of random variables tend to deviate from their expected values in similar ways.
 
