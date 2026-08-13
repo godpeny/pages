@@ -192,6 +192,10 @@ Large language models (LLMs), currently their most advanced form, are predominan
 
 A large language model (LLM) is a language model trained with self-supervised machine learning on a vast amount of text, designed for natural language processing tasks, especially language generation. The largest and most capable LLMs are generative pretrained transformers (GPTs), which are largely used in generative chatbots such as ChatGPT, Gemini or Claude.
 
+### Quantization in Large Language Models (LLMs)
+https://medium.com/data-science-at-microsoft/exploring-quantization-in-large-language-models-llms-concepts-and-techniques-4e513ebf50ee
+https://velog.io/@jodog0412/LLM-Quantization%EC%9D%98-%EC%9D%B4%EB%A1%A0%EA%B3%BC-%EC%A0%81%EC%9A%A9
+
 ### Language Model with RNN
 But we will focus on Language Model using RNN in this page.
 
