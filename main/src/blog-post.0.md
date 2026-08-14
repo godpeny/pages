@@ -359,6 +359,9 @@ $$Gini = 2A = 1 - 2B$$
 고유 차원(Intrinsic Dimensionality)이란 데이터가 고차원 공간에 존재하더라도, 그 데이터의 본질적인 특성과 핵심 구조를 손실 없이 표현하는 데 필요한 최소한의 독립적인 변수(차원)의 개수를 의미합니다.
 (A subset can be thought of as the minimal number of variables needed to represent the subset.)
 
+### Floating-point Arithmetic
+#### Float16 vs BFloat16
+
 
 ## A.I Related Terminology
 ### Supervised Learning
