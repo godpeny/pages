@@ -303,6 +303,8 @@ $$
 $$
 
 ### Relative Information Gain
+https://arxiv.org/pdf/2510.04277 
+https://www.emergentmind.com/topics/relative-information-gain
 
 ## Mutual Information
 ### Relation to Kullback–Leibler divergence
