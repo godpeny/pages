@@ -22,7 +22,23 @@ $$
 Above is true if and only if $X=E[X]$ with probability 1.  (i.e., if $X$ is a constant)
 
 ### Log Sum Inequality
+Let $a_{1},\ldots ,a_{n}$ and $b_{1},\ldots ,b_{n}$ be nonnegative numbers. Denote the $\Sigma{a_{i}} = a$ and $\Sigma{b_{i}} = b$.  
+The log sum inequality states follows.
+$$
+\sum _{i=1}^{n}a_{i}\log {\frac {a_{i}}{b_{i}}}\geq a\log {\frac {a}{b}}
+$$
+If and only if ${\frac {a_{i}}{b_{i}}}={\frac {a}{b}}$ for all $i$.  
+
+#### Proof of Log Sum Inequality
+Setting $f(x)=x\log x$, where $f(x)$ is convex function.
+$$
+{\begin{aligned}\sum _{i=1}^{n}a_{i}\log {\frac {a_{i}}{b_{i}}}&{}=\sum _{i=1}^{n}b_{i}f\left({\frac {a_{i}}{b_{i}}}\right)=b\sum _{i=1}^{n}{\frac {b_{i}}{b}}f\left({\frac {a_{i}}{b_{i}}}\right)\\&{}\geq bf\left(\sum _{i=1}^{n}{\frac {b_{i}}{b}}{\frac {a_{i}}{b_{i}}}\right)=bf\left({\frac {1}{b}}\sum _{i=1}^{n}a_{i}\right)=bf\left({\frac {a}{b}}\right)\\&{}=a\log {\frac {a}{b}},\end{aligned}}
+$$
+Note that the inequality follows from Jensen's inequality since $f(x)=x\log x$ is convex function and $ {\frac {b_{i}}{b}}\geq 0, \quad \sum _{i=1}^{n}{\frac {b_{i}}{b}}=1$.
+
+#### Reference
 https://en.wikipedia.org/wiki/Log_sum_inequality
+
 
 #### Kullback–Leibler Divergence (KL-Divergence)
 The Kullback–Leibler (KL) divergence is a type of statistical distance measure of how much a model probability distribution $Q$ is different from a true probability distribution $P$.  
