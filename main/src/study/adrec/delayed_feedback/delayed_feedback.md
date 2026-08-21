@@ -1,5 +1,15 @@
 # Delayed Feedback
+### Preliminaries
+#### PU Learning
+Positive-Unlabeled (PU) Learning 은 양성 샘플(관심 대상 인스턴스)과 라벨이 없는 데이터(클래스 라벨을 알 수 없는 인스턴스)만 존재하는 데이터셋을 다룰 때 사용되는 머신러닝 패러다임의 한 종류입니다. 이러한 시나리오는 사기 탐지, 이상 탐지, 희귀 질환 진단, 감정 분석과 같은 다양한 현실 세계 애플리케이션에서 발생하며, 음성 샘플(양성 클래스에 속하지 않는 인스턴스)을 구하는 것이 까다롭거나 비용이 많이 들거나 혹은 전혀 불가능할 때 주로 사용됩니다.
+
+##### PU Learning의 주요 접근 방식
+- 인스턴스 선택 방법: 학습을 보완하기 위해 라벨이 없는 데이터에서 신뢰할 수 있는 음성 인스턴스를 선택하는 것을 목표로 합니다.
+- PU-SVM (Positive-Unlabeled Support Vector Machine): 양성 클래스의 가중치를 재조정하고 양성과 라벨 미지정 인스턴스를 구분하는 결정 함수를 도입하여 표준 SVM을 PU Learning 환경에 맞게 변형합니다.
+- 신뢰도 추정 기반 PU-Learning: 라벨이 없는 인스턴스가 양성 클래스에 속할 확률을 추정하여 학습 과정에서 보다 정보에 기반한 의사결정을 내릴 수 있도록 합니다.
+
 ## Modeling Delayed Feedback in Display Advertising
+
 https://dl.acm.org/doi/10.1145/2623330.2623634
 
 ## A Nonparametric Delayed Feedback Model
