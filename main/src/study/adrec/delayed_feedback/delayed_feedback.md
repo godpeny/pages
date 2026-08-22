@@ -9,6 +9,176 @@ Positive-Unlabeled (PU) Learning 은 양성 샘플(관심 대상 인스턴스)�
 - 신뢰도 추정 기반 PU-Learning: 라벨이 없는 인스턴스가 양성 클래스에 속할 확률을 추정하여 학습 과정에서 보다 정보에 기반한 의사결정을 내릴 수 있도록 합니다.
 
 ## Modeling Delayed Feedback in Display Advertising
+### Delayed Feedback 문제
+
+광고 노출 혹은 클릭이 발생한 시점부터 실제 사용자가 전환을 일으키기까지는 최대 한 달이라는 긴 시간이 걸릴 수 있습니다. 이처럼 피드백이 늦게 오면 모델을 학습시키는 데 방해가 됩니다. 수집 기간(Matching Window)을 너무 짧게 잡으면 나중에 결국 전환할 사용자를 '전환하지 않은 사용자(Negative)'로 잘못 오분류(Mislabeling)하게 되고, 수집 기간을 너무 길게 잡으면 모델을 학습시킬 데이터가 너무 과거의 것이 되어 변화하는 최신 캠페인 트렌드를 신속하게 반영하지 못하는 정체 현상이 발생합니다.
+
+### 제안: Delayed Feedback Model 도입
+
+논문에서는 이 문제를 해결하기 위해 전환 지연 시간(Conversion Delay)을 직접 캡처하는 추가 확률 모델을 제안합니다.
+아직 전환이 발생하지 않은 사용자 데이터를 학습시킬 때 다음과 같이 직관적으로 작동합니다.  
+경과 시간 > 예측 지연 시간: 클릭 후 경과시간(Elapsed Time)이 모델이 예측한 지연 시간보다 충분히 길다면, 이 사용자는 앞으로도 전환하지 않을 부정 샘플(Negative Sample)로 취급합니다.  
+경과 시간이 너무 짧을 때: 클릭한 지 얼마 지나지 않아 아직 전환 여부를 확신하기 어렵다면, 섣불리 부정 샘플로 분류하지 않고 학습 세트에서 제외(Discard)할 수 있도록 확률적으로 가중치를 조절합니다.  
+이를 위해 사용자가 '궁극적으로 전환할 확률'을 예측하는 모델(로지스틱 회귀)과 '전환한다면 그 지연 시간이 얼마나 될지' 예측하는 모델(Survival Analysis 기반 지수 분포)을 결합하여 동시에 학습시킵니다.
+
+### Conversion Rate Prediction
+#### eCPM 계산 및 수식 분해
+광고주가 전환당 비용(CPA)을 지불하는 모델에서 광고 노출 1회당 기대 가치인 eCPM은 아래 공식으로 계산됩니다.
+
+$$\text{eCPM} = \text{CPA} \times \Pr(\text{click}) \times \Pr(\text{conversion} \mid \text{click})$$
+
+즉, CPA 입찰가에 클릭 확률($\Pr(\text{click})$)과 클릭 대비 전환 확률($\Pr(\text{conversion} \mid \text{click})$)을 모두 곱해 가치를 구합니다.
+
+### MODEL
+#### 변수 정의
+1. $X$ : 사용자의 데모그래픽, 광고 지면 정보, 과거 행동 이력 등 예측에 사용되는 특성(Features)들의 집합입니다.
+2. $Y \in \{0, 1\}$ : 모델 학습 시점에 실제 전환이 관측되었는지 여부를 나타냅니다.  
+   $(Y = 1)$: 전환이 발생함.  
+   $(Y = 0)$: 아직 전환이 발생하지 않음.
+3. $C \in \{0, 1\}$ : 사용자가 궁극적으로(시간이 아무리 오래 걸려도) 전환을 할 것인가에 대한 여부입니다. (실제 환경에서는 숨겨진 변수(Latent Variable)입니다.)
+4. $D$ : 사용자가 광고를 클릭한 시점부터 실제 전환하기까지 걸리는 지연 시간(Delay)입니다 (($C=0$)이면 정의되지 않음).
+5. $E$: 사용자가 광고를 클릭한 시점부터 학습 데이터셋을 추출한 시점까지 경과한 시간(Elapsed Time)입니다.
+
+#### 모델 설명 
+##### 기본 설정 및 가정
+$$ Y = 0 \iff C = 0 \quad \text{or} \quad E < D\ $$
+학습 시점에 특정 유저의 전환이 관측되지 않았다($Y=0$)는 것은 다음의 두 가지 경우 중 하나에만 해당한다는 뜻입니다.
+  1. 사용자가 아예 구매할 생각이 없음 ($C=0$)
+  2. 사용자가 궁극적으로 구매할 생각이 있으나($C=1$), 전환하기까지 필요한 시간이 클릭 후 현재까지 경과한 시간보다 길어서 아직 구매 버튼을 누르지 않음 ($D > E$).  
+
+$$\Pr(C, D \mid X, E) = \Pr(C, D \mid X)$$
+ 사용자 특성($X$)가 주어졌을 때, '궁극적 전환 여부 ($C$)'와 '지연 시간($D$)'는 '경과 시간 ($E$)'와 서로 독립이라는 가정입니다. 즉, 클릭 후 며칠이 지났는가($E$) 는 시스템이 데이터를 추출한 시점에 의해 결정되는 수치일 뿐이며, 사용자의 본질적인 구매 성향($C$)이나 실제 구매 고민 기간($D$)에는 영향을 주지 않는다는 자명한 가정입니다.
+
+##### 두 개의 일반화 선형 모델 (GLM)
+$$ \Pr(C = 1 \mid X = x) = p(x) \quad \text{with} \quad p(x) = \frac{1}{1 + \exp(-w_c \cdot x)} $$
+
+$$ \Pr(D = d \mid X = x, C = 1) = \lambda(x) \exp(-\lambda(x)d) \quad \text{with} \quad \lambda(x) = \exp(w_d \cdot x) \\[3pt]
+= \exp(w_d \cdot x) \exp\left(-\exp(w_d \cdot x) d\right)
+$$
+본 논문이 제안하는 두 가지 개별 예측 모델입니다.
+1. $p(x)$: Logistic Regression 모델로, 유저가 궁극적으로 전환할 확률을 예측합니다.
+2. $\lambda(x)$: 전환이 발생한 경우($C=1$)의 전환시간($D$) 의 확률 분포를 나타내는 모델입니다. 전환 지연 시간 ($D$)가 양수임을 반영하기 위해 Exponential Distribution 로 지연 시간을 모델링합니다. 이때 생존 분석의 Hazard Function 역할(아직 전환하지 않은 상태에서 바로 다음 순간에 전환이 일어남) 을 하는 $\lambda(x)$ 는 양수여야 하므로 $\lambda(x) = \exp(w_d \cdot x)$ 로 매개변수화합니다. 
+
+##### 전환이 관측된 샘플 (Positive)의 Likelihood
+$$ \Pr(Y = 1, D = d_i \mid X = x_i, E = e_i) = \lambda(x_i) \exp(-\lambda(x_i)d_i) p(x_i) $$
+이미 전환을 완료한 샘플($Y=1$)이 정확히 $d_i$라는 지연 시간 뒤에 전환할 확률입니다. GLM에서 구한 두 수식, "유저가 궁극적으로 전환할 확률$p(x_i)$ "과 "전환하는 유저의 지연 시간이 정확히 $d_i$ 일 확률 밀도 $\lambda(x_i)\exp(-\lambda(x_i)d_i)$"를 곱해 구합니다.  
+경과 시간 $e_i$ 는 독립 가정에 의해 제거됩니다.
+
+##### 전환이 미관측된 샘플 (Unlabeled)의 전체 확률 분해
+$$ \Pr(Y = 0 \mid X = x_i, E = e_i) \\[3pt] 
+= \Pr(Y = 0 \mid C = 0, X = x_i, E = e_i)\Pr(C = 0 \mid X = x_i) \\[3pt] 
++ \Pr(Y = 0 \mid C = 1, X = x_i, E = e_i)\Pr(C = 1 \mid X = x_i) $$
+아직 전환이 관측되지 않은 상태($Y=0$)의 확률은 "아예 안 살 사람이 안 산 확률" 더하기 "살 사람이지만 지연 때문에 아직 안 산 확률" 로 쪼갤 수 있습니다.
+
+###### ㄴ 살 사람이지만 지연 때문에 아직 안 샀을 확률 (Survival Function)
+$$
+\Pr(Y = 0 \mid C = 1, X = x_i, E = e_i) = \Pr(D > E \mid C = 1, X = x_i, E = e_i) \\[3pt] 
+= \int_{e_i}^{\infty} \lambda(x) \exp(-\lambda(x)t)dt = \exp(-\lambda(x)e_i)
+$$
+궁극적으로 살 사람($C=1$)인데 클릭 후 지금까지 경과한 시간($e_i$) 동안 아직 안 샀을 확률을 계산합니다. 이는 실제 전환 지연 시간이 지금까지 흐른 시간보다 더 길 확률($D > E$)을 뜻합니다. $e_i$부터 무한대까지 지연 확률 밀도 함수(GLM의 두번째 식)를 적분하면 $\exp(-\lambda(x)e_i)$가 도출됩니다.
+
+##### 전환이 미관측된 샘플 (Unlabeled)의 최종 Likelihood
+$$ \Pr(Y = 0 \mid X = x_i, E = e_i) = 1 - p(x_i) + p(x_i)\exp(-\lambda(x_i)e_i) $$
+위 두식에 의해 도출된 학습 데이터셋에 널려 있는 수많은 '미전환 클릭'들의 확률을 수학적으로 표현한 핵심 우도식입니다.
+- $1 - p(x_i)$: 아예 전환 안 할 확률
+- $p(x_i)\exp(-\lambda(x_i)e_i)$: 전환은 할 건데 고민 시간이 길어서 아직 안 보여준 확률
+
+### Optimization
+#### Expectation-Maximization
+숨겨진 변수(Latent Variable)인 '사용자가 궁극적으로 전환할지 여부($C$)'를 추정하기 위해 EM (Expectation-Maximization) 알고리즘을 도입합니다.
+
+
+##### 알고리즘의 배경: 잠재 변수 $C$
+학습 데이터에서 사용자가 실제로 전환을 완료했다면($y_i=1$), 그 유저는 궁극적으로 전환할 사람($C_i=1$)입니다. 하지만 아직 전환하지 않았다면 ($y_i=0$), 이 유저가 아예 안 살 사람($C_i=0$)인지 아니면 살 사람인데 아직 지연 중($C_i=1, D_i > E_i$)인지 알 수 없습니다.  
+따라서 진짜 정답($C$)이 숨겨져 있을 때, 이를 확률적으로 추정하면서 모델을 학습시키는 도구가 EM 알고리즘입니다.
+
+##### E-step (Expectation, 기대 단계)
+
+E-step의 목표는 각 샘플이 궁극적으로 전환할 사후 확률(Posterior Probability)인 $w_i$ 를 계산하는 것입니다.
+$$ w_i := \Pr(C = 1 \mid X = x_i, Y = y_i, E = e_i) $$
+
+- $y_i = 1$: 이미 전환했으므로 $w_i = 1$ 입니다.
+- $y_i = 0$: 미전환 상태일 때 베이즈 정리(Bayes' Theorem)를 적용하여 아래와 같이 계산합니다.
+
+$$ \Pr(C = 1 \mid Y = 0, X = x_i, E = e_i) = \frac{\Pr(Y = 0 \mid C = 1, X = x_i, E = e_i) \Pr(C = 1 \mid X = x_i)}{\Pr(Y = 0 \mid X = x_i, E = e_i)} $$
+
+이 식의 분자와 분모에 Model 단계에서 구한 확률식들을 대입합니다.
+- $Pr(Y = 0 \mid C = 1, X = x_i, E = e_i) = \exp(-\lambda(x_i)e_i)$  (Survival Function)
+- $\Pr(C = 1 \mid X = x_i) = p(x_i)$
+- $ \Pr(Y = 0 \mid X = x_i, E = e_i) = (1 - p(x_i) + p(x_i)\exp(- \lambda(x_i)e_i))$
+
+이를 그대로 대입하여 정리하면 아래 수식이 완성됩니다. 직관적으로 보면, 클릭 후 경과 시간($e_i$)이 매우 짧다면 분자의 지수 파트가 1에 가까워져 $w_i$ 가 커집니다. 즉, "아직 클릭한 지 얼마 안 되었으니 살 사람인데 지연 중일 확률($w_i$)이 높다"고 판단합니다.  
+반대로 클릭 후 한 달이 지나도록($e_i \to \infty$) 소식이 없다면 분자가 0에 수렴하여 $w_i \approx 0$ 이 되고, 모델은 이 샘플을 확실한 부정 샘플(안 살 사람)로 취급하게 됩니다.
+
+$$ w_i = \frac{p(x_i)\exp(-\lambda(x_i)e_i)}{1 - p(x_i) + p(x_i)\exp(-\lambda(x_i)e_i)} $$
+ 
+#####  M-step (Maximization, 최대화 단계)
+
+M-step의 목표는 E-step에서 구한 사후 확률(가중치) $w_i$를 고정한 상태에서, 전체 데이터의 Expected Log-Likelihood 를 가장 크게 만드는 파라미터 $p(x)$의 가중치 $w_c$와 $\lambda(x)$ 함수의 가중치 $w_d$를 찾는 것입니다.
+
+###### 기대 로그 우도의 정의
+$$
+\sum_{i, y_i=1} \log \Pr(Y = 1, D = d_i \mid X = x_i, E = e_i) \\[3pt] 
++ \sum_{i, y_i=0} \left[ (1 - w_i) \log \Pr(Y = 0, C = 0 \mid X = x_i, E = e_i) \\[3pt]
++ w_i \log \Pr(Y = 0, C = 1 \mid X = x_i, E = e_i) \right]
+$$
+- 전환된 샘플($y_i=1$)은 잠재 변수가 $C=1$ 로 확실하므로 일반 로그 우도를 더합니다.
+- 전환되지 않은 샘플($y_i=0$)은 실제 상태가 $C=0$일 확률 $1-w_i$ 과 $C=1$ 일 확률 $w_i$ 로 가중평균된 로그 우도를 반영합니다.
+
+<b>  ㄴ 미전환 샘플의 기대 로그 우도 전개 </b>  
+위 의 오른쪽 항(미전환 샘플 부분)의 결합 확률을 수학적으로 풀어서 전개한 식입니다.
+1. $\Pr(Y = 0, C = 0 \mid X, E) = \Pr(Y = 0 \mid C = 0, X, E)\Pr(C = 0 \mid X) = 1 \cdot (1 - p(x_i)) = 1 - p(x_i)$
+2. $\Pr(Y = 0, C = 1 \mid X, E) = \Pr(Y = 0 \mid C = 1, X, E)\Pr(C = 1 \mid X) = \exp(-\lambda(x_i)e_i) \cdot p(x_i)$
+
+위 두식을 대입해 기대 로그 likelihood를 정리하면 아래와 같습니다.
+$$
+(1 - w_i) \log(1 - p(x_i)) + w_i \left[ \log(p(x_i)) - \lambda(x_i)e_i \right]
+$$
+
+###### 최종 M-step 목적 함수
+Model에서 구한 전환 관측 likelihood 와 위에서 구한 미전환 기대 로그 likelihood를 기대 로그 likelihood 수식에 모두 대입해서 정리하면 아래와 같습니다.
+$$
+\sum_i \left[ w_i \log p(x_i) + (1 - w_i) \log(1 - p(x_i)) \right] + \sum_i \left[ \log(\lambda(x_i))y_i - \lambda(x_i)t_i w_i \right]
+$$
+단, $t_i$ 는 $y_i = 1$ 이면 지연 시간 $d_i$ 가 되고, $y_i = 0$ 이면 경과 시간 $e_i$ 가 됩니다.
+
+앞서 다룬 EM 알고리즘은 수학적으로 아름답게 분리되지만, 하나의 M-step을 밟을 때마다 내부에서 로지스틱 회귀와 지수 회귀를 완전히 수렴할 때까지 매번 새로 풀어야 하는 '중첩된 최적화(Nested Optimization)' 구조 때문에 대규모 데이터 학습 시 속도가 매우 느리다는 치명적인 단점이 있습니다. 
+
+이를 해결하기 위해 논문의 저자들은 잠oint optimization방식을 제안합니다.
+
+#### Joint optimization
+##### 목적 함수 (Regularized Negative Log-Likelihood)
+EM 알고리즘은 M-step을 밟을 때마다 내부적으로 로지스틱 회귀와 지수 회귀 최적화를 수렴할 때까지 매번 새로 돌려야 하므로 학습 속도가 매우 느리다는 단점이 있습니다. 이 때문에 논문의 저자들은 실제 대규모 실험에서 $p(x)$의 가중치 $w_c$와 $\lambda(x)$ 함수의 가중치 $w_d$를 에 대해 동시에 최적화할 수 있는 하나의 단일 목적 함수를 정의합니다.
+
+과적합(Overfitting)을 방지하기 위해 L2 Regularization를 포함한 Regularized Negative Log-Likelihood 를 최소화하는 문제로 정의합니다.
+
+$$ \arg \min_{w_c, w_d} \mathcal{L}(w_c, w_d) + \frac{\mu}{2} \left( \|w_c\|_2^2 + \|wd\|_2^2 \right) $$
+
+- $\mathcal{L}(w_c, w_d)$: 전체 데이터에 대한 Negative Log-Likelihood 입니다.
+- $\frac{\mu}{2} \left( \|w_c\|_2^2 + \|wd\|_2^2 \right)$: 모델이 가질 수 있는 가중치들의 크기를 제한하는 L2 Regularization 입니다. 이 항을 최소화함으로써 특정 피처에 가중치가 과도하게 몰려 오버핏되는 현상을 막아줍니다.
+
+###### ㄴ Negative Log-Likelihood 수식
+$$
+\mathcal{L}(w_c, w_d) = - \sum_{i, y_i=1} \left[ \log p(x_i) + \log \lambda(x_i) - \lambda(x_i)d_i \right] - \sum_{i, y_i=0} \log \left[ 1 - p(x_i) + p(x_i) \exp(-\lambda(x_i)e_i) \right] \\[3pt]
+\text{where} \quad p(x) = \frac{1}{1 + \exp(-w_c \cdot x)}, \quad \lambda(x) = \exp(w_d \cdot x)
+$$
+
+이전에 구한 전환 관측 우도와 미전환 관측 우도에 각각 로그를 취하고 음수 부호를 붙인 뒤, 전체 데이터에 대해 단순 합산한 형태입니다. EM 알고리즘처럼 가중치 $w_i$를 계산하여 대입하는 단계를 거치지 않고, $d_i, e_i, y_i$ 만으로 구성된 단일 로그 우도 함수를 직접 도출한 것입니다.
+
+이 목적 함수는 비록 비볼록 함수이지만, 제약 조건이 없고(Unconstrained) 모든 영역에서 미분 가능하며, 심지어 2차 미분까지 가능(Twice Differentiable)한 아주 유순한 수학적 성질을 지니고 있습니다. 따라서 저자들은 경사하강법 계열 중 대규모 최적화 문제에서 가장 빠르고 효율적이라고 알려진 Quasi-Newton 기반의 L-BFGS 알고리즘 을 사용하여 두 파라미터 $w_c$와 $w_d$를 동시에 최적화하는 데 성공하였습니다.
+
+#### 실제 광고 서빙 (eCPM 계산)
+실시간 경매(RTB) 시스템이 입찰 가치(eCPM)를 평가할 때는 $\Pr(\text{conversion} \mid \text{click})$자리에 우리가 학습시킨 전환 예측 모델 $p(x)$가 그대로 적용됩니다.
+$$
+\text{eCPM} = \text{CPA} \times \Pr(\text{click}) \times p(x)
+$$
+
+반면 지연 예측 모델 $\lambda(x)$는 사용자가 클릭 후 실제 전환에 이르기까지 걸리는 시간적 분포를 나타냅니다. 그렇기 때문에 $\lambda(x)$ 는 오직 학습 단계에서 아직 전환이 관측되지 않은 데이터($Y=0$)를 만났을 때, "이 유저는 아예 안 살 유저인가, 아니면 살 유저인데 단지 아직 안 산 것뿐인가?"를 판단하는 도구 로만 기여하고, 학습이 완료되면 서빙 환경에는 탑재되지 않고 버려집니다.
+
+>Once these two models are trained, the former [$p(x)$] is used to predict the probabilities of conversion while the latter [$\lambda(x)$] is discarded."
+
+(두 모델이 학습 완료되면, 전자는 전환 확률을 예측하는 데 사용되고 후자는 버려진다.)
+
 
 https://dl.acm.org/doi/10.1145/2623330.2623634
 
