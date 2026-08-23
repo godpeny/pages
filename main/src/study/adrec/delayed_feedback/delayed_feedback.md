@@ -183,6 +183,201 @@ $$
 https://dl.acm.org/doi/10.1145/2623330.2623634
 
 ## A Nonparametric Delayed Feedback Model
+### 문제점
+기존에는 Delayed Feedback Model간 지연 분포가 지수 분포(Exponential Distribution)를 따른다고 가정하지만 현실에서 지연 시간이 특정 지수 분포를 따른다는 보장은 없으며, 데이터의 특성에 따라 최적의 지연 시간 분포 형태가 다릅니다.
+
+### 제안: 비모수적 지연 피드백 모델 (NoDeF)
+분포 가정이 없는 모델 설계: 본 논문에서는 지수 분포나 와이블(Weibull) 분포 같은 특정한 모수적 분포(Parametric Distribution)를 사전에 가정하지 않고 시간 지연을 표현하는 모델을 제시합니다.고정된 수학적 분포를 억지로 끼워 맞추는 대신, 노출된 광고의 콘텐츠와 사용자의 다양한 특성(Feature)에 대응하여 시간 지연 분포를 학습합니다.
+
+### Model
+NoDeF는 크게 두 가지 확률 모델의 결합으로 구성됩니다.
+1. 시간 지연 모델 (Time Delay Model): 광고 클릭 후 구매 전환까지 걸리는 시간 지연을 모델링.
+2. 전환 모델 (Conversion Model): 새로운 사용자에게 광고가 노출되었을 때 궁극적으로 전환할지 여부를 예측하는 이진 분류기.
+
+#### 변수 정의
+- 확률 밀도 함수 (PDF) $f(t)$: 특정 시점 $t$에 정확히 이벤트(구매 전환)가 발생할 순간적인 확률 밀도를 뜻합니다.
+- 누적 분포 함수 (CDF) $F(t)$: 처음(시점 0)부터 특정 시점 $t$까지의 누적 기간 동안 이벤트가 발생할 확률의 합입니다. $F(t) = \int_{0}^{t} f(x)dx $
+- 생존 함수 (Survival Function) $s(t)$: 시점 $t$가 될 때까지 이벤트가 발생하지 않고 '생존'(미전환 상태로 유지)해 있을 확률을 뜻합니다. 전체 확률 1에서 이미 전환이 완료된 누적 확률을 빼서 구합니다.  $s(t) = 1 - F(t) $
+- 위험 함수 (Hazard Function) $h(t)$: 시점 $t$ 직전까지는 아직 이벤트가 발생하지 않은 상태에서, 정확히 그 시점 $t$에 도달하는 순간 이벤트(구매 완료)가 터질 비율을 뜻합니다. 특정 시점의 확률 밀도 함수 $f(t)$를 그 시점까지 아직 이벤트가 안 일어나고 버텼을 생존 확률 $s(t)$로 나누어 정의합니다. $h(t) = \frac{f(t)}{s(t)} $
+  - 위험 함수 $h(t)$만 정의하면, 적분을 통해 생존 함수 $s(t)$를 유도할 수 있습니다.  
+  $s(t) = \exp \left( - \int_{0}^{t} h(x)dx \right)$
+
+### 비모수적 위험 함수의 정의 
+#### 비모수적 위험 함수 (Hazard Function)
+$$
+h(d_i; x_i, V) = \sum_{l=1}^L \alpha_l(x_i; V) k(t_l, d_i)
+$$
+$i$ 번째 샘플(유저 및 광고 피처 $x_i$)의 시간 지연 $d_i$ 시점에서의 순간적인 전환율을 정의합니다. 시간축 위에 일정한 간격으로 배치된 $L$ 개의 의사 포인트(Pseudo-points) $t_l$ 을 설정합니다. 그리고 각 의사 포인트에서의 지연 가중치(강도)를 나타내는 강도 함수($\alpha_l(x_i; V)$)와 전환 시점과의 시간적 유사도를 측정하는 커널 함수 ($k(t_l, d_i)$)를 곱해 모두 더한(가중합) 형태입니다.  
+(커널 밀도 추정(KDE)의 아이디어를 차용하되, 모든 관측 데이터를 계산하는 대신 고정된 \\(L\\)개의 점만 계산하므로 연산이 매우 빠릅니다.)
+
+<b> 가우시안 커널 (Gaussian Kernel) </b>  
+$$ k(t_l, \tau) = \exp \left( -\frac{(t_l - \tau)^2}{2h^2} \right) $$
+* **설명**: 대역폭(Bandwidth) $h > 0$ 를 가진 가우시안 커널 함수입니다. 의사 포인트($t_l$) 과 실제 지연 시간 ($\tau$ 가 시간상으로 가까울수록 큰 값을 가집니다.
+
+<b> $[0, a]$ 구간에서의 커널 적분값 (Analytical Integration) </b>   
+$$ 
+\int_{0}^{a} k(t_l, \tau)d\tau = -h \frac{\sqrt{\pi}}{2} \left[ \text{erf} \left( \frac{t_l - a}{\sqrt{2}h} \right) - \text{erf} \left( \frac{t_l}{\sqrt{2}h} \right) \right] 
+$$
+오차 함수(Error Function, $\text{erf}$)를 사용하여 가우시안 커널을 시간 $[0, a]$까지 적분한 값입니다. 복잡한 수치적 근사 없이 수학적으로 정확하고 빠르게 적분값을 얻을 수 있습니다.
+
+<b> $[a, \infty)$ 구간에서의 커널 적분값 </b>  
+$$
+\int_{a}^{\infty} k(t_l, \tau)d\tau = h \frac{\sqrt{\pi}}{2} \left[ 1 + \text{erf} \left( \frac{t_l - a}{\sqrt{2}h} \right) \right]
+$$
+마찬가지로 가우시안 커널을 특정 시점 $[a, \infty)$ 적분한 값입니다.
+
+<b> 강도 함수 (Intensity Function) </b>  
+$$ \alpha_l(x_i; V) = \left( 1 + \exp \left( -V_l^T x_i \right) \right)^{-1} $$
+
+가상의 의사 포인트 $t_l$ 에 부여될 가중치(강도)를 계산하는 함수입니다. 유저 및 광고의 입력 특징 벡터 $x_i$ 와 매개변수 행렬 $V$의 $l$ 번째 행 벡터 $V_l$ 의 결합을 시그모이드(Sigmoid) 함수에 통과시켜 구합니다. 시그모이드를 사용하므로 $\alpha_l$ 의 값은 항상 0에서 1 사이가 되며, 이는 위험 함수 $h(t)$가 물리적으로 늘 양수를 유지할 수 있도록 합니다.
+
+### 생존 함수와 전환 사건 확률 
+#### 생존 함수 (Survival Function)
+$$
+s(d_i; x_i, V) = \exp \left( -\int_{0}^{d_i} h(\tau; x_i, V) d\tau \right) = \exp \left( -\sum_{l=1}^{L} \alpha_l(x_i; V) \int_{0}^{d_i} k(t_l, \tau) d\tau \right)
+$$
+$d_i$ 시점까지 사용자가 아직 구매(전환)하지 않고 미전환 상태로 버티고 있을 확률입니다. 앞서 구한 비모수적 위험 함수 $h(t)$ 를 생존 분석의 변환 공식,$s(t) = \exp \left( - \int_{0}^{t} h(x)dx \right)$ 에 대입하여 도출했습니다.
+
+#### **NoDeF의 시간 지연 모델**
+$$
+p(d_i \mid x_i, c_i = 1) = s(d_i; x_i, V) h(d_i; x_i, V)
+$$
+궁극적으로 구매할 유저($c_i = 1$)가 정확히 클릭 후 $d_i$ 시점에 구매를 완료할 확률 밀도입니다.  
+관계식 $f(t) = s(t)h(t)$ 를 따른 것으로, $d_i$ 시점까지 구매하지 않고 버텼을 확률($s$)과 바로 그 시점 $d_i$에 구매를 터뜨릴 확률($h$) 의 곱으로 정의됩니다.
+
+#### **NoDeF의  전환 모델**
+궁극적으로 전환이 일어날 사건을 나타내는 잠재 변수(Hidden Variable)를 $c_i \in \{0, 1\}$ 라고 할 때, 본 논문에서는 로지스틱 회귀를 사용하여 예측합니다.
+$$
+p(c_i = 1 \mid x_i; w) = \left( 1 + \exp(-w^T x_i) \right)^{-1} \\[3pt]
+p(c_i = 0 \mid x_i; w) = 1 - p(c_i = 1 \mid x_i)
+$$
+유저 및 광고 피처 $x_i$ 와 가중치 벡터 $w$를 결합하여, 해당 유저가 시간과 상관없이 언젠가는 최종적으로 전환할 확률을 예측합니다.
+
+#### **Joint Model**
+최종적으로 NoDeF는 이 두 모델을 결합하여, "어떤 유저가 궁극적으로 구매할 확률"과 "구매한다면 $d_i$라는 시간 지연 뒤에 구매할 확률"을 곱한 하나의 결합 확률(Joint Probability) 형태로 데이터를 해석합니다. 즉, 궁극적으로 살 유저($c_i = 1$)가 클릭 후 정확히 $d_i$ 시점에 전환을 완료할 결합 확률은 다음과 같이 두 모델식의 곱셈으로 표현됩니다.
+$$ p(c_i = 1, d_i \mid x_i; \Theta) = \underbrace{p(c_i = 1 \mid x_i; w)}_{\text{전환 모델}} \times \underbrace{p(d_i \mid x_i, c_i = 1; V)}_{\text{시간 지연 모델}} \\[3pt]
+= p(c_i = 1 \mid x_i; w) \times \Big[ s(d_i; x_i, V) h(d_i; x_i, V) \Big] $$
+
+
+### 목적함수
+$w$와 $V$를 역산해 내기 위한 목적 함수를 구합니다.
+#### 관측 데이터의 우도 함수 정의  (Likelihood of Observation)
+$$
+I_1 = \{i \mid y_i = 1, i = 1, 2, \dots, n\} \\[3pt]
+I_0 = \{i \mid y_i = 0, i = 1, 2, \dots, n\} 
+$$
+전체 데이터를 관측 기간 내에 실제 전환이 완료된 데이터($I_1$)와 전환이 관측되지 않은 데이터($I_0$)로 나눕니다.
+
+#### 전체 데이터 관측 우도
+$$
+p(D; \Theta) = \prod_{i=1}^n \sum_{c_i \in \{0, 1\}} p(y_i \mid x_i, c_i, e_i) p(c_i \mid x_i) p(d_i \mid x_i, c_i = 1)
+$$
+1. $p(c_i \mid x_i)$ : 사용자의 특징 특징 벡터($x_i$)가 주어졌을 때, 이 사용자가 시간과 관계없이*궁극적으로 전환을 일으킬 확률입니다 (로지스틱 회귀로 예측).
+2. $p(d_i \mid x_i, c_i = 1)$ : 만약 사용자가 궁극적으로 전환할 사람($c_i = 1$)이라면, 클릭 후 정확히 $d_i$ 만큼의 시간 지연 후에 전환을 완료할 확률 밀도입니다.
+3. $p(y_i \mid x_i, c_i, e_i)$: 궁극적 전환 여부($c_i$)와 경과 시간($e_i$)이 주어졌을 때, 데이터 마감 시점에 우리 시스템에 실제 관측 결과($y_i \in \{0, 1\}$)로 기록될 조건부 확률입니다.
+4. $D = \{(x_i, y_i, d_i, e_i)\}_{i=1}^n$: 광고 로그 시스템에서 수집된 전체 관측 데이터셋(Observation Set)
+5. $\Theta = \{V, w\}, V \in \mathbb{R}^{L \times M}, w \in \mathbb{R}^M $: 학습을 통해 찾아내야 하는 모델의 전체 파라미터 집합입니다. 
+
+<b> 일관성 보증 조건 (Consistency Conditions) </b>  
+궁극적으로 전환하지 않을 사람($c_i = 0$)의 상태적 특성을 정의합니다.
+$$
+p(y_i = 0 \mid x_i, c_i = 0, e_i) = 1 \\[3pt]
+p(y_i = 1 \mid x_i, c_i = 0, e_i) = 0
+$$
+최종 전환 의사가 없는 유저($c_i = 0$)라면 경과 시간($e_i$)에 상관없이 무조건 관측 라벨은 미전환($y_i = 0$)이어야 하며, 실제 전환 완료($y_i = 1$)가 관측될 확률은 절대 있을 수 없습니다.
+
+#### 조건 분해를 통한 우도 함수의 변형
+$$
+p(D; \Theta) = \left[ \prod_{i \in I_1} \sum_{c_i \in \{0, 1\}} p(y_i \mid x_i, c_i, e_i) p(c_i \mid x_i) p(d_i \mid x_i, c_i = 1) \right] \\[3pt]\times \left[ \prod_{i \in I_0} \sum_{c_i \in \{0, 1\}} p(y_i \mid x_i, c_i, e_i) p(c_i \mid x_i) p(d_i \mid x_i, c_i = 1) \right]
+$$
+전체 데이터셋을 실제로 전환이 완료된 긍정 샘플 그룹($I_1$)과 아직 미전환 상태인 부정 샘플 그룹($I_0$)으로 나눕니다. 
+
+<b> 긍정 샘플 그룹 ($i \in I_1$), 즉 실제 전환 관측값 ($y_i = 1$)인 경우 </b>  
+이 그룹은 이미 실제로 구매를 하여 $y_i = 1$ 로 관측된 상태입니다. 시그마 식의 $y_i$ 자리에 1을 대입하고, $c_i = 0$ 과 $c_i = 1$ 일 때의 합으로 풉니다.
+
+$$
+\sum_{c_i \in \{0, 1\}} p(y_i = 1 \mid x_i, c_i, e_i) p(c_i \mid x_i) p(d_i \mid x_i, c_i = 1) \\[3pt]
+= \underbrace{p(y_i = 1 \mid x_i, c_i = 0, e_i) p(c_i = 0 \mid x_i) p(d_i \mid x_i, c_i = 1)}_{c_i = 0 \text{ 인 경우}} \\[3pt]
++ \underbrace{p(y_i = 1 \mid x_i, c_i = 1, e_i) p(c_i = 1 \mid x_i) p(d_i \mid x_i, c_i = 1)}_{c_i = 1 \text{ 인 경우}}
+$$
+
+- 첫 번째 항 ($c_i = 0$): 일관성 조건 식 $p(y_i = 1 \mid x_i, c_i = 0, e_i) = 0$ 이므로, 항 전체가 0이 되어 증발합니다.
+- 두 번째 항 ($c_i = 1$): 실제 구매 완료 상태가 관측되었으므로 이 조건부 관측 확률 $p(y_i = 1 \mid x_i, c_i = 1, e_i)$ 은 1이 됩니다. 또한, 실제 수집된 지연 시간이므로 지연 확률 밀도를 $p(d_i \mid y_i = 1, x_i)$로 표기할 수 있습니다.
+
+따라서, $I_1$ 그룹을 정리하면 아래와 같습니다.
+$$ \prod_{i \in I_1} p(c_i = 1 \mid x_i) p(d_i \mid y_i = 1, x_i) $$
+
+
+<b> 부정/미전환 샘플 그룹 ($i \in I_0$), 즉 실제 전환 관측값 ($y_i = 0$) 인 경우 </b>  
+이 그룹은 관측 종료 시점까지 구매하지 않은 상태($y_i = 0$)입니다. 이들은 진짜 안 살 사람($c_i = 0$)일 수도 있고, 살 예정인데 시간만 지연되고 있는 사람($c_i = 1$)일 수도 있습니다. 다만, 이 유저들은 아직 전환하지 않았기 때문에 실제 지연 시간 데이터인 $d_i$ 를 현실적으로 관측할 수 없습니다 ($d_i = \infty$). 데이터상에 관측되지 않은 임의의 $d_i$ 에 대해 확률 주변화(Marginalization)를 거치게 되므로, 특정 시점의 단일 확률 밀도 함수인 $p(d_i \mid x_i, c_i = 1)$ 항은 계산에서 제외됩니다.   
+($p(y_i = 0 \mid x_i, c_i=1, e_i)= \int_{e_i}^{\infty} \underline{p(d_i = \tau \mid x_i, c_i=1)} d\tau$)
+
+그 결과, 부정 샘플 그룹 $I_0$에 대한 우도는 다음과 같이 단순화됩니다.
+$$
+\prod_{i \in I_0} \sum_{c_i \in \{0, 1\}} p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i)
+$$
+
+#### 목적함수 식의 완성 
+$$
+p(D; \Theta) = \prod_{i \in I_1} p(c_i = 1 \mid x_i) p(d_i \mid y_i = 1, x_i) \times \prod_{i \in I_0} \sum_{c_i \in \{0, 1\}} p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i)
+$$
+
+<b> 미전환 상태의 확률 분해 </b>  
+미전환 그룹 중 '살 예정인데 지연되는 사람($c_i = 1$)'이 관측 마감 시점 $e_i$ 까지 여전히 미전환($y_i = 0$) 상태로 남아있을 확률을 수학적으로 전개하는 과정입니다.
+
+<b> 지연 시간이 경과 시간보다 클 확률 </b>  
+$$
+p(y_i = 0 \mid x_i, c_i = 1, e_i) = p(d_i > e_i \mid x_i, c_i = 1, e_i) \\[3pt]
+= 1 - \int_{0}^{e_i} p(d_i = \tau \mid c_i = 1, x_i) d\tau
+$$
+실제 구매를 행하기까지 걸릴 지연 시간($d_i$)가, 광고 클릭 후 현재까지 흐른 관찰 시간($e_i$) 보다 더 길기 때문에 아직 미전환 상태로 관측되는 것임을 수학적으로 명시한 것입니다.  
+$ d_i > e_i $ 가 발생할 확률은, 전체 확률 1에서 '처음부터 경과 시점 $e_i$ 까지의 사이에 이미 구매가 완료되었을 누적 확률'을 차감한 여사건의 확률과 같습니다.
+
+<b> 최종 생존 함수로의 수렴 </b>  
+$$ p(y_i = 0 \mid x_i, c_i = 1, e_i) = s(e_i; x_i, V) $$
+$s(t) = 1 - F(t)$의 정의에 따라, 위 식의 구조는 정확히 경과 시간 $e_i$ 시점에서의 생존 함수 $s(e_i; x_i, V)$ 와 일치하게 됩니다. 결과적으로 미관측 유저의 우도는 복잡한 적분 연산 없이, 우리가 정의한 생존 확률 식 $s(e_i; x_i, V)$ 를 그대로 대입하여 구동할 수 있습니다.
+
+### Learning Algorithm
+궁극적으로 최적화하려는 대상은 관측된 데이터의 로그 우도인 "목적함수 식의 완성"의 수식의 로그 수식입니다. 하지만 로그 안에 덧셈($\log(A + B$))이 들어가 있으면, 이를 가중치 벡터 $w$ 나 $V$ 로 편미분할 때 분수 형태의 매우 복잡한 연쇄 법칙(Chain Rule)이 생기며 결합 연산이 얽히게 됩니다. 컴퓨터가 경사하강법으로 기울기(Gradient)를 구하는 것이 사실상 불가능해집니다.
+직접 계산하기 불가능한 실제 로그 우도(Log-likelihood) 함수를 대신하여 컴퓨터가 극대화할 수 있는 '수학적 하한선(Lower Bound)'을 젠센의 부등식을 이용하여 정의합니다. 
+
+$$ \log p(D; \Theta) = \sum_{i \in I_1} \log \left[ p(c_i = 1 \mid x_i) p(d_i \mid y_i = 1, x_i) \right] + \sum_{i \in I_0} \log \left( \sum_{c_i \in \{0, 1\}} p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i) \right) $$
+
+
+위 로그를 취한 목적함수를 변형합니다. 미전환 유저들의 진짜 의도($c_i$)에 대한 임의의 가상 확률 분포 $q_i(c_i)$를 시그마 식 안에 추가합니다. 식의 원래 값을 변하게 하지 않기 위해 $q_i(c_i)$를 곱하고 동시에 나누어 줍니다. 이제 젠센의 부등식을 적용하여 로그 기호를 시그마 안쪽으로 밀어 넣습니다. $I_1$ 항은 '불확실성'이 전혀 없는, 정답이 이미 100% 공개된 상태이기 때문에 가상 확률 분포를 추가할 필요가 없기에 그대로 둡니다.
+
+$$
+\sum_{i \in I_0} \log \left( \sum_{c_i \in \{0, 1\}} q_i(c_i) \frac{p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i)}{q_i(c_i)} \right) \\[3pt]
+\ge \sum_{i \in I_0} \sum_{c_i \in \{0, 1\}} q_i(c_i) \log \left( \frac{p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i)}{q_i(c_i)} \right) \\[3pt]
+= \sum_{i \in I_0} \sum_{c_i \in \{0, 1\}} q_i(c_i) \log \left[ p(y_i = 0 \mid x_i, c_i, e_i) p(c_i \mid x_i) \right] - \sum_{i \in I_0} \sum_{c_i \in \{0, 1\}} q_i(c_i) \log q_i(c_i)
+$$
+
+우측의 $-\sum q_i \log q_i$ 항은 정보이론에서 말하는 분포 $q$의 엔트로피(Entropy) 입니다.EM 알고리즘의 최적화 단계(M-step)에서, 이 가상 분포 $q_i(c_i)$는 이전 스텝에서 계산되어 고정된 상수($\bar{q}_{ic_i}$)로 취급됩니다. 따라서 미분하면 0이 되어 사라지게 되므로 생략합니다. 정리하면 최종적으로 아래 등식이 성립합니다.
+
+$$ \log p(D; \Theta) \ge Q(\Theta; \bar{\Theta}) \\[3pt]
+= \sum_{i \in I_1} \log \left[ p(c_i = 1 \mid x_i) p(d_i \mid x_i, c_i = 1) \right] + \sum_{i \in I_0} \sum_{c_i \in \{0, 1\}} \bar{q}_{i c_i} \log \left[ p(y_i \mid x_i, c_i, e_i) p(c_i \mid x_i) \right] $$
+
+EM(Expectation-Maximization) 알고리즘을 사용해 $\bar{q}_{ic}$와 실제 가중치 $\{w, V\}$를 시소 타듯이 번갈아 가며 구합니다.
+```
+[초기화] 가중치 w와 V를 아무 무작위 숫자로 설정한다.
+  ↓
+▶ [E-Step]
+  1. 현재 세팅된 w와 V를 위의 1번, 2번 식에 대입한다.
+  2. 그 대입해서 나온 확률값들을 곱해 미전환 유저들의 임시 사후 확률 값 "q_ic"를 계산해 고정한다.
+  (사후 확률인 $\bar{q}_{ic}$는  Joint Model(전환 모델 $\times$ 시간 지연 모델)로 계산)
+  ↓
+▶ [M-Step]
+  1. 위에서 계산해 둔 "q_ic"를 변하지 않는 고정 상수로 취급한다.
+  2. 이 q_ic를 가중치 삼아 목적 함수 Q를 조립하고, L-BFGS 최적화기를 돌려 진짜 가중치인 w와 V를 더 나은 값으로 갱신한다.
+  ↓
+(이 과정을 w와 V가 더 이상 변하지 않고 수렴할 때까지 무한 반복한다!)
+```
+### Prediction
+광고주나 시스템이 알고자 하는 목적에 따라 예측 방식을 이원화하여 처리합니다.  
+- 시간 경과와 무관한 궁극적인 전환 확률 예측: 전환모델 ($p(c_i = 1 \mid x_i; w) = \left( 1 + \exp(-w^T x_i) \right)^{-1}$)
+- 특정 시간 제한 $E$ 내에 "실제 전환이 완료될 확률" 예측: Joint Model 클릭 직후($0$)부터 마감 시간($E$) 사이의 모든 타이밍에 구매가 발생할 확률을 전부 더함(=적분) ($ \int_{0}^{E} p(c = 1 \mid x; w) \times p(d = t \mid x, c = 1; V) dt $)  
+
+
 https://arxiv.org/abs/1802.00255
 
 ## Addressing Delayed Feedback for Continuous Training
