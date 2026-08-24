@@ -377,10 +377,122 @@ EM(Expectation-Maximization) 알고리즘을 사용해 $\bar{q}_{ic}$와 실제 
 - 시간 경과와 무관한 궁극적인 전환 확률 예측: 전환모델 ($p(c_i = 1 \mid x_i; w) = \left( 1 + \exp(-w^T x_i) \right)^{-1}$)
 - 특정 시간 제한 $E$ 내에 "실제 전환이 완료될 확률" 예측: Joint Model 클릭 직후($0$)부터 마감 시간($E$) 사이의 모든 타이밍에 구매가 발생할 확률을 전부 더함(=적분) ($ \int_{0}^{E} p(c = 1 \mid x; w) \times p(d = t \mid x, c = 1; V) dt $)  
 
-
 https://arxiv.org/abs/1802.00255
 
 ## Addressing Delayed Feedback for Continuous Training
+### 지연된 피드백 딜레마
+사용자가 광고 노출을 보고 난 후 실제 클릭을 하기까지 대기 시간이 발생한다는 점입니다. 최신 데이터로 실시간 학습을 하려 할 때, 아직 클릭 여부가 결정되지 않은 최근의 광고 노출을 어떻게 레이블링해야 하는지에 대한 기술적 딜레마가 존재합니다.
+- 방안 A: 데이터가 수집될 때까지 일정 시간(Attribution Window) 대기 후 학습하면 데이터를 충분히 수집하기 위해 대기하는 동안 예측 모델이 노후화 되는 단점이 있습니다. 분석 결과에 따르면, Twitter의 경우 모델 업데이트가 단 5분만 지연되어도 서빙 성능에 치명적인 손상을 입는 것으로 밝혀졌습니다.
+- 방안 B: 즉각적으로 '부정(Negative, 미클릭)' 레이블로 처리하여 즉시 학습하면 실제 데이터 분포보다 거짓 부정(Fake Negative) 샘플이 많아져 모델이 CTR을 과소평가하는 문제가 생깁니다.
+
+### 제안: 얕은 선형 모델 기반이 아닌 딥 신경망 구조로 지연된 피드백 문제를 극복
+본 연구는 광고가 노출된 시점부터 사용자의 실제 반응이 올 때까지 이추적하여 반영하겠다는 연속 학습 구조를 채택합니다. 때문에 학습에 쓰는 데이터는 "긍정(Positive) 레이블은 100% 진짜 클릭이지만, 부정(Negative) 레이블 속에는 진짜 미클릭과 아직 클릭이 지연된 가짜 부정(Fake Negative)이 마구 뒤섞여 있는 상태"가 됩니다.
+
+### 모델 아키텍쳐
+본 연구에서 지연된 피드백 문제를 해결하기 위해 평가 및 비교 분석한 두 가지 핵심 모델 구조의 상세 스펙을 설명하고 있습니다.
+
+#### Logistic Regression 
+이 모델이 예측하는 클릭률(CTR) $f_\theta(\mathbf{x})$는 다음과 같은 로지스틱 수식으로 계산됩니다:
+$$
+f_\theta(\mathbf{x}) = \frac{1}{1 + \exp(-\mathbf{w}_c \cdot \mathbf{x})} = \sigma(\mathbf{w}_c \cdot \mathbf{x})
+$$
+- $\mathbf{x}$: 모델의 입력 벡터입니다. 특정 광고 요청 시점에 수집된 사용자(user) 정보 및 노출 후보 광고(ad candidates)들에 관련된 수천 개의 특성 피처들이 고차원의 희소 벡터(sparse representation) 형태로 표현된 것입니다.
+- $\mathbf{w}_c$: 예측 클릭률(pCTR) 계산을 위해 학습 대상이 되는 가중치(weight) 벡터입니다.
+- $\mathbf{w}_c \cdot \mathbf{x}$ : 가중치 벡터와 입력 피처 벡터 간의 내적(dot product) 연산입니다. 선형 결합 결과를 도출합니다.
+- $\sigma(\cdot)$ 시그모이드 함수로 선형 내적 연산 결과를 입력받아 항상 0~1 사이의 값으로 바꾸어 예측 확률 값(pCTR)을 최종 계산해 냅니다.
+
+#### Wide-and-Deep Model 
+현대 추천 시스템에서 다뤄지는 대규모 고차원 희소 피처들의 복잡성과 다양성을 함께 해결하기 위해 고안된 하이브리드 신경망 구조입니다. 크게 두 종류의 예측 컴포넌트가 결합되어 동작합니다:
+- Wide 영역 (일반화된 선형 모델): 원본 피처와 함께, 피처들을 임의로 결합한 교차곱 피처 변환(cross-product transformations)을 처리하여 모델에 비선형 학습 성능과 강력한 암기(Memorization) 능력을 주입합니다.
+- Deep 영역 (피드포워드 신경망): 고차원의 희소한 카테고리형 피처들을 조밀하고 밀집된 형태의 저차원 임베딩 벡터(dense, low-dimensional representation)로 압축한 뒤 심층 레이어들을 통과시켜 복잡한 피처 조합을 일반화(Generalization)하여 깊이 학습합니다.
+
+이 모델이 통합적으로 산출해 내는 클릭률 예측치 $f_\theta(\mathbf{x})$ 는 다음 수식으로 정의됩니다/
+$$
+f_\theta(\mathbf{x}) = \sigma(\mathbf{w}_{wide}^T [\mathbf{x}, \phi(\mathbf{x})] + \mathbf{w}_{deep}^T \alpha(l_f) + b)
+$$
+- $\mathbf{x}, \phi(\mathbf{x})$ : Wide 영역의 입력으로 연결(concatenation)된 벡터입니다. 원본 입력 피처 $\mathbf{x}$와 모델에 비선형 요소를 가미하기 위해 설계한 피처 간 교차곱 변환 변수 $\phi(\mathbf{x})$를 서로 결합한 것입니다.
+- $\mathbf{w}_{wide}^T$ : Wide 구성 요소의 최종 학습 가중치 벡터입니다.
+- $\alpha(l_f)$ : Deep 영역의 맨 마지막 레이어($l_f$)를 통과하며 최종적으로 출력되는 신경망의 활성화(activation) 값 벡터입니다.
+- $\mathbf{w}_{deep}^T$: Deep 신경망 출력값 $\alpha(l_f)$ 에 최종적으로 곱해지는 딥러닝 출력 가중치 벡터입니다.
+- $b$: 예측치 보정을 위해 더해지는 편향(bias) 파라미터입니다.
+- $\sigma(\cdot)$ : Wide 파트의 선형 변환 결과와 Deep 파트의 마지막 신경망 연산 결과, 그리고 편향 파라미터까지 전부 합산한 최종 변환 값을 취합하여 0~1 사이의 실제 클릭률 범위로 축소하는 시그모이드 활성화 함수입니다.
+
+### Loss Functions
+논문에서 정의한 4가지 손실 함수를 비교 분석합니다.
+
+#### Delayed Feedback Loss (지연 피드백 손실)
+이 손실 함수는 사용자가 광고 노출을 본 후 클릭하기까지 걸리는 지연 시간 분포를 지수 분포(Exponential Distribution)로 가정하고, 이를 예측 모델과 함께 공동으로 최적화하는 기법입니다.
+
+지연 시간 모델의 파라미터를 $\mathbf{w}_d$, pCTR 모델의 파라미터를 $\theta$ 라고 할 때, 정규화(Regularization) 파라미터 $\alpha$ 를 반영한 최종 목적 함수는 다음과 같습니다.
+$$
+\arg \min_{\theta, \mathbf{w}_d} L_{DF}(\theta, \mathbf{w}_d) + \alpha \left( \|\theta\|_2^2 + \|\mathbf{w}_d\|_2^2 \right), \\[3pt]
+L_{DF}(\theta, \mathbf{w}_d) = - \sum_{\mathbf{x}, y} \log f_\theta(\mathbf{x}) - \sum_{\mathbf{x}, y=1} \left( \mathbf{w}_d \cdot \mathbf{x} - \lambda(\mathbf{x})d \right) - \sum_{\mathbf{x}, y=0} \log \left[ \exp(-f_\theta(\mathbf{x})) + \exp(-\lambda(\mathbf{x})e) \right], \\[3pt]
+\lambda(\mathbf{x}) = \exp(\mathbf{w}_d \cdot \mathbf{x})
+$$
+
+- $f_\theta(\mathbf{x})$ : pCTR 예측 모델이 최종적으로 출력한 클릭 확률 값입니다.
+- $\lambda(\mathbf{x})$ : 지연 시간 분포(지수 분포)의 파라미터로, 입력 피처 $\mathbf{x}$ 와 지연 모델의 가중치 $\mathbf{w}_d$ 의 선형 결합에 지수 함수를 취해 항상 양수가 되도록 정의합니다.
+- $d$: 긍정 샘플($y=1$, 실제 클릭 발생)에 대해 기록된 '노출 후 클릭까지 걸린 시간(Time-to-click)'입니다.
+- $e$: 부정 샘플($y=0$)에 대해 기록된 '노출 후 데이터 수집 스냅샷 시점까지 경과한 시간(Time elapsed)'입니다.
+- 첫 번째 합산 항 (Positive 샘플 처리): 사용자가 결국 광고를 클릭한 경우($y=1$)에 해당하며, 클릭할 확률($f_\theta(\mathbf{x}$))과 특정 지연 시간 ($d$) 뒤에 행동을 보일 확률 밀도($\lambda(\mathbf{x}) \exp(-\lambda(\mathbf{x})d)$)를 동시에 극대화하도록 유도합니다.
+- 두 번째 합산 항 (Negative/Unlabeled 샘플 처리): 아직 클릭이 관측되지 않은 경우($y=0$)에 해당합니다. 이 상태는 사용자가 실제로 광고를 영원히 클릭하지 않을 확률($1 - f_\theta(\mathbf{x})$)과, 클릭은 하겠지만 지연 시간 ($d$)가 현재 경과 시간 ($e$)보다 길어서 아직 관측되지 못했을 확률($f_\theta(\mathbf{x}) \exp(-\lambda(\mathbf{x})e)$)의 합으로 표현됩니다.
+
+#### Positive-Unlabeled Loss (PU 손실)
+PU 학습 관점을 도입하여, 관측된 편향 데이터셋의 모든 부정(Negative) 샘플을 단순히 '미분류(Unlabeled)' 샘플로 취급하고 학습을 전개하는 방식입니다. 
+$$
+L_{PU}(\theta) = - \sum_{\mathbf{x}, y=1} \left[ \log f_\theta(\mathbf{x}) - \log(1 - f_\theta(\mathbf{x})) \right] - \sum_{\mathbf{x}, y=0} \log(1 - f_\theta(\mathbf{x}))
+$$
+- $-\sum_{\mathbf{x}, y=0} \log(1 - f_\theta(\mathbf{x}))$: 모든 샘플(긍정/부정 모두 포함)을 우선 일차적으로 부정 샘플로 보고 일반적인 Log Loss를 적용해 업데이트하는 항입니다.
+- $-\sum_{\mathbf{x}, y=1} \left[ \log f_\theta(\mathbf{x}) - \log(1 - f_\theta(\mathbf{x})) \right]$: 만약 어떤 샘플이 사후에 클릭되어 긍정($y=1$) 피드백이 들어오면 실행되는 교정 항입니다. 
+
+실시간 스트리밍 도중 긍정 샘플이 확인되었을 때, 이 샘플은 과거(노출 직후)에 이미 '부정'으로 분류되어 $-\log(1 - f_\theta(\mathbf{x}))$ 만큼 모델 가중치를 부정 방향으로 잘못 업데이트했던 이력이 있습니다. 따라서 긍정 신호가 감지되는 순간, 과거의 잘못된 업데이트를 취소($- \log(1 - f_\theta(\mathbf{x})$ 제거)하고, 동시에 올바른 긍정 방향의 업데이트($\log f_\theta(\mathbf{x})$)를 한 번에 수행해 가중치를 제자리로 돌려놓는 구조입니다.
+
+### Fake Negative Weighted 
+중요도 샘플링(Importance Sampling) 이론을 기반으로 설계되었으며, 관측된 편향 분포 $b(\mathbf{x}, y)$ 하에서의 기댓값 계산을 실제 데이터 분포 $p(\mathbf{x}, y)$ 기준으로 무편향(Unbiased)이 되도록 샘플 가중치를 직접 조절하는 손실 함수입니다.  
+이때, 편향된 관측 분포와 실제 분포 사이의 가중치를 계산하기 위해 다음과 같은 가설을 전제합니다.
+1. $b(\mathbf{x} | y = 0) = p(\mathbf{x})$: 부정으로 관측된 샘플들의 피처 분포는 전체 입력 피처 분포와 동일함.
+2. $b(\mathbf{x} | y = 1) = p(\mathbf{x} | y = 1)$: 긍정으로 관측된 샘플들의 피처 분포는 실제 진짜 긍정 샘플들의 피처 분포와 완벽히 일치함.
+3. $b(y = 1) = \frac{p(y = 1)}{1 + p(y = 1)}$: 모든 샘플이 최초에 부정 레이블로 인입된 후, 클릭 시점에 긍정 레이블로 중복 인입되므로 전체 데이터 모수가 $1+p(y=1)$ 배로 늘어남을 반영한 사전 확률.
+
+위 가설들을 바탕으로 베이즈 정리(Bayes' Theorem)를 적용해 유도한 '관측 데이터에서 긍정 및 부정으로 분류될 확률'은 다음과 같습니다.
+
+$$ b(y = 1 | \mathbf{x}) = \frac{p(y = 1 | \mathbf{x})}{1 + p(y = 1 | \mathbf{x})} $$
+
+$$ b(y = 0 | \mathbf{x}) = 1 - b(y = 1 | \mathbf{x}) = \frac{1}{1 + p(y = 1 | \mathbf{x})}  $$
+
+이 식들을 원래 분포의 크로스 엔트로피 식에 대입하여 최종 도출해 낸 중요도 샘플링 손실 함수 $L_{IS}(\theta)$ 는 다음과 같습니다.
+$$ 
+L_{IS}(\theta) = - \sum_{\mathbf{x}, y} \left[ b(y = 1 | \mathbf{x}) (1 + p(y = 1 | \mathbf{x})) \log f_\theta(\mathbf{x})+ b(y = 0 | \mathbf{x}) (1 - p(y = 1 | \mathbf{x})) (1 + p(y = 1 | \mathbf{x})) \log (1 - f_\theta(\mathbf{x})) \right] 
+$$
+
+실제 환경에서는 참 분포 확률 $p(y=1|\mathbf{x})$ 를 직접 알 수 없으므로, 이를 모델의 현재 예측치인 $f_\theta(\mathbf{x})$ 로 대체하여 아래와 같은 최종 가중치를 샘플에 부여합니다.
+- 긍정 샘플($y=1$)에 적용할 가중치: $1 + f_\theta(\mathbf{x})$
+- *부정 샘플($y=0$)에 적용할 가중치: $(1 - f_\theta(\mathbf{x}))(1 + f_\theta(\mathbf{x}))$
+
+이 손실 함수의 손실 값에 대한 예측치 \\(f_\theta\\)의 미분(Gradient)은 다음과 같이 유도됩니다.
+$$
+\frac{\partial L_{IS}}{\partial f_\theta} = \frac{(1 + f_\theta(\mathbf{x}))(f_\theta(\mathbf{x}) - p(y=1 | \mathbf{x}))}{(1 + p(y=1 | \mathbf{x})) f_\theta(\mathbf{x})}
+$$
+* 위 그래디언트 식(Equation 11)을 보면 0 이 되는 유일한 지점은 $f_\theta(\mathbf{x}) = p(y=1 | \mathbf{x})$ 일 때입니다. 즉, 모델의 예측값 $f_\theta(\mathbf{x})$ 가 실제 그라운드 트루스 확률 $p(y=1|\mathbf{x})$ 에 도달했을 때 그래디언트가 정확히 0 이 되어 최적 수렴하게 되며, 수렴 과정 중에도 그래디언트가 언제나 올바른 방향을 가리키게 됨을 수학적으로 보장합니다.
+
+### Fake Negative Calibration (거짓 부정 보정)
+손실 함수 자체를 복잡하게 변경하는 대신, 인프라 비용을 최소화하기 위해 고안된 매우 실용적인 2단계 접근법입니다.
+
+1. 편향이 포함된 스트리밍 데이터를 그대로 사용하여 일반적인 로그 손실(Log loss) 함수로 모델을 우선 학습시킵니다. 이 모델이 예측하는 값은 왜곡된 편향 분포인 $b(y=1|\mathbf{x})$ 를 따르게 됩니다.
+2. 학습이 완료된 후, 출력되는 예측값에 대해 $b(y = 1|x) = \frac{p(y = 1|x)}{1 + p(y = 1|x)}$ 을 역으로 풀어내어 실제 물리적인 클릭 확률인 $p(y=1|\mathbf{x})$로 사후 매핑(Calibration)을 수행합니다.
+
+$$
+p(y = 1 | \mathbf{x}) = \frac{b(y = 1 | \mathbf{x})}{1 - b(y = 1 | \mathbf{x})}
+$$
+
+관측 데이터셋 내에서는 모든 진짜 긍정 샘플에 대응하여 처음에 임시 수집된 거짓 부정(FN) 샘플이 1:1 비율로 쌍을 이루어 존재합니다. 이 때문에 편향된 분포에서의 긍정 확률 $b(y=1|\mathbf{x})$ 는 이론적으로 절대 0.5 를 넘을 수 없습니다. ($b(y=1|\mathbf{x}) \le 0.5$)  
+따라서 분모인 $1 - b(y=1|\mathbf{x})$ 는 항상 0.5 이상이 보장되므로, 최종 보정된 실제 확률 값 $p(y=1|\mathbf{x})$ 는 언제나 0~1 사이의 적법한 확률 분포 범위 내에 머물게 됩니다.
+
+### Conclusion
+Wide & Deep 모델이 모든 손실 함수 영역에서 로지스틱 회귀 모델보다 압도적으로 뛰어난 기본 체력을 보여주었습니다.
+특히 Wide & Deep 모델 기반에서 FN Calibration(RCE 13.58), PU Loss(RCE 13.57), FN Weighted(RCE 13.54) 삼총사가 오프라인 실험에서 가장 높은 퍼포먼스를 보여주었습니다. 즉, 모델이 복잡해질수록(딥러닝) 단순 지연 피드백 보정보다 중요도 샘플링과 같은 정교한 확률 보정이 더 효과적임을 시사합니다. 
+대규모 스트리밍 데이터 기반의 연속 학습 환경에서 지연 피드백 바이어스를 교정하는 데 Wide & Deep 모델과 FN Weighted / FN Calibration 손실 함수의 조합이 가장 최적의 솔루션임을 증명했습니다.
+
 https://arxiv.org/abs/1907.06558
 
 
