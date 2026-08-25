@@ -460,32 +460,63 @@ $$ b(y = 1 | \mathbf{x}) = \frac{p(y = 1 | \mathbf{x})}{1 + p(y = 1 | \mathbf{x}
 
 $$ b(y = 0 | \mathbf{x}) = 1 - b(y = 1 | \mathbf{x}) = \frac{1}{1 + p(y = 1 | \mathbf{x})}  $$
 
-이 식들을 원래 분포의 크로스 엔트로피 식에 대입하여 최종 도출해 낸 중요도 샘플링 손실 함수 $L_{IS}(\theta)$ 는 다음과 같습니다.
+유도 되는 과정을 보면 아래와 같습니다. 우리가 궁극적으로 최소화하고 싶은 실제(True) 데이터 분포 $p$ 상에서의 평균 크로스 엔트로피 손실 함수는 다음과 같이 정의됩니다.
+$$
+L(\theta) = - \sum_{\mathbf{x}} \left[ p(y=1|\mathbf{x}) \log f_\theta(\mathbf{x}) + p(y=0|\mathbf{x}) \log f_\theta(y=0|\mathbf{x}) \right]
+$$
+
+우리는 실제 분포 $p$를 따르는 샘플이 아니라, 거짓 부정(Fake Negative)이 섞여 왜곡된 편향 분포 $b$를 따르는 데이터만 얻을 수 있습니다.따라서 분포 $b$ 상에서의 기댓값으로 계산을 전환하기 위해, 분모와 분자에 똑같이 $b(y|\mathbf{x})$를 곱해주는 수학적 트릭을 적용합니다.
+$$p(y|\mathbf{x}) = b(y|\mathbf{x}) \cdot \frac{p(y|\mathbf{x})}{b(y|\mathbf{x})}$$
+
+이를 위의 크로스 엔트로피 식에 대입하면 다음과 같이 변형됩니다.
+$$
+L(\theta) = - \sum_{\mathbf{x}} \left[ b(y=1|\mathbf{x}) \left( \frac{p(y=1|\mathbf{x})}{b(y=1|\mathbf{x})} \right) \log f_\theta(\mathbf{x}) + b(y=0|\mathbf{x}) \left( \frac{p(y=0|\mathbf{x})}{b(y=0|\mathbf{x})} \right) \log f_\theta(y=0|\mathbf{x}) \right]
+$$
+앞서 나온 베이즈 정리 유도 관계식을 원래 분포의 크로스 엔트로피 식에 대입하여 최종 도출해 낸 중요도 샘플링 손실 함수 $L_{IS}(\theta)$ 는 다음과 같습니다.
+- $b(y=1|\mathbf{x}) = \frac{p(y=1|\mathbf{x})}{1 + p(y=1|\mathbf{x})}$
+- $b(y=0|\mathbf{x}) = \frac{1}{1 + p(y=1|\mathbf{x})}$
 $$ 
 L_{IS}(\theta) = - \sum_{\mathbf{x}, y} \left[ b(y = 1 | \mathbf{x}) (1 + p(y = 1 | \mathbf{x})) \log f_\theta(\mathbf{x})+ b(y = 0 | \mathbf{x}) (1 - p(y = 1 | \mathbf{x})) (1 + p(y = 1 | \mathbf{x})) \log (1 - f_\theta(\mathbf{x})) \right] 
 $$
 
+
 실제 환경에서는 참 분포 확률 $p(y=1|\mathbf{x})$ 를 직접 알 수 없으므로, 이를 모델의 현재 예측치인 $f_\theta(\mathbf{x})$ 로 대체하여 아래와 같은 최종 가중치를 샘플에 부여합니다.
 - 긍정 샘플($y=1$)에 적용할 가중치: $1 + f_\theta(\mathbf{x})$
-- *부정 샘플($y=0$)에 적용할 가중치: $(1 - f_\theta(\mathbf{x}))(1 + f_\theta(\mathbf{x}))$
+- 부정 샘플($y=0$)에 적용할 가중치: $(1 - f_\theta(\mathbf{x}))(1 + f_\theta(\mathbf{x}))$
 
-이 손실 함수의 손실 값에 대한 예측치 \\(f_\theta\\)의 미분(Gradient)은 다음과 같이 유도됩니다.
+이 손실 함수의 손실 값에 대한 예측치 $f_\theta$ 의 미분(Gradient)은 다음과 같이 유도됩니다.
 $$
 \frac{\partial L_{IS}}{\partial f_\theta} = \frac{(1 + f_\theta(\mathbf{x}))(f_\theta(\mathbf{x}) - p(y=1 | \mathbf{x}))}{(1 + p(y=1 | \mathbf{x})) f_\theta(\mathbf{x})}
 $$
 * 위 그래디언트 식(Equation 11)을 보면 0 이 되는 유일한 지점은 $f_\theta(\mathbf{x}) = p(y=1 | \mathbf{x})$ 일 때입니다. 즉, 모델의 예측값 $f_\theta(\mathbf{x})$ 가 실제 그라운드 트루스 확률 $p(y=1|\mathbf{x})$ 에 도달했을 때 그래디언트가 정확히 0 이 되어 최적 수렴하게 되며, 수렴 과정 중에도 그래디언트가 언제나 올바른 방향을 가리키게 됨을 수학적으로 보장합니다.
 
 ### Fake Negative Calibration (거짓 부정 보정)
-손실 함수 자체를 복잡하게 변경하는 대신, 인프라 비용을 최소화하기 위해 고안된 매우 실용적인 2단계 접근법입니다.
+손실 함수 자체를 복잡하게 변경하는 대신, 인프라 비용을 최소화하기 위해도 수식 하나만으로 편향을 완벽하게 해결할 수 있도록 한 기법입니다.
 
 1. 편향이 포함된 스트리밍 데이터를 그대로 사용하여 일반적인 로그 손실(Log loss) 함수로 모델을 우선 학습시킵니다. 이 모델이 예측하는 값은 왜곡된 편향 분포인 $b(y=1|\mathbf{x})$ 를 따르게 됩니다.
 2. 학습이 완료된 후, 출력되는 예측값에 대해 $b(y = 1|x) = \frac{p(y = 1|x)}{1 + p(y = 1|x)}$ 을 역으로 풀어내어 실제 물리적인 클릭 확률인 $p(y=1|\mathbf{x})$로 사후 매핑(Calibration)을 수행합니다.
 
+이해를 위해 베이즈 정리를 통해 편향 확률 $b$와 실제 확률 $p$ 사이의 관계식을 정리합니다.
+$$b = \frac{p}{1+p}$$
+편향을 교정하기 위해 손실 함수를 고치거나 가중치를 계산하는 복잡한 처리를 일체 하지 않습니다. 그냥 기존 광고 시스템에서 쓰던 가장 일반적인 로그 손실(Log loss, Binary Cross Entropy) 함수를 그대로 사용하여 모델을 학습시킵니다. 이렇게 학습된 모델은 편향된 데이터를 그대로 보고 배웠기 때문에, 당연히 편향된 예측값을 출력하게 됩니다. 즉, 이 모델이 내뱉는 출력 확률값은 실제 클릭 확률인 $p(y=1|\mathbf{x})$가 아니라, '관측된 편향 분포 상의 클릭 확률'인 $b(y=1|\mathbf{x})$가 됩니다. 이 예측값을 편의상 $q$라고 부르겠습니다.
+
+이 식을 우리가 알고 싶은 실제 확률 $p$에 대한 식으로 양변을 정리해 보겠습니다. 
 $$
-p(y = 1 | \mathbf{x}) = \frac{b(y = 1 | \mathbf{x})}{1 - b(y = 1 | \mathbf{x})}
+q(1+p) = p \\[3pt]
+q + qp = p \\[3pt]
+q = p - qp \\[3pt]
+q = p(1-q) \\[3pt]
+p = \frac{q}{1-q}
 $$
+이 과정을 거쳐 논문에 나오는 Equation 12가 최종 도출됩니다.
+$$p(y = 1 | \mathbf{x}) = \frac{b(y = 1 | \mathbf{x})}{1 - b(y = 1 | \mathbf{x})}$$
 
 관측 데이터셋 내에서는 모든 진짜 긍정 샘플에 대응하여 처음에 임시 수집된 거짓 부정(FN) 샘플이 1:1 비율로 쌍을 이루어 존재합니다. 이 때문에 편향된 분포에서의 긍정 확률 $b(y=1|\mathbf{x})$ 는 이론적으로 절대 0.5 를 넘을 수 없습니다. ($b(y=1|\mathbf{x}) \le 0.5$)  
+
+$$
+\text{전체 샘플 수} = N_{TN} + N_{TP} (\text{진짜 긍정}) + N_{TP} (\text{거짓 부정}) = N_{TN} + 2N_{TP} \\[3pt]
+b(y=1|\mathbf{x}) = \frac{N_{TP}}{2N_{TP}} = 0.5 \quad (50\%)
+$$
 따라서 분모인 $1 - b(y=1|\mathbf{x})$ 는 항상 0.5 이상이 보장되므로, 최종 보정된 실제 확률 값 $p(y=1|\mathbf{x})$ 는 언제나 0~1 사이의 적법한 확률 분포 범위 내에 머물게 됩니다.
 
 ### Conclusion
