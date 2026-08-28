@@ -106,3 +106,7 @@ hyper_parameters:
 - model.validation_step_outputs: []
 
 ## forward / forward_recalibration
+- forward: 학습 시 사용, sigmoid 적용된 예측값 반환.
+- forward_recalibration: $p/(1-p)$는 CVR의 fake negative calibration 보정 공식 적용 한 것.
+
+## training_step & loss
