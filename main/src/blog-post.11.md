@@ -431,3 +431,20 @@ get_json_object(log_data, '$.rawMessage.user.kuid')
 
 - `$` = JSON 루트
 - 결과는 **무조건 string**. 숫자가 필요하면 이후 `.cast("long")` 필요
+
+## self
+self 는 객체의 인스턴스 그 자체를 말
+- 이 객체에 저장된 데이터 (self.target, self.negative_sample_ratio)
+- 이 클래스에 정의된 메서드 (self.forward, self.calc_loss)
+- 부모 클래스에서 물려받은 것 (self.log_dict, self.save_hyperparameters, self.trainer, self.parameters)
+
+## pytorch
+### pytorch lightning
+PyTorch Llightning은 PyTroch에 대한 High-level (abstract) 인터페이스를 제공하는 오픈소스 라이브러리 입니다.
+
+### log_dict
+Log a dictionary of values at once.
+```python
+values = {'loss': loss, 'acc': acc, ..., 'metric_n': metric_n}
+self.log_dict(values)
+```
