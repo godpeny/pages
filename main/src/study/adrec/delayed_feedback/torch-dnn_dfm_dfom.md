@@ -110,3 +110,48 @@ hyper_parameters:
 - forward_recalibration: $p/(1-p)$는 CVR의 fake negative calibration 보정 공식 적용 한 것.
 
 ## training_step & loss
+```python
+def training_step(self, batch, batch_idx):
+  y = batch.pop(self.target)
+  x = batch
+  y_hat = self.forward(x)
+
+  loss, metrics = self.calc_loss(y_hat, y)
+
+  ret_log = {"loss": loss}
+  ret_log.update(metrics)
+
+  self.log_dict(ret_log)
+  return ret_log
+
+
+def calc_loss(self, y_hat, y):
+  if y_hat.shape[1] == 2:
+    y = torch.stack([y, 1.0 - y], dim=1)
+
+  if y.dim() != y_hat.dim():
+    ce_loss = self.loss_func_train(y_hat[:, 0], y)
+  else:
+    ce_loss = self.loss_func_train(y_hat, y)
+
+  with torch.no_grad():
+    metrics = {}
+    metrics["clk_sum"] = calc_clk_sum(y)
+    metrics["pctr_sum"] = calc_pctr_sum(y_hat)
+    metrics["rig"] = calc_rig(y_hat, y, y.shape[0], ce_loss)
+    
+    return ce_loss, metrics
+
+# Define loss func
+self.loss_func_eval = nn.BCELoss(reduction="sum")
+
+if "loss_info" in config.hyper_parameters:
+  self.loss_func_train = get_loss_type(config.hyper_parameters.get("loss_info"))
+else:
+  # default
+  self.loss_func_train = self.loss_func_eval
+```
+batch에서 레이블(y)과 피쳐(x)를 분리 한 후, 앞서 ``forward``에서 등록한 메서드를 호출, 예측값 y_hat을 도출합니다.  
+calc_loss 에서는 y와 y_hat을 입력 받아 미리 정의한 loss function으로 오차를 구합니다.  
+loss와 metric을 dictionary에 넣은 후 lightning 에 로깅정보로 전달합니다.
+
