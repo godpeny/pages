@@ -288,6 +288,7 @@ trainer.fit(model, datamodule=data_loader)                # ← configure_optimi
     → 그대로 반환 → 주입된 모먼트 보존 ✓
 ```
 아래 예시를 참고합니다.
+
 ```yaml
 # ── 최초 학습 (2026-08-21 00:00, 이전 모델 없음) ──
 self.trainer.optimizers == []  # -> falsy
@@ -302,5 +303,66 @@ trainer.fit()
 #      → configure_optimizers()
 #      → self.trainer.optimizers 가 truthy → 그대로 반환
 #      → 00:00 시점의 Adam 모먼트 유지 ✓  (learning rate warm-up 불필요)
+```
 
-````
+# models/addfmmodel.py
+| 모델 | AdWrapModel | AdDFMModel |
+|---|---|---|
+| 배치에서 꺼내는 것 | `y` | `y` + `delay`(정규화·클리핑) |
+| forward 반환 | 텐서 1개 | **튜플 (pCVR, λ)** |
+| loss 호출 | `loss(ŷ, y)` | `loss(ŷ, λ̂, y, d)` |
+
+- λ: 지수분포의 rate 파라미터로 "전환한다면 평균 1/λ일 후에"를 의미합니다.
+- d: 딜레이
+  - y=1: 클릭→전환에 실제로 걸린 시간, loss에서 λ가 이 시간 분포를 배우게 함.
+  - y=0: 클릭 후 지금까지 기다린 시간
+
+d는 관측값, λ는 그 d가 따르는 분포의 파라미터입니다. DFM은 "전환이 일어난다면, 클릭 후 걸리는 시간 d는 지수분포(Exp(λ))를 따른다"고 가정합니다.
+
+# models/addfmmodel.py
+| 모델 | AdWrapModel | AdDFMModel | **AdDFOMModel** |
+|---|---|---|---|
+| 배치에서 pop | `y` | `y` + `delay` | **`y`만** (delay 개념이 래퍼에 없음) |
+| forward 반환 | 텐서 1개 | 튜플 (p, λ) | **텐서 1개** |
+| loss 호출 | `loss(ŷ, y)` | `loss(ŷ, λ̂, y, d)` | **`loss(ŷ, y)`** — fnw도 2-인자 |
+
+ADDFOMMOdel은 AdWrapModel와 거의 동일합니다. AdWrapModel에 `loss_info: {type: fnw}`를 넣어도 학습은 돌아갑니다. 이 파일이 별도로 존재하는 이유는 학습이 아니라 평가 좌표계(`eval_metrics_dfom`) 때문입니다.
+
+## eval_metrics_dfom
+```yaml
+# 클릭 1,000건 (진짜 CVR 5%) 의 스트림
+y=0 행:  1,000건   <- 클릭당 정확히 1건
+y=1 행:     50건   <- 전환된 클릭의 재등장 (y=0 와 중복)
+합계:    1,050건
+```
+일반 eval_metrics처럼 pctr_sum = 전체 행의 Σŷ로 하면, 전환된 클릭 50건은 두 번 세어집니다 (y=0으로 한 번, y=1로 한 번). 분자에 중복이 끼면 cal이 체계적으로 부풀어 캘리브레이션 판정이 불가능해집니다.
+
+```python
+    def eval_metrics_dfom(self, y_hat, y):
+        metrics = {}
+        # conv_data = y.bool()
+        click_data = y.logical_not()
+        cal_y_hat = (
+            y_hat[:, 0] * self.negative_sample_ratio / (y_hat[:, 0] * self.negative_sample_ratio + (1 - y_hat[:, 0]))
+        )
+        # low level inform.
+        metrics["clk_sum"] = calc_clk_sum(y)
+        metrics["pctr_sum"] = calc_pctr_sum(cal_y_hat[click_data]) * 1 / self.negative_sample_ratio
+        metrics["cal"] = metrics["pctr_sum"] / metrics["clk_sum"]
+        metrics["imp_sum"] = (y_hat.shape[0] - metrics["clk_sum"]) * 1 / self.negative_sample_ratio
+        metrics["true_positive"] = calc_true_positive(y, y_hat)
+
+        self.metrics["auc"].update(y_hat[:, 0], y.int())
+
+        # high level inform.
+        metrics["loss_sum"] = log_loss(cal_y_hat, y, self.negative_sample_ratio)
+
+        return metrics
+```
+``click_data = y.logical_not()`` y=0인 행만 골라내는 마스크로 DFOM에서 y=0 행은 "클릭당 정확히 1건"이므로, 곧 중복 없는 클릭 모집단을 의미합니다.  
+마찬가지로 ``imp_sum = (N - clk_sum)/r`` 에서 ``models/adwrapmodel`` 과 달리 + clk_sum이 없습니다.
+
+```
+일반(노출 좌표계):  imp_sum = 네거티브복원 + 클릭 -> 분모 = 노출 수
+DFOM(클릭 좌표계):  imp_sum = y=0 행 수 = 클릭 수  -> 분모 = 클릭 수 (y=1 행은 중복이므로 모집단에 더하면 안 됨)
+```
