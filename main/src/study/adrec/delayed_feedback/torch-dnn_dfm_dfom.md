@@ -366,3 +366,9 @@ y=1 행:     50건   <- 전환된 클릭의 재등장 (y=0 와 중복)
 일반(노출 좌표계):  imp_sum = 네거티브복원 + 클릭 -> 분모 = 노출 수
 DFOM(클릭 좌표계):  imp_sum = y=0 행 수 = 클릭 수  -> 분모 = 클릭 수 (y=1 행은 중복이므로 모집단에 더하면 안 됨)
 ```
+
+# models/modules/loss.py
+# models/model/mtlcrossv2dfm.py
+# models/model/mtlsimpledfom.py
+# models/mtldfmmodel.py
+# config/cvr/dfm, config/cvr/dfom
