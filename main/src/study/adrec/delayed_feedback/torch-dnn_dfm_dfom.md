@@ -368,7 +368,133 @@ DFOM(클릭 좌표계):  imp_sum = y=0 행 수 = 클릭 수  -> 분모 = 클릭 
 ```
 
 # models/modules/loss.py
+## mtldfm_v2
+```python
+def mtldfm_v2(y_hat, delay_hat, y_positive, delay_positive, y_negative, delay_negative, target_type):
+    """DFM v2 loss with negative mask support."""
+    target_type_ = target_type.view(-1, 1).long()
+    y_ = y_positive.unsqueeze(1)
+    delay_ = delay_positive.unsqueeze(1)
+    delay_negative_ = delay_negative.unsqueeze(1)
+
+    delay_hat_ = delay_hat.gather(1, target_type_)      # 해당 head의 λ만 추출
+    y_hat_ = y_hat.gather(1, target_type_)              # 해당 head의 p만 추출
+
+    # Negative samples loss — 모든 head에 적용, neg_conv로 마스킹
+    output = (
+        (1.0 - y_negative) * torch.log(1.0 - y_hat + y_hat * torch.exp(-delay_hat * delay_negative_) + FLOAT32_EPS)
+    ).sum(1, keepdim=True)
+
+    # Positive samples loss — target_type head 하나에만 적용
+    output += y_ * (torch.log(y_hat_ + FLOAT32_EPS) + torch.log(delay_hat_ + FLOAT32_EPS) - delay_hat_ * delay_)
+
+    return -torch.mean(output)
+```
+dfm loss(4-인자)를 K-head로 일반화한 것입니다. 
+
+### 포지티브 항 — gather로 한 head만 조준
+```python
+y_hat_ = y_hat.gather(1, target_type_)     # [B,K]에서 [B,1]로: 샘플별 action_type
+``` 
+gather는 "샘플 b의 target_type[b]번째 열만 뽑아라"입니다. 전환이 관측된 샘플은 자신의 action_type head에만 긍정 신호를 더합니다. 즉, 구매 전환이 설치 head에 포지티브 신호를 주면 안 되도록 하는 장치입니다.
+
+### 네거티브 항 — 모든 head에 브로드캐스트, 마스크로 구멍내기
+```
+(1.0 - y_negative) * log(1 - y_hat + y_hat·exp(-delay_hat·neg_delay) + EPS)
+       └────┬────┘         └──────────────┬──────────────┘
+    head별 제외 마스크      dfm의 생존혼합 네거티브 항을 [B,K] 전체에 적용
+```
+ K개 head 각각에 "neg_delay만큼 기다렸는데 이 종류의 전환은 안 왔다"는 네거티브 신호가 갑니다. 단 y_negative(=neg_conv)가 1인 head는 (1-1)=0으로 항(포지티브 항)이 소거됩니다. 전환이 관측된 head를 네거티브로 오염시키지 않기 위한 마스크입니다
 # models/model/mtlcrossv2dfm.py
 # models/model/mtlsimpledfom.py
 # models/mtldfmmodel.py
+AdDFMModel에 "태스크 축"을 추가한 멀티태스크 버전이자, 현재 프로덕션 DFM이 실제로 쓰는 래퍼입니다.  
+AdDFMModel은 "전환이냐 아니냐" 하나만 예측하지만 실제 광고의 전환은 PURCHASE(구매), APP_INSTALL(앱 설치), SIGN_UP(가입), CART(장바구니) 등등 여러 목표를 가지고 있습니다.  
+
+그러나 목적별로 모델을 따로 만들면 데이터가 쪼개져 소수 목적 모델은 늘 데이터가 부족합니다. 따라서 MTL(Multi-Task Learning)의 해법은 임베딩과 표현(representation)은 모델들이 전부 공유하고, 출력만 action_type별 K개 head로 분리하는 것입니다. 
+
+예를 들면, 유저의 행동 패턴("이 유저는 광고에 반응하는 사람인가")은 목적이 달라도 공통 지식이므로 공유해서 배우고, "구매로 이어지나 vs 설치로 이어지나"의 차이만 head가 담당합니다. 소수 태스크가 다수 태스크의 데이터에 얹혀 학습되는 구조입니다.  
+
+
+## 비교
+
+DFM의 세 계약이 전부 **K차원으로 확장**됩니다:
+
+| 모델 | AdDFMModel | **MTLDFMModel** |
+|---|---|---|
+| 배치에서 꺼내는 것 | `y` + `delay` | `y` + `delay` + **`neg_conv` + `neg_delay` + `action_type`** |
+| forward 반환 | (p, λ) 각 `[B,1]` | (p, λ) 각 **`[B,K]`** — action_type별 head |
+| loss 호출 | 4-인자 `dfm` | **7-인자 `mtldfm_v2`** |
+
+- action_type: 전환 타입, 예) 1 = 구매, 2 = 설치, 3 = 가입
+- neg_delay: 네거티브의 "기다린 시간", 예) 259200(초)) = 클릭 후 3일 경과
+- neg_conv — "네거티브 취급 금지" 마스크:  예) [0, 1, 0, 0, 0] = "head 1은 네거티브로 세지 마라"
+
+참고로 neg_delay가 재는 것은 "각 head가 기다린 시간"이 아니라 관측 창(observation window)의 길이입니다. 즉, ``neg_delay = 스냅샷 시각 − 클릭 시각`` 입니다.
+```
+클릭 (t=0) ────────────────────── 스냅샷 (t=3일)
+   │                                  │
+   ├─ 구매 head의 관측 시작: t=0      ├─ 구매 head의 관측 종료: t=3
+   ├─ 설치 head의 관측 시작: t=0      ├─ 설치 head의 관측 종료: t=3
+   └─ 카트 head의 관측 시작: t=0      └─ 카트 head의 관측 종료: t=3
+```
+즉 위와 같이 head가 같은 클릭에서 출발하고, 같은 스냅샷에서 멈춥니다. 이 스냅샷일때 전환이 된 것과 되지 않은 head의 구분은 neg_conv 를 통해서 적용합니다.  
+
+```yaml
+# 샘플: "클릭 3일 뒤 스냅샷. 2일째에 '구매' 전환이 있었다."
+
+conv        = 1                      # "전환 있었음"
+action_type = 1                      # "종류는 구매 → head 1로 배송"
+delay       = 2일                    # "head 1의 포지티브 증거: 2일 걸림"
+neg_conv    = [0, 1, 0, 0, 0]        # "head 1은 네거티브 계산에서 제외"
+neg_delay   = 3일                    # "head 0,2,3,4의 네거티브 증거: 3일간 안 옴"
+
+→ loss 조립 결과:
+   head 1:        log(p₁) + log(λ₁) − λ₁·2       (포지티브)
+   head 0,2,3,4:  log(1 − pₖ + pₖ·e^(−λₖ·3))     (네거티브)
+   샘플 1건 → head 5개 전원 학습.
+```
+
+## Outputmask
+학습이 끝난 모델은 클릭 하나에 대해 이렇게 답합니다.
+```
+모델 출력:  [ p구매=0.030,  p설치=0.008,  p가입=0.002,  p장바구니=0.019 ]
+```
+그런데 서빙(입찰) 쪽이 원하는 답은 아래와 같습니다.
+```
+입찰 계산:  bid = pCTR × pCVR × 광고주 입찰가      ← pCVR 자리에 숫자 "하나"
+```
+K개 중 어느 것을 쓸 것인가? 정답은 광고마다 다릅니다. 광고에는 캠페인 목적(objective_detail_type)이 붙어 있습니다.
+```
+광고 A: 목적 = PURCHASE      → 구매 확률이 pCVR
+광고 B: 목적 = APP_INSTALL   → 설치 확률이 pCVR
+```
+즉 "K개 → 1개" 변환 규칙은 목적 → 유효 action_type 매핑이고, 이걸 행렬로 만든 것이 ``output_mask`` 입니다.
+
+
+output_mask는 [목적 수 × K] 크기의 0/1 행렬입니다:
+```
+                 head:  pad  구매  설치  가입  장바구니
+PURCHASE     행:      [  0,   1,   0,   0,   1  ]     ← 구매·장바구니가 유효
+APP_INSTALL  행:      [  0,   0,   1,   0,   0  ]
+SIGN_UP      행:      [  0,   0,   0,   1,   0  ]
+```
+서빙 forward의 실제 한 줄:
+```python
+output = (output * self.output_mask[inputs["objective_detail_type"].long()]).sum(1, keepdim=True)
+```
+
+```
+입력 광고의 목적 = PURCHASE (idx 1)
+① output_mask[1]        → [0, 1, 0, 0, 1]                      해당 행 꺼내기
+② 출력과 원소별 곱      → [0, 0.030, 0, 0, 0.019]              무관한 head 소거
+③ sum(1)               → 0.030 + 0.019 = 0.049              유효 head 합산
+→ "이 광고 기준 pCVR = 4.9%"  ← 입찰에 들어가는 숫자 하나
+```
+유효 action이 하나뿐인 목적이면 단순 "선택"이고, 여럿이면(PURCHASE에 구매+장바구니) "합산"입니다. "그중 뭐라도 전환하면 전환"이라는 해석입니다.
+
+``mtldfm_v2``loss 참고
+
+# models/mtldfommodel.py
+
 # config/cvr/dfm, config/cvr/dfom
