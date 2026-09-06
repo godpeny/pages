@@ -450,6 +450,30 @@ head 0,1,2,4:    계산 없음 (네거티브 항은 y=1이라 스위치가 꺼�
 이 때 ``p_k`` 는 모델이 출력한 K개 예측값 중 k번째 head의 값입니다. (``y_hat[:, k]``)
 
 # models/model/mtlcrossv2dfm.py
+래퍼가 부리는 호출 모듈로 DCN v2 기반의 K-head dual-net(서로 파라미터를 공유하지 않는 네트워크가 2개) 네트워크입니다. 즉,이 파일은 실제 파라미터(임베딩, Cross layer, Dense)가 있는 곳입니다. 
+```
+MTLDFMModel (래퍼)                    MTLCrossv2dfm (이 파일)
+  forward()            ──호출──>       forward_train()        → (p[B,K], λ[B,K])
+  validation_step()    ──호출──>       forward_without_postproc() → 접힌 pCVR [B,1]
+  (ONNX export)        ──포장──>       forward()              → 서빙용 최종 출력
+```
+
+서로 파라미터를 공유하지 않는 네트워크가 나란히 2개 있습니다.
+
+```yaml
+# build() 79~80행
+self.mainFF       = DCN_v2(...)      # 네트워크 1: pCVR 예측용
+self.mainFF_delay = MTLSimple(...)   # 네트워크 2: 지연률 λ 예측용
+              [피처 임베딩 concat]        ← 여기까지만 공유
+                 │           │
+        ┌────────┘           └────────┐
+        ▼                             ▼
+   네트워크 1 (DCN_v2)           네트워크 2 (MTLSimple)
+   Cross×2 → 96 → 48            96 → 48
+   → Linear(48,K) → Sigmoid     → Linear(48,K) → exp
+        │                             │
+      p [B,K]                      λ [B,K]
+```
 # models/model/mtlsimpledfom.py
 # models/mtldfmmodel.py
 AdDFMModel에 "태스크 축"을 추가한 멀티태스크 버전이자, 현재 프로덕션 DFM이 실제로 쓰는 래퍼입니다.  
