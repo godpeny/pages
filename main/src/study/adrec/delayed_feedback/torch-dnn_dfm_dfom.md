@@ -238,7 +238,7 @@ Negative Sampling 때문에 모델은 9.2%를 출력하도록 학습됩니다. �
   )
 ```
 
-```python
+```
 q = p / (p + (1-p)·r) <=> q·(p + (1-p)r) = p
 qp + qr - qrp   = p
 qr              = p - qp + qrp
@@ -474,6 +474,65 @@ self.mainFF_delay = MTLSimple(...)   # 네트워크 2: 지연률 λ 예측용
         │                             │
       p [B,K]                      λ [B,K]
 ```
+## build
+config의 features 목록을 "입력 모듈 목록"으로 컴파일하는 부분입니다.
+```
+net.inputs            # ModuleList[OneHotFeature(gender), OneHotFeature(slot), ...]
+main_net_input_dim    # 2 + 12 + ... = 예: 210
+net.mainFF            # DCN_v2:  210 → Cross×2 → 96 → 48 → Linear(48, 5) → Sigmoid
+net.mainFF_delay      # MTLSimple: 210 → 96 → 48 → Linear(48, 5)   (활성화 없음)
+```
+
+## forward_train
+ build 에서 만든 input에서 피쳐 임베딩을 concat 한 후, 두 네트워크에 각각 넣어, DCN으로는 head별 전환 확률 p를, MLP+clamp+exp로는 head별 지연률 λ를 예측해 튜플로 반환합니다.
+ ```yaml
+ x = {"gender": ..., "slot": ..., "conv": ..., "delay": ...}   # 라벨 섞여 있어도 무관
+
+p, lam = net.forward_train(x)
+p       # [B, 5]  head별 pCVR (Sigmoid)
+lam     # [B, 5]  head별 λ (exp, ≤ e^30)
+
+# λ 해석: lam[0] = [1.0, 0.45, 1.2, 0.8, 0.62]
+#   → "이 클릭이 구매로 전환된다면 평균 1/0.45 ≈ 2.2일 뒤"
+ ```
+
+K 개 결과가 나오는건 각각이 구매, 좋아요 등 전환 target_head 에 해당하는 output이기 때문입니다.
+```yaml
+p = [[0.001, 0.030, 0.008, 0.002, 0.019]]
+#      p₀     p₁     p₂     p₃     p₄
+#     pad    구매   설치   가입   카트    
+```
+
+## forward_without_postproc
+평가와 서빙용 forward입니다.  
+forward_train 과 달리 delay 를 예측하지 않고 output pCVR을 K개로 출력하지 않고 outputmask를 이용해 하나의 pCVR 값으로 만 출력하게 합니다.  
+단, 서빙때는 negative_sampling을 다시 역보정해서 원래의 공간으로 복원 하는 과정이 추가됩니다. 하지만 ``negative_sampling_ratio = 1.0``으로 설정되어 있어 실제로 사용되고 있지는 않습니다. 
+```
+q = q·r/(q·r+(1-q))
+
+    x = x * self.negative_sample_ratio / (x * self.negative_sample_ratio + (1 - x))
+#   ^   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   p               q·r                                 q·r + (1-q)  
+```
+
+## MTLCrossv2dfmWithConvMul
+OPC → MPC 변환의 네트워크 쪽 구현입니다.
+- OPC(One Positive Class): 클릭당 전환을 "1번 있냐 없냐"로 학습 → 출력 = 확률
+- MPC(Multi Positive Class): 실제로는 한 클릭이 전환을 여러 번 낳을 수 있음(재구매 등) → 원하는 값 = 기대 전환수(econv)
+
+econv를 처음부터 학습하는 대신, 이 클래스는 근사를 씁니다. 즉, 광고그룹 별 "전환한 클릭당 평균 전환 횟수" 통계를 외부에서 계산해 Redicoke에 올려두면, 변환 스크립트(``convert_opc_to_mpc``)가 buffer에 벡터로 저장합니다. 이를 통해 으로 OPC 모델을 MPC 모델로 변환하는 것입니다.
+```
+econv ≈ P(전환 1번 이상)   ×   E[전환수 | 전환함]
+        └── OPC 모델 출력 ──┘   └── conv_multiplier[group_id] ──┘
+```
+
+## DCNv2, MTLSimple
+DCN과 MTLSimple은 각각 구현된 DCN과 multitask 용 MLP로 delay와 전환여부 예측에 사용됩니다.
+| 부품 | 구조 | 담당 | 출력 |
+|---|---|---|---|
+| `DCN_v2` (§8) | Cross Network + Dense | **전환 확률 p** | `[B,K]`, Sigmoid → (0,1) |
+| `MTLSimple` (§9) | 순수 MLP | **지연률 λ** | `[B,K]`, linear → clamp → exp |
+
 # models/model/mtlsimpledfom.py
 # models/mtldfmmodel.py
 AdDFMModel에 "태스크 축"을 추가한 멀티태스크 버전이자, 현재 프로덕션 DFM이 실제로 쓰는 래퍼입니다.  
