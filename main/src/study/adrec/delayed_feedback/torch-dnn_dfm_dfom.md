@@ -368,6 +368,8 @@ DFOM(클릭 좌표계):  imp_sum = y=0 행 수 = 클릭 수  -> 분모 = 클릭 
 ```
 
 # models/modules/loss.py
+loss를 적용하는 mtlcrossv2dfm, mtlsimpledfom 등의 네트워크에서 정의된 가중치 파라미터들이 자동으로 bp 과정에서 학습됩니다. 학습에 필요한 gradient도 torch가 알아서 구해줍니다.  
+
 ## mtldfm_v2
 ```python
 def mtldfm_v2(y_hat, delay_hat, y_positive, delay_positive, y_negative, delay_negative, target_type):
@@ -450,7 +452,7 @@ head 0,1,2,4:    계산 없음 (네거티브 항은 y=1이라 스위치가 꺼�
 이 때 ``p_k`` 는 모델이 출력한 K개 예측값 중 k번째 head의 값입니다. (``y_hat[:, k]``)
 
 # models/model/mtlcrossv2dfm.py
-래퍼가 부리는 호출 모듈로 DCN v2 기반의 K-head dual-net(서로 파라미터를 공유하지 않는 네트워크가 2개) 네트워크입니다. 즉,이 파일은 실제 파라미터(임베딩, Cross layer, Dense)가 있는 곳입니다. 
+MTLDFMModel 래퍼가 부리는 호출 모듈로 DCN v2 기반의 K-head dual-net(서로 파라미터를 공유하지 않는 네트워크가 2개) 네트워크입니다. 즉,이 파일은 실제 파라미터(임베딩, Cross layer, Dense)가 있는 곳입니다. 
 ```
 MTLDFMModel (래퍼)                    MTLCrossv2dfm (이 파일)
   forward()            ──호출──>       forward_train()        → (p[B,K], λ[B,K])
@@ -503,7 +505,7 @@ p = [[0.001, 0.030, 0.008, 0.002, 0.019]]
 #     pad    구매   설치   가입   카트    
 ```
 
-## forward_without_postproc
+## forward_without_postproc / forward
 평가와 서빙용 forward입니다.  
 forward_train 과 달리 delay 를 예측하지 않고 output pCVR을 K개로 출력하지 않고 outputmask를 이용해 하나의 pCVR 값으로 만 출력하게 합니다.  
 단, 서빙때는 negative_sampling을 다시 역보정해서 원래의 공간으로 복원 하는 과정이 추가됩니다. 하지만 ``negative_sampling_ratio = 1.0``으로 설정되어 있어 실제로 사용되고 있지는 않습니다. 
@@ -534,6 +536,44 @@ DCN과 MTLSimple은 각각 구현된 DCN과 multitask 용 MLP로 delay와 전환
 | `MTLSimple` (§9) | 순수 MLP | **지연률 λ** | `[B,K]`, linear → clamp → exp |
 
 # models/model/mtlsimpledfom.py
+MTLDFOMModel 래퍼가 호출하는 Cross도 λ head도 없는, K-출력 순수 MLP 네트워크입니다. MTLCrossv2dfm(DFM용 네트워크)과 정확히 짝을 이루는 DFOM용 네트워크입니다.
+
+## build
+config의 features 목록을 "입력 모듈 목록"으로 컴파일하는 부분입니다. 단 DFM 처럼 DCN 클래스를 사용하지 않고 ``nn.Sequential`` 을 간단하게 이용합니다. 
+```
+self.mainFF = nn.Sequential(Linear, LN, ReLU, ..., Linear(·,K), Sigmoid) 
+```
+
+## forward_train
+임베딩 → concat → MLP → [B, K] 텐서 도출합니다. 래퍼는 도출된 텐서를 mtlfnw(p, y, action_type)에 전달합니다.
+```
+p = net.forward_train(x)     
+# tensor([[0.001, 0.030, 0.008, 0.002, 0.019]])  [B, K]
+```
+
+## forward_recalibration
+``forward_train`` + DFOM(FNW) 문법 적용
+```
+# 편향 확률 b와 실제 확률 p 사이의 관계식
+b = p / (1+p)
+p = b / (1-b)
+```
+
+## forward_without_postproc
+``MTLCrossv2dfm``와 동일합니다. Output pCVR을 K개로 출력하지 않고 outputmask를 이용해 하나의 pCVR 값으로 만 출력하게 합니다.
+
+## forward
+서빙 경로입니다. ``forward_without_postproc``의 출력에 두 가지 후처리를 진행합니다.
+1. ``forward_recalibration`` 적용 (p = b / (1-b))
+2. 목적별 ratio 역보정 적용. ``MTLCrossv2dfm.forward``과 비교해서 목적별 비율을 각각 적용합니다.
+```
+# MTLCrossv2dfm:  if self.negative_sample_ratio < 1.0:          # 스칼라, 전 트래픽 공통
+#                     x = x·r/(x·r+(1-x))
+# MTLSimpledfom:  if self.negative_sample_use:                  # 조립 시점에 결정된 플래그
+#                     r = self.negative_sample_ratio[objective] # ★ 샘플별로 자기 목적의 비율
+#                     x = x·r/(x·r+(1-x))
+```
+
 # models/mtldfmmodel.py
 AdDFMModel에 "태스크 축"을 추가한 멀티태스크 버전이자, 현재 프로덕션 DFM이 실제로 쓰는 래퍼입니다.  
 AdDFMModel은 "전환이냐 아니냐" 하나만 예측하지만 실제 광고의 전환은 PURCHASE(구매), APP_INSTALL(앱 설치), SIGN_UP(가입), CART(장바구니) 등등 여러 목표를 가지고 있습니다.  
