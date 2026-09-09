@@ -37,7 +37,7 @@
 1. **$N$ 을 측정한 적이 없다** — 원인 후보를 논하기 전에 곡선부터 그려야 한다
 2. **$N$ 일 동안의 손실액을 모른다** — 이 값 없이는 과제 우선순위를 정당화할 수 없다
 
-## 2. 원인 후보 3가지
+## 2. 원인 후보 3가지 (+ 제안 C4)
 
 ### 2.1 세 원인은 같은 사슬의 세 단계
 
@@ -85,7 +85,55 @@ DFM은 최근 클릭의 미전환 신호를 $F(d) = 1 - e^{-\lambda d}$ 만큼�
 
 온라인 학습률은 APP·PUR 1e-4, MEM·PF 1e-3이고 **조정 스케줄이 없다.** 자주 학습하는 것과 빨리 따라잡는 것은 다르다.
 
-### 2.5 왜 셋을 구별해야 하는가 — 핵심
+### 2.5 C4 — 초기 표현 (제안)
+
+**새 광고그룹의 임베딩이 "빈 종이"에서 시작한다.**
+
+새 그룹이 생기면 모델은 그 그룹의 임베딩을 **0에서** 시작한다. 정확히는 $N(0,\ 10^{-5})$, 사실상 0이다.
+
+```python
+# feature.py:171, export.py:460
+torch.nn.init.normal_(self.embed.weight, RN_MEAN, RN_STDDEV)   # RN_STDDEV = 1e-5
+```
+
+그런데 그 그룹은 **아무것도 모르는 상태가 아니다.** 어느 계정 밑에 있는지, 무슨 캠페인인지, 목적이 뭔지, 형제 그룹들이 어떻게 전환됐는지 다 알고 있다. 그 정보를 하나도 안 쓰고 빈 종이로 출발한다.
+
+**방법론**
+
+- 성능표를 **"새 광고 / 기존 광고"**, **"warm / cold"** 로 나눠서 따로 잰다 (Moment·Weapp 데이터셋)
+- 전용 방법군이 있다 (초록 확인):
+  - **MetaEmb** — 새 광고 ID의 **초기 임베딩을 생성하는 생성기**를 메타러닝으로 학습. 콘텐츠·속성을 넣으면 임베딩이 나옴 → "0 대신 생성값으로 시작". CTR 논문이지만 서베이가 CVR baseline으로 씀
+  - **AutoFuse** — 광고 ID 같은 **세밀한 피처는 새 광고에서 임베딩이 의미 없으니**, 그걸 버린 **상위 그룹 표현**(캠페인·광고주·카테고리)을 따로 배워 광고 표현과 적응적으로 융합 → 새 광고는 그룹 표현이 예측을 담당. **아래 처방 (b)와 같은 발상**, 산업 배포
+  - **MVTA** — 새 캠페인을 소재·전환 규칙·타겟팅으로 임베딩 → **비슷한 캠페인들의 CVR로 kNN 예측**. 캠페인 단위 forecasting이라 클릭 단위 모델은 아님
+  - **DCBT** — 초기값은 그대로 두고, 같은 배치의 **warm 샘플에서 attention으로 cold 샘플 표현을 보강**. 같은 문제, 다른 레버(초기화 아님)
+- 미래 방향: "메타러닝은 소수 샘플에서 지식을 뽑아 **처음 보는 태스크에 빠르게 적응**"
+
+**가리는 방법 (재학습 1회, 코드 한 줄)** — `_resize_emb_layer_size`에서 신규 행 초기값만 바꿔 $N$ 비교
+
+| 조건 | 초기값 |
+|---|---|
+| (a) 현행 | $N(0,\ 10^{-5})$ |
+| (b) | **같은 `account_id` 밑 기존 그룹 임베딩의 평균** |
+| (c) | MetaEmb 방식 생성기 |
+
+(b)만으로 $N$ 이 줄면 C4가 실재한다. 더 정확히는 **그룹 생성 후 첫 1시간의 캘리브레이션 오차** — 아직 기울기를 한 번도 안 받은 시점이라 C1~C3는 관여하지 않고, 이 값은 100% 초기값 문제다.
+
+**처방**
+
+| 단계 | 내용 | 비용 |
+|---|---|---|
+| 1 | 새 행 초기값 = 계정 임베딩 (또는 형제 그룹 평균) | 한 줄 |
+| 2 | 계정·캠페인·목적·소재 → 초기 임베딩을 **만들어주는 모델** (MetaEmb) | 중 |
+| 3 | 학습 배치 안에서 warm 샘플 표현을 cold 샘플에 보강 (DCBT) | 중 |
+
+레퍼런스
+- 서베이: Xue, Yang & Zhai, *Conversion rate prediction in online advertising: modeling techniques, performance evaluation and future directions*, 2025 — https://arxiv.org/abs/2512.01171
+  - MetaEmb (초기 임베딩 생성, **CTR**): Pan et al., *Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings*, SIGIR 2019 — https://arxiv.org/abs/1904.11547
+  - AutoFuse (상위 그룹 표현 융합, CVR): Jin et al., *Automatic Fusion Network for Cold-start CVR Prediction with Explicit Multi-Level Representation*, ICDE 2023 — https://doi.org/10.1109/ICDE55515.2023.00264
+  - MVTA (콘텐츠 기반 캠페인 임베딩 + kNN, CVR forecasting): Yao et al., *Multi-View Multi-Task Campaign Embedding for Cold-Start Conversion Rate Forecasting*, IEEE Trans. Big Data 9(1), 2023 — https://doi.org/10.1109/TBDATA.2022.3162150
+  - DCBT (warm→cold 표현 보강, 초기화 아님): Yang et al., *DCBT: A Simple but Effective Way for Unified Warm and Cold Recommendation*, SIGIR 2023 — https://doi.org/10.1145/3539618.3591856
+
+### 2.6 왜 셋을 구별해야 하는가 — 핵심
 
 > 지연 보정 기법(DFM의 $\lambda$, fnw의 가중치)이 겨냥하는 것은 **C1뿐**이다.
 
@@ -99,13 +147,13 @@ DFM은 최근 클릭의 미전환 신호를 $F(d) = 1 - e^{-\lambda d}$ 만큼�
 
 따라서 **어느 후보가 큰지 가리는 일을 가장 먼저 한다.**
 
-### 2.6 주의
+### 2.7 주의
 
 **① 재학습 주기는 원인이 아니다.** 배치 4시간·온라인 30분으로는 며칠 단위 지체가 설명되지 않는다. 그래서 남는 변수가 주기가 아니라 **회당 갱신량**(C3)이다.
 
 **② 세 원인을 일수로 합산할 수 없다.** C1·C2는 같은 학습 데이터에서 동시에 발생하고 C3는 시간이 아니라 갱신 폭에 관한 가설이다. **한 번에 한 조건만 바꾼 대조 실험**으로 비교하고, 겹치는 C1×C2는 교호작용도 함께 본다.
 
-**③ 셋은 완결적 분해가 아니라 우선 검증할 세 축이다.** 미정 후보: 표본 도착률(클릭이 적어 기울기가 안 생김), 데이터·배포 단계 지연, 신규 식별자 처리(OOV·임베딩 초기화).
+**③ 셋은 완결적 분해가 아니라 우선 검증할 세 축이다.** 미정 후보: 표본 도착률(클릭이 적어 기울기가 안 생김), 데이터·배포 단계 지연, 신규 식별자 처리(OOV·임베딩 초기화). **이 중 임베딩 초기화는 §2.5 C4로 승격했다.**
 
 ## 3. 지표 — 왜 AUC가 아니라 RIG인가
 
