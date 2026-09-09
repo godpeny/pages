@@ -677,3 +677,15 @@ MTLDFM보다 훨씬 단출합니다. 이유는 DFOM 철학 때문으로 시간 �
 ``mtlfnw``loss 참고
 
 # config/cvr/dfm, config/cvr/dfom
+2026-09 기준 실제 서빙 중인 CVR 모델 6종입니다. 중복 슬롯을 제거하면 6개 config, 2계열(배치 DFM / 온라인 DFOM), 3개 네트워크(`MTLCrossv2dfmWithConvMul`, `AdSimple`, `MTLSimpledfom`)입니다. `cvr_dfm_all_all_group_v9.200.11_kuid_mpc`와 `cvr_online_mem_v9.201.0`은 로컬 main에 없고 각각 `origin/ADRECAI-315`, `origin/ADRECAI-13` 브랜치에 있습니다.
+
+| config | 계열 | 네트워크 | 래퍼 | loss | 헤드 | 학습 방식 | 옵티마이저 |
+|---|---|---|---|---|---|---|---|
+| `cvr_dfm_all_all_group_v9.200.10_kuid_mpc` | 배치 DFM | `MTLCrossv2dfmWithConvMul` (DCN-V2 CVR 헤드 + MLP λ 헤드) | `MTLDFMModel` | `mtldfm_v2` | action_type별 다중 pCVR + action_type별 λ | `_opc` config로 학습 후 `convert_opc_to_mpc.py`로 변환 — 출력에 group_id별 `conv_multiplier` 곱, clip [0, 20] | clippy_adagrad lr 0.01, wd 0, batch 8192 |
+| `cvr_dfm_all_all_group_v9.200.11_kuid_mpc` | 배치 DFM | `MTLCrossv2dfmWithConvMul` (DCN-V2 CVR 헤드 + MLP λ 헤드) + `at` 피처 4차원 추가 | `MTLDFMModel` | `mtldfm_v2` | action_type별 다중 pCVR + action_type별 λ | `_opc` config로 학습 후 `convert_opc_to_mpc.py`로 변환 — 출력에 group_id별 `conv_multiplier` 곱, clip [0, 20] | clippy_adagrad lr 0.01, wd 0, batch 8192 |
+| `cvr_dfom_all_pf_group_v9.200.2` | 온라인 DFOM | `AdSimple` (MLP [96, 48], relu, 입력 124차원) | `AdDFOMModel` | `fnw` | 단일 | sequoia 스트림 `cvr-pf-dfom-kuid-v1` v3, `inherit_model` warm start, `conv_delay` 필터 없음 | adam lr 1e-3, wd 0, batch 1024 |
+| `cvr_online_app_v9.200.4` | 온라인 DFOM | `AdSimple` (MLP [96, 48], relu, 입력 172차원) | `AdDFOMModel` | `fnw` | 단일 | sequoia 스트림 `cvr-app-dfom-kuid-v1` v5, `inherit_model` warm start, `conv_delay` ≤ 10080분(7일) 필터 | adam lr 1e-4, wd 1e-5, batch 1024 |
+| `cvr_online_mem_v9.200.8` | 온라인 MTL-DFOM | `MTLSimpledfom` (MLP [96, 48], swish, 입력 124차원, action_type별 출력) | `MTLDFOMModel` | `mtlfnw` | action_type별 다중 pCVR, 추론 시 `output_mask[objective]`로 합산 | sequoia 스트림 `cvr-mem-dfom-kuid-v1-1` v2, `train_task` = {SIGN_UP, PARTICIPATION, COMPLETE_REGISTRATION} × {TALK_BIZ_BOARD, DISPLAY} 6조합, `conv_delay` ≤ 10080분(7일) 필터 | adam lr 1e-3, wd 0, batch 1024 |
+| `cvr_online_mem_v9.201.0` | 온라인 MTL-DFOM (ADRECAI-255 실험군) | `MTLSimpledfom` (MLP [96, 48], swish, 입력 124차원, action_type별 출력) | `MTLDFOMModel` | 학습하지 않음 | action_type별 다중 pCVR, `aux_weights`로 SIGN_UP에 PARTICIPATION 헤드 ×0.05, COMPLETE_REGISTRATION에 PARTICIPATION 헤드 ×0.07 가산한 마스크로 합산 | `convert_only: true` — `base_model: cvr_online_mem_v9.200.8` 체크포인트를 그대로 싣고 마스크만 바꿔 export, 학습 데이터 조회 없음 | 없음 (학습하지 않음) |
+
+공통: `epoches: 1`, `norm_layer_type: basic_ln` (LayerNorm, affine 없음), `padding_idx: 0`, `timeunit: 86400`, `max_delay: 7`, `recalibration` 미설정(FNC off), `negative_sample_ratio` 미설정(= 1.0, 보정 없음), 임베딩 테이블 크기 = `n_index × 1.2 + 1`.
