@@ -98,8 +98,44 @@
 
 **로직** — 클릭이 오면 정해둔 시간 $e$ 만큼 기다렸다가, 그 안에 전환이 왔으면 양성으로, 안 왔으면 음성으로 라벨을 붙여 흘려보낸다. 창이 닫힌 뒤에 전환이 도착하면 양성 복사본을 한 번 더 넣는다. 이렇게 만들어진 왜곡된 분포를 보조 모델 둘로 되돌린다.
 
-- $p_{dp}$ — 창이 닫힌 뒤에 전환할 확률
-- $p_{rn}$ — 관측된 음성이 진짜 음성일 확률
+**$p_{dp}$, $p_{rn}$ 정리**
+
+기호
+- $x$ — 클릭 하나의 피처(그룹·상품·유저·지면 등). pCVR 모델 입력 그대로
+- $h$ — 클릭부터 전환까지 걸린 시간
+- $e$ — 대기 창. 이만큼 기다렸다가 라벨을 붙인다. 설계 변수, 실무에서는 상수 하나(예: 1시간)
+
+관측 시점에 클릭은 셋으로 나뉜다.
+
+| | 확률 | 관측 라벨 | 처리 |
+|---|---|---|---|
+| 창 안 전환 | $p(y{=}1)\,p(h \le e)$ | 1 | 그대로 |
+| 창 뒤 전환 (지연 양성) | $p(y{=}1)\,p(h > e) = p_{dp}$ | 0 → 나중에 1 복사본 | **보정 대상** |
+| 진짜 미전환 | $p(y{=}0)$ | 0 | 그대로 |
+
+정의
+
+$$
+p_{dp}(x) = p(y{=}1 \mid x)\,p(h > e \mid x, y{=}1)
+$$
+
+이 클릭이 결국 전환하는데, 그 전환이 **창 밖**에 오는 확률. $h > e$ 가 창 밖이다.
+
+$$
+p_{rn}(x) = \frac{p(y{=}0 \mid x)}{p(y{=}0 \mid x) + p_{dp}(x)}
+$$
+
+관측 시점에 0으로 보인 것(분모) 중 진짜 미전환(분자)의 비율.
+
+어떻게 구하나 — 둘 다 **별도 이진 분류기** $f_{dp}(x)$, $f_{rn}(x)$ 로 학습한다. FNW처럼 CVR 모델 자기 출력을 갖다 쓰지 않는다. 학습 데이터는 라벨이 확정된 **과거 로그**(예: 30일 지난 스트림). 각 클릭이 창 안에 샀는지, 창 뒤에 샀는지, 끝까지 안 샀는지가 확정 사실이라 가짜 음성이 없다. 라벨은 아래처럼 붙인다.
+
+| 클릭의 최종 결과 | $f_{dp}$ 라벨 | $f_{rn}$ 라벨 |
+|---|---|---|
+| 창 안 전환 | 0 | 제외 |
+| 창 뒤 전환 | **1** | 0 |
+| 끝까지 미전환 | 0 | **1** |
+
+**분류기 $f_{dp}$, $f_{rn}$ 의 구조와 학습** — $p$ 는 진짜 확률(이론 유도용, 알 수 없음), $f$ 는 그것을 예측하도록 학습한 분류기의 출력(실제 가중치에 들어가는 값). pCVR의 $p(y{=}1 \mid x)$ 와 $f_\theta(x)$ 관계와 같다.
 
 가중치는 양성에 $1 + p_{dp}$, 음성에 $(1 + p_{dp})\,p_{rn}$. 둘 다 확률이라 $[0,1]$ 안에서만 만들어진다. 대기 시간 $e$ 를 **설계 변수**로 올린 것이 이 논문의 기여다 — 기다릴수록 라벨은 정확해지고 데이터는 낡는다는 교환을 손잡이로 만들었다.
 
@@ -122,19 +158,158 @@ FNW는 NLL 간격을 거의 못 메우는데(6~8%) ES-DFM은 절반 이상 메�
 
 ### DEFER & DEFUSE — ES-DFM 후속
 
-> **DEFER** (Gu et al., KDD 2021, Tier 1) — https://arxiv.org/abs/2104.14121
-> **DEFUSE** (Chen et al., WWW 2022, Tier 1) — https://arxiv.org/abs/2202.06472
-> 둘 다 Alibaba. ES-DFM이 남긴 문제를 하나씩 고친다 — ① 전환한 클릭만 두 번 들어가 $q(x) \ne p(x)$, ② 관측 음성을 한 덩어리로 봄.
+> **DEFER** (Gu et al., KDD 2021) — https://arxiv.org/abs/2104.14121  
+> **DEFUSE** (Chen et al., WWW 2022) — https://arxiv.org/abs/2202.06472  
+> 둘 다 Alibaba. ES-DFM이 남긴 문제를 하나씩 고친다.  
 
-**DEFER — 진짜 음성도 다시 넣자.** 어트리뷰션 창이 지나면 전환한 클릭만 아니라 **모든 클릭**을 확정 라벨로 재투입한다. 전체 클릭이 두 번씩 들어가므로 $q(x) = p(x)$ 가 정확히 성립하고, 창 뒤에 돌아오는 미전환은 "아직 모름"이 아니라 **확실히 안 샀다**는 확정 정보가 된다. 관측 음성 가중치는 $q_{defer}(y{=}0 \mid x) = p(y{=}0 \mid x) + \tfrac12 f_{dp}(x)$ 에서 나온다. 창 길이를 상품별로 예측하는 확장도 제안. **비용은 데이터 2배**이고, 재투입까지 창만큼 기다리므로 창이 길면 확정 정보가 늦다 — DEFUSE 논문 표에서 Criteo-1d에서는 ES-DFM보다 낫고 30d에서는 못하다. 우리 7일 창은 그 중간.
+**DEFER — 진짜 음성도 다시 넣자.** 어트리뷰션 창이 지나면 전환한 클릭만 아니라 **모든 클릭**을 확정 라벨로 재투입한다. 전체 클릭이 두 번씩 들어가므로 $q(x) = p(x)$ 가 정확히 성립하고, 창 뒤에 돌아오는 미전환은 "아직 모름"이 아니라 **확실히 안 샀다**는 확정 정보가 된다. 관측 음성 가중치는 $q_{defer}(y{=}0 \mid x) = p(y{=}0 \mid x) + \tfrac12 f_{dp}(x)$ 에서 나온다. 창 길이를 상품별로 예측하는 확장도 제안. **비용은 데이터 2배**이고, 재투입까지 창만큼 기다리므로 창이 길면 확정 정보가 늦다.
 
-**DEFUSE — 음성을 넷으로 쪼개자.** 관측 샘플을 IP(즉시 양성)·FN(가짜 음성)·RN(진짜 음성)·DP(지연 양성)로 나누고 종류별 가중치를 준다. FN과 RN은 관측 시점에 똑같이 0으로 보이는데 기존 방법은 이 둘을 구분하지 않았고, 그것이 **불편성이 깨지는 지점**이라고 짚는다(중요도 샘플링은 라벨 불변을 가정하는데 지연 피드백은 같은 클릭의 라벨이 0→1로 바뀜). 해법은 숨은 변수 $z(x)$ = 관측 음성이 가짜 음성일 확률.
+세 방법을 같은 표기로 놓으면 차이가 보인다. 각 칸은 클릭 한 건이 스트림에 들어가는 라벨의 순서다(대기 창 1시간, 어트리뷰션 창 7일 기준).
 
-$$\mathcal L_{neg} = z(x)\, w_{FN} \log f + (1 - z(x))\, w_{RN} \log(1-f)$$
+| 클릭의 실제 결과 | FNW | ES-DFM | DEFER |
+|---|---|---|---|
+| 빨리 삼 (창 안 전환) | 0, 1 | 1 | 1, 1 |
+| 늦게 삼 (창 뒤 전환) | 0, 1 | 0, 1 | 0, 1 |
+| 안 삼 | 0 | 0 | 0, 0 |
 
-관측 음성 하나가 $z$ 만큼 양성으로, $1-z$ 만큼 음성으로 기울기를 낸다. $z$ 는 진짜 음성 분류기를 따로 두는 $z_1 = 1 - f_{rn}(x)$ 가 CVR 출력으로 계산하는 $z_2$ 보다 일관되게 나았다($z_2$ 는 두 모델의 나눗셈이라 불안정). **Bi-DEFUSE**는 창 안·밖 전환을 별도 분포로 보고 MMoE 두 헤드를 둔다 — 창 안 전환은 관측 시점에 확정이라 보정 없이 학습 가능.
+FNW는 클릭 즉시 0, 전환 시 1이다. ES-DFM은 1시간 뒤 한 번 넣고 늦은 전환만 1을 추가한다. DEFER는 ES-DFM에 "안 삼"의 두 번째 0과 "빨리 삼"의 두 번째 1을 더한 것이다. 마지막 열에서 모든 행이 두 자리인 것이 "모든 클릭을 두 번 넣는다"의 뜻이고, 그래서 $q(x) = p(x)$ 가 된다. 1 → 0은 없다 — 어트리뷰션 창 안에서 전환은 취소되지 않는다(환불까지 다루는 것은 TESLA의 범위).
 
-**관계** — ES-DFM(대기 창) → DEFER(재투입 대상 확대) → DEFUSE(음성 분해)의 단계적 업그레이드. 셋 모두 `_fnw` 가중치 자리에 들어가고 DEFER만 스트림 재투입 경로가 하나 더 필요하다. **DEFUSE의 $z(x)$ 는 ULC의 $w$ 와 같은 것** — ULC는 이 음성 항에서 중요도 가중치를 떼고 경과 시간을 조건에 넣은 배치판이다. **C2에는 둘 다 닿지 않는다** — DEFER 서론이 "새 캠페인 추가 등 분포 변화"를 동기로 들지만 해법은 관측 샘플 재가중이고 보조 모델은 과거 데이터로 학습된다.
+**대기 창과 어트리뷰션 창**
+
+| | 누가 정하나 | 조정 가능? | 역할 |
+|---|---|---|---|
+| 대기 창 $w_1$ (예: 1시간) | 모델러 | 예, 튜닝 대상 | 클릭 후 이만큼 기다렸다 첫 라벨을 붙인다. ES-DFM의 $e$ 와 같은 것 |
+| 어트리뷰션 창 (예: 7일) | 사업 규칙 | 아니오, 주어진 값 | 이 안의 전환만 성과로 인정·과금. 지나면 라벨이 확정된다 |
+
+두 번째 방출이 어트리뷰션 창인 이유는 그때가 **라벨이 더 바뀌지 않는 최초 시점**이기 때문이다. DEFER의 확정 정보가 도착하는 시점은 이 창에 묶여 있어 앞당길 수 없다. 7일 목적에서는 7일 뒤, vcvr(1일)에서는 하루 뒤에 들어온다.
+
+**관측 라벨 분포 $q(y{=}0 \mid x)$ — ES-DFM vs DEFER.** 클릭 10개, 빨리 삼 1 · 늦게 삼 1 · 안 삼 8 기준($p = 0.2$, $p_{dp} = 0.1$).
+
+| | 스트림 구성 | 0인 행 | 전체 행 | 식 | 값 |
+|---|---|---|---|---|---|
+| ES-DFM | 1시간 뒤 라벨, 늦은 전환만 1 추가 | 안 삼 8 + 늦게 삼 첫 줄 1 = 9 | 10 + 1 = 11 | $\dfrac{(1-p) + p_{dp}}{1 + p_{dp}}$ | 0.818 |
+| DEFER | 1시간 뒤 라벨, 7일 뒤 **모든** 클릭 확정 라벨 추가 | 안 삼 16 + 늦게 삼 첫 줄 1 = 17 | 20 | $(1-p) + \tfrac12 p_{dp}$ | 0.85 |
+| 진짜 | | | | $1 - p$ | 0.8 |
+
+- **분자** — 관측 시점에 0으로 보인 것. 진짜 미전환과 아직 안 온 전환이 섞여 있다. DEFER는 안 삼이 두 번 세어져 $2(1-p)$ 가 된다.
+- **분모** — 전체 행 수. ES-DFM은 늦게 삼만 추가 행이라 $1 + p_{dp}$ 로 $x$ 에 따라 달라진다. DEFER는 모두 두 번이라 상수 2이고, 나누면 사라진다.
+- 둘 다 진짜 0.8보다 크고, 그 차이를 되돌리는 것이 각 방법의 음성 가중치다.
+
+**피처 분포 $q(x)$ 와 $p(x)$.** 중요도 가중치는 두 인수의 곱이다.
+
+$$
+\frac{p(x, y)}{q(x, y)} = \frac{p(x)}{q(x)} \times \frac{p(y \mid x)}{q(y \mid x)}
+$$
+
+- **뒤쪽** 라벨 왜곡은 셋 다 위 표의 $q(y \mid x)$ 로 정확히 보정한다.
+- **앞쪽** $p(x)/q(x)$ 는 "어떤 클릭이 스트림에 몇 번 나오나"다. FNW·ES-DFM은 전환한 클릭만 두 번 들어가서 산 사람의 피처가 실제보다 자주 보이는데, 이 차이를 무시하고 $q(x) \approx p(x)$ 로 놓는다. 그만큼의 편향이 남는다.
+- DEFER는 안 온 클릭에도 7일 뒤 확정 0을 넣어 모든 클릭을 두 번 만든다. 산 사람도 안 산 사람도 두 줄이라 등장 비율이 실제와 같아지고 $q(x) = p(x)$ 가 **가정이 아니라 사실**이 된다. 그 두 번째 0은 비율을 맞추는 동시에 "확실히 안 삼"이라는 확정 정보를 처음으로 모델에 넣는다.
+
+**DEFUSE — 관측 음성을 둘로 쪼개자.** 관측 샘플을 IP(즉시 양성)·FN(가짜 음성)·RN(진짜 음성)·DP(지연 양성)로 나누고 종류별 가중치를 준다. 양성 쪽 IP·DP는 스트림에서 이미 구분되므로, 실제로 새로 쪼갠 것은 **관측 음성을 FN과 RN 둘로** 나눈 것이다. FN과 RN은 관측 시점에 똑같이 0으로 보이는데 기존 방법은 이 둘을 구분하지 않았고, 그것이 **불편성이 깨지는 지점**이라고 짚는다(중요도 샘플링은 라벨 불변을 가정하는데 지연 피드백은 같은 클릭의 라벨이 0→1로 바뀜). 해법은 숨은 변수 $z(x)$ = 관측 음성이 가짜 음성일 확률.
+
+$$
+\mathcal L_{ub} = \int \underbrace{q(x)\,dx}_{(1)}\ \sum_{v}\ \underbrace{q(v \mid x)}_{(2)}\ \underbrace{\frac{p(x)}{q(x)}}_{(3)}\ \underbrace{\frac{p(y(v,d) \mid x)}{q(v \mid x)}}_{(4)}\ \underbrace{\ell\big(x, y(v,d); f_\theta(x)\big)}_{(5)}
+$$
+
+스트림에서 피처 $x$ 가 나올 확률에 (1) 그 클릭에 관측 라벨 $v$ 가 찍힐 확률을 곱하고 (2), 피처 빈도를 보정하고 (3), 관측 라벨 대신 진짜 라벨 기준으로 바꿔주는 비율을 곱한 뒤 (4), 진짜 라벨 기준의 CE loss를 곱한다 (5).
+
+**$w_i$ 는 $\mathcal L_{ub}$ 의 (3)×(4)다.**
+
+$$
+w_i(x) = \underbrace{\frac{p(x)}{q(x)}}_{(3)} \times \underbrace{\frac{p(y(v_i,d) \mid x)}{q(v_i \mid x)}}_{(4)} = \frac{p\big(x, y(v_i,d)\big)}{q(x, v_i)}
+$$
+
+조건부 확률의 곱이 결합확률이 되어 논문의 정의와 같아진다. 이걸로 $\mathcal L_{ub}$ 를 다시 쓰면 식 (14)다.
+
+$$
+\mathcal L_{ub} = \int q(x) \sum_{i \in \{IP, FN, RN, DP\}} q(v_i \mid x)\; w_i(x)\; \ell\big(x, y(v_i,d); f_\theta\big)
+$$
+
+바뀐 것은 $\sum_v$ 가 $\sum_i$ 로 바뀐 것 하나. $v{=}0$ 안에 FN과 RN이, $v{=}1$ 안에 IP와 DP가 있고, (4)의 분자 $p(y \mid x)$ 가 FN(진짜 1)과 RN(진짜 0)에서 다르니 가중치를 종류별로 따로 둬야 한다. 논문은 (3)은 여전히 1로 근사하므로 실제 계산되는 것은 (4)다.
+
+**네 종류의 가중치** (대기 창 1시간, 어트리뷰션 창 7일 기준)
+
+| 종류 | 이 클릭에 일어난 일 | 관측 $v$ | 진짜 $y$ | 가중치 | 손실 방향 |
+|---|---|---|---|---|---|
+| IP 즉시 양성 | 1시간 안에 샀다 | 1 | 1 | $1 + f_{dp}$ | 양성 |
+| DP 지연 양성 | 1시간 뒤에 샀다. **복사본** 줄 | 1 | 1 | $1$ | 양성 |
+| FN 가짜 음성 | 1시간 뒤에 샀다. **첫** 줄 | 0 | 1 | $f_{dp}$ | 양성 |
+| RN 진짜 음성 | 끝까지 안 샀다 | 0 | 0 | $1 + f_{dp}$ | 음성 |
+
+- **가중치의 의미** — 늦게 산 사람이 두 줄로 들어가 전체 행이 $1 + p_{dp}$ 배로 늘었으므로 모든 행의 비중이 그만큼 눌려 있다. 그래서 **모든 클릭이 한 클릭 몫 $1 + f_{dp}$ 를 받는다.** 한 줄짜리 IP·RN은 그 줄이 다 받고, 두 줄짜리 DP·FN은 합쳐서 받는다. 논문은 DP에 1, FN에 $f_{dp}$ 로 나눈다. 제약으로 쓰면 $w_{IP} = w_{RN} = 1 + f_{dp}$, $w_{DP} + w_{FN} = 1 + f_{dp}$.
+- **손실 방향은 진짜 라벨 기준** — IP·DP·FN은 진짜가 1이라 양성 항으로, RN만 음성 항으로 간다. 기존 방법과의 차이는 FN 줄 하나다.
+- **학습 시점에 구분되는 것** — IP vs DP는 구분된다(창 안에 왔으면 IP, 복사본이면 DP). FN vs RN은 **구분되지 않는다**(둘 다 0으로 찍혀 있고 결과를 모름). 그래서 관측 음성 하나를 $z$ 와 $1-z$ 로 쪼개 두 항에 동시에 넣는다.
+
+**ES-DFM과의 차이 — 0으로 들어온 것을 어떻게 쓰나.** 클릭 10개(빨리 삼 1 · 늦게 삼 1 · 안 삼 8), 0으로 찍힌 행 9개 기준.
+
+ES-DFM은 9개를 한 덩어리로 음성 항에 넣는다.
+
+$$
+(1 + f_{dp})\, p_{rn} \cdot \log(1 - f_\theta)
+$$
+
+$p_{rn} = 8/9$ 라 "9개 중 8개만큼만 음성으로 믿겠다"이고, 나머지 1개 몫은 버려진다. 늦게 산 사람의 첫 줄이 사실 양성이라는 정보는 쓰지 않고, 그 사람의 양성 몫은 며칠 뒤 도착하는 복사본 한 줄이 전부 담당한다.
+
+DEFUSE는 9개 각각을 둘로 쪼갠다.
+
+$$
+\mathcal L_{neg} = z \cdot f_{dp} \cdot \log f_\theta \;+\; (1 - z)(1 + f_{dp}) \cdot \log(1 - f_\theta)
+$$
+
+뒤쪽은 $1 - z = p_{rn}$ 이라 ES-DFM과 같은 숫자다. **앞쪽이 새로 생긴 것** — ES-DFM이 버리던 $z = 1/9$ 몫을 "이건 사실 살 사람"이라며 양성 항으로 보낸다. 늦게 산 사람은 양성 신호를 복사본 한 줄에서만 받다가 이제 첫 줄의 $z$ 몫에서도 받고, 첫 줄이 복사본보다 며칠 먼저 도착하므로 **양성 정보가 더 일찍, 더 많이 들어온다.** 한 줄로: 기존에는 0으로 들어온 것을 전부 음성 항에 가중치를 줘서 넣었는데, DEFUSE는 그중 나중에 1로 바뀔 비율을 $z$ 로 추정해 그만큼을 양성 항에 넣는다.
+
+**$z$ — 관측 음성이 사실 FN일 확률.**
+
+$$
+z(x) = \frac{p(y{=}1, d > w_o \mid x)}{p(y{=}0 \mid x) + p(y{=}1, d > w_o \mid x)} = 1 - p_{rn}(x)
+$$
+
+$z$ 를 직접 하지 않고 $f_{rn}$ 을 학습해 $z = 1 - f_{rn}(x)$ 로 쓴다 — ES-DFM의 진짜 음성 분류기 그대로. 확정된 과거 로그에서 관측 시점에 0으로 보였던 클릭만 골라, 끝까지 안 샀으면 1, 창 뒤에 샀으면 0으로 라벨을 붙인 이진 분류기다. 
+
+**Bi-DEFUSE (4.2) — 창 안 전환은 보정 없이, 나머지는 DEFUSE로.** 창 안 전환(IP)은 관측 시점에 이미 정답을 아니 보정 없이 배우고, DP·FN·RN은 4.1의 DEFUSE로 배운다. 보정 오차를 창 뒤 헤드 하나에 가둬 분산을 줄인다.
+
+헤드 둘, 출력 둘. 4.1은 헤드가 하나라 출력 $f_\theta$ 가 곧 pCVR이었다. Bi-DEFUSE는 답하는 질문이 다른 헤드 둘로 나눈다.
+
+| | 질문 | 클릭 10개 예시 정답 |
+|---|---|---|
+| $f_{IP}(x)$ | 창 안에 살 확률 | 빨리 삼 1 → 0.1 |
+| $f_{DP}(x)$ | 창 뒤에 살 확률 | 늦게 삼 1 → 0.1 |
+| $f_\theta(x)$ (4.1) | 결국 살 확률 | 산 사람 2 → 0.2 |
+
+$$
+p(y{=}1 \mid x) = f_{IP}(x) + f_{DP}(x)
+$$
+
+4.1은 0.2를 통째로 배우고, Bi-DEFUSE는 0.1과 0.1을 따로 배워 더한다.
+
+- **창 안 헤드 — 보정 없음.** $y_{IP}$ 는 "창 안에 샀으면 1, 아니면 0". 늦게 살 사람도 안 살 사람도 창 안에는 안 샀으니 0이 정답이다. 가짜 음성이 없어 진짜 분포 $p$ 에서 그대로 뽑는다.
+
+$$
+\mathcal L_{IP} = -\int p(x, y_{IP})\Big[\, y_{IP}\log f_{IP} + (1 - y_{IP})\log(1 - f_{IP}) \Big]
+$$
+
+- **창 뒤 헤드 — DEFUSE 가중치와 $z$.** $v_{DP}$ 는 복사본이면 1, 창 안에 안 온 첫 줄이면 0. 0 줄에 FN·RN이 섞여 있어 4.1 식 (15)를 그대로 쓴다. 다른 것은 IP 항이 빠지고 식 안의 $f_\theta$ 자리에 $f_{DP}$ 가 들어가는 것뿐이다.
+
+$$
+\mathcal L_{DP} = -\int q(x, v_{DP})\Big[\, v_{DP}\, w'_{DP}\log f_{DP} + (1 - v_{DP})\big( z'\,w'_{FN}\log f_{DP} + (1 - z')\,w'_{RN}\log(1 - f_{DP}) \big) \Big]
+$$
+
+$$
+w'_{DP} + w'_{FN} = 1 + f_{dp}, \qquad w'_{RN} = 1 + f_{dp}, \qquad \mathcal L = \mathcal L_{IP} + \mathcal L_{DP}
+$$
+
+한 클릭이 두 헤드에 들어가는 방식:
+
+| 클릭 | 창 안 헤드 $y_{IP}$ | 창 뒤 헤드 $v_{DP}$ |
+|---|---|---|
+| 빨리 삼 | 1 | 없음 |
+| 늦게 삼 | 0 | 첫 줄 0 (FN 몫 $z'$), 복사본 1 (DP) |
+| 안 삼 | 0 | 첫 줄 0 (RN 몫 $1 - z'$) |
+
+- **왜 나누나.** 통째로 배우면 $z$·가중치의 보정 오차가 0.2 전체에 묻는데, 나누면 창 뒤 몫 0.1에만 묻는다. 창 안 몫이 클수록, 즉 어트리뷰션 창이 짧을수록 이득이 크다. 논문 실험에서 $w_a \le 7$ 일이면 Bi-DEFUSE가 DEFUSE보다 낫고 그 이상이면 뒤집힌다(Criteo-30d에서는 DEFUSE 52.3% vs Bi-DEFUSE 37.3%, Taobao에서는 55.1% vs 66.3%). 우리 7일 목적은 경계, 1일 목적 vcvr은 유리한 쪽.
+- **구조** — MMoE. 창 안 전문가, 공유 전문가, 창 뒤 전문가를 게이트로 섞는다. 게이트를 빼거나 두 헤드를 독립 모델로 만들면 성능이 떨어졌다.
+
+**관계** — ES-DFM(대기 창) → DEFER(재투입 대상 확대) → DEFUSE(관측 음성을 FN·RN으로 분해)의 단계적 업그레이드. 셋 모두 `_fnw` 가중치 자리에 들어가고 DEFER만 스트림 재투입 경로가 하나 더 필요하다. **DEFUSE의 $z(x)$ 는 ULC의 $w$ 와 같은 것** — ULC는 이 음성 항에서 중요도 가중치를 떼고 경과 시간을 조건에 넣은 배치판이다. **C2에는 둘 다 닿지 않는다** — DEFER 서론이 "새 캠페인 추가 등 분포 변화"를 동기로 들지만 해법은 관측 샘플 재가중이고 보조 모델은 과거 데이터로 학습된다.
 
 **실험 결과 (DEFER)** — Criteo·Taobao-30d 스트리밍. RI는 Pre-trained = 0%, Oracle = 100%.
 
@@ -285,6 +460,75 @@ $w$ 를 학습할 데이터는 원본에 없으므로 **counterfactual labeling*
 **측정**: 초기화 방식별로 그룹 생성 후 경과 시간별 캘리브레이션 오차 곡선을 겹쳐 그린다. 첫 몇 시간 구간의 차이가 C4의 크기다.
 
 > **참고**: 콜드스타트 초기화를 다룬 논문은 MetaEmb(SIGIR 2019, CTR), **지연 피드백 문헌 밖**이다.
+
+# Alibaba 3종(ES-DFM·DEFER·DEFUSE)의 인용 현황
+
+> 2026-09-17 OpenAlex 기준. OpenAlex는 Google Scholar보다 적게 잡히므로 절대값보다 추세를 본다. 인용 논문의 arXiv가 확인된 경우 arXiv, 아니면 DOI로 연결했다.
+
+## 연도별 인용 수
+
+| | 총 인용 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+|---|---|---|---|---|---|---|---|
+| ES-DFM (AAAI 2021) | 30 | 3 | 3 | 10 | 3 | 4 | 7 |
+| DEFER (KDD 2021) | 30 | — | 5 | 8 | 4 | 4 | 9 |
+| DEFUSE (WWW 2022) | 27 | — | 2 | 9 | 4 | 4 | 8 |
+
+**읽을 점 셋.** ① 세 편 모두 2026년이 2023년 다음으로 높거나 최고치다 — 줄지 않는다. ② 역할은 거의 전부 **베이스라인**이다. 자기 방법을 제안하고 셋을 비교 대상으로 놓아 이긴다. ③ 2025~2026 인용의 절반이 Alibaba 자신이고, 2026 TESLA는 CVR 타워 디바이어스에 ES-DFM 가중치 $w^+ = 1 + p_v\,p(h_v > W \mid y{=}1, x)$ 를 그대로 쓴다(부록 C 제목이 "Debiasing Strategy in ES-DFM"). 외부 기업이 셋을 프로덕션에 그대로 쓴다고 밝힌 사례는 없고, Kuaishou(TWICE)는 셋을 이기고 자기 방법을 배포했다.
+
+## 인용 논문 목록
+
+중복 제거 후 44편 + OpenAlex 미반영 2편. "인용" 열은 셋 중 어느 것을 인용했는지, "성격" 열은 그 논문에서 셋이 어떤 역할인지다.
+
+| 연도 | 논문 | 소속 | 인용 | 성격 | 링크 |
+|---|---|---|---|---|---|
+| 2021 | Co-Transport for Class-Incremental Learning | Nanjing University | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1145/3474085.3475306) |
+| 2021 | Conversion Prediction with Delayed Feedback: A Multi-task Learning Approach | Alibaba Group (China), University of Tennessee at Knoxville | ES-DFM | 지연 방법 (MM-DFM) | [DOI](https://doi.org/10.1109/icdm51629.2021.00029) |
+| 2021 | Real Negatives Matter: Continuous Training with Real Negatives for Delayed Feedback Modeli | — | ES-DFM | 후속 방법 (DEFER) | [arXiv 2104.14121](https://arxiv.org/abs/2104.14121) |
+| 2022 | Asymptotically Unbiased Estimation for Delayed Feedback Modeling via Label Correction | Alibaba Group (China) | DEFER, ES-DFM | 후속 방법 (DEFUSE) | [arXiv 2202.06472](https://arxiv.org/abs/2202.06472) |
+| 2022 | Calibrated Conversion Rate Prediction via Knowledge Distillation under Delayed Feedback in | Chinese Academy of Sciences, Institute of Computing Technolo | DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1145/3511808.3557557) |
+| 2022 | Cross-domain Recommendation via Adversarial Adaptation | Tencent (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557277) |
+| 2022 | KEEP: An Industrial Pre-Training Framework for Online Recommendation via Knowledge Extract | Alibaba Group (China), Tsinghua University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557106) |
+| 2022 | Learning Classifiers under Delayed Feedback with a Time Window Assumption | CyberAgent (Japan) | DEFER, DEFUSE, ES-DFM | 지연 방법 (nnDF) | [arXiv 2009.13092](https://arxiv.org/abs/2009.13092) |
+| 2022 | Towards Understanding the Overfitting Phenomenon of Deep Click-Through Rate Models | Alibaba Group (China), Nanjing University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557479) |
+| 2023 | 3MN: Three Meta Networks for Multi-Scenario and Multi-Task Learning in Online Advertising  | Tencent (China) | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3583780.3614651) |
+| 2023 | Capturing Conversion Rate Fluctuation during Sales Promotions: A Novel Historical Data Reu | Alibaba Group (China), Nanjing University, University of Sci | DEFER, DEFUSE, ES-DFM | 응용 — 프로모션 CVR (HiFI) | [DOI](https://doi.org/10.1145/3580305.3599788) |
+| 2023 | CollabEquality: A Crowd-AI Collaborative Learning Framework to Address Class-wise Inequali | University of Illinois Urbana-Champaign | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3543507.3583871) |
+| 2023 | Cross-domain Recommendation via Dual Adversarial Adaptation | Tongji University, University of Electronic Science and Tech | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3632524) |
+| 2023 | Dually Enhanced Delayed Feedback Modeling for Streaming Conversion Rate Prediction | Renmin University of China | DEFER, DEFUSE, ES-DFM | 지연 방법 (DDFM) — 셋을 베이스라인으로 비교 | [DOI](https://doi.org/10.1145/3583780.3614856) |
+| 2023 | Entire Space Cascade Delayed Feedback Modeling for Effective Conversion Rate Prediction | Alibaba Group (China), Shandong University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ESDF) | [arXiv 2308.04768](https://arxiv.org/abs/2308.04768) |
+| 2023 | Freshness or Accuracy, Why Not Both? Addressing Delayed Feedback via Dynamic Graph Neural  | Zhejiang University of Science and Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1109/icws60048.2023.00059) |
+| 2023 | Joint Optimization of Ranking and Calibration with Contextualized Hybrid Model | Alibaba Group (China) | DEFER | 타 주제 — 캘리브레이션 | [DOI](https://doi.org/10.1145/3580305.3599851) |
+| 2023 | Leveraging Post-Click User Behaviors for Calibrated Conversion Rate Prediction Under Delay | Institute of Computing Technology, University of Chinese Aca | ES-DFM | 지연 방법 — post-click | [DOI](https://doi.org/10.1145/3583780.3615161) |
+| 2023 | Modelling Delayed Redemption with Importance Sampling and Pre-Redemption Engagement | — | DEFUSE, ES-DFM | 응용 — 쿠폰 리뎀션 | [DOI](https://doi.org/10.1145/3580305.3599867) |
+| 2023 | Online Conversion Rate Prediction via Neural Satellite Networks in Delayed Feedback Advert | Chinese Academy of Sciences, Institute of Computing Technolo | DEFER, DEFUSE, ES-DFM | 지연 방법 (NSN) | [DOI](https://doi.org/10.1145/3539618.3591747) |
+| 2023 | RLTP: Reinforcement Learning to Pace for Delayed Impression Modeling in Preloaded Ads | Alibaba Group (China) | ES-DFM | 응용 — 노출 pacing | [DOI](https://doi.org/10.1145/3580305.3599900) |
+| 2023 | Unbiased Delayed Feedback Label Correction for Conversion Rate Prediction | Huawei Technologies (China), Tsinghua University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ULC) | [arXiv 2307.12756](https://arxiv.org/abs/2307.12756) |
+| 2023 | Understanding Elapsed-time Sampling Delayed Feedback | Irvine University, Kindred Hospital Rancho, Lancaster Univer | ES-DFM | ES-DFM 분석 | [DOI](https://doi.org/10.4108/eai.2-6-2023.2334607) |
+| 2024 | Addressing Delayed Feedback in Conversion Rate Prediction: A Domain Adaptation Approach | Duke University, Rice University, Samsung (United States) | DEFER, DEFUSE, ES-DFM | 지연 방법 — 도메인 적응 | [DOI](https://doi.org/10.1109/icdm59182.2024.00115) |
+| 2024 | Calibration-compatible Listwise Distillation of Privileged Features for CTR Prediction | Alibaba Group (China), Shandong University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3616855.3635810) |
+| 2024 | Debiasing the Conversion Rate Prediction Model in the Presence of Delayed Implicit Feedbac | Peking University, Peking University International Hospital | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.3390/e26090792) |
+| 2024 | Enhancing Taobao Display Advertising with Multimodal Representations: Challenges, Approach | Alibaba Group (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3627673.3680068) |
+| 2024 | Modeling User Attention in Music Recommendation | Huawei Technologies (China), Renmin University of China | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1109/icde60146.2024.00064) |
+| 2024 | Online Conversion Rate Prediction via Multi-Interval Screening and Synthesizing under Dela | Institute of Computing Technology | DEFUSE, ES-DFM | 지연 방법 (MISS) | [DOI](https://doi.org/10.1609/aaai.v38i8.28726) |
+| 2025 | Consumer Conversion Prediction Via Heterogeneous Graph Networks and Sparse Attention Learn | Yantai Academy of Agricultural Sciences | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1109/eiecc67963.2025.11409614) |
+| 2025 | Mind the Gap: Delayed Label Bias-Variance Tradeoffs in Predicting Likelihood of Nonpayment | Meta (United States), Northeastern University | DEFER, DEFUSE | 응용 — 미납 예측, post-transaction pseudo-label | [DOI](https://doi.org/10.1145/3711896.3737247) |
+| 2025 | Predicting Calibrated Conversion Rate of Online Advertising Using a Multi-task Mixture-of- | China Academy of Safety Sciences and Technology, China Unive | DEFER, DEFUSE, ES-DFM | 지연 방법 — 멀티태스크 | [DOI](https://doi.org/10.1007/978-981-96-1024-2_14) |
+| 2025 | See Beyond a Single View: Multi-Attribution Learning Leads to Better Conversion Rate Predi | Alibaba Group (China) | DEFER, DEFUSE, ES-DFM | 응용 — 다중 어트리뷰션 (MAL) | [DOI](https://doi.org/10.1145/3746252.3761580) |
+| 2025 | Towards Unbiased and Real-Time Staytime Prediction for Live Streaming Recommendation | Renmin University of China | DEFER, DEFUSE, ES-DFM | 응용 — 체류시간 지연 라벨 | [DOI](https://doi.org/10.1145/3746252.3761570) |
+| 2026 | Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce R | Alibaba Group (China) | DEFUSE | 응용 — 할인 인지 CVR | [arXiv 2607.12578](https://arxiv.org/abs/2607.12578) |
+| 2026 | Deep Learning to Rank in Industrial Search Engines, Recommender Systems, and Online Advert | Tsinghua University, Wuhan University | DEFER, DEFUSE | 서베이 | [DOI](https://doi.org/10.1145/3797895) |
+| 2026 | Delayed Feedback Modeling for Post-Click Gross Merchandise Volume Prediction: Benchmark, I | Alibaba Group (China), Xiamen University | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (READER) | [arXiv 2601.20307](https://arxiv.org/abs/2601.20307) |
+| 2026 | Discovering and Alleviating Data Leakage in Staytime Prediction for Live Streaming Recomme | Chinese University of Hong Kong, Renmin University of China | DEFER, ES-DFM | 응용 — 체류시간 | [DOI](https://doi.org/10.1145/3770855.3818187) |
+| 2026 | Fast yet Accurate Learning: A Novel Joint Data Stream and Model Framework for Staytime Pre | — | DEFER, DEFUSE, ES-DFM | 지연 방법 — 스트리밍 | [DOI](https://doi.org/10.1145/3770855.3818405) |
+| 2026 | Follow the TRACE: Exploiting Post-Click Trajectories for Online Delayed Conversion Rate Pr | Institute of Computing Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 (TRACE) | [arXiv 2604.23197](https://arxiv.org/abs/2604.23197) |
+| 2026 | Large-Scale Online Learning for Generative List Recommendation in E-commerce: An Environme | Alibaba Group (China), Renmin University of China | DEFER, ES-DFM | 타 주제 — 온라인 학습 | [DOI](https://doi.org/10.1145/3805712.3809577) |
+| 2026 | MAC: A Conversion Rate Prediction Benchmark Featuring Labels Under Multiple Attribution Me | Alibaba Group (China), Nanjing University of Science and Tec | DEFER, DEFUSE, ES-DFM | 벤치마크 (MAC) | [arXiv 2603.02184](https://arxiv.org/abs/2603.02184) |
+| 2026 | Modeling Cascaded Delay Feedback for Online Net Conversion Rate Prediction: Benchmark, Ins | Alibaba Group (China), Alibaba Group (United States), Xiamen | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (TESLA) — ES-DFM 가중치를 그대로 사용 | [arXiv 2601.19965](https://arxiv.org/abs/2601.19965) |
+| 2026 | TemporalExpertNet: Cross-Temporal Knowledge Reuse for Promotion-Aware CVR Prediction | Fudan University, Kuaishou (China), Tianjin University | DEFER, DEFUSE | 응용 — 프로모션 CVR | [DOI](https://doi.org/10.1145/3773966.3777956) |
+| 2022 | Generalized Delayed Feedback Model with Post-Click Information in Recommender Systems | Nanjing University | ES-DFM, DEFER | 지연 방법 (GDFM) — 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2206.00407](https://arxiv.org/abs/2206.00407) |
+| 2026 | TWICE: Two Clocks for Delayed Feedback CVR (Kuaishou) | Kuaishou | ES-DFM, DEFER, DEFUSE | 지연 방법 — Kwai 전 트래픽 배포, 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2607.25404](https://arxiv.org/abs/2607.25404) |
+
+**Alibaba 내부 정리.** 배포가 명시된 것은 DEFER(2021, 주 트래픽)와 DEFUSE(2022, A/B +2.28%)까지다. 2026년 TESLA·READER·MAC은 배포 문장이 없고, alimama-tech의 [NetCVR 저장소](https://github.com/alimama-tech/NetCVR)에 FNW·FNC·ES-DFM·DEFER·DEFUSE·DDFM·DFSN·MISS·TESLA의 스트리밍 학습 스크립트가 자사 데이터 위에 공개돼 있다. "계속 쓴다"도 "바꿨다"도 논문으로 확정할 수 없고, 확인되는 것은 **2026년 방법의 기반이 여전히 ES-DFM 가중치**라는 점까지다.
 
 # 결론 — 메인 / 옵션 / 참고
 
