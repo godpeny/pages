@@ -46,7 +46,6 @@
 > **문제** : 전환은 클릭하자마자 오지 않는다. 며칠 뒤에 오기도 한다(최대 7일). 그래서 어제 클릭에 붙은 "전환 안 함"은 진짜 안 샀다는 뜻이 아니라 **아직 모른다**는 뜻이다. 배치 DFM은 이걸 알고 있어서 최근 클릭의 "안 샀다" 신호를 거의 안 믿는다 — 얼마나 믿을지가 $F(d) = 1 - e^{-\lambda d}$ 이고, $\lambda = 0.7/\text{일}$ 이면 2시간 전 클릭은 5.6%만 반영한다. 신규 그룹은 가진 데이터가 전부 "최근"이라 이 할인을 그대로 다 맞는다.  
 온라인 모델(`fnw`)은 정반대로 일단 전부 "안 샀다"로 즉시 학습하기 때문에 첫 며칠은 무조건 과소예측이 난다. 전환이 실제로 며칠 걸려 오는 것 자체는 앞당길 수 없으니 **없앨 수 없는 최소 지연**이다. 다만 아래 논문들은 두 가지를 더 말한다 — (a) 초반에 보이는 라벨은 그냥 적기만 한 게 아니라 **빨리 사는 사람 쪽으로 기울어 있고**(C1-b), (b) 장바구니처럼 빨리 오는 신호를 쓰면 일부는 당겨올 수 있다.
 
-
 ### 문제점 지적
 
 - **FSIW** (Yasui et al., WWW 2020) — https://arxiv.org/abs/2002.02068
@@ -71,7 +70,6 @@
 
 > **문제** : 신규 그룹의 임베딩은 미학습 상태(콜드스타트)라 예측은 사실상 **과거 30일의 다른 그룹들로 학습된 공유 파라미터가 내놓는 "평균적인 그룹"의 값**이 되고, 그래서 이 그룹의 실제 CVR과 어긋난다. 둘로 갈린다 — **C2-①** 임베딩이 아직 안 배워짐(30일 창과 무관, 7일이어도 같음) / **C2-②** 그동안 받는 기본값(공유 파라미터)이 지난 30일 평균이라 **오늘과 어긋남**(창이 길수록 커짐). 학습 기간을 30→7일로 줄이면 비중은 오르지만 라벨 미성숙 샘플 비율도 올라 C1이 악화되므로, 위키 처방은 "기간을 자르지 말고 최근 데이터에 가중치".
 
-
 ### 문제점 지적
 
 - **GDFM** (Yang & Zhan, NeurIPS 2022) — https://arxiv.org/abs/2206.00407
@@ -90,7 +88,22 @@
   재가중 계열은 **이미 있는 positive의 무게를 재분배**할 뿐이라, 과거와 다른 신규 그룹의 fake negative를 표현할 수 없다.
   > "[This problem] is worse when the data distribution has changed recently. As the information about the false negative samples may differ from the past observed positive samples, only using the observed positive samples cannot complement the correct information about the fresh false negative samples."
 
-## C1, C2 소결
+## C3 — 파라미터 갱신량
+
+> **문제** : 데이터도 있고 라벨도 왔는데 **한 번 학습할 때 파라미터가 움직이는 폭이 작으면** 여전히 오래 걸린다. 온라인 학습률은 APP 1e-4, PF·MEM 1e-3이고 조정 스케줄이 없다. 배치는 ClippyAdagrad lr 0.01에 Adagrad 누적기가 run마다 리셋된다. **재학습 주기(배치 4시간·온라인 30분)는 원인이 아니다** — 자주 학습하는 것과 빨리 따라잡는 것은 다르고, 남는 변수는 회당 갱신량이다.
+
+해당 논문 없음. 지연 피드백 문헌은 손실 함수와 라벨 설계를 다루고 학습률·옵티마이저는 다루지 않는다. **기존 파라미터와 lr 값을 확인한 뒤 미세조정으로 판정한다.**
+
+## C4 — 초기 표현 (제안)
+
+> **문제** : 새 그룹이 생기면 group_id 임베딩이 $N(0,\ 10^{-5})$ 에서 시작한다(`models/model/feature.py`의 `OneHotFeature`, `RN_STDDEV = 0.00001`). 그 그룹은 어느 계정·캠페인·목적인지 다 알려져 있는데 그 정보를 하나도 안 쓰고 **빈 종이로 출발**한다. C1~C3가 전부 완벽해도 **첫 예측은 출발점이 결정**하며, $N$ 은 그룹 생성 순간부터 재므로 첫 몇 시간은 이 문제다.
+
+> **참고**: 콜드스타트 초기화를 다룬 논문은 MetaEmb(SIGIR 2019, CTR), **지연 피드백 문헌 밖**이다.
+
+# 예상 원인별 해결 제안
+> 각 원인에 대한 해결 방안을 모았다 — 각 방법이 **무엇**이고 논문이 무엇을 보였는지. 우리가 **무엇을 어떤 순서로** 하는지는 아래 결론.
+
+## C1·C2 — 지연 피드백 보정
 
 ### ES-DFM — 대기 창을 설계 변수로
 
@@ -336,10 +349,12 @@ $$
 
 **실험 설계 함의** — 셋이 "클릭 후 $e$ 시간 기다렸다 emit하는 스트림"을 공유하므로, 오프라인 스트리밍 재생으로 대조군(현행 `_fnw`)·ES-DFM·+DEFER·+DEFUSE·+둘 다를 **한 번에 비교**하고 승자만 온라인 A/B로 올린다. DEFER가 7일 창에서 이득인지는 이 비교로만 답이 나온다. DEFUSE 팔의 결과는 배치 라인 ULC의 사전 검증이 된다.
 
+### GDFM — post-click 행동을 전환의 대리 신호로
+
 > **GDFM** (Yang & Zhan, NeurIPS 2022) — https://arxiv.org/abs/2206.00407
 > C1과 C2를 한 틀에서 다루는 유일한 논문. 아래는 그 요지와 두 원인에 대한 대응.
 
-### 요지
+#### 요지
 
 유저 트렌드나 프로모션 등에 의해 현재 시점의 클릭-전환 분포 $p_t(y \mid x)$ 는 매 순간 불안정하게 변화한다. 반면 **전환할 유저 $y$ 가 장바구니에 담는 행동 $a$ 를 할 조건부 확률** $p(a \mid x, y)$ 는 시간에 거의 구애받지 않고 안정적으로 유지된다.
 
@@ -351,7 +366,7 @@ $$w_j = \underbrace{e^{-\alpha H(y \mid a_j)}}_{\text{정보량}} \cdot \underbr
 
 여기에 확정 라벨로 학습한 모델을 KL 앵커로 붙잡아, 정보 없는 행동을 넣어도 성능이 떨어지지 않도록 보장한다. 운영에서 새 신호를 안전하게 추가하기 위한 장치다.
 
-### C1에 대한 대응
+#### C1에 대한 대응
 
 C1의 구조는 "신규 그룹은 클릭이 전부 최근이라 미전환이 할인되고, 자기 데이터가 기울기를 못 만들어 예측이 공유 파라미터 값에 머문다"였다.
 
@@ -359,7 +374,7 @@ GDFM은 **배우는 대상을 바꿔** 이 구조를 빠져나간다. 10분 뒤 
 
 가짜 미전환을 만들지 않는 점도 여기에 닿는다. FNW·ES-DFM은 틀린 라벨을 붙였다가 가중치로 되돌리지만 GDFM에는 그 단계가 없다. Taobao 실험에서 두 방법의 NLL이 사전학습 모델보다 크게 나빴던 것이 그 대가였다(FNW −361%, ES-DFM −214%, GDFM +49.6%). **AUC는 유지되는데 NLL만 무너지는 패턴** — 우리가 AUC 대신 RIG를 보는 이유와 같은 지점이고, 현행 온라인 3종이 FNW 계열이다.
 
-### C2에 대한 대응
+#### C2에 대한 대응
 
 **C2-② 낡은 prior** — 신선도 가중이 오래된 정보를 지수적으로 깎는다. 신규 그룹이 받던 "지난 30일 평균"의 발언권이 줄고 최근 신호의 발언권이 커진다. 이 격차를 temporal gap으로 따로 이름 붙여 정식화한 논문은 GDFM뿐이다.
 
@@ -422,13 +437,7 @@ $w$ 를 학습할 데이터는 원본에 없으므로 **counterfactual labeling*
 | GDFM | 대기 시간을 분 단위로 단축 | 신선도 가중으로 정면 대응 |
 | ULC | 미전환에 확률값 부여 | 신규 그룹 자기 데이터로 보정 |
 
-## C3 — 파라미터 갱신량
-
-> **문제** : 데이터도 있고 라벨도 왔는데 **한 번 학습할 때 파라미터가 움직이는 폭이 작으면** 여전히 오래 걸린다. 온라인 학습률은 APP 1e-4, PF·MEM 1e-3이고 조정 스케줄이 없다. 배치는 ClippyAdagrad lr 0.01에 Adagrad 누적기가 run마다 리셋된다. **재학습 주기(배치 4시간·온라인 30분)는 원인이 아니다** — 자주 학습하는 것과 빨리 따라잡는 것은 다르고, 남는 변수는 회당 갱신량이다.
-
-해당 논문 없음. 지연 피드백 문헌은 손실 함수와 라벨 설계를 다루고 학습률·옵티마이저는 다루지 않는다. **기존 파라미터와 lr 값을 확인한 뒤 미세조정으로 판정한다.**
-
-
+## C3 — 옵티마이저 설정
 
 > 튜닝 예
 > | 항목 | 현재 값 | 실험 방향 | 근거 |
@@ -441,11 +450,7 @@ $w$ 를 학습할 데이터는 원본에 없으므로 **counterfactual labeling*
 > | 배치 크기 (배치 DFM) | 8192 | 조건부 4096 | 희소 행 기울기 ∝ 등장 횟수 / 배치 크기. Adagrad는 기울기 크기가 스텝에 반영. 처리량 비용 있음 |
 > | `lr_scheduler` | false | 유지 | 켜도 상수 0.95를 곱할 뿐 스케줄이 아님 |
 
----
-
-## C4 — 초기 표현 (제안)
-
-> **문제** : 새 그룹이 생기면 group_id 임베딩이 $N(0,\ 10^{-5})$ 에서 시작한다(`models/model/feature.py`의 `OneHotFeature`, `RN_STDDEV = 0.00001`). 그 그룹은 어느 계정·캠페인·목적인지 다 알려져 있는데 그 정보를 하나도 안 쓰고 **빈 종이로 출발**한다. C1~C3가 전부 완벽해도 **첫 예측은 출발점이 결정**하며, $N$ 은 그룹 생성 순간부터 재므로 첫 몇 시간은 이 문제다.
+## C4 — group_id 임베딩 초기화
 
 **의미 있는 값으로 초기화하면 초기 pCVR 안정에 도움이 될 수 있다.** 초기값 후보는 아래 순서로 본다.
 
@@ -458,77 +463,6 @@ $w$ 를 학습할 데이터는 원본에 없으므로 **counterfactual labeling*
 **구현 시 주의 두 가지.** ① 초기화 지점이 한 곳이 아니다 — 모델 생성 시점의 `torch.nn.init.normal_` 외에 `utils_online/export.py`의 슬롯 재사용 경로(`reset not used embedding`)와 `cmd/reset_embed.py`도 같이 고쳐야 한다. 안 그러면 은퇴한 슬롯을 물려받은 새 그룹은 여전히 $10^{-5}$ 로 시작한다. ② 옵티마이저 모멘트를 0으로 민 상태에서 출발값만 커지면 초반 갱신 동역학이 바뀐다.
 
 **측정**: 초기화 방식별로 그룹 생성 후 경과 시간별 캘리브레이션 오차 곡선을 겹쳐 그린다. 첫 몇 시간 구간의 차이가 C4의 크기다.
-
-> **참고**: 콜드스타트 초기화를 다룬 논문은 MetaEmb(SIGIR 2019, CTR), **지연 피드백 문헌 밖**이다.
-
-# Alibaba 3종(ES-DFM·DEFER·DEFUSE)의 인용 현황
-
-> 2026-09-17 OpenAlex 기준. OpenAlex는 Google Scholar보다 적게 잡히므로 절대값보다 추세를 본다. 인용 논문의 arXiv가 확인된 경우 arXiv, 아니면 DOI로 연결했다.
-
-## 연도별 인용 수
-
-| | 총 인용 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
-|---|---|---|---|---|---|---|---|
-| ES-DFM (AAAI 2021) | 30 | 3 | 3 | 10 | 3 | 4 | 7 |
-| DEFER (KDD 2021) | 30 | — | 5 | 8 | 4 | 4 | 9 |
-| DEFUSE (WWW 2022) | 27 | — | 2 | 9 | 4 | 4 | 8 |
-
-**읽을 점 셋.** ① 세 편 모두 2026년이 2023년 다음으로 높거나 최고치다 — 줄지 않는다. ② 역할은 거의 전부 **베이스라인**이다. 자기 방법을 제안하고 셋을 비교 대상으로 놓아 이긴다. ③ 2025~2026 인용의 절반이 Alibaba 자신이고, 2026 TESLA는 CVR 타워 디바이어스에 ES-DFM 가중치 $w^+ = 1 + p_v\,p(h_v > W \mid y{=}1, x)$ 를 그대로 쓴다(부록 C 제목이 "Debiasing Strategy in ES-DFM"). 외부 기업이 셋을 프로덕션에 그대로 쓴다고 밝힌 사례는 없고, Kuaishou(TWICE)는 셋을 이기고 자기 방법을 배포했다.
-
-## 인용 논문 목록
-
-중복 제거 후 44편 + OpenAlex 미반영 2편. "인용" 열은 셋 중 어느 것을 인용했는지, "성격" 열은 그 논문에서 셋이 어떤 역할인지다.
-
-| 연도 | 논문 | 소속 | 인용 | 성격 | 링크 |
-|---|---|---|---|---|---|
-| 2021 | Co-Transport for Class-Incremental Learning | Nanjing University | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1145/3474085.3475306) |
-| 2021 | Conversion Prediction with Delayed Feedback: A Multi-task Learning Approach | Alibaba Group (China), University of Tennessee at Knoxville | ES-DFM | 지연 방법 (MM-DFM) | [DOI](https://doi.org/10.1109/icdm51629.2021.00029) |
-| 2021 | Real Negatives Matter: Continuous Training with Real Negatives for Delayed Feedback Modeli | — | ES-DFM | 후속 방법 (DEFER) | [arXiv 2104.14121](https://arxiv.org/abs/2104.14121) |
-| 2022 | Asymptotically Unbiased Estimation for Delayed Feedback Modeling via Label Correction | Alibaba Group (China) | DEFER, ES-DFM | 후속 방법 (DEFUSE) | [arXiv 2202.06472](https://arxiv.org/abs/2202.06472) |
-| 2022 | Calibrated Conversion Rate Prediction via Knowledge Distillation under Delayed Feedback in | Chinese Academy of Sciences, Institute of Computing Technolo | DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1145/3511808.3557557) |
-| 2022 | Cross-domain Recommendation via Adversarial Adaptation | Tencent (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557277) |
-| 2022 | KEEP: An Industrial Pre-Training Framework for Online Recommendation via Knowledge Extract | Alibaba Group (China), Tsinghua University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557106) |
-| 2022 | Learning Classifiers under Delayed Feedback with a Time Window Assumption | CyberAgent (Japan) | DEFER, DEFUSE, ES-DFM | 지연 방법 (nnDF) | [arXiv 2009.13092](https://arxiv.org/abs/2009.13092) |
-| 2022 | Towards Understanding the Overfitting Phenomenon of Deep Click-Through Rate Models | Alibaba Group (China), Nanjing University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557479) |
-| 2023 | 3MN: Three Meta Networks for Multi-Scenario and Multi-Task Learning in Online Advertising  | Tencent (China) | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3583780.3614651) |
-| 2023 | Capturing Conversion Rate Fluctuation during Sales Promotions: A Novel Historical Data Reu | Alibaba Group (China), Nanjing University, University of Sci | DEFER, DEFUSE, ES-DFM | 응용 — 프로모션 CVR (HiFI) | [DOI](https://doi.org/10.1145/3580305.3599788) |
-| 2023 | CollabEquality: A Crowd-AI Collaborative Learning Framework to Address Class-wise Inequali | University of Illinois Urbana-Champaign | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3543507.3583871) |
-| 2023 | Cross-domain Recommendation via Dual Adversarial Adaptation | Tongji University, University of Electronic Science and Tech | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3632524) |
-| 2023 | Dually Enhanced Delayed Feedback Modeling for Streaming Conversion Rate Prediction | Renmin University of China | DEFER, DEFUSE, ES-DFM | 지연 방법 (DDFM) — 셋을 베이스라인으로 비교 | [DOI](https://doi.org/10.1145/3583780.3614856) |
-| 2023 | Entire Space Cascade Delayed Feedback Modeling for Effective Conversion Rate Prediction | Alibaba Group (China), Shandong University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ESDF) | [arXiv 2308.04768](https://arxiv.org/abs/2308.04768) |
-| 2023 | Freshness or Accuracy, Why Not Both? Addressing Delayed Feedback via Dynamic Graph Neural  | Zhejiang University of Science and Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1109/icws60048.2023.00059) |
-| 2023 | Joint Optimization of Ranking and Calibration with Contextualized Hybrid Model | Alibaba Group (China) | DEFER | 타 주제 — 캘리브레이션 | [DOI](https://doi.org/10.1145/3580305.3599851) |
-| 2023 | Leveraging Post-Click User Behaviors for Calibrated Conversion Rate Prediction Under Delay | Institute of Computing Technology, University of Chinese Aca | ES-DFM | 지연 방법 — post-click | [DOI](https://doi.org/10.1145/3583780.3615161) |
-| 2023 | Modelling Delayed Redemption with Importance Sampling and Pre-Redemption Engagement | — | DEFUSE, ES-DFM | 응용 — 쿠폰 리뎀션 | [DOI](https://doi.org/10.1145/3580305.3599867) |
-| 2023 | Online Conversion Rate Prediction via Neural Satellite Networks in Delayed Feedback Advert | Chinese Academy of Sciences, Institute of Computing Technolo | DEFER, DEFUSE, ES-DFM | 지연 방법 (NSN) | [DOI](https://doi.org/10.1145/3539618.3591747) |
-| 2023 | RLTP: Reinforcement Learning to Pace for Delayed Impression Modeling in Preloaded Ads | Alibaba Group (China) | ES-DFM | 응용 — 노출 pacing | [DOI](https://doi.org/10.1145/3580305.3599900) |
-| 2023 | Unbiased Delayed Feedback Label Correction for Conversion Rate Prediction | Huawei Technologies (China), Tsinghua University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ULC) | [arXiv 2307.12756](https://arxiv.org/abs/2307.12756) |
-| 2023 | Understanding Elapsed-time Sampling Delayed Feedback | Irvine University, Kindred Hospital Rancho, Lancaster Univer | ES-DFM | ES-DFM 분석 | [DOI](https://doi.org/10.4108/eai.2-6-2023.2334607) |
-| 2024 | Addressing Delayed Feedback in Conversion Rate Prediction: A Domain Adaptation Approach | Duke University, Rice University, Samsung (United States) | DEFER, DEFUSE, ES-DFM | 지연 방법 — 도메인 적응 | [DOI](https://doi.org/10.1109/icdm59182.2024.00115) |
-| 2024 | Calibration-compatible Listwise Distillation of Privileged Features for CTR Prediction | Alibaba Group (China), Shandong University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3616855.3635810) |
-| 2024 | Debiasing the Conversion Rate Prediction Model in the Presence of Delayed Implicit Feedbac | Peking University, Peking University International Hospital | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.3390/e26090792) |
-| 2024 | Enhancing Taobao Display Advertising with Multimodal Representations: Challenges, Approach | Alibaba Group (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3627673.3680068) |
-| 2024 | Modeling User Attention in Music Recommendation | Huawei Technologies (China), Renmin University of China | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1109/icde60146.2024.00064) |
-| 2024 | Online Conversion Rate Prediction via Multi-Interval Screening and Synthesizing under Dela | Institute of Computing Technology | DEFUSE, ES-DFM | 지연 방법 (MISS) | [DOI](https://doi.org/10.1609/aaai.v38i8.28726) |
-| 2025 | Consumer Conversion Prediction Via Heterogeneous Graph Networks and Sparse Attention Learn | Yantai Academy of Agricultural Sciences | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1109/eiecc67963.2025.11409614) |
-| 2025 | Mind the Gap: Delayed Label Bias-Variance Tradeoffs in Predicting Likelihood of Nonpayment | Meta (United States), Northeastern University | DEFER, DEFUSE | 응용 — 미납 예측, post-transaction pseudo-label | [DOI](https://doi.org/10.1145/3711896.3737247) |
-| 2025 | Predicting Calibrated Conversion Rate of Online Advertising Using a Multi-task Mixture-of- | China Academy of Safety Sciences and Technology, China Unive | DEFER, DEFUSE, ES-DFM | 지연 방법 — 멀티태스크 | [DOI](https://doi.org/10.1007/978-981-96-1024-2_14) |
-| 2025 | See Beyond a Single View: Multi-Attribution Learning Leads to Better Conversion Rate Predi | Alibaba Group (China) | DEFER, DEFUSE, ES-DFM | 응용 — 다중 어트리뷰션 (MAL) | [DOI](https://doi.org/10.1145/3746252.3761580) |
-| 2025 | Towards Unbiased and Real-Time Staytime Prediction for Live Streaming Recommendation | Renmin University of China | DEFER, DEFUSE, ES-DFM | 응용 — 체류시간 지연 라벨 | [DOI](https://doi.org/10.1145/3746252.3761570) |
-| 2026 | Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce R | Alibaba Group (China) | DEFUSE | 응용 — 할인 인지 CVR | [arXiv 2607.12578](https://arxiv.org/abs/2607.12578) |
-| 2026 | Deep Learning to Rank in Industrial Search Engines, Recommender Systems, and Online Advert | Tsinghua University, Wuhan University | DEFER, DEFUSE | 서베이 | [DOI](https://doi.org/10.1145/3797895) |
-| 2026 | Delayed Feedback Modeling for Post-Click Gross Merchandise Volume Prediction: Benchmark, I | Alibaba Group (China), Xiamen University | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (READER) | [arXiv 2601.20307](https://arxiv.org/abs/2601.20307) |
-| 2026 | Discovering and Alleviating Data Leakage in Staytime Prediction for Live Streaming Recomme | Chinese University of Hong Kong, Renmin University of China | DEFER, ES-DFM | 응용 — 체류시간 | [DOI](https://doi.org/10.1145/3770855.3818187) |
-| 2026 | Fast yet Accurate Learning: A Novel Joint Data Stream and Model Framework for Staytime Pre | — | DEFER, DEFUSE, ES-DFM | 지연 방법 — 스트리밍 | [DOI](https://doi.org/10.1145/3770855.3818405) |
-| 2026 | Follow the TRACE: Exploiting Post-Click Trajectories for Online Delayed Conversion Rate Pr | Institute of Computing Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 (TRACE) | [arXiv 2604.23197](https://arxiv.org/abs/2604.23197) |
-| 2026 | Large-Scale Online Learning for Generative List Recommendation in E-commerce: An Environme | Alibaba Group (China), Renmin University of China | DEFER, ES-DFM | 타 주제 — 온라인 학습 | [DOI](https://doi.org/10.1145/3805712.3809577) |
-| 2026 | MAC: A Conversion Rate Prediction Benchmark Featuring Labels Under Multiple Attribution Me | Alibaba Group (China), Nanjing University of Science and Tec | DEFER, DEFUSE, ES-DFM | 벤치마크 (MAC) | [arXiv 2603.02184](https://arxiv.org/abs/2603.02184) |
-| 2026 | Modeling Cascaded Delay Feedback for Online Net Conversion Rate Prediction: Benchmark, Ins | Alibaba Group (China), Alibaba Group (United States), Xiamen | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (TESLA) — ES-DFM 가중치를 그대로 사용 | [arXiv 2601.19965](https://arxiv.org/abs/2601.19965) |
-| 2026 | TemporalExpertNet: Cross-Temporal Knowledge Reuse for Promotion-Aware CVR Prediction | Fudan University, Kuaishou (China), Tianjin University | DEFER, DEFUSE | 응용 — 프로모션 CVR | [DOI](https://doi.org/10.1145/3773966.3777956) |
-| 2022 | Generalized Delayed Feedback Model with Post-Click Information in Recommender Systems | Nanjing University | ES-DFM, DEFER | 지연 방법 (GDFM) — 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2206.00407](https://arxiv.org/abs/2206.00407) |
-| 2026 | TWICE: Two Clocks for Delayed Feedback CVR (Kuaishou) | Kuaishou | ES-DFM, DEFER, DEFUSE | 지연 방법 — Kwai 전 트래픽 배포, 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2607.25404](https://arxiv.org/abs/2607.25404) |
-
-**Alibaba 내부 정리.** 배포가 명시된 것은 DEFER(2021, 주 트래픽)와 DEFUSE(2022, A/B +2.28%)까지다. 2026년 TESLA·READER·MAC은 배포 문장이 없고, alimama-tech의 [NetCVR 저장소](https://github.com/alimama-tech/NetCVR)에 FNW·FNC·ES-DFM·DEFER·DEFUSE·DDFM·DFSN·MISS·TESLA의 스트리밍 학습 스크립트가 자사 데이터 위에 공개돼 있다. "계속 쓴다"도 "바꿨다"도 논문으로 확정할 수 없고, 확인되는 것은 **2026년 방법의 기반이 여전히 ES-DFM 가중치**라는 점까지다.
 
 # 결론 — 메인 / 옵션 / 참고
 
@@ -602,3 +536,73 @@ DEFUSE의 $z(x)$ 와 같은 아이디어의 배치판이다(중요도 가중치�
 | 2 | 메인 1 ES-DFM + DEFER·DEFUSE 비교 | 스트림 변경 1회. Tier 1 |
 | 옵션 | 초기화 (구조 확인 후) · GDFM ($H$ 확인 후) | 선행 확인 결과에 따라 |
 | 참고 | ULC | 메인 1의 DEFUSE 팔 결과에 따라 |
+
+# Appendix
+
+## Alibaba 3종(ES-DFM·DEFER·DEFUSE)의 인용 현황
+
+> 2026-09-17 OpenAlex 기준. OpenAlex는 Google Scholar보다 적게 잡히므로 절대값보다 추세를 본다. 인용 논문의 arXiv가 확인된 경우 arXiv, 아니면 DOI로 연결했다.
+
+### 연도별 인용 수
+
+| | 총 인용 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 |
+|---|---|---|---|---|---|---|---|
+| ES-DFM (AAAI 2021) | 30 | 3 | 3 | 10 | 3 | 4 | 7 |
+| DEFER (KDD 2021) | 30 | — | 5 | 8 | 4 | 4 | 9 |
+| DEFUSE (WWW 2022) | 27 | — | 2 | 9 | 4 | 4 | 8 |
+
+**읽을 점 셋.** ① 세 편 모두 2026년이 2023년 다음으로 높거나 최고치다 — 줄지 않는다. ② 역할은 거의 전부 **베이스라인**이다. 자기 방법을 제안하고 셋을 비교 대상으로 놓아 이긴다. ③ 2025~2026 인용의 절반이 Alibaba 자신이고, 2026 TESLA는 CVR 타워 디바이어스에 ES-DFM 가중치 $w^+ = 1 + p_v\,p(h_v > W \mid y{=}1, x)$ 를 그대로 쓴다(부록 C 제목이 "Debiasing Strategy in ES-DFM"). 외부 기업이 셋을 프로덕션에 그대로 쓴다고 밝힌 사례는 없고, Kuaishou(TWICE)는 셋을 이기고 자기 방법을 배포했다.
+
+### 인용 논문 목록
+
+중복 제거 후 44편 + OpenAlex 미반영 2편. "인용" 열은 셋 중 어느 것을 인용했는지, "성격" 열은 그 논문에서 셋이 어떤 역할인지다.
+
+| 연도 | 논문 | 소속 | 인용 | 성격 | 링크 |
+|---|---|---|---|---|---|
+| 2021 | Co-Transport for Class-Incremental Learning | Nanjing University | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1145/3474085.3475306) |
+| 2021 | Conversion Prediction with Delayed Feedback: A Multi-task Learning Approach | Alibaba Group (China), University of Tennessee at Knoxville | ES-DFM | 지연 방법 (MM-DFM) | [DOI](https://doi.org/10.1109/icdm51629.2021.00029) |
+| 2021 | Real Negatives Matter: Continuous Training with Real Negatives for Delayed Feedback Modeli | — | ES-DFM | 후속 방법 (DEFER) | [arXiv 2104.14121](https://arxiv.org/abs/2104.14121) |
+| 2022 | Asymptotically Unbiased Estimation for Delayed Feedback Modeling via Label Correction | Alibaba Group (China) | DEFER, ES-DFM | 후속 방법 (DEFUSE) | [arXiv 2202.06472](https://arxiv.org/abs/2202.06472) |
+| 2022 | Calibrated Conversion Rate Prediction via Knowledge Distillation under Delayed Feedback in | Chinese Academy of Sciences, Institute of Computing Technolo | DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1145/3511808.3557557) |
+| 2022 | Cross-domain Recommendation via Adversarial Adaptation | Tencent (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557277) |
+| 2022 | KEEP: An Industrial Pre-Training Framework for Online Recommendation via Knowledge Extract | Alibaba Group (China), Tsinghua University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557106) |
+| 2022 | Learning Classifiers under Delayed Feedback with a Time Window Assumption | CyberAgent (Japan) | DEFER, DEFUSE, ES-DFM | 지연 방법 (nnDF) | [arXiv 2009.13092](https://arxiv.org/abs/2009.13092) |
+| 2022 | Towards Understanding the Overfitting Phenomenon of Deep Click-Through Rate Models | Alibaba Group (China), Nanjing University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3511808.3557479) |
+| 2023 | 3MN: Three Meta Networks for Multi-Scenario and Multi-Task Learning in Online Advertising  | Tencent (China) | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3583780.3614651) |
+| 2023 | Capturing Conversion Rate Fluctuation during Sales Promotions: A Novel Historical Data Reu | Alibaba Group (China), Nanjing University, University of Sci | DEFER, DEFUSE, ES-DFM | 응용 — 프로모션 CVR (HiFI) | [DOI](https://doi.org/10.1145/3580305.3599788) |
+| 2023 | CollabEquality: A Crowd-AI Collaborative Learning Framework to Address Class-wise Inequali | University of Illinois Urbana-Champaign | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1145/3543507.3583871) |
+| 2023 | Cross-domain Recommendation via Dual Adversarial Adaptation | Tongji University, University of Electronic Science and Tech | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3632524) |
+| 2023 | Dually Enhanced Delayed Feedback Modeling for Streaming Conversion Rate Prediction | Renmin University of China | DEFER, DEFUSE, ES-DFM | 지연 방법 (DDFM) — 셋을 베이스라인으로 비교 | [DOI](https://doi.org/10.1145/3583780.3614856) |
+| 2023 | Entire Space Cascade Delayed Feedback Modeling for Effective Conversion Rate Prediction | Alibaba Group (China), Shandong University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ESDF) | [arXiv 2308.04768](https://arxiv.org/abs/2308.04768) |
+| 2023 | Freshness or Accuracy, Why Not Both? Addressing Delayed Feedback via Dynamic Graph Neural  | Zhejiang University of Science and Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.1109/icws60048.2023.00059) |
+| 2023 | Joint Optimization of Ranking and Calibration with Contextualized Hybrid Model | Alibaba Group (China) | DEFER | 타 주제 — 캘리브레이션 | [DOI](https://doi.org/10.1145/3580305.3599851) |
+| 2023 | Leveraging Post-Click User Behaviors for Calibrated Conversion Rate Prediction Under Delay | Institute of Computing Technology, University of Chinese Aca | ES-DFM | 지연 방법 — post-click | [DOI](https://doi.org/10.1145/3583780.3615161) |
+| 2023 | Modelling Delayed Redemption with Importance Sampling and Pre-Redemption Engagement | — | DEFUSE, ES-DFM | 응용 — 쿠폰 리뎀션 | [DOI](https://doi.org/10.1145/3580305.3599867) |
+| 2023 | Online Conversion Rate Prediction via Neural Satellite Networks in Delayed Feedback Advert | Chinese Academy of Sciences, Institute of Computing Technolo | DEFER, DEFUSE, ES-DFM | 지연 방법 (NSN) | [DOI](https://doi.org/10.1145/3539618.3591747) |
+| 2023 | RLTP: Reinforcement Learning to Pace for Delayed Impression Modeling in Preloaded Ads | Alibaba Group (China) | ES-DFM | 응용 — 노출 pacing | [DOI](https://doi.org/10.1145/3580305.3599900) |
+| 2023 | Unbiased Delayed Feedback Label Correction for Conversion Rate Prediction | Huawei Technologies (China), Tsinghua University | DEFER, DEFUSE, ES-DFM | 지연 방법 (ULC) | [arXiv 2307.12756](https://arxiv.org/abs/2307.12756) |
+| 2023 | Understanding Elapsed-time Sampling Delayed Feedback | Irvine University, Kindred Hospital Rancho, Lancaster Univer | ES-DFM | ES-DFM 분석 | [DOI](https://doi.org/10.4108/eai.2-6-2023.2334607) |
+| 2024 | Addressing Delayed Feedback in Conversion Rate Prediction: A Domain Adaptation Approach | Duke University, Rice University, Samsung (United States) | DEFER, DEFUSE, ES-DFM | 지연 방법 — 도메인 적응 | [DOI](https://doi.org/10.1109/icdm59182.2024.00115) |
+| 2024 | Calibration-compatible Listwise Distillation of Privileged Features for CTR Prediction | Alibaba Group (China), Shandong University | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3616855.3635810) |
+| 2024 | Debiasing the Conversion Rate Prediction Model in the Presence of Delayed Implicit Feedbac | Peking University, Peking University International Hospital | DEFER, DEFUSE, ES-DFM | 지연 방법 | [DOI](https://doi.org/10.3390/e26090792) |
+| 2024 | Enhancing Taobao Display Advertising with Multimodal Representations: Challenges, Approach | Alibaba Group (China) | DEFER | 타 주제 인용 | [DOI](https://doi.org/10.1145/3627673.3680068) |
+| 2024 | Modeling User Attention in Music Recommendation | Huawei Technologies (China), Renmin University of China | DEFUSE | 타 주제 인용 | [DOI](https://doi.org/10.1109/icde60146.2024.00064) |
+| 2024 | Online Conversion Rate Prediction via Multi-Interval Screening and Synthesizing under Dela | Institute of Computing Technology | DEFUSE, ES-DFM | 지연 방법 (MISS) | [DOI](https://doi.org/10.1609/aaai.v38i8.28726) |
+| 2025 | Consumer Conversion Prediction Via Heterogeneous Graph Networks and Sparse Attention Learn | Yantai Academy of Agricultural Sciences | ES-DFM | 타 주제 인용 | [DOI](https://doi.org/10.1109/eiecc67963.2025.11409614) |
+| 2025 | Mind the Gap: Delayed Label Bias-Variance Tradeoffs in Predicting Likelihood of Nonpayment | Meta (United States), Northeastern University | DEFER, DEFUSE | 응용 — 미납 예측, post-transaction pseudo-label | [DOI](https://doi.org/10.1145/3711896.3737247) |
+| 2025 | Predicting Calibrated Conversion Rate of Online Advertising Using a Multi-task Mixture-of- | China Academy of Safety Sciences and Technology, China Unive | DEFER, DEFUSE, ES-DFM | 지연 방법 — 멀티태스크 | [DOI](https://doi.org/10.1007/978-981-96-1024-2_14) |
+| 2025 | See Beyond a Single View: Multi-Attribution Learning Leads to Better Conversion Rate Predi | Alibaba Group (China) | DEFER, DEFUSE, ES-DFM | 응용 — 다중 어트리뷰션 (MAL) | [DOI](https://doi.org/10.1145/3746252.3761580) |
+| 2025 | Towards Unbiased and Real-Time Staytime Prediction for Live Streaming Recommendation | Renmin University of China | DEFER, DEFUSE, ES-DFM | 응용 — 체류시간 지연 라벨 | [DOI](https://doi.org/10.1145/3746252.3761570) |
+| 2026 | Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce R | Alibaba Group (China) | DEFUSE | 응용 — 할인 인지 CVR | [arXiv 2607.12578](https://arxiv.org/abs/2607.12578) |
+| 2026 | Deep Learning to Rank in Industrial Search Engines, Recommender Systems, and Online Advert | Tsinghua University, Wuhan University | DEFER, DEFUSE | 서베이 | [DOI](https://doi.org/10.1145/3797895) |
+| 2026 | Delayed Feedback Modeling for Post-Click Gross Merchandise Volume Prediction: Benchmark, I | Alibaba Group (China), Xiamen University | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (READER) | [arXiv 2601.20307](https://arxiv.org/abs/2601.20307) |
+| 2026 | Discovering and Alleviating Data Leakage in Staytime Prediction for Live Streaming Recomme | Chinese University of Hong Kong, Renmin University of China | DEFER, ES-DFM | 응용 — 체류시간 | [DOI](https://doi.org/10.1145/3770855.3818187) |
+| 2026 | Fast yet Accurate Learning: A Novel Joint Data Stream and Model Framework for Staytime Pre | — | DEFER, DEFUSE, ES-DFM | 지연 방법 — 스트리밍 | [DOI](https://doi.org/10.1145/3770855.3818405) |
+| 2026 | Follow the TRACE: Exploiting Post-Click Trajectories for Online Delayed Conversion Rate Pr | Institute of Computing Technology | DEFER, DEFUSE, ES-DFM | 지연 방법 (TRACE) | [arXiv 2604.23197](https://arxiv.org/abs/2604.23197) |
+| 2026 | Large-Scale Online Learning for Generative List Recommendation in E-commerce: An Environme | Alibaba Group (China), Renmin University of China | DEFER, ES-DFM | 타 주제 — 온라인 학습 | [DOI](https://doi.org/10.1145/3805712.3809577) |
+| 2026 | MAC: A Conversion Rate Prediction Benchmark Featuring Labels Under Multiple Attribution Me | Alibaba Group (China), Nanjing University of Science and Tec | DEFER, DEFUSE, ES-DFM | 벤치마크 (MAC) | [arXiv 2603.02184](https://arxiv.org/abs/2603.02184) |
+| 2026 | Modeling Cascaded Delay Feedback for Online Net Conversion Rate Prediction: Benchmark, Ins | Alibaba Group (China), Alibaba Group (United States), Xiamen | DEFER, DEFUSE, ES-DFM | 벤치마크+방법 (TESLA) — ES-DFM 가중치를 그대로 사용 | [arXiv 2601.19965](https://arxiv.org/abs/2601.19965) |
+| 2026 | TemporalExpertNet: Cross-Temporal Knowledge Reuse for Promotion-Aware CVR Prediction | Fudan University, Kuaishou (China), Tianjin University | DEFER, DEFUSE | 응용 — 프로모션 CVR | [DOI](https://doi.org/10.1145/3773966.3777956) |
+| 2022 | Generalized Delayed Feedback Model with Post-Click Information in Recommender Systems | Nanjing University | ES-DFM, DEFER | 지연 방법 (GDFM) — 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2206.00407](https://arxiv.org/abs/2206.00407) |
+| 2026 | TWICE: Two Clocks for Delayed Feedback CVR (Kuaishou) | Kuaishou | ES-DFM, DEFER, DEFUSE | 지연 방법 — Kwai 전 트래픽 배포, 셋을 베이스라인으로 비교. **OpenAlex 미반영, 본문 확인** | [arXiv 2607.25404](https://arxiv.org/abs/2607.25404) |
+
