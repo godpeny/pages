@@ -438,6 +438,75 @@ self 는 객체의 인스턴스 그 자체를 말
 - 이 클래스에 정의된 메서드 (self.forward, self.calc_loss)
 - 부모 클래스에서 물려받은 것 (self.log_dict, self.save_hyperparameters, self.trainer, self.parameters)
 
+## f-string
+문자열 안에 변수를 바로 넣을 수 있는 파이썬 문법.
+문자열 앞에 f를 붙이고, 변수는 중괄호 { } 안에 작성.
+
+```python
+name = "민수"
+score = 88.5
+print(f"이름: {name} | 점수: {score}")
+
+# 이름: 민수 | 점수: 88.5
+```
+
+### 이전 방법과 비교
+```python
+# % 포맷팅 → 위치 순서 맞추기 어려움
+"이름: %s | 점수: %.1f" % (name, score)
+
+
+# .format() 방식 → 조금 낫지만 여전히 장황
+"이름: {} | 점수: {:.1f}".format(name, score)
+
+
+# f-string → 변수명 그대로 보여서 가독성 최고
+f"이름: {name} | 점수: {score:.1f}"
+```
+
+## getattr
+Python 의 getattr() 함수는 문자열로 제공되는 이름을 통해 객체의 속성에 접근할 수 있게 해주는 내장 함수입니다. 이는 런타임까지 이름을 알 수 없는 속성을 검색할 수 있게 해주므로 동적 프로그래밍에 강력한 기능입니다. 또한 속성이 존재하지 않을 경우 반환할 기본값을 제공할 수 있어 오류를 방지하는 데 도움이 됩니다.
+
+```python
+getattr(object, name[, default])
+# object: 속성을 찾을 대상 객체입니다.
+# name: 가져올 속성이나 메서드의 이름(문자열)입니다.
+# default(선택): 속성이 없을 때 반환할 기본값입니다. 지정하지 않고 속성이 없으면 AttributeError가 발생합니다.
+```
+
+### 예시
+```python
+# 예시 1 - 본 사용법점(.) 표기법을 사용하는 것과 같은 결과: 하지만 속성 이름을 문자열로 전달할 수 있다는 차이가 있습니다.
+
+class Person:
+    name = "홍길동"
+    age = 20
+
+p = Person()
+
+# 점 표기법
+print(p.name)  # 홍길동
+
+# getattr 사용
+print(getattr(p, "name"))  # 홍길동
+
+# 예시 2 - 존재하지 않는 속성과 기본값(Default): 속성이 없을 때 에러를 발생시키는 대신 기본값을 출력하도록 지정할 수 있습니다.
+print(getattr(p, "gender", "정보 없음"))  # 정보 없음
+
+
+# 예시 3 - 동적 메서드 호출: 문자열 입력값에 따라 객체의 메서드를 동적으로 실행할 때 유용
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+calc = Calculator()
+method_name = "add"
+
+# 문자열로 메서드를 가져와서 바로 실행
+func = getattr(calc, method_name)
+print(func(3, 5))  # 8
+```
+
 ## pytorch
 ### pytorch lightning
 PyTorch Llightning은 PyTroch에 대한 High-level (abstract) 인터페이스를 제공하는 오픈소스 라이브러리 입니다.
