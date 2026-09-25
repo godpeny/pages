@@ -290,3 +290,13 @@ unknown index 를 안쓰고 형제 임베딩을 그때그때 계산해서 넣어
 
 지금 문제는 unknown index 모든 신규광고그룹이 쓴다는 것
 신규가 아니게 되는 시점 (노출이 되는 시점) 바로 임베딩을 쓰는데 학습이 덜 되었으니 과대예측이 이루어진다. 
+
+### As-Is in TorchDNN
+```
+run_online_cvr.py  build_model()                          ┐ config.hyper_parameters.training_method
+  └ models/addfommodel.py  AdDFOMModel(config)            ┘ (기본 "AdDFOMModel")
+      └ models/model/adsimple.py  AdSimple(config).build() ┐ config.model.mainFF.type
+          └ models/model/feature.py  OneHotFeature(feat)   ┘ feat_info["feature_type"] = "one_hot"
+              └ nn.Embedding(...)
+```
+torch-dnn 콜드스타트 코드 흐름
