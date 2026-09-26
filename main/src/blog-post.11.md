@@ -507,6 +507,21 @@ func = getattr(calc, method_name)
 print(func(3, 5))  # 8
 ```
 
+## any
+파이썬의 any 함수는 반복 가능한 자료형 안의 요소 중 단 하나라도 참(True)이 있으면 True를 반환하고, 모두 거짓(False)일 때만 False를 반환합니다. 조건문(if)을 여러 번 쓰지 않고 여러 조건 중 하나라도 만족하는지 확인할 때 좋습니다.
+```python
+result = any([0, "", False, 10])  # 10이 참이므로 True
+print(result)  # True
+```
+
+## next 
+파이썬의 next 함수는 반복자(Iterator)에서 다음 값을 차례대로 하나씩 가져옵니다. 더 이상 가져올 값이 없을 때 기본값(default)을 지정하지 않으면 StopIteration 오류가 발생합니다. 제너레이터나 파일 객체에서 값을 수동으로 꺼낼 때 유용합니다.
+```python
+it = iter([1, 2, 3])
+print(next(it))  # 1
+print(next(it))  # 2
+```
+
 ## pytorch
 ### pytorch lightning
 PyTorch Llightning은 PyTroch에 대한 High-level (abstract) 인터페이스를 제공하는 오픈소스 라이브러리 입니다.
