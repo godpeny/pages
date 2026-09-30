@@ -336,16 +336,38 @@ G가 처음 등장한 행(10,001)을 찾으면 dict에서 A를 얻고, A에 속�
 
 ### 2.4 문헌 지도 — 초기값을 어디서 가져오나
 
-| 출처 | 방법 | 핵심 | 우리 적용 |
-|---|---|---|---|
-| 계층 통계 | Lee, Orten, Dasdan, Li (KDD 2012, Turn) — https://doi.org/10.1145/2339530.2339651 | 신규 광고 CVR을 광고주·캠페인 계층의 과거 성과로 추정. **형제 평균의 원형** | 2.3의 논리적 근거 |
-| 속성 → 생성기 | MetaEmb (Pan et al., SIGIR 2019) — https://arxiv.org/abs/1904.11547 | 속성으로 초기 임베딩을 생성하는 생성기를 메타러닝. CVR에도 적용 | 생성기 학습 파이프라인 추가 필요. 3단계 |
-| 이웃 광고 | GME (SIGIR 2021) — https://arxiv.org/abs/2105.08909 | 새 광고와 기존 광고를 그래프로 연결해 이웃에서 초기 임베딩 증류 | 형제 평균을 학습된 가중으로 일반화한 것 |
-| 기존 임베딩 변환 | MWUF (SIGIR 2021, 인용 129) — https://doi.org/10.1145/3404835.3462843 | 콜드 임베딩을 side info로 scaling·shifting해 warm 분포로 이동 | 형제 평균 다음 단계 후보 |
-| 구조 변경 | EmerG (Baidu, KDD 2024) — https://arxiv.org/abs/2407.10112 | 속성으로 아이템별 피처 상호작용 그래프 생성. 임베딩이 아니라 네트워크를 바꿈 | 범위 밖 |
-| 스트리밍 | PAM (Kuaishou, KDD 2025) — https://arxiv.org/abs/2411.11225 | 스트리밍에서 인기도 구간별 메타러닝. **온라인 학습 제약을 명시적으로 다룬 유일한 것** | 온라인 라인 참고 |
+**전제.** 신규 광고그룹의 임베딩 행을 만들어야 한다는 전제하에서 찾았다. 즉 빈 임베딩 행을 아예 안 만들도록 우회하는 방식은 제외했다. 가령 ID를 해시 버킷에 매핑하는 Hashing trick, 테이블 대신 MLP로 임베딩을 만드는 DHE, ID 임베딩을 콘텐츠 인코더로 대체하는 MoRec, 아이템을 콘텐츠 코드로 표현하는 TIGER, LLM으로 학습 데이터를 만들어 주는 LLM Data Augmenter·ColdLLM이 그것이다. 학습 시작 시 전 행을 위한 초기화(Xavier·He, N(0, σ²))도 별개 문제라 제외했다. 8편이며 인용 수는 OpenAlex 기준이다.
 
-공수 대비 순서는 계층 통계 → 형제 평균 → MWUF다. 생성기·그래프·구조 변경은 학습 파이프라인이 늘어난다.
+| 연도 | 방법 | 핵심 | 레퍼런스 |
+|---|---|---|---|
+| 2012 | 계층 추정 | 신규 광고 CVR을 광고주·캠페인 계층의 과거 성과로 추정. 데이터가 적을수록 부모로 수축. **형제 평균의 통계적 원형** | Lee et al., KDD 2012 (Turn), 210회<br>Estimating Conversion Rate in Display Advertising from Past Performance Data |
+| 2015 | LightFM | 아이템 벡터 = 메타 feature 임베딩의 합 (+ 선택적 ID 임베딩). 콜드 아이템은 ID 행이 0이라 메타만으로 표현. **계정 + 그룹 잔차의 원형** | Kula 2015, 136회<br>Metadata Embeddings for User and Item Cold-start Recommendations |
+| 2019 | MetaEmb | 속성 → 초기 임베딩 생성기를, 그 초기값에서 몇 스텝 학습한 뒤 손실이 작도록 메타러닝. "빨리 배우는 출발점". 광고 CTR 대상 | Pan et al., SIGIR 2019 (Alibaba)<br>Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings |
+| 2021 | MWUF | e' = γ(속성) ⊙ e_cold + β(이웃 임베딩). 콜드 행의 현재 값을 warm 분포로 scale·shift. 본 모델 고정, warm 아이템을 콜드인 척 시켜 학습 | Zhu et al., SIGIR 2021, 129회<br>Learning to Warm Up Cold Item Embeddings for Cold-start Recommendation with Meta Scaling and Shifting Networks |
+| 2021 | GME | 신규 광고와 속성(카테고리·브랜드 등)이 겹치는 기존 광고를 이웃으로 뽑고, 신규 광고 속성으로 만든 예비 임베딩을 이웃 정보로 GAT가 다듬어 초기 ID 임베딩을 생성. **무작위·이웃 평균 초기화를 베이스라인으로 두어 우리 현재·제안과 직접 비교됨**  | Ouyang et al., SIGIR 2021 (Alibaba), 50회<br>Learning Graph Meta Embeddings for Cold-Start Ads in Click-Through Rate Prediction |
+| 2022 | CVAR | 조건부 VAE로 side info에서 warm 임베딩 분포를 생성. 모델 무관, 점이 아닌 분포 | Zhao et al., SIGIR 2022, 53회<br>Improving Item Cold-start Recommendation via Model-agnostic Conditional Variational Autoencoder |
+| 2022 | GAR | 콘텐츠 → 콜드 임베딩 생성기를 추천 모델과 적대적으로 학습. 생성된 콜드 임베딩이 warm과 구별되지 않게 | Chen et al., SIGIR 2022, 77회<br>Generative Adversarial Framework for Cold-Start Item Recommendation |
+| 2023 | ALDI | warm 모델을 교사로 두고 속성만 받는 학생이 교사의 예측 분포·순위·표현을 따르도록 증류 | Huang et al., SIGIR 2023, 99회<br>Aligning Distillation For Cold-start Item Recommendation |
+
+**흐름.** 2019년까지는 "빈 행을 무엇으로 채우나"(부모 통계, 속성 합, 메타러닝 초기값), 2021~2023년은 "채운 값을 warm 분포에 맞추나"(MWUF, CVAR, GAR, ALDI)다. 2024년 이후는 콘텐츠·LLM 기반으로 옮겨가 ID 행 초기화 자체를 다룬 논문은 드물고, 생성기 학습 목표를 시간 이동에 강건하게 만든 TDRO(Lin et al., AAAI 2024, 21회) 정도가 경계선에 있다. 그 밖의 흐름으로 ID 임베딩을 콘텐츠 표현으로 대체하거나(MoRec, TIGER), LLM으로 콜드 아이템의 데이터 자체를 만들거나(Google, ColdLLM), 콜드 아이템에서 어떤 feature를 믿을지를 훈련으로 배우게 하는(DropoutNet, Heater, 스트리밍용 PAM) 쪽이 있으나 전제에서 제외했다.
+
+**베이스라인 등장 빈도.** arXiv 판본이 있는 최신 논문(MWUF, GME, CVAR, DHE, MoRec, TIGER, LLM Data Augmenter, ColdLLM) 8편의 실험 절에서 확인. 표에서 뺀 논문도 비교군 집계에는 포함.
+
+| 베이스라인 | 등장 논문 | 비고 |
+|---|---|---|
+| MetaEmb (2019) | MWUF, GME, CVAR, ColdLLM | 사실상 표준 비교군 |
+| DropoutNet (2017) | MWUF, CVAR, ColdLLM | 표준 비교군 |
+| 무작위 초기화 | GME(RndEmb), MWUF(암묵적 하한) | 우리 현재 상태 |
+| 전역 평균 초기화 | MWUF (구성요소) | "무작위보다 낫다"고만 서술. 이전 CTR 실험이 이것 |
+| 이웃 평균 초기화 | GME (NgbEmb) | **형제 평균과 같은 발상.** 결과는 "MetaEmb보다 나을 때도 못할 때도 있어 단순 평균은 그리 효과적이지 않다" |
+| MWUF (2021) | CVAR | |
+| GAR, ALDI (2022~23) | ColdLLM | |
+
+
+**우리 제안에 대한 시사점.**
+- 형제 평균 채우기는 GME가 NgbEmb로 이미 베이스라인에 넣었고 결과가 들쭉날쭉했다. 다만 GME의 이웃은 속성 유사도로 고른 광고이고 우리는 같은 계정 그룹이라 이웃의 질이 다르다. 1차 실험 결과를 NgbEmb 결과와 나란히 두면 위치가 분명해진다.
+- "다음 단계"의 표준 비교군은 MetaEmb와 DropoutNet이다. 형제 평균 뒤에 생성기로 가려면 MetaEmb를 구현해 비교군으로 두는 게 문헌과 맞추는 길이다.
+- 우리 위치: 형제 평균은 Lee 2012의 임베딩판, 후속인 계정 + 잔차는 LightFM 구조, 그 다음 후보는 MWUF. LLM 계열은 소재 텍스트·이미지가 파이프라인에 들어와야 의미가 있어 범위 밖.
 
 ### 2.5 실험 설계
 
