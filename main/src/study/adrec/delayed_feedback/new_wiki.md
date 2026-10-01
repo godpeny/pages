@@ -336,20 +336,30 @@ G가 처음 등장한 행(10,001)을 찾으면 dict에서 A를 얻고, A에 속�
 
 ### 2.4 문헌 지도 — 초기값을 어디서 가져오나
 
-**전제.** 신규 광고그룹의 임베딩 행을 만들어야 한다는 전제하에서 찾았다. 즉 빈 임베딩 행을 아예 안 만들도록 우회하는 방식은 제외했다. 가령 ID를 해시 버킷에 매핑하는 Hashing trick, 테이블 대신 MLP로 임베딩을 만드는 DHE, ID 임베딩을 콘텐츠 인코더로 대체하는 MoRec, 아이템을 콘텐츠 코드로 표현하는 TIGER, LLM으로 학습 데이터를 만들어 주는 LLM Data Augmenter·ColdLLM이 그것이다. 학습 시작 시 전 행을 위한 초기화(Xavier·He, N(0, σ²))도 별개 문제라 제외했다. 8편이며 인용 수는 OpenAlex 기준이다.
+**전제.** 신규 광고그룹의 임베딩 행을 만들어야 한다는 전제하에서 찾았다. 즉 빈 임베딩 행을 아예 안 만들도록 우회하는 방식은 제외했다. 가령 ID를 해시 버킷에 매핑하는 Hashing trick, 테이블 대신 MLP로 임베딩을 만드는 DHE, ID 임베딩을 콘텐츠 인코더로 대체하는 MoRec, 아이템을 콘텐츠 코드로 표현하는 TIGER, LLM으로 학습 데이터를 만들어 주는 LLM Data Augmenter·ColdLLM이 그것이다. 학습 시작 시 전 행을 위한 초기화(Xavier·He, N(0, σ²))도 별개 문제라 제외했다. 6편이며 인용 수는 OpenAlex 기준이다.
 
 | 연도 | 방법 | 핵심 | 레퍼런스 |
 |---|---|---|---|
 | 2012 | 계층 추정 | 신규 광고 CVR을 광고주·캠페인 계층의 과거 성과로 추정. 데이터가 적을수록 부모로 수축. **형제 평균의 통계적 원형** | Lee et al., KDD 2012 (Turn), 210회<br>Estimating Conversion Rate in Display Advertising from Past Performance Data |
 | 2015 | LightFM | 아이템 벡터 = 메타 feature 임베딩의 합 (+ 선택적 ID 임베딩). 콜드 아이템은 ID 행이 0이라 메타만으로 표현. **계정 + 그룹 잔차의 원형** | Kula 2015, 136회<br>Metadata Embeddings for User and Item Cold-start Recommendations |
-| 2019 | MetaEmb | 속성 → 초기 임베딩 생성기를, 그 초기값에서 몇 스텝 학습한 뒤 손실이 작도록 메타러닝. "빨리 배우는 출발점". 광고 CTR 대상 | Pan et al., SIGIR 2019 (Alibaba)<br>Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings |
-| 2021 | MWUF | e' = γ(속성) ⊙ e_cold + β(이웃 임베딩). 콜드 행의 현재 값을 warm 분포로 scale·shift. 본 모델 고정, warm 아이템을 콜드인 척 시켜 학습 | Zhu et al., SIGIR 2021, 129회<br>Learning to Warm Up Cold Item Embeddings for Cold-start Recommendation with Meta Scaling and Shifting Networks |
-| 2021 | GME | 신규 광고와 속성(카테고리·브랜드 등)이 겹치는 기존 광고를 이웃으로 뽑고, 신규 광고 속성으로 만든 예비 임베딩을 이웃 정보로 GAT가 다듬어 초기 ID 임베딩을 생성. **무작위·이웃 평균 초기화를 베이스라인으로 두어 우리 현재·제안과 직접 비교됨**  | Ouyang et al., SIGIR 2021 (Alibaba), 50회<br>Learning Graph Meta Embeddings for Cold-Start Ads in Click-Through Rate Prediction |
-| 2022 | CVAR | 조건부 VAE로 side info에서 warm 임베딩 분포를 생성. 모델 무관, 점이 아닌 분포 | Zhao et al., SIGIR 2022, 53회<br>Improving Item Cold-start Recommendation via Model-agnostic Conditional Variational Autoencoder |
-| 2022 | GAR | 콘텐츠 → 콜드 임베딩 생성기를 추천 모델과 적대적으로 학습. 생성된 콜드 임베딩이 warm과 구별되지 않게 | Chen et al., SIGIR 2022, 77회<br>Generative Adversarial Framework for Cold-Start Item Recommendation |
-| 2023 | ALDI | warm 모델을 교사로 두고 속성만 받는 학생이 교사의 예측 분포·순위·표현을 따르도록 증류 | Huang et al., SIGIR 2023, 99회<br>Aligning Distillation For Cold-start Item Recommendation |
+| 2019 | MetaEmb | MetaEmb는 외부 생성기가 warm 데이터로 미리 학습해 두었다가, 신규 아이템의 초기 임베딩을 생성해 넣어 주고 이후에는 역할이 없다. 초기값에서 몇 스텝 학습한 뒤 손실이 작도록 메타러닝. "빨리 배우는 출발점". 광고 CTR 대상.  | Pan et al., SIGIR 2019 (Alibaba), 179회<br>Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings |
+| 2021 | MWUF | MWUF는 콜드 행을 학습된 보정(γ·β)으로 warm 분포 쪽으로 옮겨 예측에 사용한다. 클릭 하나로 손실 2개를 계산해, 콜드 행은 보정 전 예측의 손실로 보통처럼 학습하고, 보정 네트워크는 보정 후 예측의 손실로 학습한다. | Zhu et al., SIGIR 2021, 129회<br>Learning to Warm Up Cold Item Embeddings for Cold-start Recommendation with Meta Scaling and Shifting Networks |
+| 2021 | GME | MetaEmb가 신규 광고의 속성만 보고 초기 임베딩을 만든다면, GME는 속성이 겹치는 기존 광고들의 정보까지 끌어와 만듭니다. 신규 광고와 속성(카테고리·브랜드 등)이 겹치는 기존 광고를 이웃으로 뽑고, 신규 광고 속성으로 만든 예비 임베딩을 이웃 정보로 GAT가 다듬어 초기 ID 임베딩을 생성. **무작위·이웃 평균 초기화를 베이스라인으로 두어 우리 현재·제안과 직접 비교됨**  | Ouyang et al., SIGIR 2021 (Alibaba), 50회<br>Learning Graph Meta Embeddings for Cold-Start Ads in Click-Through Rate Prediction |
+| 2022 | VELF | 광고 CTR에서 ID 임베딩을 점이 아닌 분포로 학습. 사후분포는 ID로, 사전분포는 그 ID의 **속성으로 DNN이 계산**하고, KL 항이 데이터가 적은 ID의 임베딩을 속성 사전분포 쪽으로 끌어당김(사전분포 자체는 N(0, I)로 묶음). 서빙 시 z = g(빈도)·자기 값 + (1−g(빈도))·속성 기준값으로 섞어, 신규·희소 ID는 속성 기준값을 따르고 데이터가 쌓이면 자기 값으로 넘어감. **계층 수축 원리를 학습(KL)과 서빙(빈도 게이트) 양쪽에 구현한 것.** 그대로 도입하면 임베딩 모듈과 MLP를 함께 다시 학습해야 하지만, 서빙 시 섞기 식만 떼어 g(갱신 횟수)·테이블[G] + (1−g)·형제 평균으로 쓰면 모델 학습 변경 없이 형제 평균 채우기를 연속형으로 확장할 수 있음 | Xu et al., WWW 2022, 31회<br>Alleviating Cold-start Problem in CTR Prediction with A Variational Embedding Learning Framework |
 
-**흐름.** 2019년까지는 "빈 행을 무엇으로 채우나"(부모 통계, 속성 합, 메타러닝 초기값), 2021~2023년은 "채운 값을 warm 분포에 맞추나"(MWUF, CVAR, GAR, ALDI)다. 2024년 이후는 콘텐츠·LLM 기반으로 옮겨가 ID 행 초기화 자체를 다룬 논문은 드물고, 생성기 학습 목표를 시간 이동에 강건하게 만든 TDRO(Lin et al., AAAI 2024, 21회) 정도가 경계선에 있다. 그 밖의 흐름으로 ID 임베딩을 콘텐츠 표현으로 대체하거나(MoRec, TIGER), LLM으로 콜드 아이템의 데이터 자체를 만들거나(Google, ColdLLM), 콜드 아이템에서 어떤 feature를 믿을지를 훈련으로 배우게 하는(DropoutNet, Heater, 스트리밍용 PAM) 쪽이 있으나 전제에서 제외했다.
+**제외한 논문.** 신규 ID 행을 만들고 채운다는 전제에 맞지 않아 표에서 뺐다.
+
+| 논문 | 핵심 개념 | 제외 이유 |
+|---|---|---|
+| DropoutNet (NeurIPS 2017) | 학습 중 ID 임베딩을 무작위로 0으로 지워, 콘텐츠만으로도 예측하게 훈련 | 초기값이 아니라 훈련법이다. 주 모델을 다시 학습한다 |
+| Heater (SIGIR 2020) | DropoutNet의 "0으로 지움"을 "콘텐츠 → MoE 변환 표현으로 대체"로 바꿈 | DropoutNet과 같은 이유 |
+| CVAR (SIGIR 2022) | 속성과 ID 임베딩을 VAE의 공용 공간에서 맞춘 뒤 임베딩을 생성 | 이미 제외했다. 형제 임베딩은 같은 공간이라 번역이 필요 없다 |
+| AVAEW (arXiv 2023) | CVAR에 적대적 정렬을 더해, 생성 임베딩이 warm 분포와 닮게 함. 뉴스 플랫폼 온라인 A/B 보고 | CVAR과 같은 부류이고, 학회 게재 논문이 아니다 |
+| EmerG (KDD 2024, Baidu) | 아이템 속성으로 아이템별 feature 상호작용 그래프를 생성. ID 임베딩은 무작위 초기화 그대로 | 임베딩이 아니라 상호작용 구조를 바꾼다. 모델 구조 변경이다 |
+| MeLU (KDD 2019) | MAML로 모델 결정층을 "몇 스텝 적응 뒤 잘 맞기"로 학습 | 이미 제외했다. 학습 목표 자체가 바뀐다 |
+| MAMO (KDD 2020) | MeLU의 "모두에게 같은 초기 파라미터" 대신, 메모리로 유저별 맞춤 초기 파라미터를 만듦 | 유저 콜드스타트 대상이고, ID 행이 아니라 모델 파라미터를 초기화한다 |
+
+**흐름.** 2019년까지는 "빈 행을 무엇으로 채우나"(부모 통계, 속성 합, 메타러닝 초기값), 2021년은 "이웃에서 빌려오나, 채운 값을 warm 분포에 맞추나"(GME, MWUF), 2022년은 "속성 기준값으로 학습과 서빙 양쪽에서 수축시키나"(VELF)다. 그 이후는 콘텐츠·LLM 기반으로 옮겨가 ID 행 초기화 자체를 다룬 논문은 드물고, 생성기 학습 목표를 시간 이동에 강건하게 만든 TDRO(Lin et al., AAAI 2024, 21회) 정도가 경계선에 있다. 그 밖의 흐름으로 콘텐츠로 콜드 아이템의 표현을 직접 만들어 ID 행 대신 쓰거나(CVAR, GAR, ALDI), ID 임베딩을 콘텐츠 인코더 출력으로 대체하거나(MoRec, TIGER), LLM으로 콜드 아이템의 데이터 자체를 만들거나(Google, ColdLLM), 콜드 아이템에서 어떤 feature를 믿을지를 훈련으로 배우게 하는(DropoutNet, Heater, 스트리밍용 PAM) 쪽이 있으나 전제에서 제외했다.
 
 **베이스라인 등장 빈도.** arXiv 판본이 있는 최신 논문(MWUF, GME, CVAR, DHE, MoRec, TIGER, LLM Data Augmenter, ColdLLM) 8편의 실험 절에서 확인. 표에서 뺀 논문도 비교군 집계에는 포함.
 
