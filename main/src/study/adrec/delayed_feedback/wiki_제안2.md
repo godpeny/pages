@@ -405,7 +405,7 @@ F(서빙 시 보정)와 H(학습 중 규제)는 초기화가 아니라 추가 �
 ##### 사전 정의
 실험 전에 정해야 하는 값은 두 개다.
 - 신규 그룹 정의: 기준은 "직전 n주 노출 0 후 측정 기간에 첫 등장한 group_id"로 시작한다. 측정하면서 두 가지를 확인해 바꿀 수 있다. 
-  - 창 길이: 3주가 너무 길면 설정 변경 후 재개한 그룹이 섞이고, 짧으면 잠깐 쉰 그룹이 신규로 잡힌다. 번호 발급 시각과 첫 클릭 시각 분포를 보고 정한다.
+  - 창 길이: n주가 너무 길면 설정 변경, 번호 발급 시각과 첫 클릭 시각 분포를 보고 정한다.
   - 단위: 우리 안이 바꾸는 것이 group_id 행이니 group_id 단위가 맞지만, 계정 자체가 처음인 그룹(형제가 없는 그룹)은 따로 표시한다.
   - 판정 방법: 회차별 index 파일 비교 외에, 인덱서를 주기적으로 호출해 새로 추가된 group_id를 직접 받아 두는 방법도 고려한다.
 - 신규 판별 기준 검증: 온라인에서 "아직 학습 안 된 행"을 찾는 두 방법이 맞는지 미리 확인한다. 두 방법을 정답과 비교한다. 각 방법이 미학습 행을 얼마나 놓치는지, 놓친 행이 어떤 경우인지 본다. 덜 놓치는 방법을 1차 훅에 쓴다.
@@ -498,7 +498,74 @@ value.index_add_(0, index, old_trainer["state_dict"][key][:key_length], alpha=fo
 - 회의의 **캘리브레이터**가 무엇이고 어디 있는지
 - **인덱서 갱신 주기** — 새 group_id에 인덱스가 붙는 시점을 정하는 외부 작업. 단계 A의 길이가 여기에 달림
 
-### 2.8 기타
+### 2.8 bara
+### DFM (PURCHASE 등, 배치) → `data_prep/cvr_v2/`
+
+| 단계 | 스크립트 | 가져오는 테이블 | 조인 키 |
+|---|---|---|---|
+| 1 클릭 + 유저 피처 | `00_join_user_feat.py` | `catson.km_filtered_click` (valid='Y', 캠페인 TALK_BIZ_BOARD/DISPLAY/PRODUCT_CATALOG) + `bizrec_kuid.keyuser_*_24h` (ufos, purchase/viewcart/roas history, lookalike 4종) | kuid |
+| 2 전환 | `10_join_click_conv.py` | `catson.km_filtered_click_conversion` (7일, 협력광고 제외) + `catson.km_filtered_collab_click_conversion` (CATALOG_PRODUCT_PURCHASE_SEGMENT) | 클릭 id (`action.actionId` ↔ 전환 `actionChain.actionId`) |
+| 3 vocab·인덱싱 | `30/31/32_*.py` | 2단계 출력 | 2,048줄 미만은 `<unk>` |
+
+**"어떤 클릭을 학습 데이터에 넣나"**
+- valid='Y': 로그의 유효 플래그. 중복·봇 등 무효 로그를 뺍니다. 로그 분석 가이드의 필수 필터입니다.
+
+**"그 클릭에 어떤 유저 정보를 붙이나"입니다.** 
+- 캠페인 TALK_BIZ_BOARD / DISPLAY / PRODUCT_CATALOG: 광고 캠페인 유형. 톡비즈보드, 디스플레이, 상품 카탈로그 광고의 클릭만 씁니다. 
+  - 그 외(검색·동영상 등)는 CVR 예측기 대상이 아니라 제외합니다.
+- 유저 피처는 kuid로 붙이는 "이 유저가 최근 무엇을 했나"입니다.
+  - ufos: 유저 관심 카테고리 점수 맵(700차원).
+  - conv_purchase_history / viewcart_history / roas_history: 최근 구매·장바구니·ROAS 전환을 일으킨 광고(track_id) 목록.
+  - lookalike_purchase / appinstall / cart / registration: 유사타겟 점수. 구매·앱설치·장바구니·가입을 한 사람들과 얼마나 닮았나.
+
+전부 bizrec_kuid.keyuser_*_24h 테이블(danke-feature-jobs가 매일 만드는 key/value 피처)에서 가져옵니다.
+
+**전환을 붙일 때 두 테이블을 쓰는 이유**
+
+전환 로그가 광고 유형에 따라 두 테이블로 나뉘어 있습니다.
+
+- catson.km_filtered_click_conversion: 일반 광고의 전환. 픽셀·SDK로 잡힌 구매·앱설치·가입 등. 클릭 뒤 7일 이내(click_conv_diff_days < 7) 전환만 붙임. 어트리뷰션 창이 7일이기 때문이다.
+- catson.km_filtered_collab_click_conversion: 협력광고(여러 광고주 상품을 묶어 내보내는 카탈로그 광고, objectiveDetailType = CATALOG_PRODUCT_PURCHASE_SEGMENT)의 전환. 로그 구조가 달라서(event_code, conversion_dttm) 별도 테이블에 쌓임.
+
+그래서 일반 테이블에서는 협력광고 목적을 빼고(그 전환은 일반 테이블에 제대로 안 잡힘), 협력 테이블에서는 event_code='Purchase'만 가져와 붙입니다. 담당자 피드백 4번이 말한 "협력광고 전환은 별도 테이블에서 Purchase만"이 이 분기입니다. cvr_v2는 이 분기가 있고, kakao_unified는 협력 테이블을 읽지 않습니다(PURCHASE 자체를 안 다루니까요).
+
+
+### DFOM (APP·MEM·PF, 온라인) → `data_prep/kakao_unified/`, `TARGET=CVR`**
+| 단계 | 스크립트 | 가져오는 테이블 | 조인 키 |
+|---|---|---|---|
+| 1 클릭 + 전환 | `step1_load_bimp_click.py` (`ConversionJoiner`) | `catson.km_filtered_click` (valid='Y', 캠페인 TALK_BIZ_BOARD/DISPLAY, objectiveDetailType=PLACEMENT) + `catson.km_filtered_click_conversion` (7일, actionType↔목적 매핑) + PF는 `catson.km_filtered_action` + 소재 카테고리 `biz_common.km_m_creative_categories` | 클릭 id; 전환 행을 union으로 한 번 더 추가(DFOM식 중복 양성) |
+| 2 유저 피처 | `step2_join_features_cvr.py` | `bizrec_kuid.keyuser_*` / `featmp_*` (`conversion.yaml`에 적힌 것만) | kuid |
+| 3 vocab | `step3_build_vocab.py` | COLDSTART_COUNT="True"로 두면 vocab 파일에 추가열 (그 값이 콜드를 벗어난 시각) | |
+| 4 인덱싱 | `step4_index_features.py` | 2단계 출력 + vocab | tail cut 없음 |
+
+- `catson.km_filtered_click`
+  - objectiveDetailType = PLACEMENT: 여기서 PLACEMENT는 run.bash의 PLACEMENTS에 적은 전환 목적입니다. APP_INSTALL이면 앱설치 목적 광고의 클릭만, dfom_mem이면 SIGN_UP·PARTICIPATION·COMPLETE_REGISTRATION 세 목적을 묶어서 가져옵니다. 목적마다 모델이 따로라 데이터도 목적별로 만듭니다.
+- `catson.km_filtered_click_conversion`
+  - 클릭 뒤 7일 이내 전환만.
+  - actionType↔목적 매핑: 전환 로그의 actionType(예 bcon_AppInstall)이 그 클릭의 목적(APP_INSTALL)과 짝(참고: common/const.py의 OBJECTIVE_ACTION_MAP)이 맞을 때만 전환으로 칩니다.
+- `catson.km_filtered_action` — PF(친구추가) 전환
+  - 친구추가는 픽셀·SDK 전환이 아니라 카카오톡 안의 행동이라 전환 테이블이 아닌 action 로그에 찍힙니다(kakao_talk_add_plusfriend). 그래서 PLACEMENTS=("ADD_FRIEND")일 때만 이 테이블을 대신 읽고, 7일 창도 적용하지 않습니다.
+
+- `biz_common.km_m_creative_categories` - 어떤 업종·주제의 광고인지 적어 둔 분류
+  - 소재(creative_id): 실제로 노출되는 광고 이미지·문구 한 개. 광고그룹 아래에 여러 소재가 있습니다.
+  - IAB 카테고리: 인터넷광고협회(IAB)가 정한 표준 업종 분류. 예를 들어 “Automotive”, “Food & Drink”, “Travel” 같은 값이고, 소재 하나에 여러 개가 붙을 수 있어 배열(iab_category)입니다.
+  - 1depth / 2depth 카테고리: 카카오 내부 상품 분류의 대분류·중분류 번호(category_1depth_id, category_2depth_id). 예를 들어 1depth "패션", 2depth "여성의류" 같은 식입니다.
+
+- `bizrec_kuid.keyuser_* / featmp_*`
+  - danke-feature-jobs가 매일·매시간 만들어 두는 유저 피처 테이블들입니다. 이름이 keyuser_ 또는 featmp_로 시작하고 뒤에 피처 이름이 붙습니다. 클릭 행의 kuid로 이 테이블들을 LEFT JOIN해 유저 이력을 붙입니다. 
+
+- `COLDSTART_COUNT="True"`- 학습 데이터에 충분히 쌓였다고 보는 첫 시각
+  - 값마다 지금까지 나온 행 수를 누적합니다.
+  - 누적이 coldstart_threshold(group_id는 2,048)를 처음 넘는 시간을 그 값의 "콜드를 벗어난 시각"으로 적습니다.
+  - “DFOM에서 2,048줄 전은 콜드”는 bara 안에서 평가할 때의 약속이지 실제 동작이 아니라서 이 값을 바꾸거나 이 열을 쓰지 않는 게 맞다.
+
+**둘의 차이 한 줄씩**
+- DFM은 피처를 먼저 붙이고 전환을 나중에, DFOM은 전환을 먼저 붙이고 피처를 나중에.
+- DFM은 PURCHASE·협력광고를 다루고 서빙 `pcvr`을 남김. DFOM 경로는 PURCHASE 불가, 서빙 `pcvr` 없음, PF(action 로그) 가능.
+- DFM은 vocab에서 2,048줄 미만을 unknown으로(운영과 같은 규칙), DFOM은 전부 자기 번호.
+- DFOM은 전환마다 행을 하나 더 넣어 "클릭 즉시 0, 전환 시 1"의 온라인 학습을 흉내 냄.
+
+### 2.9 기타
 
 #### 초기 제안 내용
 **의미 있는 값으로 초기화하면 초기 pCVR 안정에 도움이 될 수 있다.** 초기값 후보는 아래 순서로 본다.
