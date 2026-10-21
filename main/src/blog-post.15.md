@@ -176,6 +176,14 @@ $$
 \text{Scalar projection} = \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \\
 \text{Length of projection} = \left| \frac{\mathbf{a}^T \mathbf{b}}{\|\mathbf{b}\|} \right|
 $$
+
+### Scalar, Vector and Linear Projection
+수학에서의 Vector / Scalar Projection (정사영)수학(선형대수학)에서 말하는 투영은 "특정 공간이나 벡터 위로 수직으로 내리꽂아 그림자를 만드는 연산"입니다.
+- Vector Projection: 벡터 $\mathbf{u}$를 벡터 $\mathbf{v}$ 방향으로 수직으로 내리쬐어 얻는 새로운 벡터(그림자)입니다.
+- Scalar Projection: 그 그림자 벡터의 길이를 나타내는 스칼라 값으로 기준 벡터 $\mathbf{v}$ 방향으로의 부호가 있는 성분(Signed Component)입니다.
+- 딥러닝/트랜스포머에서의 선형 투영 (Linear Projection): 딥러닝에서의 투영(projection)은 "입력 데이터를 가중치 행렬($W$)을 곱해 원하는 역할이나 차원의 공간으로 재배치(Mapping)하는 선형 변환(Linear Transformation)"입니다.
+  - 개념: 입력 토큰 벡터 $x$에 가중치 행렬 $W$를 곱하여($xW$), 토큰을 특정 의미 공간으로 옮깁니다.
+
 ### Null Space (Kernel)
 In mathematics, the kernel of a linear map, also known as the null space or nullspace, is the part of the domain which is mapped to the zero vector of the co-domain.  
 The kernel is always a linear subspace of the domain. That is, given a linear map $L : V \to W$ between two vector spaces $V$ and $W$, the kernel of $L$ is the vector space of all elements $v$ of $V$ such that $L(v) = 0$, where $0$ denotes the zero vector in $W$.
