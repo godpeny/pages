@@ -460,6 +460,46 @@ $$
 | **Tarjan’s SCC**     | Strongly Connected Component 분해 | O(V+E)    | 방향 그래프용, 가장 일반적 |
 | **Union-Find**       | 연결성 추적 (무방향 그래프용)               | O(E α(V)) | 빠르고 간단          |
 
+### Matrix Broadcasting
+브로드캐스팅(Broadcasting)은 크기가 다른 행렬이나 배열 간에 산술 연산을 수행할 수 있도록 작은 배열을 큰 배열의 크기에 맞춰 가상으로 확장(늘려)주는 기법입니다. NumPy, PyTorch 같은 라이브러리에서 자주 사용되는 개념으로 서로 다른 shape의 텐서를 특정 규칙에 따라 맞춰서 element-wise 연산을 수행하는 것입니다.  
+
+가령 아래와 같이 크가 다른 A,P 행렬간의 덧셈을 연산한다고 생각해봅시다.  ($A' = A + P$)  
+A: shape (3, 3)
+$$
+\begin{pmatrix}
+0.1&0.8&0.3\\
+0.8&0.4&0.6\\
+0.2&0.7&0.5
+\end{pmatrix}
+$$
+P: shape (3, 3, 2)
+
+$$
+\begin{pmatrix}
+[p,p]&[p,p]&[p,p]\\
+[p,p]&[p,p]&[p,p]\\
+[p,p]&[p,p]&[p,p]
+\end{pmatrix} \\[5pt]
+
+ P_{:,:, 1} = \begin{bmatrix} 0 & \mathbf{+0.5} & +1.0 \\ \mathbf{-0.5} & 0 & +0.5 \\ -1.0 & -0.5 & 0 \end{bmatrix}, \quad
+
+ P_{:,:, 2} = \begin{bmatrix} 0 & \mathbf{+0.2} & +0.4 \\ \mathbf{+0.1} & 0 & +0.3 \\ +0.2 & +0.1 & 0 \end{bmatrix}
+$$
+
+
+A는 각 위치에 scalar 하나, P는 각 위치에 길이 2의 벡터 하나가 있습니다.  
+
+$A$의 각 요소에 채널별로 $P$를 더해주면, 각 위치 $(i, j)$는 $m=2$차원 벡터를 갖게 됩니다.위치 $(1, 2)$의 2차원 벡터: $$A'_{1,2} = [A_{1,2} + P_{1,2,1}, \; A_{1,2} + P_{1,2,2}] = [0.8 + 0.5, \; 0.8 + 0.2] = \mathbf{[1.3, \; 1.0]}$$위치 $(2, 1)$의 2차원 벡터: $$A'_{2,1} = [A_{2,1} + P_{2,1,1}, \; A_{2,1} + P_{2,1,2}] = [0.8 - 0.5, \; 0.8 + 0.1] = \mathbf{[0.3, \; 0.9]}$$
+
+$$
+A'=
+\begin{pmatrix}
+[0.1,0.1]&[1.3,1.0]&[0.3,0.3]\\
+[0.3,0.9]&[0.4,0.4]&[0.6,0.6]\\
+[0.2,0.2]&[0.7,0.7]&[0.5,0.5]
+\end{pmatrix}
+$$
+
 ## Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line.  
 (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
