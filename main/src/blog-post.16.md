@@ -456,3 +456,35 @@ GPU라는 거대한 공장이 쉬는 시간 없이 돌아가게 만드는 기술
 
 - 다중 컨텍스트: 여러 사용자의 추천 요청(Context)을 한 번에 묶어서(배치 처리) GPU에 밀어 넣는 것입니다.
 - 다중 스트림: GPU 내에서 서로 의존성이 없는 독립적인 여러 연산 흐름(Stream)을 동시에 병렬로 실행하는 것입니다. 이를 통해 하드웨어의 활용률(Utilization)을 극한까지 끌어올립니다.
+
+## Transformer 메모리 절감 기법
+### 기본
+트랜스포머의 어텐션은 여러 개의 '헤드(Head)'가 병렬로 정보를 처리하는 Multi-Head Attention (MHA) 구조를 사용합니다.
+
+MHA: Query 헤드가 16개 있다면, Key 헤드도 16개, Value 헤드도 16개가 1:1:1로 각각 존재합니다. 문장이 길어질수록 16개 헤드의 Key와 Value 데이터를 모두 GPU 메모리(KV 캐시)에 저장해 두어야 하므로 메모리가 소모가 큽니다.
+
+### 헤드 공유 방식 (Head Sharing)
+헤드의 개수는 그대로 유지하여 질문 능력(표현력)을 지키되, Key와 Value 헤드의 개수를 줄여서 여러 Query 헤드가 하나의 Key/Value 헤드를 함께 공유하게 만드는 구조
+- MQA (Multi-Query Attention): 모든 Query 헤드가 단 1개의 Key/Value 헤드만 공유하는 극단적인 방식.
+- GQA (Grouped Query Attention)개념: MHA와 MQA의 중간 형태로, Query 헤드들을 몇 개 그룹으로 묶은 뒤 그룹당 1개의 Key/Value 헤드를 공유하게 만드는 방식
+
+### 투영 공유 방식 (Projection Sharing)
+헤드 개수를 줄이는 것이 아니라, Key와 Value에 적용되는 투영 행렬(Projection Matrix) 자체를 통일($K=V$) 하는 방식입니다. 즉, Key를 만드는 투영 행렬($W_k$)과 Value를 만드는 투영 행렬($W_v$)을 따로 두지 않고 하나의 동일한 행렬($W_{kv}$)로 통일 ($W_k = W_v$) 하는 것입니다.
+
+반면에 헤드 공유 방식은 Key-Value 헤드의 개수를 줄여 공유하는 것으로 $W_k$와 $W_v$라는 투영 행렬은 여전히 서로 다르게 각각 유지하지만, Query 헤드가 $H$개일 때 Key/Value 헤드는 $H$개가 아니라 $g$개(또는 1개)만 생성하는 것입니다.
+
+### From "Do Transformers Need Three Projections? Systematic Study of QKV Variants"
+논문에서는 GQA 기반이지만 $g$개 그룹 각각의 내부에서 Key와 Value 투영 행렬을 $K=V$로 통일하는 $Q\text{-}GQA\text{-}g$ 방식과 MQA 기반이지만 단일 KV 헤드에 $K=V$ 제약을 추가 적용한 $Q\text{-}MQA$ 방식을 제안합니다.
+
+#### 벤치마크
+
+##### 300M 파라미터 모델 실험 결과
+- Q-GQA-4 (결합): PPL 5.32 (+3.9%) / KV 캐시 절감 87.5%
+- Q-MQA (결합): PPL 5.36 (+4.8%) / KV 캐시 절감 96.9%
+
+##### 1.2B 파라미터 모델 & 다운스트림 과제
+동일한 순위와 경향성이 유지되었습니다.
+
+Q-GQA-8은 88% 캐시 절감과 함께 PPL 증가가 3.08%에 불과했습니다.
+
+특히 5가지 표준 벤치마크(ARC, HellaSwag, PIQA 등) 5-shot 다운스트림 과제 평가에서 Q-GQA-8은 평균 정확도 36.72%를 기록하여, Baseline QKV(36.40%)와 거의 대등하거나 미세하게 우수한 실성능을 보여주었습니다
