@@ -540,7 +540,160 @@ https://arxiv.org/abs/1907.06558
 
 피드백 시프트(Feedback Shift): 학습 데이터와 실서비스 환경에서 유입되는 사용자 분포($P(X)$)는 똑같습니다. 하지만 지연된 피드백 오류 때문에, 동일한 유저($X$)에 대해 학습 데이터가 가리키는 전환 확률 $P(Y|X)$가 실제 서비스에서 일어나야 할 진짜 확률 $P(C|X)$보다 왜곡되어 다르게 나타나는 현상을 의미합니다.
 
+## Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings
 
+논문 [Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings](https://arxiv.org/pdf/1904.11547#moonlight=on)의 3.2절(Meta-Embedding)과 **3.3절(Architecture and hyper-parameter)** 전체 내용을 핵심 질의응답 포인트를 포함하여 통합 정리한 상세 가이드입니다.
+
+---
+
+### 1. 3.2 Meta-Embedding (메타-임베딩 방법론)
+
+#### 1.1 기본 개념 및 작동 원리 (수식 8, 9)
+
+* **적용 범위:** 이진 분류(Binary Classification) 기반 예측 모델 특성상 **CTR(클릭률)과 CVR(전환률) 예측 모두에 동일하게 적용**됩니다.
+* **임베딩 주입(Substitution/Injection) 방식:** 딥러닝 기반 예측 모델($f_\theta$)에서 기존 기존 광고가 거치는 `ID 임베딩 테이블 Look-up` 과정을 대체합니다. 데이터가 전혀 없는 신규 광고 $i^*$의 ID 벡터 입력 자리에 생성기($h_w$)가 생성한 초기 임베딩 벡터($\phi_{[i^*]}^{init}$)를 직접 주입합니다.
+
+##### **[수식 8] 초기 메타-임베딩 생성**
+
+$$\phi_{[i^*]}^{init} = h_w(u_{[i^*]})$$
+
+* **$i^*$**: 신규 광고 ID (콜드스타트 상태).
+* **$\phi_{[i^*]}^{init}$**: 생성기 $h_w$가 만들어낸 $m$차원 초기 ID 임베딩 벡터.
+* **$u_{[i^*]}$**: 광고 고유 속성 (제목, 카테고리, 태그 등).
+* **$h_w(\cdot)$**: 가중치 $w$를 가지는 메타-임베딩 생성기 신경망.
+
+##### **[수식 9] 메타 학습기 기반 예측**
+
+$$g_{meta}(u_{[i^*]}, v) = f_\theta(\phi_{[i^*]}^{init}, u_{[i^*]}, v)$$
+
+* **$g_{meta}$**: 임베딩 테이블 조회 없이 예측을 수행하는 결합 예측 함수.
+* **$v$**: 유저 및 문맥(Context) 특징.
+* **$f_\theta$**: 사전 학습된 베이스 CTR/CVR 모델 (학습 중 파라미터 $\theta$는 **고정/Freeze**).
+
+---
+
+#### 1.2 3.2.1 Cold-start phase (콜드스타트 단계)
+
+데이터가 0개인 신규 광고의 첫 노출/클릭 오차를 측정하기 위해 기존 광고 $i$의 첫 번째 미니배치 $\mathcal{D}_{[i]}^a$ (크기 $K$)를 활용하여 시뮬레이션을 수행합니다.
+
+##### **[수식 10] 콜드스타트 예측**
+
+$$\hat{p}_{aj} = g_{meta}(u_{[i]}, v_{aj}) = f_\theta(\phi_{[i]}^{init}, u_{[i]}, v_{aj})$$
+
+* 생성된 초기 임베딩 $\phi_{[i]}^{init}$를 주입하여 $j$번째 샘플의 클릭 확률 $\hat{p}_{aj}$를 예측합니다.
+
+##### **[수식 11] 콜드스타트 손실 ($l_a$)**
+
+$$l_a = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{aj} \log \hat{p}_{aj} - (1 - y_{aj}) \log (1 - \hat{p}_{aj}) \right]$$
+
+* 배치 $\mathcal{D}_{[i]}^a$에 대한 평균 Log-loss입니다. 초기 임베딩이 첫 타석에서 얼마나 정확한지 평가합니다.
+
+---
+
+#### 1.3 3.2.2 Warm-up phase (웜업 단계)
+
+소량의 데이터가 수집되었을 때 모델이 **얼마나 빠르게 적응(Fast Adaptation)하는지** 평가하는 단계입니다.
+
+##### **[수식 12] 적응형 임베딩 경사하강법 1-Step 업데이트**
+
+$$\phi_{[i]}^\prime = \phi_{[i]}^{init} - a \frac{\partial l_a}{\partial \phi_{[i]}^{init}}$$
+
+* **$\phi_{[i]}^\prime$**: 1회 적응된 임베딩 벡터 (모델 가중치가 아닌 **중간 변수의 가상 상태**).
+* **$a$**: Inner-loop 학습률.
+* 첫 번째 오차 $l_a$의 기울기를 이용해 임베딩 변수만 1 step 이동시킵니다.
+
+##### **[수식 13] 웜업 손실 ($l_b$)**
+
+$$l_b = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{bj} \log \hat{p}_{bj} - (1 - y_{bj}) \log (1 - \hat{p}_{bj}) \right]$$
+
+* **예측:** $\hat{p}_{bj} = f_\theta(\phi_{[i]}^\prime, u_{[i]}, v_{bj})$
+* 1회 적응된 임베딩 $\phi_{[i]}^\prime$을 사용해 보지 못한 두 번째 미니배치 $\mathcal{D}_{[i]}^b$ (크기 $K$)의 예측 오차 $l_b$를 산출합니다. (전체 웜업 기간 평균이 아닌 **단일 가상 배치 오차**입니다.)
+
+---
+
+#### 1.4 3.2.3 A Unified Optimization Objective & Algorithm 1
+
+##### **[수식 15] 통합 메타 손실 함수**
+
+$$l_{meta} = \alpha l_a + (1 - \alpha) l_b$$
+
+* **$\alpha \in [0, 1]$**: 두 단계의 가중치 밸런서 (논문에서는 웜업 적응을 중시하여 $\alpha = 0.1$로 설정).
+
+##### **[수식 16, 17] 2차 미분 (Hessian-vector) 역전파**
+
+$$\frac{\partial l_{meta}}{\partial w} = \frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} \frac{\partial h_w}{\partial w}$$
+
+$$\frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} = \alpha \frac{\partial l_a}{\partial \phi_{[i]}^{init}} + (1 - \alpha)\frac{\partial l_b}{\partial \phi_{[i]}^\prime} - a(1 - \alpha)\frac{\partial l_b}{\partial \phi_{[i]}^\prime} \frac{\partial^2 l_a}{\partial (\phi_{[i]}^{init})^2}$$
+
+* **$- a(1 - \alpha)\frac{\partial l_b}{\partial \phi_{[i]}^\prime} \frac{\partial^2 l_a}{\partial (\phi_{[i]}^{init})^2}$**: 수식 (12)의 적응 과정을 통째로 미분하면서 발생하는 **2차 미분(Hessian-vector product)** 항입니다.
+* 1 step 업데이트 후 오차($l_b$)가 가장 적어지도록 출발점 $\phi^{init}$의 최적 그래디언트 방향을 도출합니다.
+
+##### **[Algorithm 1 메커니즘 요약]**
+
+1. 기존 광고 ID 집합 $I$에서 $n$개 샘플링 (Outer-loop).
+2. 속성 $u_{[i]}$로부터 초기 임베딩 생성: $\phi_{[i]}^{init} = h_w(u_{[i]})$.
+3. 배치 $\mathcal{D}_{[i]}^a$ 오차 $l_a$ 계산.
+4. 임베딩 1-Step 가상 적응: $\phi_{[i]}^\prime = \phi_{[i]}^{init} - a \frac{\partial l_a}{\partial \phi_{[i]}^{init}}$ (Inner-loop).
+5. 배치 $\mathcal{D}_{[i]}^b$ 오차 $l_b$ 계산 후 통합 손실 $l_{meta, i} = \alpha l_a + (1-\alpha)l_b$ 도출.
+6. **생성기 파라미터 업데이트:** $w \leftarrow w - b \sum_{i} \frac{\partial l_{meta, i}}{\partial w}$.
+
+---
+
+#### 핵심 개념 정리 및 오해 방지 포인트
+
+* **학습 대상:** 학습 대상은 출력값 벡터인 $\phi_{[i]}^{init}$가 아니라, 생성기 신경망 내부의 가중치 파라미터 $w$입니다.
+* **시점(Phase) 구분:**
+* **메타 학습 단계 (Training):** 기존 광고들로 이중 루프(Inner/Outer-loop) 시뮬레이션을 돌려 오차 $l_{meta}$를 구하고, **생성기 가중치 $w$를 최적화**합니다.
+* **실제 추론 단계 (Inference):** 최적화된 $h_w$에 새로운 광고의 속성 $u_{[i^*]}$만 입력하여 우수한 초기 임베딩 $\phi_{[i^*]}^{init}$를 즉시 추출해 사용합니다.
+
+
+
+---
+
+## 2. 3.3 Architecture and Hyper-parameter (신경망 구조 및 하이퍼파라미터)
+
+### 2.1 3.3.1 생성기 $h_w$의 신경망 구조 (Architectures of $h_w$)
+
+논문에서는 생성기 구조를 간결하면서도 강력하게 구축하기 위해 **"Simple yet Strong"** 원칙을 제시합니다.
+
+```
+[ Raw Features u_[i] ] ──> [ Reused Embeddings (Frozen) ] ──> [ Composition Layer ] ──> [ Dense Layer (w) ] ──> ϕ_[i]^init
+
+```
+
+1. **입력층 (Raw Inputs):** 광고 속성 $u_{[i]}$ (카테고리, 태그, 제목 등).
+2. **사전 학습 임베딩 재사용 (Reused Embeddings):**
+* 베이스 CTR 모델($f_\theta$)에 이미 훈련되어 있는 피처 임베딩 레이어들을 그대로 가져와 재사용합니다.
+* **가중치 고정 (Freeze):** 해당 임베딩 레이어의 가중치는 고정(Non-trainable)하여 학습 파라미터 수를 최소화합니다.
+
+
+3. **결합 레이어 (Simple Composition Layer):**
+* 각 속성 필드에서 추출된 덴스 벡터들을 하나의 벡터로 통합합니다. (Average-pooling, Max-pooling, Concatenation 등 적용).
+
+
+4. **출력층 (Dense Layer / Parameters $w$):**
+* 결합된 벡터를 최종 ID 임베딩 차원($m$차원)으로 정렬해 주는 단일 완전연결층입니다.
+* **이 완전연결층의 가중치만이 메타 생성기 $h_w$에서 실제 최적화되는 파라미터 $w$입니다.**
+
+
+
+#### **안정적인 임베딩 생성을 위한 3가지 실무 트릭**
+
+* **`tanh` 활성화 함수 사용:** 출력 벡터 값의 범위를 $[-1, 1]$로 제한하여 초기 수치 폭주를 방지.
+* **편향(Bias) 제거:** Dense Layer에서 Bias 항을 빼고 오직 행렬곱만 수행.
+* **$L_2$ 정규화 (Regularization):** 파라미터 $w$의 과도한 증폭을 막아 손실 정형화.
+
+---
+
+### 2.2 3.3.2 하이퍼파라미터 $\alpha$
+
+* **역할:** 콜드스타트 손실($l_a$)과 웜업 손실($l_b$) 간의 비중을 조절.
+* **설정값:** **$\alpha = 0.1$**
+* **이유:** 실제 광고 시스템에서는 데이터가 완전히 0개인 시점(콜드스타트)보다 소량의 데이터가 쌓이며 적응하는 기간(웜업)이 훨씬 깁니다. 따라서 모델이 웜업 적응 성능($l_b$)에 더 집중하도록 설정하였으며, 실험을 통해 해당 값에서 견고한(Robust) 성능을 확인했습니다.
+
+---
+
+추가로 4장의 실측 실험 결과(MovieLens, Tencent CVR, KDD Cup 2012)나 베이스 모델(FM, DeepFM, PNN 등)과의 결합 방식에 대해 궁금한 점이 있으시다면 말씀해주세요!
 
 
 ## References
