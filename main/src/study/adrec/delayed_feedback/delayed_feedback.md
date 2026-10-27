@@ -544,6 +544,9 @@ https://arxiv.org/abs/1907.06558
 
 논문 [Warm Up Cold-start Advertisements: Improving CTR Predictions via Learning to Learn ID Embeddings](https://arxiv.org/pdf/1904.11547#moonlight=on)의 3.2절(Meta-Embedding)과 **3.3절(Architecture and hyper-parameter)** 전체 내용을 핵심 질의응답 포인트를 포함하여 통합 정리한 상세 가이드입니다.
 
+**기본 컨셉**  
+MetaEmb는 새 광고 그룹의 메타 피처(account_id, campaign_type, objective_detail_type)에 대한 메인 모델 임베딩을 이어 붙여 생성기(Linear 한 층 + tanh)에 넣고, 그 출력을 새 group_id 행의 초기 임베딩으로 쓴다.
+
 ---
 
 ### 1. 3.2 Meta-Embedding (메타-임베딩 방법론)
