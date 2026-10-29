@@ -549,14 +549,12 @@ MetaEmb는 새 광고 그룹의 메타 피처(account_id, campaign_type, objecti
 
 ---
 
-### 1. 3.2 Meta-Embedding (메타-임베딩 방법론)
-
-#### 1.1 기본 개념 및 작동 원리 (수식 8, 9)
+### 1.1 기본 개념 및 작동 원리 (수식 8, 9)
 
 * **적용 범위:** 이진 분류(Binary Classification) 기반 예측 모델 특성상 **CTR(클릭률)과 CVR(전환률) 예측 모두에 동일하게 적용**됩니다.
 * **임베딩 주입(Substitution/Injection) 방식:** 딥러닝 기반 예측 모델($f_\theta$)에서 기존 기존 광고가 거치는 `ID 임베딩 테이블 Look-up` 과정을 대체합니다. 데이터가 전혀 없는 신규 광고 $i^*$의 ID 벡터 입력 자리에 생성기($h_w$)가 생성한 초기 임베딩 벡터($\phi_{[i^*]}^{init}$)를 직접 주입합니다.
 
-##### **[수식 8] 초기 메타-임베딩 생성**
+#### **[수식 8] 초기 메타-임베딩 생성**
 
 $$\phi_{[i^*]}^{init} = h_w(u_{[i^*]})$$
 
@@ -565,7 +563,7 @@ $$\phi_{[i^*]}^{init} = h_w(u_{[i^*]})$$
 * **$u_{[i^*]}$**: 광고 고유 속성 (제목, 카테고리, 태그 등).
 * **$h_w(\cdot)$**: 가중치 $w$를 가지는 메타-임베딩 생성기 신경망.
 
-##### **[수식 9] 메타 학습기 기반 예측**
+#### **[수식 9] 메타 학습기 기반 예측**
 
 $$g_{meta}(u_{[i^*]}, v) = f_\theta(\phi_{[i^*]}^{init}, u_{[i^*]}, v)$$
 
@@ -575,17 +573,17 @@ $$g_{meta}(u_{[i^*]}, v) = f_\theta(\phi_{[i^*]}^{init}, u_{[i^*]}, v)$$
 
 ---
 
-#### 1.2 3.2.1 Cold-start phase (콜드스타트 단계)
+### 1.2 Cold-start phase (콜드스타트 단계)
 
 데이터가 0개인 신규 광고의 첫 노출/클릭 오차를 측정하기 위해 기존 광고 $i$의 첫 번째 미니배치 $\mathcal{D}_{[i]}^a$ (크기 $K$)를 활용하여 시뮬레이션을 수행합니다.
 
-##### **[수식 10] 콜드스타트 예측**
+#### **[수식 10] 콜드스타트 예측**
 
 $$\hat{p}_{aj} = g_{meta}(u_{[i]}, v_{aj}) = f_\theta(\phi_{[i]}^{init}, u_{[i]}, v_{aj})$$
 
 * 생성된 초기 임베딩 $\phi_{[i]}^{init}$를 주입하여 $j$번째 샘플의 클릭 확률 $\hat{p}_{aj}$를 예측합니다.
 
-##### **[수식 11] 콜드스타트 손실 ($l_a$)**
+#### **[수식 11] 콜드스타트 손실 ($l_a$)**
 
 $$l_a = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{aj} \log \hat{p}_{aj} - (1 - y_{aj}) \log (1 - \hat{p}_{aj}) \right]$$
 
@@ -593,11 +591,11 @@ $$l_a = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{aj} \log \hat{p}_{aj} - (1 - y_{aj
 
 ---
 
-#### 1.3 3.2.2 Warm-up phase (웜업 단계)
+### 1.3 Warm-up phase (웜업 단계)
 
 소량의 데이터가 수집되었을 때 모델이 **얼마나 빠르게 적응(Fast Adaptation)하는지** 평가하는 단계입니다.
 
-##### **[수식 12] 적응형 임베딩 경사하강법 1-Step 업데이트**
+#### **[수식 12] 적응형 임베딩 경사하강법 1-Step 업데이트**
 
 $$\phi_{[i]}^\prime = \phi_{[i]}^{init} - a \frac{\partial l_a}{\partial \phi_{[i]}^{init}}$$
 
@@ -605,7 +603,7 @@ $$\phi_{[i]}^\prime = \phi_{[i]}^{init} - a \frac{\partial l_a}{\partial \phi_{[
 * **$a$**: Inner-loop 학습률.
 * 첫 번째 오차 $l_a$의 기울기를 이용해 임베딩 변수만 1 step 이동시킵니다.
 
-##### **[수식 13] 웜업 손실 ($l_b$)**
+#### **[수식 13] 웜업 손실 ($l_b$)**
 
 $$l_b = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{bj} \log \hat{p}_{bj} - (1 - y_{bj}) \log (1 - \hat{p}_{bj}) \right]$$
 
@@ -614,15 +612,15 @@ $$l_b = \frac{1}{K} \sum_{j=1}^{K} \left[ -y_{bj} \log \hat{p}_{bj} - (1 - y_{bj
 
 ---
 
-#### 1.4 3.2.3 A Unified Optimization Objective & Algorithm 1
+### 1.4 A Unified Optimization Objective & Algorithm 1
 
-##### **[수식 15] 통합 메타 손실 함수**
+#### **[수식 15] 통합 메타 손실 함수**
 
 $$l_{meta} = \alpha l_a + (1 - \alpha) l_b$$
 
 * **$\alpha \in [0, 1]$**: 두 단계의 가중치 밸런서 (논문에서는 웜업 적응을 중시하여 $\alpha = 0.1$로 설정).
 
-##### **[수식 16, 17] 2차 미분 (Hessian-vector) 역전파**
+#### **[수식 16, 17] 2차 미분 (Hessian-vector) 역전파**
 
 $$\frac{\partial l_{meta}}{\partial w} = \frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} \frac{\partial h_w}{\partial w}$$
 
@@ -631,7 +629,7 @@ $$\frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} = \alpha \frac{\partial l
 * **$- a(1 - \alpha)\frac{\partial l_b}{\partial \phi_{[i]}^\prime} \frac{\partial^2 l_a}{\partial (\phi_{[i]}^{init})^2}$**: 수식 (12)의 적응 과정을 통째로 미분하면서 발생하는 **2차 미분(Hessian-vector product)** 항입니다.
 * 1 step 업데이트 후 오차($l_b$)가 가장 적어지도록 출발점 $\phi^{init}$의 최적 그래디언트 방향을 도출합니다.
 
-##### **[Algorithm 1 메커니즘 요약]**
+#### **[Algorithm 1 메커니즘 요약]**
 
 1. 기존 광고 ID 집합 $I$에서 $n$개 샘플링 (Outer-loop).
 2. 속성 $u_{[i]}$로부터 초기 임베딩 생성: $\phi_{[i]}^{init} = h_w(u_{[i]})$.
@@ -642,20 +640,16 @@ $$\frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} = \alpha \frac{\partial l
 
 ---
 
-#### 핵심 개념 정리 및 오해 방지 포인트
+### 핵심 개념 정리 및 오해 방지 포인트
 
 * **학습 대상:** 학습 대상은 출력값 벡터인 $\phi_{[i]}^{init}$가 아니라, 생성기 신경망 내부의 가중치 파라미터 $w$입니다.
 * **시점(Phase) 구분:**
 * **메타 학습 단계 (Training):** 기존 광고들로 이중 루프(Inner/Outer-loop) 시뮬레이션을 돌려 오차 $l_{meta}$를 구하고, **생성기 가중치 $w$를 최적화**합니다.
 * **실제 추론 단계 (Inference):** 최적화된 $h_w$에 새로운 광고의 속성 $u_{[i^*]}$만 입력하여 우수한 초기 임베딩 $\phi_{[i^*]}^{init}$를 즉시 추출해 사용합니다.
 
-
-
 ---
 
-## 2. 3.3 Architecture and Hyper-parameter (신경망 구조 및 하이퍼파라미터)
-
-### 2.1 3.3.1 생성기 $h_w$의 신경망 구조 (Architectures of $h_w$)
+### 2.1 Architecture and Hyper-parameter (신경망 구조 및 하이퍼파라미터): 생성기 $h_w$의 신경망 구조 (Architectures of $h_w$)
 
 논문에서는 생성기 구조를 간결하면서도 강력하게 구축하기 위해 **"Simple yet Strong"** 원칙을 제시합니다.
 
@@ -688,15 +682,173 @@ $$\frac{\partial l_{meta}}{\partial \phi_{[i]}^{init}} = \alpha \frac{\partial l
 
 ---
 
-### 2.2 3.3.2 하이퍼파라미터 $\alpha$
+#### 2.2 3.3.2 하이퍼파라미터 $\alpha$
 
 * **역할:** 콜드스타트 손실($l_a$)과 웜업 손실($l_b$) 간의 비중을 조절.
 * **설정값:** **$\alpha = 0.1$**
 * **이유:** 실제 광고 시스템에서는 데이터가 완전히 0개인 시점(콜드스타트)보다 소량의 데이터가 쌓이며 적응하는 기간(웜업)이 훨씬 깁니다. 따라서 모델이 웜업 적응 성능($l_b$)에 더 집중하도록 설정하였으며, 실험을 통해 해당 값에서 견고한(Robust) 성능을 확인했습니다.
 
+
+## Learning Graph Meta Embeddings for Cold-Start Ads in Click-Through Rate Prediction (GME)
+
+[Graph Meta Embedding(GME)](https://arxiv.org/pdf/2105.08909) 논문의 **3절(MODEL DESIGN) 3.1 ~ 3.5 정리**에 요청하신 수식 변수($a, g, p, V$)의 상세 정의를 **3.3.1절 바로 앞**에 추가한 전체 정리본입니다.
+
 ---
 
-추가로 4장의 실측 실험 결과(MovieLens, Tencent CVR, KDD Cup 2012)나 베이스 모델(FM, DeepFM, PNN 등)과의 결합 방식에 대해 궁금한 점이 있으시다면 말씀해주세요!
+### 3.1 Overview (개요)
+
+GME는 신규 광고(Cold-Start Ads)의 초기 ID 임베딩을 효과적으로 생성하기 위한 메타 러닝 기반 그래프 신경망 구조입니다.
+
+* **처리 분기 (Lookup vs Generation):**
+* **기존 광고 (Old Ads):** 과거 데이터로 학습된 CTR 모델의 임베딩 매트릭스에서 사전 학습된 ID 임베딩($p_i$)을 그대로 검색(Lookup)하여 사용합니다.
+* **신규 광고 (New Ads):** 클릭 이력이 없어 GME 모듈이 활성화됩니다. 신규 광고의 속성 정보와 관련 기존 광고(이웃 노드)들의 정보를 결합해 초기 ID 임베딩($r_0$)을 생성합니다.
+
+
+* **GME의 2대 핵심 구성 요소:**
+1. **임베딩 생성기 (Embedding Generator, EG):** 속성 정보를 ID 임베딩 공간으로 사상(Projection)합니다.
+2. **그래프 어텐션 네트워크 (Graph Attention Network, GAT):** 이웃 광고들로부터 중요한 정보를 가중 선택하여 정제(Distill)합니다.
+
+
+* **공통 파라미터 규약:** 모델 종류(GME-P, GME-G, GME-A)가 달라도 가중치 행렬 $W$ (전사 레이어), $V$ (선형 변환), $a$ (어텐션 벡터)는 동일한 기능을 수행합니다.
+
+---
+
+### 3.2 Graph Creation (고속 그래프 생성)
+
+소셜 네트워크와 달리 광고 데이터에는 명시적 그래프나 클릭 이력이 없으므로, 광고 간 공통 속성(Shared Attributes)을 매개체로 그래프를 구축합니다.
+
+* **기존 방식의 한계:** 전체 기존 광고와 신규 광고 간의 유사도를 계산하는 인접 행렬(Adjacency Matrix) 방식은 신규 광고 입력 시마다 전수 조사(Full Scan)를 수행해야 하므로 실시간 시스템에 적용하기 어렵습니다.
+* **고속 그래프 생성 (Fast Graph Creation) 3단계:**
+1. **역색인 사전 구축 (오프라인 1회):** 속성을 Key, 해당 속성을 지닌 기존 광고 ID 집합을 Value로 설정합니다. (예: `category:1 $\rightarrow$ ID:1, ID:2`, `brand:2 $\rightarrow$ ID:2, ID:3`)
+2. **이웃 광고 검색:** 신규 광고의 속성(예: `category:1`, `brand:2`)에 해당하는 역색인 항목을 조회하여 후보 이웃 합집합({`ID:1`, `ID:2`, `ID:3`})을 추출합니다.
+3. **유사도 점수화 & Top-$N$ 선별:** 역색인 조회 시 중복으로 검색된 횟수(=공유 속성 개수)를 유사도 점수로 정의합니다. 점수가 높은 순으로 정렬하여 가장 유사한 상위 $N$개의 이웃만 그래프 노드 $\mathcal{N} = \{ID_i\}_{i=1}^N$으로 최종 선별합니다.
+
+
+---
+
+### 주요 수식 변수 및 파라미터 정의
+
+* **$p_i$ (Pre-trained ID Embedding):** 메인 CTR 예측 모델에서 사전 학습된 $i$번째 이웃 광고의 ID 임베딩입니다. 과거 클릭 로그 데이터를 통해 임베딩 매트릭스에서 직접 최적화된 벡터를 Lookup하여 가져옵니다.
+* **$g_0 / g_i$ (Generated Preliminary ID Embedding):** 속성 결합 벡터 $z$를 기반으로 임베딩 생성기(EG) 신경망 수식을 통과시켜 생성한 예비 ID 임베딩입니다 ($g_0$는 신규 광고, $g_i$는 이웃 광고).
+* **$V$ (Shared Weight Matrix):** 서로 다른 입력 벡터(임베딩 또는 속성 표현)를 고차원의 공통 표현 공간으로 사상(Projection)하여 어텐션 연산이 가능하도록 맞춰주는 공유 가중치 행렬 파라미터입니다.
+* **$a$ (Attention Weight Vector):** 단일 레이어 피드포워드 신경망으로 구현된 어텐션 메커니즘의 학습 파라미터 벡터로, 두 노드 표현 간의 상호 연관성(어텐션 점수)을 측정하는 역할을 합니다.
+
+### 3.3 GME-P: Using Pre-trained Neighbor ID Embeddings
+
+신규 광고의 속성 임베딩과 기존 이웃 광고의 사전 학습된 ID 임베딩($p_i$)을 결합하는 모델입니다.
+
+#### 3.3.1 ID Embedding Generation (임베딩 생성)
+
+입력 피처를 $[ID_0, x_0, o_0]$ (신규 ID, 속성, 기타 문맥 정보)로 구분합니다. 속성 $x_0$의 임베딩들을 연결(Concatenate)하여 $z_0$를 만든 후, 임베딩 생성기(EG)를 통과시켜 예비 ID 임베딩 $g_0$를 만듭니다.
+
+
+$$g_0 = \gamma \tanh(W z_0)$$
+
+* $\gamma \in (0, 1]$: 기울기 폭주를 방지하고 출력 범위를 $[-\gamma, \gamma]$로 정규화하는 스케일 파라미터입니다.
+
+#### 3.3.2 ID Embedding Refinement (임베딩 정제)
+
+단순 평균(Average Pooling)의 노이즈 문제를 해결하기 위해 GAT를 적용합니다.
+
+1. **어텐션 점수 연산:** $c_{0i} = \text{LeakyReLU}(a^T [V g_0 \parallel V p_i])$
+2. **Softmax 정규화:** $\alpha_{0i} = \frac{\exp(c_{0i})}{\sum_{j=0}^N \exp(c_{0j})}$ (자기 자신 $j=0$ 포함, $p_0 \triangleq g_0$)
+3. **최종 가중 합산:** $r_0 = \text{ELU}\left(\sum_{i=0}^N \alpha_{0i} V p_i\right)$
+
+#### 3.3.3 Analysis & 표현 공간 불일치 원인
+
+* **발생 원인 (광고 생애주기 관점):** 기존 광고의 $p_i$도 아주 먼 과거 신규 광고 시절에는 EG로 출발했을 수 있으나, 수많은 사용자 클릭 데이터가 쌓이면서 백프로파게이션을 통해 'CTR 최적화 공간'으로 이주한 상태입니다.
+* **문제점:** 속성 매핑 수식($W$)의 강력한 제약 하에 배치된 신규 광고의 예비 임베딩 $g_0$와, 제약 없이 CTR 최적화 공간으로 이동해버린 $p_i$는 서로 다른 표현 공간(Representation Space)에 존재합니다. 따라서 어텐션 메커니즘이 두 임베딩 간의 상호 연관성을 정확히 측정하지 못합니다.
+
+---
+
+### 3.4 GME-G: Using Generated Neighbor ID Embeddings
+
+GME-P의 표현 공간 불일치 문제를 해결하기 위해, 이웃 광고의 임베딩도 동일한 생성기(EG)로 찍어내어 비교하는 모델입니다.
+
+#### 3.4.1 ID Embedding Generation & 3.4.2 Refinement
+
+사전 학습된 $p_i$를 완전히 배제합니다. 신규 광고 및 이웃 광고 $N$개 모두 **동일한 가중치 파라미터 $W$를 갖는 EG**를 거쳐 $g_0, g_i$를 생성합니다.
+
+
+$$g_0 = \gamma \tanh(W z_0), \quad g_i = \gamma \tanh(W z_i)$$
+
+
+동일한 생성 공식으로 유도된 $g_0$와 $\{g_i\}_{i=1}^N$ 사이에서 어텐션을 연산하므로 두 임베딩은 동일한 표현 공간에 존재하게 됩니다.
+
+
+$$r_0 = \text{ELU}\left(\sum_{i=0}^N \alpha_{0i} V g_i\right)$$
+
+#### 3.4.3 Analysis (한계점)
+
+* **장점:** $g_0$와 $g_i$가 동일 선상에서 비교되므로 어텐션 가중치가 실제 속성 유사성을 정상적으로 반영합니다.
+* **단점:** 이웃 $N$개에 대해 EG 연산을 반복적으로 수행해야 합니다. 신경망 연산($W$) 자체에서 발생하는 원치 않는 오차(노이즈)가 이웃 노드들을 거치며 누적 및 전파(Spread Noise)되는 한계가 있습니다.
+
+---
+
+### 3.5 GME-A: Using Neighbor Attributes
+
+GME-P의 공간 불일치와 GME-G의 노이즈 전파 문제를 동시에 해결한 가장 우수한 모델입니다.
+
+#### 3.5.1 Attribute Embedding Refinement (속성 정제)
+
+**"정제(Refinement)"와 "생성(Generation)"의 순서를 역전**시킵니다. ID 임베딩으로 변환하기 전, 변하지 않는 원천 속성 결합 벡터($z_0, z_i$) 단에서 직접 어텐션을 수행합니다.
+
+
+$$\alpha_{0i} = \frac{\exp\left(\text{LeakyReLU}(a^T [V z_0 \parallel V z_i])\right)}{\sum_{j=0}^N \exp\left(\text{LeakyReLU}(a^T [V z_0 \parallel V z_j])\right)}$$
+
+$$\tilde{z}_0 = \text{ELU}\left(\sum_{i=0}^N \alpha_{0i} V z_i\right)$$
+
+#### 3.5.2 ID Embedding Generation (ID 임베딩 생성)
+
+노이즈 없이 정제된 고차원 속성 표현 $\tilde{z}_0$를 **임베딩 생성기(EG)에 단 1회만 입력**하여 최종 초기 ID 임베딩 $r_0$를 산출합니다.
+
+
+$$r_0 = \gamma \tanh(W \tilde{z}_0)$$
+
+#### 3.5.3 Analysis (우수성 이유)
+
+1. **GME-P 대비:** CTR 학습에 의해 변형된 $p_i$를 쓰지 않고 원본 속성 공간($z_0, z_i$)을 비교하므로 표현 공간 불일치가 발생하지 않습니다.
+2. **GME-G 대비:** 깨끗한 원본 속성을 먼저 조합해 $\tilde{z}_0$를 만든 후 EG를 **단 1회만 거치므로**, 연산 반복에 따른 **노이즈 누적/전파 현상이 근본적으로 차단**됩니다.
+
+---
+
+### GME 세부 모델 비교 요약
+
+| 비교 항목 | GME-P | GME-G | GME-A (최종 권장) |
+| --- | --- | --- | --- |
+| **GAT 비교 대상** | 예비 ID ($g_0$) vs 사전 학습 ID ($p_i$) | 생성 ID ($g_0$) vs 생성 ID ($g_i$) | **원천 속성 ($z_0$) vs 원천 속성 ($z_i$)** |
+| **연산 순서** | 생성 $\rightarrow$ 정제 | 생성 $\rightarrow$ 정제 | **정제 $\rightarrow$ 생성** |
+| **EG 연산 횟수** | 1회 | $N+1$회 (반복) | **1회** |
+| **표현 공간 불일치** | **발생함** (CTR 공간 vs 속성 공간) | 해결됨 | **해결됨** (동일 속성 공간) |
+| **노이즈 전파 위험** | 없음 | **높음** (EG 오차 누적) | **없음** (EG 1회 적용) |
+
+---
+
+### 3.6  Model Learning
+메인 CTR 모델 파라미터를 고정한 상태에서 메타 러닝(Meta-Learning)을 통해 GME 모듈 파라미터만 효율적으로 학습시키는 절차를 핵심 위주로 정리한 내용입니다.
+---
+
+#### 1. 파라미터 동결 (Parameter Freezing)
+
+* 기존 광고로 사전 학습된 메인 CTR 모델의 파라미터($\Theta$)는 동결(Freeze)합니다.
+* GME 모듈 전용 파라미터 $\Psi = \{W, V, a\}$ (생성기 가중치 $W$, GAT 선형 변환 $V$, 어텐션 벡터 $a$)만 업데이트합니다.
+
+---
+
+#### 2. 메타 러닝 기반 학습 (MAML 응용)
+
+각 광고 ID의 임베딩 생성을 하나의 독립된 태스크(Task)로 정의하고, 적은 데이터로도 빠르게 적응할 수 있는 오프라인 메타 러닝 파이프라인을 구축합니다.
+
+---
+
+#### 3. 두 단계 손실 함수 ($l = \beta l_a + (1-\beta)l_b$)
+
+학습용 기존 광고 하나당 2개의 독립된 미니배치 데이터($D^a, D^b$)를 뽑아 다음 과정을 거칩니다.
+
+1. **$l_a$ (콜드 스타트 손실):** 데이터가 아예 없는 초기 상태 $r_0$를 첫 번째 미니배치($D^a$)에 적용해 계산한 즉각 예측 오차입니다.
+2. **Inner-Loop (임베딩 적응):** $l_a$의 그래디언트로 1회 경사하강법을 수행하여 소량 데이터에 적응된 임베딩 $r_0'$를 만듭니다 ($r_0' = r_0 - \eta \frac{\partial l_a}{\partial r_0}$).
+3. **$l_b$ (웜업 손실):** 적응된 임베딩 $r_0'$를 두 번째 미니배치($D^b$)에 적용해 계산한 빠른 적응 능력 오차입니다.
+4. **최종 손실 연산:** 두 손실을 계수 $\beta \in [0, 1]$로 가중 합산하여 GME 파라미터 $\Psi$를 역전파 업데이트합니다. (실험 세팅: $\beta = 0.1$)
 
 
 ## References
