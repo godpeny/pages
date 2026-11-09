@@ -858,6 +858,34 @@ The operational core of CPT involves taking a model pre-trained on a large, gene
 - Data Construction: Collect or synthesize in-domain, target-language, or target-modality data (may be unlabeled).
 - Continued Pre-Training Phase: Apply self-supervised learning objectives—such as next-token prediction, masked language modeling, contrastive loss for speech, or denoising autoencoding—on the new data.
 
+### Censored Regression Model
+https://en.wikipedia.org/wiki/Censored_regression_model
+
+검열된 회귀모형(Censored Regression Model) 은 종속 변수(Dependent Variable - 결과 변수)가 특정 임계값(Threshold) 위나 아래로 잘려 나간(검열된) 데이터를 다루기 위한 회귀 분석 방법입니다.
+
+#### 주요 특징
+종속 변수의 정확한 값은 알 수 없지만, 그 값이 특정 임계값보다 크거나 같다는(혹은 작거나 같다는) 정보와 독립 변수(Independent Variables - 원인/설명 변수)의 값은 여전히 알고 있는 경우에 사용됩니다.
+
+#### 대표적인 모형
+이러한 샘플을 다루기 위한 가장 대표적인 우도 기반(Likelihood-based) 모델로는 토빗 모형(Tobit Model) 이 있으며, 이 외에도 분위수(Quantile) 추정량이나 비모수(Nonparametric) 추정량이 개발되어 있습니다.
+
+#### 절단된 회귀모형(Truncated Regression Model)과의 차이점
+많은 사람들이 두 모형을 혼동하지만 명확한 차이가 있습니다.
+
+- 절단된 회귀모형(Truncated Regression): 종속 변수뿐만 아니라 독립 변수를 포함한 전체 관측치가 아예 누락되어 데이터 자체를 볼 수 없는 경우에 사용됩니다 Censored regression model.
+- 검열된 회귀모형(Censored Regression): 종속 변수의 값은 정확히 알 수 없지만, 독립 변수의 값은 여전히 관측 가능한 상태로 남아 있는 경우에 사용됩니다 Censored regression model.
+
+#### 대표적인 예시: 노동 공급(Labor Supply)
+근로 시간과 개인의 특성(나이, 교육 수준, 가족 구성 등) 사이의 관계를 파악하고자 합니다. 실제 취업한 사람들의 근로 시간 데이터는 확보할 수 있습니다. 하지만 실직 상태인 사람들의 경우, 그들이 고용되었다면 일했을 근로 시간을 직접 관측할 수는 없습니다.  
+그럼에도 불구하고 이 실직자들의 나이나 교육 수준 같은 독립 변수들은 여전히 알고 있으므로, 일반적인 선형 회귀를 사용하면 추정치가 왜곡(Biased)될 수 있습니다. 이럴 때 검열된 회귀모형을 적용하게 됩니다.
+
+계량경제학(Tobit 모형)에서 말하는 노동 공급 모형에서 연구자가 알고 싶은 종속 변수는 관측된 근로 시간이 아니라, 사람들이 일하고 싶어 하는 잠재적 근로 의사(Y*)입니다. 하지만 이 잠재적 성향은 이론적으로 음수(-)일 수도 있습니다. 그러나 현실에서 관측되는 실제 근로 시간(Y)은 마이너스가 될 수 없으므로, 일하지 않는 사람들은 실제 근로 시간이 '0시간'으로 고정되어 나타납니다.
+
+- 취업자 ($Y = Y^ > 0$): 일하고 싶어 하는 만큼 실제로 일하며, 그 값이 0보다 큽니다.
+- 실직자/미취업자 (Y=0, 단 $Y^ \le 0$): 근로 의사가 기준치(0)에 못 미쳐, 실제 근로 시간이 0시간으로 잘려 나간(Censored) 상태입니다.
+
+즉, 실직자들의 실제 근로 시간은 0으로 일괄 처리되어 관측 한계(임계값 0)에 걸리지만, 이들의 독립 변수(나이, 학력 등) 정보는 남아있으므로 이를 보정하여 분석하는 것이 검열된 회귀모형(토빗 모형)입니다.
+
 ### Tips for reading papers
 Compile list of paper (including blogs and medium posts) and skipping around the list.
 Steady learning, Not short burst.
