@@ -13,7 +13,7 @@
 | **pricing_adjusted_ba** | base_ba를 실제 과금 타입 단위로 바꾼 값 | 과금 타입 | 최대 과금액 |
 | **ranker_ba** | 할인(SR)까지 반영해 최종적으로 광고주가 내는 금액 | 과금 타입 | 로그의 `bidAmount` |
 
-이 문서는 아래 세 위키를 순서대로 정리하되, [eCPM 이해하기](../ecpm/ecpm.md)와 [자동입찰 이해하기](autobid.md)에 이미 있는 내용은 빼고 **새로 추가되는 내용만** 담았습니다.
+이 문서는 아래 세 위키를 순서대로 정리하되, [eCPM 이해하기](ecpm.md)와 [자동입찰 이해하기](autobid.md)에 이미 있는 내용은 빼고 **새로 추가되는 내용만** 담았습니다.
 
 1. [1.1. 자동입찰 입찰가 계산 기본](https://kakao.atlassian.net/wiki/spaces/adrec/pages/140808548)
 2. [1.2. BidAmount](https://kakao.atlassian.net/wiki/spaces/adrec/pages/144478502)
@@ -25,7 +25,7 @@
 
 ### 1.1 pAR: BA에 짝지어지는 확률
 
-eCPM 식은 [eCPM 이해하기 4.1](../ecpm/ecpm.md)과 같습니다. 이 위키에서는 BA와 곱하는 확률을 **pAR**(predicted Action Rate)이라고 부릅니다.
+eCPM 식은 [eCPM 이해하기 4.1](ecpm.md)과 같습니다. 이 위키에서는 BA와 곱하는 확률을 **pAR**(predicted Action Rate)이라고 부릅니다.
 
 $$
 \text{eCPM} = \text{bidAmount} \times \text{pAR} \times 1000
@@ -361,7 +361,7 @@ pCVR 사용 여부와 관계없이 **항상 max_ba로 상한을 겁니다.** 경
 | 방문, 또는 전환인데 valid group off (pCVR 미사용) | `min(base_bid, max_ba) × pCTR × 1000` |
 | 전환이고 valid group on (pCVR 사용) | `min(conv_base_bid × pCVR, max_ba) × pCTR × 1000` |
 
-valid group은 [eCPM 이해하기 4.4](../ecpm/ecpm.md)의 전환 목적 CPC에서 "pCVR을 믿고 쓸 만한 광고그룹"을 뜻합니다.
+valid group은 [eCPM 이해하기 4.4](ecpm.md)의 전환 목적 CPC에서 "pCVR을 믿고 쓸 만한 광고그룹"을 뜻합니다.
 
 그럼 max_ba는 경우마다 어떻게 정할까요?
 
@@ -511,7 +511,7 @@ pid_max_ba 자체가 pid_output에 비례하므로, 최종 max_ba를 pid_output�
 
 ## 4. 용어 사전
 
-[eCPM 이해하기](../ecpm/ecpm.md)와 [자동입찰 이해하기](autobid.md)의 용어 사전에 없는 것만 모았습니다.
+[eCPM 이해하기](ecpm.md)와 [자동입찰 이해하기](autobid.md)의 용어 사전에 없는 것만 모았습니다.
 
 | 용어 | 뜻 |
 |---|---|
