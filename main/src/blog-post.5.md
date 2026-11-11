@@ -296,6 +296,150 @@ $
 $  
 where $e_i$ is $Y_i - \hat{Y}_i$ and $\mathbf{e}$ is $n \times 1$ column vector.
 
+## L1 Smooth Loss (Error)
+### 용어 정리
+
+| 기호/용어 | 의미 |
+|---|---|
+| `x` | 모델의 예측값 (`input`) |
+| `y` | 정답값 (`target`) |
+| `d = x − y` | 오차. 모델이 얼마나 틀렸는지를 나타냅니다. 양수면 크게, 음수면 작게 예측한 것입니다 |
+| `l` 또는 `lₙ` | 샘플 하나(n번째)의 손실 값 |
+| `L = {l₁, ..., l_N}` | 배치(N개 샘플) 전체의 샘플별 손실 모음 |
+| `β` (beta) | 제곱 구간과 절댓값 구간을 나누는 경계값 (기본값 1.0) |
+| **L1 loss** | 오차의 절댓값 `abs(d)`  를 손실로 쓰는 것 (`nn.L1Loss`, 평균 내면 MAE) | 
+| **L2 loss (MSE)** | 오차의 제곱 `d²`을 손실로 쓰는 것 (`nn.MSELoss`) |
+
+소문자 `l₁`(1번째 샘플의 손실)과 **L1 loss**(절댓값 손실)는 이름만 비슷할 뿐 다른 개념입니다.
+
+### 수식
+
+**샘플 하나의 손실**
+
+```
+           ⎧ 0.5 · d² / β        if |d| < β    ← 작은 오차: 제곱 (L2처럼)
+l(d)  =    ⎨
+           ⎩ |d| − 0.5 · β       if |d| ≥ β    ← 큰 오차: 절댓값 (L1처럼)
+```
+
+**배치 전체의 손실**
+
+```
+loss = mean(l₁, ..., l_N)    ← reduction='mean' (기본값)
+loss = sum(l₁, ..., l_N)     ← reduction='sum'
+```
+
+**Gradient (모델이 받는 수정 신호)**
+
+```
+              ⎧ d / β        if |d| < β
+dl/dd  =      ⎨
+              ⎩ sign(d)      if |d| ≥ β     (= +1 또는 −1)
+```
+
+### 그림
+**$\beta = 1$**
+<img src="images/blog5_l1_smooth_error_beta_1.png" alt="Smooth Error when Beta=1" width="400"/>     
+
+
+**$\beta = 2.5$**
+<img src="images/blog5_l1_smooth_error_beta_2.5.png" alt="Smooth Error when Beta=2,5" width="400"/>   
+
+### 의미
+
+**왜 두 구간을 섞었나: L1과 MSE의 단점을 서로 보완하기 위해서입니다**
+
+| | 장점 | 단점 |
+|---|---|---|
+| MSE | 0 근처에서 매끄러워 정밀하게 수렴 | 큰 오차를 제곱으로 키워 outlier 하나가 학습을 지배 |
+| L1 | 틀린 만큼만 벌점을 줘서 outlier에 강함 | gradient가 항상 ±1이라 정답 근처에서 값이 튀고, 0에서 꺾여 미분 불가 |
+| **Smooth L1** | 작은 오차는 MSE처럼, 큰 오차는 L1처럼 처리 | β를 정해야 함 |
+
+이름의 "Smooth"는 L1의 꺾인 0 근처를 포물선으로 **둥글게 만들었다**는 뜻입니다. PyTorch 문서도 L1에서 |x − y| < β 구간을 경계에서 기울기가 1이 되는 2차 함수로 바꾼 것으로 설명합니다.
+
+**Gradient 관점: 손실 함수 안에 clipping이 내장되어 있습니다**
+
+| 오차 d | MSE gradient | L1 gradient | Smooth L1 gradient (β=1) |
+|---|---|---|---|
+| 0.01 | 0.01 | ±1 | 0.01 |
+| 100 | **100** | ±1 | ±1 |
+
+- 작은 오차에서는 gradient가 오차에 비례해 작아져서 안정적으로 수렴합니다.
+- 큰 오차에서는 gradient가 최대 1로 잘립니다. 즉 **샘플별 gradient clipping**과 같은 효과가 나서, 잘못된 라벨이나 극단값 하나가 파라미터를 크게 흔들지 못합니다. 문서에서도 MSE보다 outlier에 덜 민감하고, 경우에 따라 gradient 폭주를 막는다고 설명하며 Fast R-CNN을 예로 듭니다.
+
+**경계에서 끊기지 않습니다**
+
+`d = β`일 때 두 식을 비교해 보면 다음과 같습니다.
+
+```
+값:     0.5 · β² / β = 0.5β     vs   β − 0.5β = 0.5β    → 같음
+기울기:  β / β = 1              vs   1                  → 같음
+```
+
+L1 구간의 `− 0.5β`는 값을 이어 붙이기 위한 오프셋입니다.
+
+### β의 의미와 설정
+
+β는 **"이 정도 오차까지는 정상 노이즈로 보고, 그보다 크면 outlier로 의심한다"는 기준선**입니다.
+
+- β를 작게 잡으면 L1에 가까워집니다. β = 0이면 L1 loss와 완전히 같아집니다.
+- β를 크게 잡으면 대부분의 오차가 제곱 구간에 들어가서 MSE에 가까워집니다.
+- 보통 타깃의 정상적인 노이즈 수준 정도로 설정합니다. 타깃을 정규화했다면 기본값 1.0이 무난한 출발점입니다.
+- 주의할 점이 있습니다. 제곱 구간이 `/β`로 나뉘어 있어서 β를 키우면 손실 값과 gradient가 전체적으로 작아집니다. 그래서 학습률이나 다른 loss와의 가중치도 함께 봐야 합니다.
+
+### Huber vs Smooth L1
+Smooth L1은 `huber(x, y) / β`와 같고, Smooth L1의 β가 Huber의 delta에 해당합니다. 모양은 같지만 스케일이 달라서 극한 동작이 다릅니다.
+
+화면 폭보다 코드 블록이 넓어서 잘린 것 같습니다. 폭을 줄여서 수식 부분만 다시 정리하겠습니다.
+
+**Smooth L1 손실**
+
+```
+|d| < β  →  0.5 · d² / β
+|d| ≥ β  →  |d| − 0.5 · β
+```
+
+**Huber 손실**
+
+```
+|d| < β  →  0.5 · d²
+|d| ≥ β  →  β · (|d| − 0.5 · β)
+```
+
+**관계**
+
+```
+Huber = β × Smooth L1
+```
+
+Smooth L1의 각 식에 β를 곱하면 Huber가 됩니다.
+
+```
+(0.5 · d² / β) × β
+  = 0.5 · d²
+
+(|d| − 0.5β) × β
+  = β · (|d| − 0.5β)
+```
+
+**Smooth L1 gradient**
+
+```
+|d| < β  →  d / β
+|d| ≥ β  →  sign(d)
+```
+
+최대 크기는 1입니다.
+
+**Huber gradient**
+
+```
+|d| < β  →  d
+|d| ≥ β  →  β · sign(d)
+```
+
+최대 크기는 β입니다.
+
 ## Point estimation
 In statistics, point estimation involves the use of sample data to calculate a single value (known as a point estimate since it identifies a point in some parameter space) which is to serve as a "best guess" or "best estimate" of an unknown population parameter (for example, the population mean).
 
