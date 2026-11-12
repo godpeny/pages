@@ -12,6 +12,49 @@ Semantic ID is a tuple of codewords of length $m$. Each codeword in the tuple co
 For example, an item with Semantic ID (10, 21, 35) should
 be more similar to one with Semantic ID (10, 21, 40), than an item with ID (10, 23, 32). 
 
+### Semantic ID 토큰의 초기화와 학습 방법
+SID는 콘텐츠 기반 임베딩을 양자화(quantization)하여 만든 짧은 이산적 코드 시퀀스입니다. 가령 계층적 구조의 3개 레벨(256/256/256)로 구성하면, 단 768개의 특수 토큰만 vocabulary에 추가하면서도 최대 1,680만 개의 아이템을 표현할 수 있어 효율적입니다.
+
+#### 일반적인 Semantic ID 학습법
+
+기존 LLM 기반 생성형 추천 파이프라인은 SID 토큰을 모델에 점진적으로 주입하기 위해 아래 2단계 파이프라인을 주로 사용합니다. (a) SID 토큰을 언어 공간에 정렬시키는 지속적 사전 훈련(CPT / Itemic Alignment)과 (b) 추천 작업을 가르치는 지도 미세조정(SFT)입니다.
+
+##### (a) 지속적 사전 훈련 (CPT / Continual Pretraining, 또는 Itemic Alignment)
+
+- **목적:** 새로 추가된 무작위 상태의 SID 토큰들을 기존 자연어 텍스트 공간에 정렬(grounding)시키는 단계입니다.
+- **학습 방식:**
+  - LLM의 본체 가중치(backbone)는 동결(freeze)하고, 새로 추가된 SID 임베딩 행(row)들만 학습 가능(trainable)하도록 설정합니다.
+  - 학습 데이터로는 사용자의 상호작용 기록에 등장하는 각 아이템의 SID와 그 아이템의 텍스트 설명(상품명/제목, 카테고리 등)이 번갈아 나오는 데이터(interleaved SID-text pairs)를 사용합니다.
+  - 모델이 "SID 토큰이 주어졌을 때 해당 아이템의 텍스트를 예측(생성)"하도록 인과적 언어 모델링(Causal LM) 손실로 학습시켜, SID가 언어적으로 무엇을 뜻하는지 임베딩을 예열(warm-up)시킵니다.
+- **학습 대상:** 새로 추가된 SID 임베딩 행(row)들
+
+##### (b) 지도 미세조정 (SFT / Supervised Fine-Tuning)
+
+- **목적:** 모델에게 실질적인 추천(Next-item Prediction) 작업을 가르치는 단계입니다.
+- **학습 방식:**
+  - 이제 LLM 본체를 포함한 모든 파라미터를 동결 해제하여 학습합니다(Full fine-tune).
+  - 사용자의 과거 행동 이력(과거에 구매/클릭한 아이템들의 SID 시퀀스)을 프롬프트 입력으로 주고, "다음에 올 타깃 아이템의 SID를 순차적으로 생성(autoregressive next-token prediction)"하도록 학습시킵니다.
+  - 즉, (a)에서 SID 토큰의 기본 의미를 부여했다면, (b)에서는 사용자의 취향과 상호작용 패턴을 바탕으로 아이템을 추천하는 생성 능력을 훈련하는 것입니다.
+- **학습 대상:** SID 임베딩 + LLM 본체를 포함한 전체 파라미터(Full fine-tune)
+
+#### 초기화 문제
+
+SID 토큰을 기존 단어 토큰들과 평균 및 공분산이 일치하는 랜덤 가우시안 벡터(random Gaussian vectors)로 초기화하면, SID 생성 시점에 구축된 의미론적 정보가 전부 사라지고 CPT 및 SFT 과정에서 상호작용 데이터만으로 토큰 간 관계를 처음부터 다시 학습하도록 강제됩니다. 그러면 SID 임베딩은 아이템의 의미가 아니라 아이템의 인기도(popularity)를 중심으로 구성됩니다.
+
+##### 예시 설명
+**[1단계] 이산화 (토큰 번호 부여)**
+
+아이템 텍스트(예: "삼다수")를 임베딩한 뒤, 군집화(양자화)를 통해 가장 가까운 군집 중심점 번호를 찾아 라벨을 붙입니다. 삼다수에 **`<token_12>`(생수/음료 군집)**라는 이산적인 번호표가 부여됩니다.
+
+**[2단계] 어휘집 등록 (초기화 개입 지점)**
+
+LLM이 이 토큰을 읽고 계산할 수 있도록 단어 사전 행렬에 `<token_12>` 행을 새로 추가하고, 그 자리에 최초의 실수 벡터 값을 채워 넣습니다.
+
+** 초기화 방식 비교**
+
+- ❌ **기존(랜덤 가우시안):** 아무 의미 없는 무작위 난수를 채웁니다. 1단계에서 구한 '생수'라는 의미 벡터가 모두 증발하여 LLM이 백지상태에서 학습을 시작합니다.
+- 💡 **제안(센트로이드):** 1단계에서 계산했던 '12번 생수 군집 중심점 벡터'를 그대로 복사해 채웁니다. LLM이 학습 시작 전부터 토큰의 의미와 유사도 관계를 온전히 알고 출발합니다.
+
 ## Codebook
 A codebook in vector quantization (VQ) is simply a small set of learnable vectors (called codes or tokens) that the model chooses from to represent a larger vector.
 $$
