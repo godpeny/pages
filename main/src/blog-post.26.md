@@ -223,6 +223,62 @@ $$
 $$
 Thus, the constrained maximum is $\displaystyle \ {\sqrt {2\ }}$ and the constrained minimum is $\displaystyle -{\sqrt {2}}$.
 
+### Mean Centring
+데이터셋에 있는 각 변수(특성 또는 열)의 평균값을 계산한 뒤, 해당 변수의 모든 데이터 값에서 그 평균을 빼주는 과정입니다. 이 변환을 거치면 각 변수의 평균은 정확히 0이 됩니다.  
+어떤 변수 $x$의 데이터 값들이 $x_1, x_2, \dots, x_n$이고 평균이 $\mu$라면, 중심화된 데이터 $x_i'$는 다음과 같습니다.
+$$x_i' = x_i - \mu$$
+
+#### 기하학적 의미
+공간적 관점에서 평균 중심화는 좌표계의 원점을 데이터의 평균점(Centroid) 위치로 이동시키는 평행이동(Translation)을 의미합니다.  
+데이터들이 퍼져 있는 전체적인 형태나 분산(산포도)은 그대로 유지된 채, 전체 무리의 중심이 그래프의 한가운데(원점, $(0,0)$ 등)로 맞춰집니다.
+
+#### 주요 목적과 효과
+회귀 분석 등에서 독립변수들을 평균 중심화하면, 회귀식의 절편($\beta_0$)이 "모든 독립변수가 0일 때의 종속변수 값"이 아니라 "모든 독립변수가 평균일 때의 종속변수 예상값"을 나타내게 됩니다. 이는 현실적으로 0이 될 수 없는 데이터(예: 키, 연령 등)를 다룰 때 모델 해석을 훨씬 직관적으로 만들어 줍니다.
+
+주성분 분석(PCA)이나 커널 메서드 등에서 평균 중심화를 생략하면, 데이터의 첫 번째 주성분이 '진정한 변동성의 방향' 대신 전체 데이터의 평균적인 편향(Bias)을 억지로 쫓아가게 되어 분석이 왜곡될 수 있습니다. 중심화를 거쳐야 데이터 고유의 분산과 주성분이 올바르게 도출됩니다.
+
+최신 딥러닝과 대형 언어 모델(LLM) 영역에서는 임베딩이나 배치 데이터에 평균 중심화(Batch-Mean Centering 등)를 적용하여 불필요한 공통 편향 성분을 제거하고, 모델 내부 표현(Representation)의 해석 가능성과 일반화 성능을 높이는 데 활용합니다.
+
+#### Mean Centring vs Mean Shift
+| 구분 | **Mean-Centering (평균 중심화)** | **Mean-Shift (평균 이동 / 평행 이동)** |
+| :--- | :--- | :--- |
+| **수학적 정의** | 데이터에서 자신의 평균($\bar{\mathbf{c}}$)을 빼서 **데이터의 중심(평균)을 정확히 원점($\mathbf{0}$)으로 맞추는 연산** | 데이터 전체의 중심 위치를 **특정 목표 평균($\boldsymbol{\mu}_{\text{base}}$)으로 통째로 밀어서 옮기는(Translation) 연산** |
+| **기본 수식** | $\mathbf{x}_{\text{centered}} = \mathbf{x} - \bar{\mathbf{x}}$ | $\mathbf{x}_{\text{shifted}} = \mathbf{x}_{\text{centered}} + \boldsymbol{\mu}_{\text{target}}$ |
+| **변환 후 중심** | 결과 데이터의 평균이 반드시 **$\mathbf{0}$ (원점)**이 됨 | 결과 데이터의 평균이 **$\boldsymbol{\mu}_{\text{target}}$**이 됨 |
+| **핵심 목적** | 좌표계의 절대적인 원점 편향을 제거하고, **데이터 간의 순수한 상대적 거리 및 분산(기하학적 형상)**을 보존/추출 | 서로 다른 두 공간(예: 텍스트 인코더 공간 vs. LLM 어휘 공간) 사이의 **분포 중심 위치를 일치시킴** |
+
+
+##### 예시
+출처: Preserving Item Semantics for Free: Rethinking Token
+Initialization in LLM-Based Generative Recommendation
+(https://arxiv.org/pdf/2608.07816v1)
+
+**1.토큰 임베딩의 "순수 기하학적 형상(퍼짐과 축)"을 정확히 측정하기 위함 (Section 3.2)**
+토큰 임베딩들이 원점에서 멀리 떨어진 한 덩어리로 몰려 있으면, 단순히 SVD를 돌렸을 때 1번 특이벡터가 데이터의 내부 구조가 아니라 "원점에서 군집 중심까지의 전체 이동 방향"만 잡아내는 왜곡이 발생합니다.
+- 평균 중심화 행렬 $\mathbf{X}$: $K$개의 Level-0 토큰 벡터들에서 전체 평균 벡터($\bar{\mathbf{e}}$)를 빼주어 원점을 데이터의 무게중심으로 옮겼습니다.
+- 목적: 
+  1. 임베딩 스케일($\sigma_{\text{geo}}$): 임베딩 공간이 유효 차원에 걸쳐 실제로 어느 정도의 부피와 확산 크기를 갖는지 순수 분산(변동폭)을 측정했습니다.
+  2. 부분공간 분산 설명 비율($R^2_q$): 인기도 타깃($\mathbf{T}_{\text{pop}}$)과 카테고리 타깃($\mathbf{T}_{\text{sem}}$) 역시 컬럼별로 평균을 0으로 맞춘 뒤($\mathbf{T} - \bar{\mathbf{T}}$), 상위 주성분 축($\mathbf{Z}_q$)이 순수 변동성(Variance around the mean)을 얼마나 설명하는지 정확히 측정하기 위해 사용되었습니다.
+
+**2. 모든 토큰의 '공통 이동'을 제거하고, 개별 토큰만의 '상대적 인기도 줄서기'를 증명하기 위함 (Section 3.3, Theorem 3.1 & Appendix F)**
+경사하강법(GD) 훈련 시, 크로스 엔트로피 손실로 인해 모든 토큰은 전체 평균 문맥에 의해 집단 전체가 한 방향으로 함께 이동하는 거대한 배경 흐름(Global drift)을 겪습니다.
+- 중심화된 임베딩 $\mathbf{x}_v^{(t)} = \mathbf{o}_v^{(t)} - \bar{\mathbf{o}}^{(t)}$ 도입: 전체 평균 업데이트를 빼주는 mean-centering을 적용함으로써, 모든 토큰이 똑같이 받는 공통 업데이트 성분을 소거했습니다.
+- 목적: 평균을 뺌으로써 토큰 $v$만의 상대적 위치 변화가 "상대적 등장 빈도($\tilde{n}_v = n_v - \bar{n}$) $\times$ 공통 히든 스테이트 축($\sum \bar{\mathbf{h}}^{(t)}$)"이라는 깔끔한 1차원 수식으로 분리되어 나옵니다. 즉, 평균 중심화를 통해 "임베딩 공간의 배경 이동을 걷어내고, 토큰들이 오직 등장 횟수의 편차($\tilde{n}_v$)에 비례하여 1차원 직선상에서 일렬로 줄을 서게 되는 수학적 메커니즘"을 고립시켜 엄밀하게 증명할 수 있었습니다.
+
+
+**3. 센트로이드 벡터를 LLM의 기존 단어 분포와 정렬시키기 위함 (Section 4.1, Equation 5)**
+사전 학습된 텍스트 인코더에서 뽑은 원본 센트로이드 벡터($\mathbf{c}_k$)들의 중심 좌표와, LLM 단어 사전(Vocabulary)의 기존 토큰 임베딩들의 중심 좌표는 서로 완전히 다른 공간에 위치해 있습니다.
+<b> Mean-Shift 수식 </b>
+$$\mathbf{e}_{\ell,k}^{\text{cent}} = \Phi_{d_{\text{model}}}(\mathbf{c}_{\ell,k} - \bar{\mathbf{c}}) + \boldsymbol{\mu}_{\text{base}}$$
+
+1. 원본 센트로이드에서 센트로이드들의 평균($\bar{\mathbf{c}}$)을 빼서 원점으로 가져온 뒤(Mean-centering),
+2. 사전 학습된 LLM 단어들의 기존 평균 벡터($\boldsymbol{\mu}_{\text{base}}$)를 더해줍니다(Mean-shift translation).
+
+- 목적 (최적화 안정성, Optimization Stability): 센트로이드들이 담고 있는 상대적인 거리·각도(의미 기하학적 구조)는 그대로 유지하면서, 벡터들의 위치를 LLM이 원래 알고 있던 어휘집의 분포 중심($\boldsymbol{\mu}_{\text{base}}$)으로 맞춰줌으로써, 기존 무작위 가우시안 초기화가 가졌던 안정적인 훈련 안정성(In-distribution)을 그대로 계승하기 위함입니다.
+
+**요약**
+논문에서 Mean-centering은 ① 임베딩 공간의 순수한 형상과 인기도 축을 SVD로 측정하기 위해, ② 경사하강법에서 전체 배경 이동을 제거하고 인기도 편향 수식을 증명하기 위해, 그리고 ③ 외부 센트로이드 좌표를 LLM 어휘집 분포에 부드럽게 안착시키기 위한 핵심 도구로 사용되었습니다.
+
 ## Basics
 Principal component analysis is a dimensionality reduction method that is often used to reduce the dimensionality of large data sets, by transforming a large set of variables into a smaller one that still contains most of the information in the large set.
 
