@@ -500,6 +500,12 @@ A'=
 \end{pmatrix}
 $$
 
+### Projection Matrix
+투영 행렬($\mathbf{P}$)은 관측된 반응값 벡터(response values) $\mathbf{y}$를 예측된 적합값 벡터(fitted values) $\hat{\mathbf{y}}$로 매핑(변환)하는 행렬입니다.
+$$\hat{\mathbf{y}} = \mathbf{P}\mathbf{y}$$
+Projectino Matrix는 $n \times n$ 크기의 정사각 행렬(Square Matrix)로, 어떤 벡터 공간($R^n$)을 그 하위 공간(Subspace $W$)으로 사영(Projection, 투영)시키는 역할을 합니다.  
+회귀 분석이나 통계 모델에서 우리가 가진 실제 데이터(반응값)를 바탕으로 예측값(적합값)을 만들어내는 다리 역할을 하는 행렬입니다. 실제 데이터 벡터에 이 투영 행렬을 곱하면 예측값 벡터가 튀어나옵니다
+
 ## Affine Function
 An affine function is a function composed of a linear function + a constant and its graph is a straight line.  
 (즉 가중치 합(=Weighted Sum)에 bias(b)를 더해준 것)
