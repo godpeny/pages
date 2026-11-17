@@ -440,6 +440,26 @@ Smooth L1의 각 식에 β를 곱하면 Huber가 됩니다.
 
 최대 크기는 β입니다.
 
+## Weighted Mean Absolute Percentage Error(WMAPE)
+- MAPE (Mean Absolute Percentage Error): 항목마다 % 오차(|실제 − 예측| ÷ 실제)를 구한 뒤 단순 평균합니다.
+모든 항목이 같은 무게를 가집니다.
+- WMAPE (Weighted MAPE): 항목마다 % 오차를 실제값 크기로 가중 평균합니다.
+
+$$\text{wMAPE} = \frac{\sum_{i=1}^{n} \vert{}A_i - F_i\vert{}}{\sum_{i=1}^{n} \vert{}A_i\vert{}}$$
+
+* $A_i$: 실제값 (Actual)
+* $F_i$: 예측값 (Forecast)
+
+**사용자 지정 가중치 적용 (일반화된 공식):**
+단순 수량 외에 단가나 비용 같은 별도의 가중치($w_i$)를 적용할 때는 분자와 분모 모두에 가중치를 곱해 계산합니다. (만약 모든 $w_i = 1$이면 위의 기본 공식과 같아지며, 이를 흔히 **WAPE**라고도 부릅니다.)
+
+$$\text{wMAPE} = \frac{\sum_{i=1}^{n} w_i \vert{}A_i - F_i\vert{}}{\sum_{i=1}^{n} w_i \vert{}A_i\vert{}}$$
+
+### 3. 주요 장점
+
+* **0 또는 극소값 처리 가능:** 개별 데이터의 실제값이 0이더라도 전체 실제값의 합이 0이 아닌 이상 계산이 가능하며, 작은 값에서 발생한 오차가 전체 평가 점수를 왜곡하는 현상을 막아줍니다.
+* **비즈니스 중요도 반영:** 판매량이나 매출액이 큰 핵심 품목의 예측 오차에 더 높은 비중을 두기 때문에, 실무적인 관점에서 모델의 성능을 훨씬 현실적으로 평가할 수 있습니다.
+
 ## Point estimation
 In statistics, point estimation involves the use of sample data to calculate a single value (known as a point estimate since it identifies a point in some parameter space) which is to serve as a "best guess" or "best estimate" of an unknown population parameter (for example, the population mean).
 
