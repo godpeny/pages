@@ -190,40 +190,96 @@ WINNER는 **입찰가를 정하는 마지막 단계**예요.
 
 | 이름 | 뜻 |
 |---|---|
-| ecpm_price | 랭커가 계산한 할인 전 eCPM |
-| 수수료 | 대행사 수수료 + DSP 수수료 |
-| eCPM' | 수수료를 뺀 eCPM. 우리가 최대로 낼 수 있는 금액 |
+| eCPM | 랭커가 계산한 할인 전 eCPM (로그 필드: ecpm_price) |
+| 수수료 | Ca + Cd. 대행사 수수료(Ca) + DSP 수수료(Cd) |
+| eCPM' | 수수료를 뺀 eCPM. 우리가 최대로 낼 수 있는 금액. eCPM × (1 − 수수료) |
 | dr | 위너 모델이 낸 입찰 비율. 모델 예측가(bid_price) / eCPM' |
-| bsr | ecpm_price 기준으로 깎는 비율 |
+| bsr | eCPM 기준으로 깎는 비율 |
+| max_bsr | bsr 상한. 지면별로 daum·network 0.1, service 0.05, talk 0.2125 |
 | 제출가 | 실제로 SSP에 낸 입찰가(ssp_price) |
 | ecpm 피처 | 세콰이어 학습 데이터에 기록되는 모델 입력값. 제출가 / dr로 계산 |
 
 **eCPM'을 구하는 두 방법**
 
-- 방법 1. 정의: eCPM' = ecpm_price × (1 − 수수료)
-- 방법 2. 로그에서 역산: eCPM' = 제출가 / dr. 세콰이어 ecpm 피처가 이 방식이다.
+- 방법 1. 정의
+
+$$
+\text{eCPM}' = \text{eCPM} \times (1 - \text{수수료})
+$$
+
+- 방법 2. 로그에서 역산. 세콰이어 ecpm 피처가 이 방식이다.
+
+$$
+\text{eCPM}' = \frac{\text{제출가}}{\text{dr}} = \frac{\text{eCPM} \times (1 - \text{수수료} - \text{bsr})}{\text{dr}}
+$$
 
 **두 방법이 같아지는 원리**
 
-1. bsr = (1 − 수수료) × (1 − dr)
-2. 제출가 = ecpm_price × (1 − 수수료 − bsr)
-3. 1을 2에 대입하면, 괄호 안이 (1 − 수수료) − (1 − 수수료) × (1 − dr) = (1 − 수수료) × dr로 정리된다.
-4. 따라서 제출가 = ecpm_price × (1 − 수수료) × dr = eCPM' × dr
-5. 양변을 dr로 나누면 제출가 / dr = eCPM'
+1. bsr은 다음과 같이 정해진다.
+
+$$
+\text{bsr} = (1 - \text{수수료}) \times (1 - \text{dr})
+$$
+
+2. 제출가는 다음과 같다.
+
+$$
+\text{제출가} = \text{eCPM} \times (1 - \text{수수료} - \text{bsr})
+$$
+
+3. 1을 2에 대입하면 괄호 안이 다음과 같이 정리된다.
+
+$$
+(1 - \text{수수료}) - (1 - \text{수수료}) \times (1 - \text{dr}) = (1 - \text{수수료}) \times \text{dr}
+$$
+
+4. 따라서 제출가는 다음과 같다.
+
+$$
+\text{제출가} = \underbrace{\text{eCPM} \times (1 - \text{수수료})}_{\text{eCPM}'} \times \text{dr} = \text{eCPM}' \times \text{dr}
+$$
+
+5. 양변을 dr로 나누면 두 방법이 같아진다.
+
+$$
+\frac{\text{제출가}}{\text{dr}} = \text{eCPM}'
+$$
 
 **조건: max_bsr clip이 적용되지 않을 때만 같다**
 
-- bsr이 max_bsr보다 크면 bsr = max_bsr로 바뀐다(max_bsr clip). 지면별 max_bsr은 daum·network 0.1, service 0.05, talk 0.2125다.
-- 이때 제출가 = ecpm_price × (1 − 수수료 − max_bsr)이 되어 eCPM' × dr보다 커진다.
-- 그래서 제출가 / dr > eCPM'이 되고, 그 차이는 dr이 작을수록 커진다.
+- 1에서 구한 bsr이 max_bsr보다 크면 bsr = max_bsr로 바뀐다(max_bsr clip).
+- 이때 제출가는 3~4처럼 정리되지 않고 다음 값으로 고정된다.
 
-**예시** (ecpm_price 1,000원, 수수료 0.15, eCPM' 850원)
+$$
+\text{제출가} = \text{eCPM} \times (1 - \text{수수료} - \text{max\_bsr})
+$$
+
+- 이 값을 dr로 나누면 eCPM'보다 커진다. 배수는 dr이 작을수록 커진다.
+
+$$
+\frac{\text{제출가}}{\text{dr}} = \text{eCPM}' \times \frac{1 - \text{수수료} - \text{max\_bsr}}{(1 - \text{수수료}) \times \text{dr}}
+$$
+
+**왜곡은 max_bsr clip이 만들고, 왜곡의 최대 크기는 dr 하한(min_dr)이 정한다**
+
+- 왜곡 자체는 max_bsr clip이 걸리면 생긴다. 10-28 전에도 있었다.
+- 10-28 전에는 torch-dnn 모델 config(`hyper_parameters.min_dr`)가 dr을 지면별 하한에서 잘랐고, 그만큼 배수도 막혔다. 10-28 배포(ADRECAI-727, torch-dnn `8f682afa`)로 이 clip이 빠지면서 dr이 0 근처까지 내려갈 수 있게 됐다.
+
+| 지면 | min_dr (10-28 전) | 10-28 전 최대 배수 (수수료 0.15 가정) |
+|---|---|---|
+| daum, network | 0.4 | 약 2.2배 |
+| service | 0.01 | 약 94배. 10-28 전에도 큰 왜곡이 있었다 |
+| talk_all | 0.75 | 1배. min_dr이 clip 경계(dr < 0.75)와 같아 clip이 걸리지 않았다 |
+
+**예시** (eCPM 1,000원, 수수료 0.15, eCPM' 850원, max_bsr 0.1)
 
 | 경우 | dr | bsr | 제출가 | ecpm 피처 (제출가 / dr) | eCPM' 대비 |
 |---|---|---|---|---|---|
-| max_bsr clip 미적용 | 0.35 | 0.55 | 300원 | 850원 | 1배 |
-| max_bsr clip 적용 (max_bsr 0.1) | 0.35 | 0.1 | 750원 | 2,140원 | 2.5배 |
-| max_bsr clip 적용, min_dr clip 제거 후 | 0.015 | 0.1 | 750원 | 50,000원 | 59배 |
+| max_bsr clip 미적용 | 0.9 | 0.085 | 765원 | 850원 | 1배 |
+| max_bsr clip 적용, min_dr 0.4 (10-28 전 daum·network) | 0.4 | 0.51 → 0.1 | 750원 | 1,875원 | 2.2배 |
+| max_bsr clip 적용, min_dr clip 제거 후 | 0.015 | 0.84 → 0.1 | 750원 | 50,000원 | 59배 |
+
+**결론**: 제출가 / dr은 max_bsr clip이 걸린 행에서 eCPM'과 달라지고, 그 차이는 dr이 작을수록 커진다.
 
 ## 10. WINNER 출력값은 누가 만드나
 
