@@ -116,8 +116,49 @@ $$
 $$
 While $ \mathbb{E}[X\mu_Y] =  \mathbb{E}[X\mu_Y]  = \mathbb{E}[\mu_X \mu_Y]$.
 
-### Spearman Rank Correlation Coefficient
+### Pearson Correlation Coefficient & Spearman Rank Correlation Coefficient
+
+
+### 1. 피어슨 상관계수 (Pearson)
+
+두 변수의 **원래 값**으로 **선형 관계**의 방향과 강도를 측정한다.
+모든 점이 우상향 직선 위에 있으면 $r=1$, 우하향 직선 위에 있으면 $r=-1$이다.
+
+$$
+r =
+\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+{\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}
+ \sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}
+$$
+
+여기서 $\bar{x}$와 $\bar{y}$는 각 변수의 표본평균이다.
+
+### 2. 스피어만 순위상관계수 (Spearman)
 https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
+
+각 변수의 값을 **순위**로 바꾼 뒤, 그 순위에 피어슨 공식을 적용한다.
+두 변수의 순위가 완전히 일치하면 $\rho_s=1$, 완전히 반대면 $\rho_s=-1$이다.
+
+$$
+\rho_s = \operatorname{Corr}(\operatorname{rank}(X), \operatorname{rank}(Y))
+$$
+
+### 3. 선형 관계와 단조 관계의 차이
+
+- **선형 관계:** $X$가 같은 양만큼 증가할 때 $Y$의 변화량도 일정하다.
+- **단조 관계:** $X$가 증가할 때 $Y$의 변화 방향은 유지되지만, 변화량은 달라도 된다.
+
+**공통 예시: 두 모델이 광고 4개에 매긴 점수**
+
+| 광고 | 모델 X 점수 | 모델 Y 점수 | X 순위 | Y 순위 |
+|---|---:|---:|---:|---:|
+| A | 1 | 1 | 4위 | 4위 |
+| B | 2 | 2 | 3위 | 3위 |
+| C | 3 | 3 | 2위 | 2위 |
+| D | 4 | 100 | 1위 | 1위 |
+
+- **피어슨 ≈ 0.785:** X 점수는 매번 1씩 증가하지만 Y 점수의 증가량은 1, 1, 97이다. 두 점수는 함께 증가하지만 정확한 직선 관계는 아니다.
+- **스피어만 = 1:** 두 모델의 광고 순위가 D > C > B > A로 완전히 같다. D의 점수가 100이어도 순위가 같으므로 계수는 1이다.
 
 ### Covariance and Correlation
 In probability theory and statistics, the mathematical concepts of covariance and correlation are very similar. Since both describe the degree to which two random variables or sets of random variables tend to deviate from their expected values in similar ways.
