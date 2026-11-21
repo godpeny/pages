@@ -1051,3 +1051,5 @@ model.py 의 AutoTokenizer.from_pretrained()이 우선적으로 tokenizer.json�
 
 Reference: https://arxiv.org/pdf/2509.25429v2
 
+## Hierarchical Sequential Transduction Unit (HSTU)
+https://arxiv.org/pdf/2402.17152
