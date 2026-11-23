@@ -414,6 +414,16 @@ $$
 
 일반적으로는 0.7 전후에서 시작하여 필요에 따라 조정하는 것이 가장 좋다.
 
+#### Prefill vs Decode
+https://wikidocs.net/371839
+https://developer.nvidia.com/ko-kr/blog/mastering-llm-techniques-inference-optimization/
+##### Prefill
+프리필 단계에서 LLM은 입력 토큰을 처리하여 중간 상태(키와 밸류)를 연산하고, 이 중간 상태는 “첫 번째” 새 토큰을 생성하는 데 사용됩니다. 각각의 새 토큰은 이전의 모든 토큰에 의존하지만, 입력의 전체 범위를 알 수 있기 때문에 높은 수준에서 이는 고도로 병렬화된 매트릭스-매트릭스 연산입니다. 이는 GPU 사용률을 효과적으로 포화시킵니다. 즉, 입력 프롬프트의 모든 토큰을 병렬로 한꺼번에 처리해 첫 출력 토큰을 만들고, 모든 입력 토큰의 Key/Value를 계산해 KV cache를 채우는 방식입니다.
+
+##### Decode
+디코드 단계에서 LLM은 중단 기준이 충족될 때까지 출력 토큰을 한 번에 하나씩 자동 회귀적으로 생성합니다. 각 순차 출력 토큰은 이전 반복의 모든 출력 상태(키와 값)를 알고 있어야 합니다. 이는 행렬-벡터 연산과 같아서 프리필 단계에 비해 GPU 연산 능력을 제대로 활용하지 못합니다. 데이터(가중치, 키, 값, 활성화)가 메모리에서 GPU로 전송되는 속도가 지연 시간을 결정하며, 계산이 실제로 얼마나 빨리 이루어지는지가 지연 시간을 결정하지 않습니다. 다시말하면, 이 작업은 메모리 바운드 연산입니다. 즉, 한 번에 토큰 하나씩 생성하는 방식입니다.
+
+
 
 ### Parametic vs Non-Parametic Learning Algorithm
 - Parametic : fixed finite number of parameters ($\theta$) for fitting to the data. So After fitting theta, trainning data is no more needed to make prediction.    
