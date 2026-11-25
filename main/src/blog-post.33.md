@@ -820,6 +820,19 @@ Where ${\displaystyle REL_{p}}$ represents the list of relevant documents (order
 IDCG = 최적의 추천일 때의 DCG  
 NCCG = DCG/IDCG
 
+### Mean Reciprocal Rank (MPR)
+검색 엔진이나 질의응답(Question Answering) 시스템처럼 쿼리(질문·검색어)에 대해 정답 확률 순으로 정렬된 후보 목록을 내놓는 시스템의 성능을 평가하는 통계 지표입니다.
+
+핵심은 "첫 번째로 등장한 정답이 얼마나 위쪽에 있는가"를 보는 것입니다.
+각 질의(Query)마다 첫 번째 정답이 등장한 순위($\text{rank}_{i}$)의의 역수($\frac{1}{\text{rank}_{i}}$)를 구한 뒤, 전체 질의 수($\vert{}Q\vert{}$)로 평균을 냅니다.
+
+$$\text{MRR} = \frac{1}{\vert{}Q\vert{}} \sum_{i=1}^{\vert{}Q\vert{}} \frac{1}{\text{rank}_i}$$
+- $\vert{}Q\vert{}$: 평가에 사용한 전체 쿼리의 개수
+- $i$: $1$부터 $\vert{}Q\vert{}$까지의 각 쿼리 번호
+- $\text{rank}_i$: $i$번째 쿼리에서 첫 번째 정답(관련 항목)이 등장한 순위 (정답이 없으면 $\frac{1}{\text{rank}_i} = 0$으로 처리)
+- $\sum_{i=1}^{\vert{}Q\vert{}} \frac{1}{\text{rank}_i}$: 모든 쿼리에 대한 역순위의 합
+- $\frac{1}{\vert{}Q\vert{}} \sum \dots$: 그 합을 전체 쿼리 수로 나눈 산술 평균
+
 ### Reference
 https://lsjsj92.tistory.com/663
 
